@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3.3 Shrinkage Methods | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3.3 Shrinkage Methods | CS 598 Practical Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3.3 Shrinkage Methods | CS 598 Practical Statistical Learning" />
+  
+  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  
+
+<meta name="author" content="Alexandra Chronopoulou" />
+
+
+<meta name="date" content="2025-08-24" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="subset-selection.html"/>
+<link rel="next" href="the-student-performance-example.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
+<li class="chapter" data-level="1.5.4" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures"><i class="fa fa-check"></i><b>1.5.4</b> Code for the Examples in the Lectures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>2.1</b> Multiple Linear Regression (MLR) Model</a></li>
+<li class="chapter" data-level="2.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>2.2</b> MLR Model Fitting</a></li>
+<li class="chapter" data-level="2.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>2.3</b> Least-Squares &amp; Normal Equations</a></li>
+<li class="chapter" data-level="2.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>2.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
+<li class="chapter" data-level="2.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>2.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
+<li class="chapter" data-level="2.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>2.6</b> Rank deficiency</a></li>
+<li class="chapter" data-level="2.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>2.7</b> Hypothesis Testing in MLR</a></li>
+<li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
+<li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
+<li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
+<li class="chapter" data-level="2.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Data Set Example</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="training-vs.-testing-errors.html"><a href="training-vs.-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training vs. Testing Errors</a></li>
+<li class="chapter" data-level="3.2" data-path="subset-selection.html"><a href="subset-selection.html"><i class="fa fa-check"></i><b>3.2</b> Subset Selection</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria-based-procedures"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria-based procedures</a></li>
+<li class="chapter" data-level="3.2.2" data-path="subset-selection.html"><a href="subset-selection.html#search-algorithms"><i class="fa fa-check"></i><b>3.2.2</b> Search Algorithms</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html"><i class="fa fa-check"></i><b>3.3</b> Shrinkage Methods</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
+<ul>
+<li class="chapter" data-level="4.0.1" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html#a-note-on-nonlinearity"><i class="fa fa-check"></i><b>4.0.1</b> A Note on Nonlinearity</a></li>
+<li class="chapter" data-level="4.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html"><i class="fa fa-check"></i><b>4.1</b> Polynomial Regression</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-basis-functions"><i class="fa fa-check"></i><b>4.1.1</b> Polynomial Basis Functions</a></li>
+<li class="chapter" data-level="4.1.2" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-regression-1"><i class="fa fa-check"></i><b>4.1.2</b> Polynomial Regression</a></li>
+<li class="chapter" data-level="4.1.3" data-path="polynomial-regression.html"><a href="polynomial-regression.html#orthogonal-polynomials"><i class="fa fa-check"></i><b>4.1.3</b> Orthogonal Polynomials</a></li>
+<li class="chapter" data-level="4.1.4" data-path="polynomial-regression.html"><a href="polynomial-regression.html#piece-wise-polynomials"><i class="fa fa-check"></i><b>4.1.4</b> Piece-wise Polynomials</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="splines-regression.html"><a href="splines-regression.html"><i class="fa fa-check"></i><b>4.2</b> Splines Regression</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="splines-regression.html"><a href="splines-regression.html#examples-of-cubic-splines-basis"><i class="fa fa-check"></i><b>4.2.1</b> Examples of Cubic Splines Basis</a></li>
+<li class="chapter" data-level="4.2.2" data-path="splines-regression.html"><a href="splines-regression.html#b-splines-basis-functions-in-r"><i class="fa fa-check"></i><b>4.2.2</b> B-Splines Basis Functions in <code>R</code></a></li>
+<li class="chapter" data-level="4.2.3" data-path="splines-regression.html"><a href="splines-regression.html#natural-cubic-splines-ncs"><i class="fa fa-check"></i><b>4.2.3</b> Natural Cubic Splines (NCS)</a></li>
+<li class="chapter" data-level="4.2.4" data-path="splines-regression.html"><a href="splines-regression.html#regression-splines"><i class="fa fa-check"></i><b>4.2.4</b> Regression Splines</a></li>
+<li class="chapter" data-level="4.2.5" data-path="splines-regression.html"><a href="splines-regression.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>4.2.5</b> K-Fold Cross-Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="smoothing-splines.html"><a href="smoothing-splines.html"><i class="fa fa-check"></i><b>4.3</b> Smoothing Splines</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="smoothing-splines.html"><a href="smoothing-splines.html#the-roughness-penalty-approach"><i class="fa fa-check"></i><b>4.3.1</b> The Roughness Penalty Approach</a></li>
+<li class="chapter" data-level="4.3.2" data-path="smoothing-splines.html"><a href="smoothing-splines.html#proof"><i class="fa fa-check"></i><b>4.3.2</b> Proof</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
+<li class="chapter" data-level="4.5" data-path="the-birthrates-example-in-r.html"><a href="the-birthrates-example-in-r.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example in R</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="shrinkage-methods" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Shrinkage Methods<a href="shrinkage-methods.html#shrinkage-methods" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The variable selection methods we already discussed work quite well in practice when it comes to data sets where we do not have too many predictors. For example, recall that the <em>level-wise</em> algorithms are good when <span class="math inline">\(p&lt;40\)</span>.</p>
+<p>In this section, we are going to study two different methods we can use to <font color="darkblue"><strong>shrink</strong></font> the number of predictors in order to select the optimal model that balances the <em>trade-off between model bias and prediction error (variance)</em>.</p>
+<p>Let us then re-frame what we have been doing so far:</p>
+<p><br><br></p>
+<p><font color="darkblue"><strong>Regression with Penalization</strong></font></p>
+<p><span class="math display">\[\begin{align*}
+\hat{\beta} &amp;= \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2 + \underbrace{\lambda \sum_{j=1}^{p} \mathbf{1}_{\beta_j \neq 0}}_{\text{penalty}}\\
+&amp;=  \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2 + \underbrace{\lambda ||\beta||_0}_{\text{penalty}}
+\end{align*}\]</span>
+where <span class="math inline">\(||\beta||_0 = \sum_{j=1}^{p} \mathbf{1}_{\beta_j \neq 0}\)</span>. The <em>vector norm</em> <span class="math inline">\(||\beta||_0\)</span> can be thought of as a function that decides whether a variable is <strong>in</strong> or <strong>out</strong> of the model. Then, the different criteria we discussed before rise by choosing <span class="math inline">\(\lambda\)</span> properly.</p>
+<p><br>
+Taking this idea one step further (remembering our linear algebra tools), we can replace the <em>0-norm</em> above with a different one, e.g. the <span class="math inline">\(L^1\)</span> or the <span class="math inline">\(L^2\)</span> norm. Exactly this observation, lead to two extremely popular <em>penalized regression</em> methods:</p>
+<ul>
+<li><p>the <font color="blue"><strong>Ridge Regression</strong></font>
+<span class="math display">\[\hat{\beta} =  \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2 + \underbrace{\lambda ||\beta||^2}_{\text{penalty}}, \text{ where } ||\beta||^2 = \sum_{j=1}^{p} \beta_j^2\]</span></p></li>
+<li><p>the <font color="blue"><strong>Lasso Regression</strong></font>
+<span class="math display">\[\hat{\beta} =  \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2 + \underbrace{\lambda |\beta|}_{\text{penalty}}, \text{ where }  |\beta| = \sum_{j=1}^{p} |\beta_j|\]</span></p></li>
+</ul>
+<p><br>
+In the next sections, we discuss the mathematics and the implementation of these methods. However, before proceeding, we need to make two consider the following:</p>
+<div class="learningbox">
+<p><strong>Implementation Considerations</strong></p>
+<p>When the penalization norm changes, we observe that the penalty term that arises (in both cases) <em>is not location or scale invariant</em>. This implies that if we re-scale a variable then the penalized <span class="math inline">\(\beta\)</span> estimators will be sensitive to these values. Therefore, it is suggested that we <strong>center</strong> and <strong>scale</strong> each column of the design matrix <span class="math inline">\(\mathbf{X}\)</span>. Specifically, if <span class="math inline">\(\mathbf{x}_{j}\)</span>, <span class="math inline">\(j=1, \ldots, p\)</span> is a column of <span class="math inline">\(\mathbf{X}\)</span>, then
+<span class="math display">\[\tilde{\mathbf{x}}_{j} = \frac{ \mathbf{x}_{j} - \bar{\mathbf{x}}_{j} } { sd_{\mathbf{x}_{j}}} \]</span>
+In addition to that we <strong>center</strong> <span class="math inline">\(\mathbf{y}\)</span> to <em>suppress the intercept</em>, i.e. <span class="math display">\[\mathbf{\tilde{y}}_i = \mathbf{y}_{i} - \bar{\mathbf{y}}\]</span></p>
+<p><br> After the model selection/fitting, we can always transform the variables back to their original values so that we continue with interpretation and/or prediction. We can also <em>estimate back the intercept</em> as follows:</p>
+<p><span class="math display">\[\hat{\beta}_0 = \bar{y} - \sum_{j=1}^{n} \hat{\beta}_j \bar{\mathbf{x}}_{j} \]</span></p>
+<p>Note that in <code>R</code> tha <code>glmnet</code> package handles the centering and scaling (and transformation back to original) automatically.</p>
+</div>
+<br>
+<hr>
+<p><br></p>
+<div id="ridge-regression" class="section level3 hasAnchor" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Ridge Regression<a href="shrinkage-methods.html#ridge-regression" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Ridge regression assumes that after normalization, some of the regression coefficients should not be very large. Ridge regression is very useful when you have collinearity and the LS regression coefficients are unstable. In fact, it was initially introduced by A. Tikhonov to remedy multi-collinearity problems by adding a non-negative constant to the diagonal of the design matrix.</p>
+<p><br></p>
+<div class="motivationbox">
+<p><strong>Ridge Regression</strong></p>
+<p>The idea of the method is to add a <strong>penalty</strong> term to the LS minimization problem :
+<span class="math display">\[\text{minimize}_{\beta}\,  (y-X \beta)^T(y-X \beta) + {\color{blue}{\lambda \sum_j \beta_j^2}}\]</span>
+for some <span class="math inline">\(\lambda \ge 0\)</span>. The penalty term is <span class="math inline">\(\sum_j \beta_j^2\)</span>.</p>
+</div>
+<p>As discussed before, for the method to be more effective, we prefer to <em>standardize</em> the predictors first (centered by their means and scaled by their standard deviations) and center the response <span class="math inline">\(y\)</span>.</p>
+<p>One of the main advantages of the ridge regression is that it provides us with closed-form solutions for the <span class="math inline">\(\beta\)</span> coefficients. Indeed, solving the minimization problem we obtain:
+<font color="darkblue">
+<span class="math display">\[\hat{\beta}_{\text{Ridge}}=(X^T X+\underbrace{\lambda I}_{\text{ridge}})^{-1} X^T y\]</span>
+</font></p>
+<p>It is easy to see that when <span class="math inline">\(\lambda=0\)</span> the ridge regression estimation problem reduces to the standard least squares problem, while when <span class="math inline">\(\lambda \rightarrow \infty\)</span>, the ridge coefficients <span class="math inline">\(\hat{\beta} \rightarrow \mathbf{0}\)</span>. As a result, during implementation, one of the main considerations is how to choose <span class="math inline">\(\lambda\)</span>. Choosing a very small (relatively speaking) value for <span class="math inline">\(\lambda\)</span> leads back to the usual LS estimators, while choosing a very large value for <span class="math inline">\(\lambda\)</span> makes most estimators zero.</p>
+<p>To balance this trade-off in practice, a common approach is to use automated methods such as <em>Generalized Cross-Validation</em> (GCV). The main <em>disadvantage</em> of the ridge regression estimators is that they are <strong>biased</strong>, that is <span class="math inline">\(\mathbb{E}(\hat{\beta}) = \beta + \text{ bias}\)</span>.</p>
+<p><br>
+To better understand the structure of the ridge regression LS Coefficients, assume that <span class="math inline">\(\mathbf{X}^T\mathbf{X} = \mathbf{I}_p\)</span>, that is the columns of the design matrix are orthogonal. Then, the general formula above reduces to
+<span class="math display">\[\hat{\beta}_{ridge} = \bigl(\mathbf{X}^T \mathbf{X} + \lambda I \bigr)^{-1} \mathbf{X}^T \mathbf{y} = \frac{1}{1+\lambda} \mathbf{X}^T \mathbf{y}\]</span>
+Similarly, the fitted values
+<span class="math display">\[\hat{\mathbf{y}}_{ridge} = \mathbf{X} \hat{\beta}_{ridge} = \frac{1}{1+\lambda}\; \hat{\mathbf{y}}_{LS} \]</span></p>
+<p>If the columns of the design matrix are not orthogonal, then we can run the regression against an orthonormal version of <span class="math inline">\(\mathbf{X}\)</span>, known as <em>principal components analysis</em>, or <em>singular value decomposition</em>.</p>
+<p><br></p>
+<div id="singular-value-decomposition-svd" class="section level4 unnumbered hasAnchor">
+<h4>Singular Value Decomposition (SVD)<a href="shrinkage-methods.html#singular-value-decomposition-svd" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The Singular Value Decomposition (SVD) is one of the most important concepts in applied mathematics. It is used for a number of application including dimension reduction and data analysis. Principal Components Analysis (PCA) is also a special case of the SVD.</p>
+<div class="motivationbox">
+<p><strong>SVD of <span class="math inline">\(\mathbf{X}_{n\times p}\)</span></strong></p>
+<p>Consider the design matrix <span class="math inline">\(\mathbf{X}_{n\times p}\)</span>. Then, <span class="math inline">\(\mathbf{X}\)</span> can be written as
+<span class="math display">\[\mathbf{X} = \mathbf{U}_{n\times p} \; \mathbf{D}_{p\times p}\, \mathbf{V}_{p\times p}^T\]</span></p>
+<p>where</p>
+<ul>
+<li><p><span class="math inline">\(\mathbf{U}_{n\times p}\)</span> orthogonal matrix with columns that are spanning <span class="math inline">\(\mathcal{C}(\mathbf{X})\)</span>.</p></li>
+<li><p><span class="math inline">\(\mathbf{V}_{p\times p}\)</span> orthogonal matrix with columns that are spanning <span class="math inline">\(\mathbb{R}^p\)</span>.</p></li>
+<li><p><span class="math inline">\(\mathbf{D}_{p\times p}\)</span> diagonal values with <span class="math inline">\(d_1 \geq \ldots \geq d_p \geq 0\)</span> the singular values of <span class="math inline">\(\mathbf{X}\)</span>. If one or more <span class="math inline">\(d_j = 0\)</span>, then <span class="math inline">\(\mathbf{X}\)</span> is singular, i.e. not full-rank.<br></p></li>
+</ul>
+<p>This factorization of the matrix <span class="math inline">\(\mathbf{X}\)</span> is called the <strong>singular value decomposition of</strong> <span class="math inline">\(\mathbf{X}\)</span>, and the columns of <span class="math inline">\(\mathbf{U}\)</span> and <span class="math inline">\(\mathbf{V}\)</span> are called the left- and right-hand <strong>singular vectors</strong> of <span class="math inline">\(\mathbf{X}\)</span>.</p>
+</div>
+<p>For simplicity in the discussion, let <span class="math inline">\(n&gt;p\)</span> and <span class="math inline">\(rank(\mathbf{X}) = p\)</span>, which also implies that <span class="math inline">\(d_p&gt;0\)</span>.</p>
+<p><br>
+<strong>Some Useful Properties of the SVD</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>The left-hand singular vectors are a set of orthonormal eigenvectors for <span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span>, i.e. <span class="math inline">\(\mathbf{U}^T\mathbf{U} = \mathbf{I}\)</span>.</p></li>
+<li><p>The right-hand singular vectors are a set of orthonormal eigenvectors for <span class="math inline">\(\mathbf{X}\mathbf{X}^T\)</span>, i.e. <span class="math inline">\(\mathbf{V}^T\mathbf{V}=\mathbf{I}\)</span>.</p></li>
+<li><p>The eigenvectors <span class="math inline">\(\mathbf{v}_j\)</span> are also called the <em>principal components directions</em> of the columns of <span class="math inline">\(\mathbf{X}\)</span>.</p></li>
+<li><p>The first principal component direction <span class="math inline">\(v_1\)</span> has the property that <span class="math inline">\(z_1 = \mathbf{X} \mathbf{v}_1 = \mathbf{u}_1 d_1\)</span> has the largest sample variance among all normalized linear combinations of the columns of <span class="math inline">\(\mathbf{X}\)</span>.</p></li>
+<li><p>The singular values are the square roots of the eigenvalues for <span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span> and <span class="math inline">\(\mathbf{X}\mathbf{X}^T\)</span>, since these matrices have the same eigenvalues.</p></li>
+<li><p>The first singular value is equal to
+<span class="math display">\[\sigma_1 = \max_{||x||=1} ||\mathbf{X}||_2\]</span></p></li>
+</ol>
+<p><br></p>
+<p>One of the goals of <em>principal components analysis</em> is to find the new coordinates, or <em>scores</em>, of the data in the principal components basis. If the original (centered or standardized) data was contained in the matrix <span class="math inline">\(\mathbf{X}\)</span> and the eigenvectors of the covariance/correlation matrix <span class="math inline">\((\mathbf{X}^T\mathbf{X})\)</span> were columns of a matrix <span class="math inline">\(\mathbf{V}\)</span>, then to find the scores (<span class="math inline">\(\mathbf{S}\)</span> ) of the observations on the eigenvectors we can use the following equation:
+<span class="math display">\[\mathbf{X} = \mathbf{S} \mathbf{V}^T\]</span>
+where each columns of <span class="math inline">\(\mathbf{S}_{n\times p} = \mathbf{U}\mathbf{D}\)</span> is the
+so-called <strong>principal component</strong> and each column of <span class="math inline">\(V\)</span> is the <strong>principal
+component direction</strong> of <span class="math inline">\(\mathbf{X}\)</span>.</p>
+<p><br></p>
+</div>
+<div id="svd-of-fitted-values-ls-vs.-ridge" class="section level4 unnumbered hasAnchor">
+<h4>SVD of Fitted Values: LS vs. Ridge<a href="shrinkage-methods.html#svd-of-fitted-values-ls-vs.-ridge" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>To observe how the <em>ridge</em> affects the structure of the fitted <span class="math inline">\(\beta\)</span>, we have the following.</p>
+<ul>
+<li>In <em>least-squares</em> regression, the fitted values compute as:</li>
+</ul>
+<p><span class="math display">\[\begin{align*}
+{\color{blue}{\hat{\mathbf{y}}_{LS}}} &amp;= \mathbf{X} \hat{\beta}_{LS}= \mathbf{X} \bigl(\mathbf{X}^T \mathbf{X} \bigr)^{-1} \mathbf{X}^T \mathbf{y}\\
+&amp;= \mathbf{U} \; \mathbf{D}\; \mathbf{V}^T \bigl(\mathbf{V}\; \mathbf{D}^2\; \mathbf{V}^T\bigr)^{-1} \mathbf{V}\; \mathbf{D}\;\mathbf{U}^T \mathbf{y}\\
+&amp;= \mathbf{U} \; \mathbf{D}\; \mathbf{V}^T \bigl( \mathbf{V}^T \bigl)^{-1}\; \mathbf{D}^{-2}\; \mathbf{V}^{-1} \mathbf{V}\; \mathbf{D}\;\mathbf{U}^T \mathbf{y}\\
+&amp;= \mathbf{U} \; \mathbf{D}\; \mathbf{D}^{-2}\mathbf{D}\;\mathbf{U}^T \mathbf{y}\\
+&amp;= {\color{blue}{\mathbf{U} \mathbf{U}^T \mathbf{y}}}\\
+&amp;= {\color{blue}{\sum_{j=1}^{p} \bigl(\mathbf{u}_j^T \mathbf{y} \bigr) \mathbf{u}_{j}}}
+\end{align*}\]</span>
+where we used the facts that <span class="math inline">\(\mathbf{U}^T \mathbf{U} =\mathbf{I}\)</span>, and that
+<span class="math display">\[\mathbf{X}^T \mathbf{X} = \mathbf{V}\; \mathbf{D}^T\;\mathbf{U}^T \mathbf{U} \; \mathbf{D}\; \mathbf{V}^T = \mathbf{V}\; \mathbf{D}^2\; \mathbf{V}^T\]</span>
+The last expression is the <em>eigen-decomposition of <span class="math inline">\(\mathbf{X}^T \mathbf{X}\)</span></em>.
+<br></p>
+<p>Similarly, for the ridge regression coefficients, we have:</p>
+<p><span class="math display">\[\begin{align*}
+{\color{blue}{\hat{\mathbf{y}}_{ridge}}} &amp;= \mathbf{X} \hat{\beta}_{ridge}\\
+&amp;= \mathbf{X} \bigl(\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I} \bigr)^{-1} \mathbf{X}^T \mathbf{y}\\
+&amp;= \mathbf{U}\;\mathbf{D}\;\mathbf{V}^T \bigl(  \mathbf{V}\; \mathbf{D}^2\; \mathbf{V}^T + \lambda \mathbf{I} \bigr)^{-1}\mathbf{V}\;\mathbf{D}\;\mathbf{U}^T  \mathbf{y}\\
+&amp;= \mathbf{U}\;\mathbf{D}\;\mathbf{V}^T \bigl(  \mathbf{V}\; \mathbf{D}^2\; \mathbf{V}^T + \lambda \mathbf{V}\mathbf{V}^T \bigr)^{-1}\mathbf{V}\;\mathbf{D}\;\mathbf{U}^T  \mathbf{y}\\
+&amp;= \mathbf{U}\;\mathbf{D}\;\mathbf{V}^T \bigl(  \mathbf{V}\; \bigl( \mathbf{D}^2 + \lambda \mathbf{I} \bigr)\;  \mathbf{V}^T \bigr)^{-1}\mathbf{V}\;\mathbf{D}\;\mathbf{U}^T  \mathbf{y}\\
+&amp;= \mathbf{U}\;\mathbf{D}\;\mathbf{V}^T (\mathbf{V}^T)^{-1}\; \bigl( \mathbf{D}^2 + \lambda \mathbf{I} \bigr)^{-1}\;  \mathbf{V}^{-1}\mathbf{V}\;\mathbf{D}\;\mathbf{U}^T  \mathbf{y}\\
+&amp;= {\color{blue}{\mathbf{U}\mathbf{D}\;\bigl( \mathbf{D}^2 + \lambda \mathbf{I} \bigr)^{-1}\; \mathbf{D}\mathbf{U}^T  \mathbf{y}}}
+\end{align*}\]</span></p>
+<p>In this last expression, note that</p>
+<ul>
+<li><p><span class="math inline">\(\mathbf{D}\;\bigl( \mathbf{D}^2 + \lambda \mathbf{I} \bigr)^{-1}\)</span> is a diagonal matrix with elements given by <span class="math inline">\(\frac{d_j^2}{d_j^2 + \lambda}\)</span>.</p></li>
+<li><p>the vector <span class="math inline">\(\mathbf{U}^T  \mathbf{y}\)</span> is the coordinates of the vector <span class="math inline">\(\mathbf{y}\)</span> in the basis spanned by the <span class="math inline">\(p\)</span> columns of <span class="math inline">\(\mathbf{U}\)</span>.</p></li>
+</ul>
+<p>Therefore, <span class="math inline">\(\hat{\mathbf{y}}_{ridge}\)</span> simplifies to
+<span class="math display">\[{\color{blue}{\hat{\mathbf{y}}_{ridge} = \sum_{j=1}^{p} \mathbf{u}_j \;  \frac{d_j^2}{d_j^2 + \lambda}  \; \mathbf{u}_j^T \mathbf{y}}}\]</span></p>
+<p>As we can observe, the inner products <span class="math inline">\(\mathbf{u}_j^T \mathbf{y}\)</span> are scaled by the factors <span class="math inline">\(\frac{d_j^2}{d_j^2 + \lambda}\)</span>, or in other words the ridge estimate <span class="math inline">\(\hat{\beta}_{ridge}\)</span> <font color="darkblue"><strong>shrinks the LS estimate <span class="math inline">\(\hat{\beta}_{LS}\)</span> by a factor of <span class="math inline">\(\frac{d_j^2}{d_j^2 + \lambda}\)</span></strong></font> where <em>the smaller the eigenvalues the more the shrinkage</em>. Essentially, ridge regression projects <span class="math inline">\(\mathbf{y}\)</span> onto the principal components, and then shrinks the coefficients of the low–variance components more than the high-variance components.</p>
+<p><br></p>
+</div>
+<div id="complexity-of-ridge-regression" class="section level4 unnumbered hasAnchor">
+<h4>Complexity of Ridge Regression<a href="shrinkage-methods.html#complexity-of-ridge-regression" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>To quantify the complexity of a model, heuristically we need to understand the number of coefficients that need to be estimated. So, a linear regression model is a model with <span class="math inline">\(p\)</span> covariates and <span class="math inline">\(p\)</span> <span class="math inline">\(\beta\)</span> coefficients, so it has <span class="math inline">\(p\)</span> degrees of freedom. In ridge regression however, the estimated <span class="math inline">\(\beta\)</span>s are still <span class="math inline">\(p\)</span>-dimensional, however the method does not use all strength of the <span class="math inline">\(p\)</span> covariates due to shrinkage. If <span class="math inline">\(\lambda\)</span> is extremely large, there will be no effective covariates left in the model, meaning that they should all be close to zero. On the other hand, if <span class="math inline">\(\lambda\)</span> is 0, then we go back to linear regression with <span class="math inline">\(p\)</span> covariates and <span class="math inline">\(p\)</span> degrees of freedom. So, in the case of the ridge regression, the truth lies somewhere between 0 and <span class="math inline">\(p\)</span>.</p>
+<p>Let’s formalize the intuition, by recalling that one method to compute the degrees of freedom of a model is to relate them to the correlation between the observed and fitted values as follows:
+<span class="math display">\[df = \sum_{i=1}^{n} Cor \bigl(y_i,\; \hat{y}_i \bigr)\]</span></p>
+<ul>
+<li><font color="darkblue"><strong>Linear regression</strong></font>:<br>
+We have already shown that the fitted values can be expressed as <span class="math inline">\(\hat{\mathbf{y}} = \mathbf{H} \mathbf{y}\)</span>, in which case
+<span class="math display">\[df = \sum_{i=1}^{n} Cor \bigl(y_i,\; \hat{y}_i \bigr) = \sum_{i=1}^{n} H_{ii} = tr \bigl( \mathbf{H} \bigr) = p\]</span>
+where (recall) <span class="math inline">\(\mathbf{H}\)</span> is the hat (projection) matrix equal to <span class="math inline">\(\mathbf{X} \bigl( \mathbf{X}^T \mathbf{X} \bigr)^{-1} \mathbf{X}^T \mathbf{y}\)</span>.</li>
+</ul>
+<p><br></p>
+<ul>
+<li><font color="darkblue"><strong>Ridge regression</strong></font>:<br>
+We have shown that <span class="math inline">\(\hat{y} = \underbrace{ \mathbf{X} \bigl(\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I} \bigr)^{-1} \mathbf{X}^T}_{:= \mathbf{S}_{\lambda}} \mathbf{y} = \mathbf{S}_{\lambda}\mathbf{y}\)</span>. So, the effective degrees of freedom of the ridge regression are</li>
+</ul>
+<p><span class="math display">\[\begin{align*}
+df(\lambda) &amp;= \sum_{i=1}^{n} Cor \bigl(y_i,\; \hat{y}_i \bigr) = \sum_{i=1}^{n} [S_{\lambda}]_{ii}\\
+&amp;= tr(\mathbf{S}_{\lambda}) \\
+&amp;=  tr(\mathbf{X} \bigl(\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I} \bigr)^{-1} \mathbf{X}^T)\\
+&amp;= tr\Biggl( \sum_{j=1}^{p} \frac{d_j^2}{d_j^2 + \lambda} \mathbf{u}_i \mathbf{u}_i^T\Biggr) =  \sum_{j=1}^{p} \frac{d_j^2}{d_j^2 + \lambda}   
+\end{align*}\]</span>
+Based on the expression above, we can see that the degrees of freedom of the ridge regression are a <em>decreasing</em> function of <span class="math inline">\(\lambda\)</span>, and reduce to <span class="math inline">\(p\)</span> when <span class="math inline">\(\lambda = 0\)</span>. One important consequence of this expression is that we can use it to determine the values of <span class="math inline">\(\lambda\)</span> to use when applying cross validation. This can be done by thinking <span class="math inline">\(df(\lambda)\)</span> as a function of <span class="math inline">\(\lambda\)</span> and then setting <span class="math inline">\(df(\lambda)=k\)</span>, with <span class="math inline">\(k=1, \ldots, p\)</span> representing all possible dfs. Then, we can solve with respect to <span class="math inline">\(\lambda\)</span> using a numerical approach.</p>
+<br>
+<hr>
+<p><br></p>
+</div>
+</div>
+<div id="lasso-regression" class="section level3 hasAnchor" number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> Lasso Regression<a href="shrinkage-methods.html#lasso-regression" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Lasso Regression is similar to the Ridge regression in the sense that it minimizes the least squares criterion <em>subject to a penalty term</em>. However, the penalty term is different in the case of lasso.
+<br></p>
+<div class="motivationbox">
+<p><strong>Lasso Regression</strong></p>
+<p><span class="math inline">\(\hat{\beta}_{\text{LASSO}}\)</span> minimizes:
+<span class="math display">\[\text{minimize } (y-X \beta)^T (y-X\beta) + \lambda \sum_j |\beta_j|\]</span>
+for some <span class="math inline">\(\lambda \ge 0\)</span>. The penalty term is <span class="math inline">\(\sum_j |\beta_j|\)</span> (<span class="math inline">\(L_1\)</span> constraint).</p>
+</div>
+<p>In two-dimensions the constraint defines a square, while in higher dimensions it defines a polytope. Lasso is useful when the response can be explained by <em>few</em> predictors with zero effect on the remaining predictors (Lasso is similar to a variable selection method). When <span class="math inline">\(\beta_j=0\)</span> the corresponding predictor is eliminated which is not the case for ridge regression. Therefore, we use lasso when the effect of predictors is <strong>sparse</strong>. This means that only few predictors will have an effect on the response (e.g. gene expression data) or when number of predictors is large (<span class="math inline">\(p&gt;n\)</span>).</p>
+<p>The lasso solution is defined as
+<span class="math display">\[\hat{\beta}_{lasso} = \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl((y-X\boldsymbol{\beta})^\top(y-X\boldsymbol{\beta}) + \lambda \sum_j |\beta_j| \Bigr)\]</span>
+and does not have a closed form expression.</p>
+<p>If we assume that <span class="math inline">\(\mathbf{X}^T\mathbf{X} = \mathbf{I}_p\)</span>}, then
+<span class="math display">\[\begin{align*}
+||\mathbf{y} - \mathbf{X}\beta||^2 &amp;= ||\mathbf{y} - \mathbf{X}\hat{\beta}_{LS} + \mathbf{X}\hat{\beta}_{LS} - \mathbf{X}\beta||^2\\
+&amp;=||\mathbf{y} - \mathbf{X}\hat{\beta}_{LS}||^2 + ||\mathbf{X}\hat{\beta}_{LS} - \mathbf{X}\beta||^2
+\end{align*}\]</span>
+where
+<span class="math display">\[2  \bigl( \mathbf{y} - \mathbf{X}\hat{\beta}_{LS}\bigr)^T \bigl(  \mathbf{X}\hat{\beta}_{LS} - \mathbf{X}\beta \bigr) = 2 \; r^T \; \bigl(  \mathbf{X}\hat{\beta}_{LS} - \mathbf{X} \beta\bigr) =0\]</span>
+since the swecond term is a linear combination of columns of <span class="math inline">\(\mathbf{X}\)</span> no matter what value <span class="math inline">\(\beta\)</span> takes, and thus is in <span class="math inline">\(\mathcal{C}(\mathbf{X})\)</span>, therefore orthogonal to the residual vector <span class="math inline">\(r\)</span>.</p>
+<p><br></p>
+<div id="obtaining-the-lasso-solution" class="section level4 unnumbered hasAnchor">
+<h4>Obtaining the Lasso Solution<a href="shrinkage-methods.html#obtaining-the-lasso-solution" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Although we do not have a closed form solution in the case of lasso, the minimization problem we have to solve is not very challenging.</p>
+<p><br></p>
+<p>The lasso solution can be expressed as:</p>
+<p><span class="math display">\[\begin{align*}
+\hat{\beta}_{lasso} &amp;= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( ||\mathbf{y}-\mathbf{X} \beta||^2 + \lambda |\beta| \Bigr)\\
+&amp;= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( ||\mathbf{X} \hat{\beta}_{LS} -\mathbf{X} \beta||^2 + \lambda |\beta| \Bigr)\\
+&amp;= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( \bigl(  \hat{\beta}_{LS} - \beta \bigr)^T \mathbf{X}^T \mathbf{X}  \bigl(  \hat{\beta}_{LS} - \beta \bigr) + \lambda |\beta| \Bigr)\\
+&amp;= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( \bigl(  \hat{\beta}_{LS} - \beta \bigr)^T  \bigl(  \hat{\beta}_{LS} - \beta \bigr) + \lambda |\beta| \Bigr)\\
+&amp;= \arg \min_{\beta_1, \ldots, \beta_p} \sum_{i=1}^{p}  \Bigl( \bigl(  \beta_{j} - \hat{\beta}_{(LS)j} \bigr)^2  + \lambda |\beta_j| \Bigr)\\
+\end{align*}\]</span></p>
+We can find the <em>optimal</em> <span class="math inline">\(\beta_j\)</span> for each of <span class="math inline">\(j=1, \ldots, p\)</span> <strong>separately</strong> by solving the following generic problem for each dimension:
+<div class="motivationbox">
+<p><span class="math display">\[\arg \min_{x} \bigl( x-a \bigr )^2 + \lambda |x|,\,\, \lambda &gt;0\]</span></p>
+</div>
+<p>Therefore, to solve the one-dim lasso above, define
+<span class="math display">\[f(x)  = \bigl( x-a \bigr )^2 + \lambda |x|,\,\, a\in\mathbb{R},\,\,\lambda &gt;0\]</span></p>
+<p>The value <span class="math inline">\(x^*\)</span> that minimizes <span class="math inline">\(f(x)\)</span> must satisfy:
+<span class="math display">\[\begin{align*}
+\frac{\partial}{\partial x} \bigl(x^* - a \bigr)^2 + \lambda \;\frac{\partial}{\partial x} |x^*| &amp; = 0\\
+2\bigl(x^* - a \bigr) +\lambda z^* &amp;= 0
+\end{align*}\]</span>
+where <span class="math inline">\(z^*\)</span> is the <em>sub-gradient</em> of the absolute value function evaluated at <span class="math inline">\(x^*\)</span>, which equals to <span class="math inline">\(sign(x^*)\)</span> if <span class="math inline">\(x^*\neq 0\)</span> and any number in [-1,1], if <span class="math inline">\(x^*=0\)</span>.</p>
+<p><br>
+Therefore, the minimizer of <span class="math inline">\(f(x)\)</span> is given by
+<font color="darkblue">
+<span class="math display">\[x^* = S_{\lambda/2}(a) = sign(a) \bigl(|a|-\lambda/2 \bigr)_{+} =
+\begin{cases}
+&amp; a-\lambda/2,  \text{ if } \,\,  a \; &gt;\lambda/2\\
+&amp; 0, \qquad \quad \text{ if } |a| \leq \lambda/2\\
+&amp; a+\lambda/2,  \text{ if } \,\,  a \; &lt; -\lambda/2\\
+\end{cases}
+\]</span>
+</font>
+where <span class="math inline">\(S_{\lambda/2}(\cdot)\)</span> is often referred to as the <strong>soft-thresholding operator</strong>.</p>
+<p><br>
+When the design matrix <span class="math inline">\(\mathbf{X}\)</span> is orthogonal, the lasso solution simplifies to</p>
+<p><span class="math display">\[\hat{\beta}_{j}^{lasso} = \begin{cases}
+&amp; sign (\hat{\beta}_{(LS)j} - \lambda/2), \text{ if }|\hat{\beta}_{(LS)j}| &gt; \lambda/2\\
+&amp; 0, \text{ if }|\hat{\beta}_{(LS)j}| \leq \lambda/2\\
+\end{cases}
+\]</span></p>
+<p>A large <span class="math inline">\(\lambda\)</span> will cause some of the coefficients to be exactly zero. So, lasso does both variable (subset) selection and (soft) shrinkage.</p>
+<p><br></p>
+<p><font color="darkblue"><strong>Remarks</strong></font></p>
+<ul>
+<li><p>It is suggested to use lasso when the effect of predictors is <em>sparse</em>, since lasso will “make” some of the <span class="math inline">\(\beta\)</span> coefficients zero keeping the coefficients that will have an effect on <span class="math inline">\(\mathbf{y}\)</span>. This is the reason why this method also works when the number of predictors is larger than the sample size (<span class="math inline">\(p&gt;n\)</span>). These are scenarios often encountered in genomic or proteomic data where the design matrices tend to have a lot of zeros and too many predictors.</p></li>
+<li><p>In lasso as in ridge regression, we can select <span class="math inline">\(\lambda\)</span> using Cross-Validation (CV). When <span class="math inline">\(\lambda\)</span> increases, the number of predictors decreases.</p></li>
+</ul>
+<p><br></p>
+<p><font color="darkblue"><strong>Comparing Ridge Regression and Lasso</strong></font></p>
+<p>Lasso selects a sub-set of predictors (some coefficients will equal to zero), while ridge regression performs better when the response is a function of many predictors with coefficients around the same size. Lasso will perform better when a relatively small number of predictors have large coefficients and the rest are very small or equal to zero.Since the number of predictors is never known <em>a priori</em>, cross-validation can be used to decide which approach is better for a particular data set.</p>
+<p>Ridge regression does a proportional shrinkage. Lasso translates each
+coefficient by a constant factor λ, truncating at zero.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-66"></span>
+<img src="images/week3/ridge-lasso_comparisson.png" alt="Contour of the optimization for Lasso (left) and Ridge (right)." width="75%" />
+<p class="caption">
+Figure 3.2: Contour of the optimization for Lasso (left) and Ridge (right).
+</p>
+</div>
+<p>In the picture below, we can see the difference in the contours of optimization for lasso (left) and Ridge (right) when there are only two parameters. The residual sum of squares has elliptical contours, centered at the full least squares estimate, <span class="math inline">\(\hat{\beta}_{LS}\)</span>. The constraint region for ridge regression is the disk <span class="math inline">\(\beta_1^2 + \beta_2^2 \leq t\)</span>, while that for lasso is the diamond <span class="math inline">\(|\beta_1| + |\beta_2| \leq t\)</span>. Both methods find the first point where the elliptical contours hit the constraint region. Unlike the disk, the diamond has corners which means that if the solution occurs at a corner, then it has one parameter
+<span class="math inline">\(\beta_j\)</span> equal to zero. When <span class="math inline">\(p&gt;2\)</span>, the diamond becomes a rhomboid, and has many corners, flat edges and faces; there are many more opportunities for the estimated parameters to be zero.</p>
+<p><br></p>
+</div>
+<div id="lasso-with-pn" class="section level4 unnumbered hasAnchor">
+<h4>Lasso with <span class="math inline">\(p&gt;n\)</span><a href="shrinkage-methods.html#lasso-with-pn" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><em>When <span class="math inline">\(\mathbf{X}\)</span> is of full rank:</em></p>
+<ul>
+<li><p>the lasso solution is the minimizer of a convex function over a convex set</p></li>
+<li><p>the lasso solution is unique since the first term is a strictly convex function.</p></li>
+</ul>
+<p><em>When <span class="math inline">\(\mathbf{X}\)</span> is not of full rank, or when <span class="math inline">\(p&gt;n\)</span>:</em></p>
+<ul>
+<li>The lasso criterion is no longer convex which means that it may not have a unique minimizer.first term is no longer strictly convex. In the <span class="math inline">\(p&gt;n\)</span> case, the lasso selects at most <span class="math inline">\(n\)</span> variables before it saturates, because of the nature of the convex optimization problem which is a limiting feature for a variable selection method.</li>
+</ul>
+<br>
+<hr>
+<p><br></p>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="subset-selection.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="the-student-performance-example.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans serif",
+    "size": 1
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/03-variableselection.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section",
+    "toc_depth": 4,
+    "toc_float": true,
+    "scroll_highlight": true
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato&family=Mulish:wght@200&display=swap');
+
+.book.font-family-1 {
+  font-family: 'Mulish', sans-serif;
+  font-size: 8pt;
+ }
+
+
+p.caption {
+  color: #777;
+  margin-top: 8pt;
+}
+p code {
+  white-space: inherit;
+}
+pre {
+  word-break: normal;
+  word-wrap: normal;
+  font-family: 'Mulish';
+}
+pre code {
+  white-space: inherit;
+}
+
+
+body {
+  text-align: justify;
+  font-family: Mulish;
+  font-size: 6pt;
+}
+
+.learningbox {
+  background-color: #FFF2DA;
+  color: #5D6D7E;
+  padding: 10px;
+  margin: 20px;
+  text-align: justify;
+  width: 100%;
+  font-family: Mulish;
+}
+
+.motivationbox {
+  background-color: #ECF4FF;
+  color: #1B4F72;
+  padding: 10px;
+  margin: 20px;
+  text-align: justify;
+  width: 100%;
+  font-family: Mulish;
+}
+
+.examplebox {
+  background-color: #F6FFEA;
+  color: #566573;
+  padding: 10px;
+  margin: 20px;
+  text-align: justify;
+  width: 100%;
+  font-family: Mulish;
+}
+
+
+.solutionbox {
+  background-color: #F3F8FE;
+  color: #1F3C5F;
+  padding: 10px;
+  margin: 20px;
+  text-align: justify;
+  width: 100%;
+  font-family: Mulish;
+}

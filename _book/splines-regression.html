@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4.2 Splines Regression | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4.2 Splines Regression | CS 598 Practical Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4.2 Splines Regression | CS 598 Practical Statistical Learning" />
+  
+  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  
+
+<meta name="author" content="Alexandra Chronopoulou" />
+
+
+<meta name="date" content="2025-08-25" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="polynomial-regression.html"/>
+<link rel="next" href="smoothing-splines.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
+<li class="chapter" data-level="1.5.4" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures"><i class="fa fa-check"></i><b>1.5.4</b> Code for the Examples in the Lectures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>2.1</b> Multiple Linear Regression (MLR) Model</a></li>
+<li class="chapter" data-level="2.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>2.2</b> MLR Model Fitting</a></li>
+<li class="chapter" data-level="2.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>2.3</b> Least-Squares &amp; Normal Equations</a></li>
+<li class="chapter" data-level="2.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>2.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
+<li class="chapter" data-level="2.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>2.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
+<li class="chapter" data-level="2.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>2.6</b> Rank deficiency</a></li>
+<li class="chapter" data-level="2.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>2.7</b> Hypothesis Testing in MLR</a></li>
+<li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
+<li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
+<li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
+<li class="chapter" data-level="2.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Data Set Example</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="training-vs.-testing-errors.html"><a href="training-vs.-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training vs. Testing Errors</a></li>
+<li class="chapter" data-level="3.2" data-path="subset-selection.html"><a href="subset-selection.html"><i class="fa fa-check"></i><b>3.2</b> Subset Selection</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria-based-procedures"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria-based procedures</a></li>
+<li class="chapter" data-level="3.2.2" data-path="subset-selection.html"><a href="subset-selection.html#search-algorithms"><i class="fa fa-check"></i><b>3.2.2</b> Search Algorithms</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html"><i class="fa fa-check"></i><b>3.3</b> Shrinkage Methods</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
+<ul>
+<li class="chapter" data-level="4.0.1" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html#a-note-on-nonlinearity"><i class="fa fa-check"></i><b>4.0.1</b> A Note on Nonlinearity</a></li>
+<li class="chapter" data-level="4.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html"><i class="fa fa-check"></i><b>4.1</b> Polynomial Regression</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-basis-functions"><i class="fa fa-check"></i><b>4.1.1</b> Polynomial Basis Functions</a></li>
+<li class="chapter" data-level="4.1.2" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-regression-1"><i class="fa fa-check"></i><b>4.1.2</b> Polynomial Regression</a></li>
+<li class="chapter" data-level="4.1.3" data-path="polynomial-regression.html"><a href="polynomial-regression.html#orthogonal-polynomials"><i class="fa fa-check"></i><b>4.1.3</b> Orthogonal Polynomials</a></li>
+<li class="chapter" data-level="4.1.4" data-path="polynomial-regression.html"><a href="polynomial-regression.html#piece-wise-polynomials"><i class="fa fa-check"></i><b>4.1.4</b> Piece-wise Polynomials</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="splines-regression.html"><a href="splines-regression.html"><i class="fa fa-check"></i><b>4.2</b> Splines Regression</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="splines-regression.html"><a href="splines-regression.html#examples-of-cubic-splines-basis"><i class="fa fa-check"></i><b>4.2.1</b> Examples of Cubic Splines Basis</a></li>
+<li class="chapter" data-level="4.2.2" data-path="splines-regression.html"><a href="splines-regression.html#b-splines-basis-functions-in-r"><i class="fa fa-check"></i><b>4.2.2</b> B-Splines Basis Functions in <code>R</code></a></li>
+<li class="chapter" data-level="4.2.3" data-path="splines-regression.html"><a href="splines-regression.html#natural-cubic-splines-ncs"><i class="fa fa-check"></i><b>4.2.3</b> Natural Cubic Splines (NCS)</a></li>
+<li class="chapter" data-level="4.2.4" data-path="splines-regression.html"><a href="splines-regression.html#regression-splines"><i class="fa fa-check"></i><b>4.2.4</b> Regression Splines</a></li>
+<li class="chapter" data-level="4.2.5" data-path="splines-regression.html"><a href="splines-regression.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>4.2.5</b> K-Fold Cross-Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="smoothing-splines.html"><a href="smoothing-splines.html"><i class="fa fa-check"></i><b>4.3</b> Smoothing Splines</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="smoothing-splines.html"><a href="smoothing-splines.html#the-roughness-penalty-approach"><i class="fa fa-check"></i><b>4.3.1</b> The Roughness Penalty Approach</a></li>
+<li class="chapter" data-level="4.3.2" data-path="smoothing-splines.html"><a href="smoothing-splines.html#proof"><i class="fa fa-check"></i><b>4.3.2</b> Proof</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
+<li class="chapter" data-level="4.5" data-path="the-birthrates-example-in-r.html"><a href="the-birthrates-example-in-r.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example in R</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="splines-regression" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Splines Regression<a href="splines-regression.html#splines-regression" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><em>Splines</em> are piecewise polynomials thar are constructed so that thay can be both sensitive and smooth, but also capture local features of the data.</p>
+<p>A <font color=Darkblue><strong>Cubic Spline</strong></font> is a curve constructed from sections of cubic polynomials, joined together so that the curve is <em>continuous up to second derivative</em>. The points at which the sections join are called the <font color=blue><strong>knots</strong></font> of the spline. For a conventional spline, the knots occur wherever there is a datum, but for the regression splines the locations of the knots must be chosen. Typically, the knots would either be <em>evenly spaced</em> through the range of observed <span class="math inline">\(x\)</span> values, or placed at the <em>quantiles</em> of the distribution of unique <span class="math inline">\(x\)</span> values. Each section of cubic has different coefficients, but at the knots <em>it will match its neighboring sections in value and first two derivatives</em>.</p>
+<div class="motivationbox">
+<p><strong>Cubic Splines (Mathematical) Definition</strong></p>
+<p>A function <span class="math inline">\(g\)</span> defined on <span class="math inline">\([a,b]\)</span> is a <font color=Darkblue><strong>cubic spline</strong></font> with respect to <strong>knots</strong> <span class="math inline">\(\{\xi_i\}_{i=1}^m\)</span> (specifically <span class="math inline">\(a&lt;\xi_1&lt;\xi_2&lt;\ldots&lt;\xi_m&lt;b\)</span>) if:</p>
+<ul>
+<li><p><font color=Darkblue><span class="math inline">\(g\)</span></font> is a cubic polynomial in each of the <span class="math inline">\(m+1\)</span> intervals, i.e.
+<font color=blue>
+<span class="math display">\[g(x) =d_ix^3+c_ix^2+b_ix+a_i,\quad x\in [\xi_i,\xi_{i+1}]\]</span>
+</font>
+where <span class="math inline">\(i=0,\ldots, m\)</span>, <span class="math inline">\(\xi_0=a\)</span> and <span class="math inline">\(\xi_{m+1}=b\)</span>.</p></li>
+<li><p><font color=Darkblue><span class="math inline">\(g\)</span> is continuous up to the <em>2nd</em> derivative</font>. Since <span class="math inline">\(g\)</span> is continuous up to the <em>2nd</em> derivative <em>for any point inside an interval</em>, it suffices to check the following conditions:
+<font color=blue>
+<span class="math display">\[g^{(0,1,2)} (\xi_i^+)=g^{(0,1,2)}(\xi_i^-),\quad i=1, \ldots, m\]</span>
+</font>
+This expression indicates that the function and the first and second order derivatives are continuous at the knots.</p></li>
+</ul>
+</div>
+<p><br></p>
+<p><font color=Darkblue><u><strong>How many free parameters do we need to represent a cubic spline?</strong></u> </font></p>
+<p><strong>(+)</strong> <font color=blue>4</font> parameters <span class="math inline">\((d_i,c_i,b_i,a_i)\)</span> <em>for each of the <span class="math inline">\((m+1)\)</span> intervals</em>.</p>
+<p><strong>(-)</strong> <font color=blue>3</font> constraints <em>at each of the <span class="math inline">\(m\)</span> knots</em> (continuity constraints).</p>
+<p>The total number of free parameters (similar to the number of degrees of freedom) is:
+<font color=Darkblue>
+<span class="math display">\[4(m+1) - 3m = m + 4\]</span>
+</font></p>
+<p><br></p>
+<p><font color=Darkblue><u><strong>A property of the cubic splines</strong></u> </font></p>
+<p>Suppose the knots <span class="math inline">\(\{\xi_i\}_{i=1}^m\)</span> are given.</p>
+<ul>
+<li>If <span class="math inline">\(g_1(x)\)</span> and <span class="math inline">\(g_2(x)\)</span> are cubic splines, the linear combination
+<span class="math display">\[a_1g_1(x)+a_2g_2(x)\]</span>
+is also a cubic spline, where <span class="math inline">\(a_1\)</span> and <span class="math inline">\(a_2\)</span> are known constants.<br></li>
+</ul>
+<p>That is, for a set of given knots, the corresponding <em>cubic splines form a linear space (of functions) with dim <span class="math inline">\((m + 4)\)</span></em>.</p>
+<p><br></p>
+<div id="examples-of-cubic-splines-basis" class="section level3 hasAnchor" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Examples of Cubic Splines Basis<a href="splines-regression.html#examples-of-cubic-splines-basis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ol style="list-style-type: decimal">
+<li>A set of basis functions for cubic splines (w.r.t knots <span class="math inline">\(\{\xi_i\}_{i=1}^m\)</span>) is given by:
+<span class="math display">\[\begin{align*}
+  h_0(x)&amp;= 1\\
+   h_1(x)&amp;=x\\
+  h_2(x)&amp;=x^2\\
+  h_3(x)&amp;=x^3;\\
+  h_{i+3}(x) &amp;= (x-\xi_i)_+^3,\quad i=1,2,\ldots,m\\
+\end{align*}\]</span>
+That is, any cubic spline can be uniquely expressed as:
+<span class="math display">\[ \beta_0 +\sum_{j=1}^{m+3}\beta_j h_j(x)\]</span></li>
+</ol>
+<p><br></p>
+<ol start="2" style="list-style-type: decimal">
+<li>Given knot locations, there are many alternative, but equivalent ways of writing down a basis for cubic splines. For example, <em>another</em> basis for cubic splines can be written as:
+<span class="math display">\[\begin{align*}
+h_0(x) &amp;= 1\\
+h_1(x) &amp;= x\\
+h_{i+1}(x) &amp;= R(x, \xi_i^*),\,\, i=1, \ldots, q-1
+\end{align*}\]</span>
+where
+<span class="math display">\[\begin{align*}
+R(x,z) &amp;= \left[  (z-1/2)^2 - 1/12\right] \left[  (x-1/2)^2 - 1/12\right]/4\\
+&amp; \quad \,- \left[  (|x-z|-1/2)^4 - 1/2   (|x-z|-1/2)^2 + 7/240\right] /24\\
+\end{align*}\]</span></li>
+</ol>
+<div class="examplebox">
+<p><strong>An Example of a Cubic Splines Basis</strong></p>
+<p>We first define the function <span class="math inline">\(R(x,z)\)</span> as above in <code>R</code>:</p>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="splines-regression.html#cb220-1" tabindex="-1"></a>R_xz <span class="ot">&lt;-</span> <span class="cf">function</span>(x,z){</span>
+<span id="cb220-2"><a href="splines-regression.html#cb220-2" tabindex="-1"></a>  ((z<span class="fl">-0.5</span>)<span class="sc">^</span><span class="dv">2-1</span><span class="sc">/</span><span class="dv">12</span>)<span class="sc">*</span>((x<span class="fl">-0.5</span>)<span class="sc">^</span><span class="dv">2-1</span><span class="sc">/</span><span class="dv">12</span>)<span class="sc">/</span><span class="dv">4</span><span class="sc">-</span>((<span class="fu">abs</span>(x<span class="sc">-</span>z)<span class="sc">-</span><span class="fl">0.5</span>)<span class="sc">^</span><span class="dv">4</span><span class="sc">-</span>(<span class="fu">abs</span>(x<span class="sc">-</span>z)<span class="sc">-</span><span class="fl">0.5</span>)<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">2</span><span class="sc">+</span><span class="dv">7</span><span class="sc">/</span><span class="dv">240</span>)<span class="sc">/</span><span class="dv">24</span></span>
+<span id="cb220-3"><a href="splines-regression.html#cb220-3" tabindex="-1"></a>}</span></code></pre></div>
+<p>We then need to define the knots</p>
+<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="splines-regression.html#cb221-1" tabindex="-1"></a>new.knots<span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>, <span class="dv">3</span><span class="sc">/</span><span class="dv">6</span>, <span class="dv">5</span><span class="sc">/</span><span class="dv">6</span>)</span></code></pre></div>
+<p>In regression examples the <span class="math inline">\(x\)</span> variable will be the predictor (there is no need to generate any <span class="math inline">\(x\)</span> values). Here, we need a “generic” <span class="math inline">\(x\)</span> for illustration purposes.</p>
+<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="splines-regression.html#cb222-1" tabindex="-1"></a>x<span class="ot">=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by=</span><span class="fl">0.01</span>)</span></code></pre></div>
+<p>Finally, we defined the splines functions, based on the definition given above:</p>
+<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="splines-regression.html#cb223-1" tabindex="-1"></a>spline1 <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">length</span>(x)) <span class="co"># First basis function</span></span>
+<span id="cb223-2"><a href="splines-regression.html#cb223-2" tabindex="-1"></a>spline2 <span class="ot">=</span> x <span class="co"># Second basis function</span></span>
+<span id="cb223-3"><a href="splines-regression.html#cb223-3" tabindex="-1"></a>spline3 <span class="ot">=</span> <span class="fu">R_xz</span>(x,new.knots[<span class="dv">1</span>]) <span class="co"># Third basis function </span></span>
+<span id="cb223-4"><a href="splines-regression.html#cb223-4" tabindex="-1"></a>spline4 <span class="ot">=</span> <span class="fu">R_xz</span>(x,new.knots[<span class="dv">2</span>]) <span class="co"># Fourth basis function </span></span>
+<span id="cb223-5"><a href="splines-regression.html#cb223-5" tabindex="-1"></a>spline5 <span class="ot">=</span> <span class="fu">R_xz</span>(x,new.knots[<span class="dv">3</span>]) <span class="co"># Fifth basis function </span></span></code></pre></div>
+<p>If we want to represent a function using the basis above, we have:</p>
+<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="splines-regression.html#cb224-1" tabindex="-1"></a>fun1s <span class="ot">=</span> <span class="dv">4</span><span class="sc">*</span>spline1 <span class="sc">-</span> <span class="fl">0.05</span><span class="sc">*</span>spline2 <span class="sc">-</span> <span class="dv">6</span><span class="sc">*</span>spline3 <span class="sc">+</span><span class="dv">2</span><span class="sc">*</span>spline4 <span class="sc">+</span><span class="dv">10</span><span class="sc">*</span>spline5</span></code></pre></div>
+<p>For illustration purposes, we plot the basis functions defined above as well as the function <span class="math inline">\(f\)</span>:</p>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="splines-regression.html#cb225-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>))</span>
+<span id="cb225-2"><a href="splines-regression.html#cb225-2" tabindex="-1"></a><span class="fu">plot</span>(x, spline1, <span class="at">type=</span><span class="st">&#39;l&#39;</span>, <span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;h&quot;</span>[<span class="dv">0</span>]<span class="sc">*</span><span class="st">&quot;(x)=1&quot;</span>))</span>
+<span id="cb225-3"><a href="splines-regression.html#cb225-3" tabindex="-1"></a><span class="fu">plot</span>(x, spline2, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;h&quot;</span>[<span class="dv">1</span>]<span class="sc">*</span><span class="st">&quot;(x)=x&quot;</span>))</span>
+<span id="cb225-4"><a href="splines-regression.html#cb225-4" tabindex="-1"></a><span class="fu">plot</span>(x, spline3, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">2</span>](x))<span class="sc">*</span><span class="st">&quot;=&quot;</span><span class="sc">*</span><span class="fu">paste</span>(<span class="fu">R</span>(x,xi[<span class="dv">1</span>])))  )</span>
+<span id="cb225-5"><a href="splines-regression.html#cb225-5" tabindex="-1"></a><span class="fu">plot</span>(x, spline4, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">3</span>](x))<span class="sc">*</span><span class="st">&quot;=&quot;</span><span class="sc">*</span><span class="fu">paste</span>(<span class="fu">R</span>(x,xi[<span class="dv">2</span>])))  )</span>
+<span id="cb225-6"><a href="splines-regression.html#cb225-6" tabindex="-1"></a><span class="fu">plot</span>(x, spline5, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">4</span>](x))<span class="sc">*</span><span class="st">&quot;=&quot;</span><span class="sc">*</span><span class="fu">paste</span>(<span class="fu">R</span>(x,xi[<span class="dv">3</span>])))  )</span>
+<span id="cb225-7"><a href="splines-regression.html#cb225-7" tabindex="-1"></a><span class="fu">plot</span>(x, fun1s, <span class="at">type=</span><span class="st">&#39;l&#39;</span>, <span class="at">ylab=</span><span class="st">&quot;f(x)&quot;</span>, <span class="at">main=</span><span class="fu">expression</span>(<span class="st">&quot;f(x) =  4 - 0.05 h&quot;</span>[<span class="dv">1</span>]<span class="sc">*</span><span class="st">&quot; - 6 h&quot;</span>[<span class="dv">2</span>]<span class="sc">*</span><span class="st">&quot;+ 2 h&quot;</span>[<span class="dv">3</span>]<span class="sc">*</span><span class="st">&quot;+ 10 h&quot;</span>[<span class="dv">4</span>]), <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-110-1.png" width="672" /></p>
+</div>
+<p><br><br></p>
+</div>
+<div id="b-splines-basis-functions-in-r" class="section level3 hasAnchor" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> B-Splines Basis Functions in <code>R</code><a href="splines-regression.html#b-splines-basis-functions-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In this class, one of the cubic splines basis that we are going to use is called <strong>B-Splines</strong>.</p>
+<div class="motivationbox">
+<p><strong>Cubic B Splines Definition</strong></p>
+<p>The cubic B Splines basis is defined on an interval <span class="math inline">\([a,b]\)</span> by the following requirements on the interior basis functions with knotpoints at <span class="math inline">\(\{\xi_i\}_{i=1}^m\)</span>:</p>
+<ol style="list-style-type: decimal">
+<li><p>A given basis function is nonzero on an interval defined by <em>four successive knots and zero elsewhere</em>.</p></li>
+<li><p>The basis function is a cubic polynomial for each subinterval between successive knots.</p></li>
+<li><p>The basis function is continuous and is also continuous in its first and second derivatives at each knotpoint.</p></li>
+<li><p>The basis function integrates to 1 over its support.</p></li>
+<li><p>The boundary function definitions are adjusted to account for continuity in derivatives at the boundaries of the interval.</p></li>
+</ol>
+</div>
+<p>These are part of the <code>splines</code> library in <code>R</code> and the function to generate then is called <code>bs</code>. The arguments of the <code>bs</code> function are:
+<font color=blue>
+<span class="math display">\[ bs(x, df, knots, degree, intercept, Boundary.knots) \]</span>
+</font>
+The <code>R</code> documentation can be found <a href="https://www.rdocumentation.org/packages/splines/versions/3.6.2/topics/bs" target=blank>here</a>.</p>
+<p><u>Arguments in the <code>bs</code> function:</u></p>
+<ul>
+<li><p><code>x</code> is the predictor, i.e. the variable to which we want to apply the splines function.</p></li>
+<li><p><code>df</code> are the degrees of freedom for the splines functions.</p></li>
+<li><p><code>knots</code> are the <em>internal</em> breakpoints/knots that define the spline, i.e. location where the knots should be placed.</p></li>
+<li><p><code>degree</code> is the degree of the piecewise polynomial. The default is <code>degree=3</code> for cubic splines.</p></li>
+<li><p><code>intercept</code> is whether we want to add an intercept in the splines basis or not. <em>This is not the intercept in the regression we perform</em>. The default is <code>intercept=FALSE</code>.</p></li>
+<li><p><code>Boundary.knots</code> are the boundary points at which we “anchor” the B-splines basis. The default values are obtained from the range of non-NA values of <code>x</code>, i.e. <code>Boundary.knots=FALSE</code>.</p></li>
+</ul>
+<p>So, <em>in our examples</em>, we will need to feed the appropriate predictor <code>x</code> and then the desired <code>knots</code> <strong>or</strong> degrees of freedom, <code>df</code>, <em>not both</em>. The rest we leave them at their default values.</p>
+<p><br>
+The <font color=Darkblue><strong>output</strong></font> of the <code>bs()</code> function is a <em>matrix</em> of dimension <code>c(length(x), df)</code>, if <code>df</code> was supplied or of dimension <code>df = length(knots) + degree (+1 if intercept=TRUE)</code> if <code>knots</code> were supplied.
+<br></p>
+<p><u><strong>Knots or Degrees of Freedom in <code>bs()</code></strong></u></p>
+<p>As we mentioned, we need to supply the degrees of freedom or the location of the knots in the <code>bs()</code> function, and of course there is an equivalence between the two. Some details to keep in mind on how you can correctly specify these arguments:</p>
+<ul>
+<li>If you know where the knots should be placed, then you need to define a vector of the <strong>locations</strong> of the knots and input that in the <code>knots</code> argument in the <code>bs()</code> function. For example,</li>
+</ul>
+<div class="examplebox">
+<p><strong>Defining <code>knots</code> location in <code>bs()</code></strong>
+<br></p>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="splines-regression.html#cb226-1" tabindex="-1"></a><span class="fu">library</span>(splines)</span>
+<span id="cb226-2"><a href="splines-regression.html#cb226-2" tabindex="-1"></a>x<span class="ot">=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by=</span><span class="fl">0.01</span>) <span class="co"># generic `x` for illustration purposes</span></span>
+<span id="cb226-3"><a href="splines-regression.html#cb226-3" tabindex="-1"></a>new.knots<span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>, <span class="dv">3</span><span class="sc">/</span><span class="dv">6</span>, <span class="dv">5</span><span class="sc">/</span><span class="dv">6</span>)  <span class="co"># define three knots at locations 1/6, 3/6, 5/6.</span></span>
+<span id="cb226-4"><a href="splines-regression.html#cb226-4" tabindex="-1"></a>Bsplines.basis1 <span class="ot">=</span> <span class="fu">bs</span>(x, <span class="at">knots=</span>new.knots)</span>
+<span id="cb226-5"><a href="splines-regression.html#cb226-5" tabindex="-1"></a><span class="fu">head</span>(Bsplines.basis1)</span></code></pre></div>
+<pre><code>##             1         2         3 4 5 6
+## [1,] 0.000000 0.0000000 0.0000000 0 0 0
+## [2,] 0.165912 0.0034896 0.0000144 0 0 0
+## [3,] 0.304896 0.0135168 0.0001152 0 0 0
+## [4,] 0.418824 0.0294192 0.0003888 0 0 0
+## [5,] 0.509568 0.0505344 0.0009216 0 0 0
+## [6,] 0.579000 0.0762000 0.0018000 0 0 0</code></pre>
+</div>
+<p>In this case, <code>R</code> calculates the degrees of freedom using the following formula:
+<span class="math display">\[\text{df = length(knots) + degree}\]</span>
+or <strong>if <code>intercept=TRUE</code></strong> then
+<span class="math display">\[\text{df = length(knots) + degree + 1}\]</span>
+<br></p>
+<ul>
+<li>If you prefer to specify the degrees of freedom, then the function <code>bs()</code> chooses <code>df-degree</code> many knots at suitable quantiles of <span class="math inline">\(x\)</span> (ignoring any missing values). If you specified <code>intercept=TRUE</code>, then the number of knots will be <code>df-degree-1</code>. For example,</li>
+</ul>
+<div class="examplebox">
+<p><strong>Defining <code>knots</code> location in <code>bs()</code></strong>
+<br></p>
+<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="splines-regression.html#cb228-1" tabindex="-1"></a>x<span class="ot">=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by=</span><span class="fl">0.01</span>) <span class="co"># generic `x` for illustration purposes</span></span>
+<span id="cb228-2"><a href="splines-regression.html#cb228-2" tabindex="-1"></a>Bsplines.basis2 <span class="ot">=</span> <span class="fu">bs</span>(x, <span class="at">df=</span><span class="dv">4</span>)</span>
+<span id="cb228-3"><a href="splines-regression.html#cb228-3" tabindex="-1"></a><span class="fu">head</span>(Bsplines.basis2)</span></code></pre></div>
+<pre><code>##             1        2        3 4
+## [1,] 0.000000 0.000000 0.000000 0
+## [2,] 0.058214 0.000592 0.000002 0
+## [3,] 0.112912 0.002336 0.000016 0
+## [4,] 0.164178 0.005184 0.000054 0
+## [5,] 0.212096 0.009088 0.000128 0
+## [6,] 0.256750 0.014000 0.000250 0</code></pre>
+</div>
+<p><br></p>
+<p>As an example, below we plot the first 7 B Splines basis functions:</p>
+<div class="examplebox">
+<p><strong>Illustration of B Splines Basis Function</strong></p>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="splines-regression.html#cb230-1" tabindex="-1"></a>Bsplines.basis <span class="ot">=</span> <span class="fu">bs</span>(x, <span class="at">knots=</span>new.knots)</span>
+<span id="cb230-2"><a href="splines-regression.html#cb230-2" tabindex="-1"></a><span class="fu">dim</span>(Bsplines.basis)</span></code></pre></div>
+<pre><code>## [1] 101   6</code></pre>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="splines-regression.html#cb232-1" tabindex="-1"></a><span class="fu">head</span>(Bsplines.basis)</span></code></pre></div>
+<pre><code>##             1         2         3 4 5 6
+## [1,] 0.000000 0.0000000 0.0000000 0 0 0
+## [2,] 0.165912 0.0034896 0.0000144 0 0 0
+## [3,] 0.304896 0.0135168 0.0001152 0 0 0
+## [4,] 0.418824 0.0294192 0.0003888 0 0 0
+## [5,] 0.509568 0.0505344 0.0009216 0 0 0
+## [6,] 0.579000 0.0762000 0.0018000 0 0 0</code></pre>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="splines-regression.html#cb234-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>))</span>
+<span id="cb234-2"><a href="splines-regression.html#cb234-2" tabindex="-1"></a><span class="fu">plot</span>(x, Bsplines.basis[,<span class="dv">1</span>], <span class="at">type=</span><span class="st">&#39;l&#39;</span>, <span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">1</span>](x))))</span>
+<span id="cb234-3"><a href="splines-regression.html#cb234-3" tabindex="-1"></a><span class="fu">plot</span>(x, Bsplines.basis[,<span class="dv">2</span>], <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">2</span>](x))))</span>
+<span id="cb234-4"><a href="splines-regression.html#cb234-4" tabindex="-1"></a><span class="fu">plot</span>(x, Bsplines.basis[,<span class="dv">3</span>], <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">3</span>](x)) ))</span>
+<span id="cb234-5"><a href="splines-regression.html#cb234-5" tabindex="-1"></a><span class="fu">plot</span>(x, Bsplines.basis[,<span class="dv">4</span>], <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">4</span>](x))))</span>
+<span id="cb234-6"><a href="splines-regression.html#cb234-6" tabindex="-1"></a><span class="fu">plot</span>(x, Bsplines.basis[,<span class="dv">5</span>], <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">5</span>](x))))</span>
+<span id="cb234-7"><a href="splines-regression.html#cb234-7" tabindex="-1"></a><span class="fu">plot</span>(x, Bsplines.basis[,<span class="dv">6</span>], <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">6</span>](x))))</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-114-1.png" width="672" /></p>
+</div>
+<p><br><br></p>
+</div>
+<div id="natural-cubic-splines-ncs" class="section level3 hasAnchor" number="4.2.3">
+<h3><span class="header-section-number">4.2.3</span> Natural Cubic Splines (NCS)<a href="splines-regression.html#natural-cubic-splines-ncs" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>A cubic spline on <span class="math inline">\([a, b]\)</span> is a <font color=Darkblue><strong>Natural Cubic Spline</strong></font> if its <em>second</em> and <em>third</em> derivatives are <em>zero at <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span></em>. This condition implies that NCS is a linear function in the two extreme intervals <span class="math inline">\([a,\xi_1]\)</span> and <span class="math inline">\([\xi_m,b]\)</span>. The linear functions in the two extreme intervals are completely determined by their neighboring intervals. The degrees of freedom of NCS’s with <span class="math inline">\(m\)</span> knots are:
+<span class="math display">\[4(m+1)-3m -4=m\]</span>
+since we have 4 additional constraints (the ones on the boundary points).</p>
+<p><font color=orange><strong><u>Remark</u></strong></font>: For a curve estimation problem with data <span class="math inline">\((x_i,y_i)^n_{i=1}\)</span>, if we put <span class="math inline">\(n\)</span> knots at the <span class="math inline">\(n\)</span> data points (assumed to be unique), then using NCS we obtain a <em>smooth</em> curve passing through <strong>all</strong> <span class="math inline">\(y\)</span>’s.</p>
+<div class="motivationbox">
+<p><strong>Natural Cubic Spline</strong></p>
+A Natural Cubic Spline with <span class="math inline">\(m\)</span> knots is represented by <span class="math inline">\(m\)</span> basis functions, for example one such basis is given by
+<span class="math display">\[\begin{align*}
+N_1(x) &amp;= 1\\
+N_2(x) &amp;= x\\
+N_{k+2} (x) &amp;= d_k(x) - d_{k-1}(x)
+\end{align*}\]</span>
+where
+<span class="math display">\[d_k(x) = \frac{(x-\xi_k)_{+}^{3} - (x-\xi_{m})_{+}^{3}}{\xi_m - \xi_k}\]</span>
+Each of these derivatives can be seen to have zero second and third derivative for <span class="math inline">\(x\geq \xi_m\)</span>.
+</div>
+<p><br></p>
+<p>In <code>R</code> we can find the NCS as part of the <code>splines</code> library, by calling the <code>ns()</code> function. Specifically, we have that</p>
+<p><font color=blue>
+<span class="math display">\[ ns(x, df, knots, intercept=TRUE, Boundary.knots) \]</span>
+</font></p>
+<div class="examplebox">
+<p><strong>Natural Cubic Splines in <code>R</code></strong></p>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="splines-regression.html#cb235-1" tabindex="-1"></a>NCS.basis <span class="ot">=</span><span class="fu">ns</span>(x, <span class="at">knots=</span>new.knots, <span class="at">Boundary.knots=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb235-2"><a href="splines-regression.html#cb235-2" tabindex="-1"></a><span class="fu">dim</span>(NCS.basis)</span></code></pre></div>
+<pre><code>## [1] 101   4</code></pre>
+<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="splines-regression.html#cb237-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>))</span>
+<span id="cb237-2"><a href="splines-regression.html#cb237-2" tabindex="-1"></a><span class="fu">plot</span>(x, NCS.basis[,<span class="dv">1</span>], <span class="at">type=</span><span class="st">&#39;l&#39;</span>, <span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">1</span>](x))))</span>
+<span id="cb237-3"><a href="splines-regression.html#cb237-3" tabindex="-1"></a><span class="fu">plot</span>(x, NCS.basis[,<span class="dv">2</span>], <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">2</span>](x))))</span>
+<span id="cb237-4"><a href="splines-regression.html#cb237-4" tabindex="-1"></a><span class="fu">plot</span>(x, NCS.basis[,<span class="dv">3</span>], <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">3</span>](x)) ))</span>
+<span id="cb237-5"><a href="splines-regression.html#cb237-5" tabindex="-1"></a><span class="fu">plot</span>(x, NCS.basis[,<span class="dv">4</span>], <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="fu">paste</span>(h[<span class="dv">4</span>](x))))</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-115-1.png" width="672" /></p>
+</div>
+<p><br></p>
+<p>Recall that the linear functions in the two extreme intervals are completely determined by the other cubic splines. This means that data points in the two extreme intervals (i.e., outside the two boundary knots) are wasted since they do not affect the fitting. Therefore, by default, <code>R</code> puts the two boundary knots as the <em>min</em> and <em>max</em> of the <span class="math inline">\(x_i\)</span>’s.</p>
+<p>As in the case of the <code>bs()</code> function:</p>
+<ul>
+<li><p>You can tell <code>R</code> the location of knots, which are the interior knots. Recall that a NCS with <span class="math inline">\(m\)</span> knots has <span class="math inline">\(m\)</span> df. So, the df is equal to the number of (interior) knots plus <span class="math inline">\(2\)</span>, where <span class="math inline">\(2\)</span> means the two boundary knots.</p></li>
+<li><p>Or you can tell <code>R</code> the df. If intercept = TRUE, then we need <span class="math inline">\(m= df - 2\)</span> knots, otherwise we need <span class="math inline">\(m = df - 1\)</span> knots. Again, by default, <code>R</code> puts knots at the <span class="math inline">\(1/(m+1),...,m/(m+1)\)</span> quantiles of <span class="math inline">\(x_{1:n}\)</span>.</p></li>
+</ul>
+<p><br><br></p>
+</div>
+<div id="regression-splines" class="section level3 hasAnchor" number="4.2.4">
+<h3><span class="header-section-number">4.2.4</span> Regression Splines<a href="splines-regression.html#regression-splines" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Recall that for a given set of knots, the corresponding cubic splines form a <em>linear space</em> of functions with dimension <span class="math inline">\((m + 4)\)</span>. So, the <strong>Regression Splines</strong> use a basis expansion approach:
+<span class="math display">\[g(x)=\beta_1 h_1(x)+\beta_2 h_2(x)+\ldots+\beta_p h_p(x)\]</span>
+* If Cubic Splines are used as basis functions <span class="math inline">\(p=m+4\)</span>.</p>
+<ul>
+<li>If Natural Cubic Splines (NCS) are used as basis functions <span class="math inline">\(p=m\)</span>.</li>
+</ul>
+<p>We can represent the model on the observed <span class="math inline">\(n\)</span> data points using matrix notation:
+<span class="math display">\[
+      \begin{pmatrix}
+        y_1\\
+        y_2\\
+        \ldots\\
+        y_n
+      \end{pmatrix}_{n\times 1} =
+      \begin{pmatrix}
+         h_1(x_1)&amp; \ldots &amp; h_{p}(x_1)\\
+          h_1(x_2)&amp; \ldots &amp; h_{p}(x_2)\\
+         \\
+           h_1(x_n)&amp; \ldots &amp; h_{p}(x_n)
+      \end{pmatrix}_{n\times p}
+      \begin{pmatrix}
+      \beta_1\\
+      \beta_2\\
+      \ldots\\
+      \beta_p
+      \end{pmatrix}_{p\times 1}
+\]</span>
+where our <em>“design”</em> matrix is the matrix <span class="math inline">\(\mathbf{F}\)</span> of basis functions. Therefore, we can estimate the coefficients <span class="math inline">\(\mathbf{\beta}\)</span> by solving the following Least-Squares problem:
+<span class="math display">\[\hat{\mathbf{\beta}}= \arg\min_{\mathbf{\beta}}||\mathbf{y} - \mathbf{F}{\mathbf{\beta}|}|^2\]</span>
+<br></p>
+</div>
+<div id="k-fold-cross-validation" class="section level3 hasAnchor" number="4.2.5">
+<h3><span class="header-section-number">4.2.5</span> K-Fold Cross-Validation<a href="splines-regression.html#k-fold-cross-validation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>One of the challenges in using splines regression is the choice of the degrees of freedom/ knots. One way to optimally select the number of knots or degrees of freedom is the so-called K-fold cross-validation approach. This is outlined in the steps below:</p>
+<ol style="list-style-type: decimal">
+<li>Set a fixed number of knots (or df).</li>
+<li>Divide the set of observations into <span class="math inline">\(k\)</span> groups (or <em>folds</em>).</li>
+<li>Leave the first fold as a validation set (not used to fit the model). Fit the Regression Spline with a fixed number of knots using the remaining <span class="math inline">\(k-1\)</span> folds.</li>
+<li>Calculate the Mean Square Error for fold 1: <span class="math inline">\(MSE_1\)</span>.</li>
+<li>Repeat the previous steps <span class="math inline">\(k\)</span> times. Each time a new validation set is used to calculate <span class="math inline">\(MSE_i\)</span>.</li>
+<li>Calculate the average <span class="math inline">\(k\)</span>-fold Cross-Validation error: <span class="math display">\[CV(k)=\frac{1}{k}\sum_{i=1}^k MSE_i\]</span></li>
+<li>Repeat 2 to 6 with a new number of knots (or df).</li>
+<li>Select the number of knots that minimizes the <span class="math inline">\(k\)</span>-fold CV error or <span class="math inline">\(CV(k)\)</span>.</li>
+</ol>
+<p>Then, we repeat the same process for a different number of knots and in the end we select the one that minimizes the <span class="math inline">\(CV(k)\)</span>. A sketch of this approach is shown below:</p>
+<p><img src="images/week4/kfold.png" width="60%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="polynomial-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="smoothing-splines.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans serif",
+    "size": 1
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/04-nonlinearregression.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section",
+    "toc_depth": 4,
+    "toc_float": true,
+    "scroll_highlight": true
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

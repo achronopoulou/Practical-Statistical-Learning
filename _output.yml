@@ -1,0 +1,29 @@
+bookdown::gitbook:
+  split_by: "section"
+  css: style.css
+  config:
+    fontsettings:
+      theme: white
+      family: sans serif
+      size: 1
+    toc:
+      toc_depth: 4
+      toc_float: true
+      collapse: section
+      scroll_highlight: true
+      before: |
+        <li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+      after: |
+        <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+    edit: https://github.com/USERNAME/REPO/edit/BRANCH/%s
+    download: ["epub"]
+    
+    
+bookdown::pdf_book:
+  includes:
+    in_header: preamble.tex
+  latex_engine: xelatex
+  citation_package: natbib
+  keep_tex: yes
+  
+bookdown::epub_book: default

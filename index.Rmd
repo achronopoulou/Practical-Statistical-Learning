@@ -1,0 +1,49 @@
+--- 
+title: "CS 598 Practical Statistical Learning"
+author: "Alexandra Chronopoulou"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+description: |
+    Lecture notes for  "CS 598 PSL".
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+---
+
+
+
+# <font color="darkblue"> Course Information </font>  {-} 
+
+#### <font color="blue"> Course Description </font>  {-} 
+
+This course provides an introduction to modern techniques for statistical analysis of complex and massive data. Examples of these include model selection for regression, classification, nonparametric models such as splines and kernel models, regularization, dimension reduction, and clustering analysis. Applications are discussed as well as computation and theoretical foundations. 
+
+#### <font color="blue">Course Prerequisites </font>  {-} 
+
+Knowledge of basic multivariate calculus, statistical inference, and linear algebra. You should be comfortable with the following concepts: probability distribution functions, expectations, conditional distributions, likelihood functions, random samples, estimators, and linear regression models. 
+
+
+#### <font color="blue"> Course Learning Outcomes </font>  {-} 
+
+By the end of the course, you will be able to:
+
+* Use a broad range of methods and techniques in machine learning.
+* Have a deeper understanding of major algorithms and techniques in machine learning.
+* Build analytics pipelines for regression problems.
+* Build analytics pipelines for classification problems.
+* Build analytics pipelines for recommendation problems. 
+
+#### <font color="blue"> Textbook and Readings </font>  {-} 
+
+There is no required textbook for this course. 
+
+Recommended resources for a statistical approach to machine learning are the following textbooks:
+
+* An Introduction to Statistical Learning with Applications in R (basic)
+* An Introduction to Statistical Learning with Applications in Python (basic)
+* The Elements of Statistical Learning: Data Mining, Inference, and Prediction (more advanced)
+* You may also want to view the  Data School YouTube videos associated with the first book, as an additional resource.  
+
+<br>
+<p> The detailed syllabus for the course can be found on Coursera.

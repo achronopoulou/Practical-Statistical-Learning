@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2.11 Birthweight Data Set Example | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2.11 Birthweight Data Set Example | CS 598 Practical Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2.11 Birthweight Data Set Example | CS 598 Practical Statistical Learning" />
+  
+  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  
+
+<meta name="author" content="Alexandra Chronopoulou" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="model-diagnostics.html"/>
+<link rel="next" href="variable-selection-regularization.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
+<li class="chapter" data-level="1.5.4" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures"><i class="fa fa-check"></i><b>1.5.4</b> Code for the Examples in the Lectures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>2.1</b> Multiple Linear Regression (MLR) Model</a></li>
+<li class="chapter" data-level="2.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>2.2</b> MLR Model Fitting</a></li>
+<li class="chapter" data-level="2.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>2.3</b> Least-Squares &amp; Normal Equations</a></li>
+<li class="chapter" data-level="2.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>2.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
+<li class="chapter" data-level="2.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>2.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
+<li class="chapter" data-level="2.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>2.6</b> Rank deficiency</a></li>
+<li class="chapter" data-level="2.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>2.7</b> Hypothesis Testing in MLR</a></li>
+<li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
+<li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
+<li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
+<li class="chapter" data-level="2.11" data-path="birthweight-data-set-example.html"><a href="birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> <code>Birthweight</code> Data Set Example</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="training-vs.-testing-errors.html"><a href="training-vs.-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training vs. Testing Errors</a></li>
+<li class="chapter" data-level="3.2" data-path="subset-selection.html"><a href="subset-selection.html"><i class="fa fa-check"></i><b>3.2</b> Subset Selection</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria-based-procedures"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria-based procedures</a></li>
+<li class="chapter" data-level="3.2.2" data-path="subset-selection.html"><a href="subset-selection.html#search-algorithms"><i class="fa fa-check"></i><b>3.2.2</b> Search Algorithms</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html"><i class="fa fa-check"></i><b>3.3</b> Shrinkage Methods</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
+<ul>
+<li class="chapter" data-level="4.0.1" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html#a-note-on-nonlinearity"><i class="fa fa-check"></i><b>4.0.1</b> A Note on Nonlinearity</a></li>
+<li class="chapter" data-level="4.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html"><i class="fa fa-check"></i><b>4.1</b> Polynomial Regression</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-basis-functions"><i class="fa fa-check"></i><b>4.1.1</b> Polynomial Basis Functions</a></li>
+<li class="chapter" data-level="4.1.2" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-regression-1"><i class="fa fa-check"></i><b>4.1.2</b> Polynomial Regression</a></li>
+<li class="chapter" data-level="4.1.3" data-path="polynomial-regression.html"><a href="polynomial-regression.html#orthogonal-polynomials"><i class="fa fa-check"></i><b>4.1.3</b> Orthogonal Polynomials</a></li>
+<li class="chapter" data-level="4.1.4" data-path="polynomial-regression.html"><a href="polynomial-regression.html#piece-wise-polynomials"><i class="fa fa-check"></i><b>4.1.4</b> Piece-wise Polynomials</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="splines-regression.html"><a href="splines-regression.html"><i class="fa fa-check"></i><b>4.2</b> Splines Regression</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="splines-regression.html"><a href="splines-regression.html#examples-of-cubic-splines-basis"><i class="fa fa-check"></i><b>4.2.1</b> Examples of Cubic Splines Basis</a></li>
+<li class="chapter" data-level="4.2.2" data-path="splines-regression.html"><a href="splines-regression.html#b-splines-basis-functions-in-r"><i class="fa fa-check"></i><b>4.2.2</b> B-Splines Basis Functions in <code>R</code></a></li>
+<li class="chapter" data-level="4.2.3" data-path="splines-regression.html"><a href="splines-regression.html#natural-cubic-splines-ncs"><i class="fa fa-check"></i><b>4.2.3</b> Natural Cubic Splines (NCS)</a></li>
+<li class="chapter" data-level="4.2.4" data-path="splines-regression.html"><a href="splines-regression.html#regression-splines"><i class="fa fa-check"></i><b>4.2.4</b> Regression Splines</a></li>
+<li class="chapter" data-level="4.2.5" data-path="splines-regression.html"><a href="splines-regression.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>4.2.5</b> K-Fold Cross-Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="smoothing-splines.html"><a href="smoothing-splines.html"><i class="fa fa-check"></i><b>4.3</b> Smoothing Splines</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="smoothing-splines.html"><a href="smoothing-splines.html#the-roughness-penalty-approach"><i class="fa fa-check"></i><b>4.3.1</b> The Roughness Penalty Approach</a></li>
+<li class="chapter" data-level="4.3.2" data-path="smoothing-splines.html"><a href="smoothing-splines.html#proof"><i class="fa fa-check"></i><b>4.3.2</b> Proof</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
+<li class="chapter" data-level="4.5" data-path="the-birthrates-example.html"><a href="the-birthrates-example.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="birthweight-data-set-example" class="section level2 hasAnchor" number="2.11">
+<h2><span class="header-section-number">2.11</span> <code>Birthweight</code> Data Set Example<a href="birthweight-data-set-example.html#birthweight-data-set-example" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p></br></br></p>
+<p>The <code>birthweight.csv</code> data set contains data from a study on the birth weight of <strong>42</strong> babies. The variables in the data set are the following:</p>
+<ul>
+<li><code>ID</code>: Unique Identification number of a baby</li>
+<li><code>Length</code>: Length of the baby at time of birth in cm (<span class="math inline">\(X_1\)</span>)</li>
+<li><code>Birthweight</code>: Weight of the baby at time of birth in kg (<span class="math inline">\(Y\)</span>)</li>
+<li><code>Headcirc</code>: Head circumference of the baby at time of birth in cm (<span class="math inline">\(X_2\)</span>)</li>
+<li><code>Gestation</code>: Completed weeks of gestation (<span class="math inline">\(X_3\)</span>)</li>
+<li><code>smoker</code>: Mother is/is not a smoker {0: No, 1: Yes} (<span class="math inline">\(X_4\)</span>)</li>
+<li><code>mage</code>: Mother’s age at time of birth (<span class="math inline">\(X_5\)</span>)</li>
+<li><code>mnocig</code>: Mother’s number of cigarettes smoked per day (<span class="math inline">\(X_6\)</span>)</li>
+<li><code>mheight</code>: Mother’s height in cm (<span class="math inline">\(X_7\)</span>)</li>
+<li><code>mppwt</code>: Mother’s pre-pregnancy weight (<span class="math inline">\(X_8\)</span>)</li>
+<li><code>fage</code>: Father’s age at time of birth (<span class="math inline">\(X_9\)</span>)</li>
+<li><code>fedyrs</code>: Father’s years of education (<span class="math inline">\(X_{10}\)</span>)</li>
+<li><code>fnocig</code>: Father’s number of cigarettes smoked per day (<span class="math inline">\(X_{11}\)</span>)</li>
+<li><code>fheight</code>: Father’s height (<span class="math inline">\(X_{12}\)</span>)</li>
+</ul>
+<p><br></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="birthweight-data-set-example.html#cb1-1" tabindex="-1"></a>birthweight <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;data/week2/Birthweight.csv&quot;</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-2"><a href="birthweight-data-set-example.html#cb1-2" tabindex="-1"></a><span class="fu">dim</span>(birthweight)</span></code></pre></div>
+<pre><code>## [1] 42 14</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="birthweight-data-set-example.html#cb3-1" tabindex="-1"></a><span class="fu">head</span>(birthweight)</span></code></pre></div>
+<pre><code>##     ID Length Birthweight Headcirc Gestation smoker mage mnocig mheight mppwt
+## 1 1360     56        4.55       34        44      0   20      0     162    57
+## 2 1016     53        4.32       36        40      0   19      0     171    62
+## 3  462     58        4.10       39        41      0   35      0     172    58
+## 4 1187     53        4.07       38        44      0   20      0     174    68
+## 5  553     54        3.94       37        42      0   24      0     175    66
+## 6 1636     51        3.93       38        38      0   29      0     165    61
+##   fage fedyrs fnocig fheight
+## 1   23     10     35     179
+## 2   19     12      0     183
+## 3   31     16     25     185
+## 4   26     14     25     189
+## 5   30     12      0     184
+## 6   31     16      0     180</code></pre>
+<p>Since the <code>ID</code> variable is not of interest in our analysis, we won’t use it in our analysis. For convenience can remove it from the data frame we are working with:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="birthweight-data-set-example.html#cb5-1" tabindex="-1"></a>birthweight <span class="ot">=</span> birthweight[,<span class="sc">-</span><span class="dv">1</span>]</span></code></pre></div>
+<p><br><br></p>
+<div id="fitting-a-multiple-linear-regression" class="section level4 hasAnchor" number="2.11.0.1">
+<h4><span class="header-section-number">2.11.0.1</span> Fitting a Multiple Linear Regression<a href="birthweight-data-set-example.html#fitting-a-multiple-linear-regression" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><br></p>
+<p>We start by fitting a linear regression model using all the predictors and we print the summary of the LS results:
+<br></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="birthweight-data-set-example.html#cb6-1" tabindex="-1"></a>birthweight.mlr.full <span class="ot">=</span> <span class="fu">lm</span>(Birthweight<span class="sc">~</span>., <span class="at">data=</span>birthweight)</span>
+<span id="cb6-2"><a href="birthweight-data-set-example.html#cb6-2" tabindex="-1"></a><span class="fu">summary</span>(birthweight.mlr.full)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Birthweight ~ ., data = birthweight)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.37925 -0.25558 -0.05541  0.21700  0.60329 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept) -3.812311   2.080150  -1.833  0.07713 . 
+## Length       0.034152   0.031456   1.086  0.28656   
+## Headcirc     0.086594   0.029489   2.937  0.00644 **
+## Gestation    0.096565   0.031323   3.083  0.00447 **
+## smoker      -0.243895   0.168516  -1.447  0.15854   
+## mage        -0.019004   0.018537  -1.025  0.31374   
+## mnocig       0.001064   0.006854   0.155  0.87770   
+## mheight      0.004187   0.014153   0.296  0.76944   
+## mppwt        0.010346   0.011228   0.921  0.36443   
+## fage         0.007187   0.016327   0.440  0.66305   
+## fedyrs       0.003220   0.030939   0.104  0.91783   
+## fnocig       0.003445   0.004013   0.858  0.39769   
+## fheight     -0.013293   0.009614  -1.383  0.17731   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3342 on 29 degrees of freedom
+## Multiple R-squared:  0.7834, Adjusted R-squared:  0.6938 
+## F-statistic: 8.742 on 12 and 29 DF,  p-value: 1.011e-06</code></pre>
+<p><br>
+If we want to check the objects returned by <code>lm</code> and <code>summary(lm...)</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="birthweight-data-set-example.html#cb8-1" tabindex="-1"></a><span class="fu">names</span>(birthweight.mlr.full)</span></code></pre></div>
+<pre><code>##  [1] &quot;coefficients&quot;  &quot;residuals&quot;     &quot;effects&quot;       &quot;rank&quot;         
+##  [5] &quot;fitted.values&quot; &quot;assign&quot;        &quot;qr&quot;            &quot;df.residual&quot;  
+##  [9] &quot;xlevels&quot;       &quot;call&quot;          &quot;terms&quot;         &quot;model&quot;</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="birthweight-data-set-example.html#cb10-1" tabindex="-1"></a><span class="fu">names</span>(<span class="fu">summary</span>(birthweight.mlr.full)) </span></code></pre></div>
+<pre><code>##  [1] &quot;call&quot;          &quot;terms&quot;         &quot;residuals&quot;     &quot;coefficients&quot; 
+##  [5] &quot;aliased&quot;       &quot;sigma&quot;         &quot;df&quot;            &quot;r.squared&quot;    
+##  [9] &quot;adj.r.squared&quot; &quot;fstatistic&quot;    &quot;cov.unscaled&quot;</code></pre>
+<p><br>
+The design matrix in this example can be extracted using:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="birthweight-data-set-example.html#cb12-1" tabindex="-1"></a>design.birthweight <span class="ot">=</span> <span class="fu">model.matrix</span>(birthweight.mlr.full)</span></code></pre></div>
+<p><br>
+If we want to extract the Regression coefficients including the intercept, i.e. <span class="math inline">\(\hat{\beta}\)</span>, we have</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="birthweight-data-set-example.html#cb13-1" tabindex="-1"></a>birthweight.mlr.full<span class="sc">$</span>coef</span></code></pre></div>
+<pre><code>##  (Intercept)       Length     Headcirc    Gestation       smoker         mage 
+## -3.812311183  0.034151922  0.086594329  0.096565435 -0.243895136 -0.019003806 
+##       mnocig      mheight        mppwt         fage       fedyrs       fnocig 
+##  0.001064074  0.004187315  0.010346096  0.007187428  0.003219952  0.003444674 
+##      fheight 
+## -0.013293205</code></pre>
+<p><br>
+The fitted values and residuals are obtained by:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="birthweight-data-set-example.html#cb15-1" tabindex="-1"></a>full.model.residuals <span class="ot">=</span> birthweight.mlr.full<span class="sc">$</span>resid</span>
+<span id="cb15-2"><a href="birthweight-data-set-example.html#cb15-2" tabindex="-1"></a>full.model.fitted <span class="ot">=</span> birthweight.mlr.full<span class="sc">$</span>fitted</span></code></pre></div>
+<p><br></p>
+<p>Check the calculation for Residual standard error and Multiple R-squared in the summary output:</p>
+<p>The residuals <span class="math inline">\(\mathbf{r}\)</span> are used to estimate the :
+<span class="math display">\[\hat{\sigma}^2 = \frac{1}{n-p-1}\sum_i r_i^2 = \frac{RSS}{n-p-1}\]</span>
+To obtain and estimator for <span class="math inline">\(\hat{\sigma}\)</span>, we can either use the formula (from the notes):
+<br></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="birthweight-data-set-example.html#cb16-1" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">dim</span>(birthweight)[<span class="dv">1</span>]</span>
+<span id="cb16-2"><a href="birthweight-data-set-example.html#cb16-2" tabindex="-1"></a>p <span class="ot">=</span> <span class="fu">dim</span>(birthweight)[<span class="dv">2</span>] <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb16-3"><a href="birthweight-data-set-example.html#cb16-3" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">sum</span>(birthweight.mlr.full<span class="sc">$</span>residuals<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(n<span class="sc">-</span> p <span class="sc">-</span> <span class="dv">1</span>))</span></code></pre></div>
+<pre><code>## [1] 0.3341631</code></pre>
+<p><br>
+or we can extract it from the <code>lm</code> object:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="birthweight-data-set-example.html#cb18-1" tabindex="-1"></a><span class="fu">summary</span>(birthweight.mlr.full)<span class="sc">$</span>sigma</span></code></pre></div>
+<pre><code>## [1] 0.3341631</code></pre>
+<p><br><br>
+The coefficient of determination computes as:
+<span class="math display">\[ \frac{\sum_i (\hat{y}_i - \bar{y})^2}{\sum_i (y_i - \bar{y})^2} = 1 - \frac{RSS}{TSS}\]</span>
+We can extract <span class="math inline">\(R^2\)</span> from the summary output or compute it:
+<br></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="birthweight-data-set-example.html#cb20-1" tabindex="-1"></a><span class="fu">summary</span>(birthweight.mlr.full)<span class="sc">$</span>r.squared</span></code></pre></div>
+<pre><code>## [1] 0.783425</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="birthweight-data-set-example.html#cb22-1" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">sum</span>(birthweight.mlr.full<span class="sc">$</span>residuals<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="fu">var</span>(birthweight<span class="sc">$</span>Birthweight)<span class="sc">*</span>(n<span class="dv">-1</span>))</span></code></pre></div>
+<pre><code>## [1] 0.783425</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="birthweight-data-set-example.html#cb24-1" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">var</span>(birthweight.mlr.full<span class="sc">$</span>residuals)<span class="sc">/</span><span class="fu">var</span>(birthweight<span class="sc">$</span>Birthweight)</span></code></pre></div>
+<pre><code>## [1] 0.783425</code></pre>
+<p><br><br></p>
+</div>
+<div id="invariance-of-r2-fitted-values" class="section level4 hasAnchor" number="2.11.0.2">
+<h4><span class="header-section-number">2.11.0.2</span> Invariance of <span class="math inline">\(R^2\)</span> &amp; Fitted Values<a href="birthweight-data-set-example.html#invariance-of-r2-fitted-values" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We can also check the invariance property of <span class="math inline">\(R^2\)</span> by rescaling one of the variables:
+<br></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="birthweight-data-set-example.html#cb26-1" tabindex="-1"></a><span class="do">## Center the Length variable</span></span>
+<span id="cb26-2"><a href="birthweight-data-set-example.html#cb26-2" tabindex="-1"></a>birthweight.new <span class="ot">=</span> birthweight</span>
+<span id="cb26-3"><a href="birthweight-data-set-example.html#cb26-3" tabindex="-1"></a>birthweight.new<span class="sc">$</span>Length.new <span class="ot">=</span> birthweight.new<span class="sc">$</span>Length <span class="sc">-</span> <span class="fu">rep</span>(<span class="fu">mean</span>(birthweight.new<span class="sc">$</span>Length), <span class="dv">42</span>)</span>
+<span id="cb26-4"><a href="birthweight-data-set-example.html#cb26-4" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="birthweight-data-set-example.html#cb26-5" tabindex="-1"></a><span class="do">## Model with original `Length`</span></span>
+<span id="cb26-6"><a href="birthweight-data-set-example.html#cb26-6" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(Birthweight<span class="sc">~</span>., <span class="at">data=</span>birthweight.new[<span class="sc">-</span><span class="dv">14</span>]))<span class="sc">$</span>r.squared</span></code></pre></div>
+<pre><code>## [1] 0.783425</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="birthweight-data-set-example.html#cb28-1" tabindex="-1"></a><span class="do">## Model with centered `Length`</span></span>
+<span id="cb28-2"><a href="birthweight-data-set-example.html#cb28-2" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(Birthweight<span class="sc">~</span>., <span class="at">data=</span>birthweight.new[<span class="sc">-</span><span class="dv">1</span>]))<span class="sc">$</span>r.squared</span></code></pre></div>
+<pre><code>## [1] 0.783425</code></pre>
+<p><br><br></p>
+<p>If we want, we can also check that the fitted values from both models are identical:
+<br></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="birthweight-data-set-example.html#cb30-1" tabindex="-1"></a><span class="do">## Difference in fitted values between Model w `Length` -  Model w `centered-Length`</span></span>
+<span id="cb30-2"><a href="birthweight-data-set-example.html#cb30-2" tabindex="-1"></a><span class="do">### The values are added to make the output cleaner.</span></span>
+<span id="cb30-3"><a href="birthweight-data-set-example.html#cb30-3" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="birthweight-data-set-example.html#cb30-4" tabindex="-1"></a><span class="fu">sum</span>( <span class="fu">fitted</span>(<span class="fu">lm</span>(Birthweight<span class="sc">~</span>., <span class="at">data=</span>birthweight.new[<span class="sc">-</span><span class="dv">14</span>])) <span class="sc">-</span> <span class="fu">fitted</span>(<span class="fu">lm</span>(Birthweight<span class="sc">~</span>., <span class="at">data=</span>birthweight.new[<span class="sc">-</span><span class="dv">1</span>])) )</span></code></pre></div>
+<pre><code>## [1] -8.881784e-16</code></pre>
+<p><br>
+Note that the difference is not exactly 0, since there are rounding errors that accumulated when the various R functions are applied.</p>
+<p><br><br></p>
+</div>
+<div id="r2-and-rss-behavior-when-adding-more-xs" class="section level4 hasAnchor" number="2.11.0.3">
+<h4><span class="header-section-number">2.11.0.3</span> <span class="math inline">\(R^2\)</span> and <span class="math inline">\(RSS\)</span> behavior when adding more <span class="math inline">\(X\)</span>s<a href="birthweight-data-set-example.html#r2-and-rss-behavior-when-adding-more-xs" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We can also visualize how the <span class="math inline">\(R^2\)</span> and <span class="math inline">\(RSS\)</span> change as a function of the number of variables in the model to observe that adding a new predictor, even if it is randomly generated and has nothing to do with <span class="math inline">\(Y\)</span> will decrease <span class="math inline">\(RSS\)</span> and therefore increase <span class="math inline">\(R^2\)</span>.</p>
+<p>So, start with the null model that contains only the intercept and then we add variables one at a time, keeping the <span class="math inline">\(R^2\)</span> and <span class="math inline">\(RSS\)</span> that we will plot in the end. We will also randomly generate a new variable <code>randomvar</code> to illustrate that even an unrelevant variable has an effect on both <span class="math inline">\(R^2\)</span> and <span class="math inline">\(RSS\)</span>:
+<br></p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="birthweight-data-set-example.html#cb32-1" tabindex="-1"></a>birthweight.new <span class="ot">=</span> birthweight</span>
+<span id="cb32-2"><a href="birthweight-data-set-example.html#cb32-2" tabindex="-1"></a>birthweight.new<span class="sc">$</span>randomvar <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">42</span>)</span></code></pre></div>
+<p><br></p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="birthweight-data-set-example.html#cb33-1" tabindex="-1"></a>no.var <span class="ot">=</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">12</span></span>
+<span id="cb33-2"><a href="birthweight-data-set-example.html#cb33-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb33-3"><a href="birthweight-data-set-example.html#cb33-3" tabindex="-1"></a><span class="fu">plot</span>(no.var, rsq, <span class="at">xlab=</span><span class="st">&quot;No. of Parameters&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;R-square&quot;</span>, <span class="at">type=</span><span class="st">&#39;n&#39;</span>);</span>
+<span id="cb33-4"><a href="birthweight-data-set-example.html#cb33-4" tabindex="-1"></a><span class="fu">lines</span>(no.var, rsq, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;orange&quot;</span>)</span>
+<span id="cb33-5"><a href="birthweight-data-set-example.html#cb33-5" tabindex="-1"></a><span class="fu">plot</span>(no.var, rss, <span class="at">xlab=</span><span class="st">&quot;No. of Parameters&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;RSS&quot;</span>, <span class="at">type=</span><span class="st">&#39;n&#39;</span>);</span>
+<span id="cb33-6"><a href="birthweight-data-set-example.html#cb33-6" tabindex="-1"></a><span class="fu">lines</span>(no.var, rss, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><br>
+This is to illustrate why <span class="math inline">\(R^2\)</span> and <span class="math inline">\(RSS\)</span> are not good metrics when it comes to model selection. They are useful, because they helps us understand the quality of the model or <span class="math inline">\(RSS\)</span> is a key ingredient in constructing hypothesis tests, but they are never used for model selection.</p>
+<br>
+<hr>
+<p><br></p>
+</div>
+<div id="rank-deficiency-1" class="section level4 hasAnchor" number="2.11.0.4">
+<h4><span class="header-section-number">2.11.0.4</span> Rank Deficiency<a href="birthweight-data-set-example.html#rank-deficiency-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We have rank deficiency when <span class="math inline">\(\mathbf{X}\)</span> is not of full rank which leads to the <span class="math inline">\((\mathbf{X}^T\mathbf{X})\)</span> matrix not being invertible.</p>
+<p>Here we illustrate a scenario where it is easy to identify the cause of the problem.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="birthweight-data-set-example.html#cb34-1" tabindex="-1"></a><span class="do">## Create a new variable: the average height of both parents</span></span>
+<span id="cb34-2"><a href="birthweight-data-set-example.html#cb34-2" tabindex="-1"></a>birthweight.new <span class="ot">=</span> birthweight</span>
+<span id="cb34-3"><a href="birthweight-data-set-example.html#cb34-3" tabindex="-1"></a>birthweight.new<span class="sc">$</span>aveheight <span class="ot">=</span> (birthweight.new<span class="sc">$</span>mheight<span class="sc">+</span>birthweight.new<span class="sc">$</span>fheight)<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb34-4"><a href="birthweight-data-set-example.html#cb34-4" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="birthweight-data-set-example.html#cb34-5" tabindex="-1"></a><span class="do">## Regress birthweight against all predictors</span></span>
+<span id="cb34-6"><a href="birthweight-data-set-example.html#cb34-6" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(Birthweight <span class="sc">~</span> ., <span class="at">data=</span>birthweight.new))</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Birthweight ~ ., data = birthweight.new)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.37925 -0.25558 -0.05541  0.21700  0.60329 
+## 
+## Coefficients: (1 not defined because of singularities)
+##              Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept) -3.812311   2.080150  -1.833  0.07713 . 
+## Length       0.034152   0.031456   1.086  0.28656   
+## Headcirc     0.086594   0.029489   2.937  0.00644 **
+## Gestation    0.096565   0.031323   3.083  0.00447 **
+## smoker      -0.243895   0.168516  -1.447  0.15854   
+## mage        -0.019004   0.018537  -1.025  0.31374   
+## mnocig       0.001064   0.006854   0.155  0.87770   
+## mheight      0.004187   0.014153   0.296  0.76944   
+## mppwt        0.010346   0.011228   0.921  0.36443   
+## fage         0.007187   0.016327   0.440  0.66305   
+## fedyrs       0.003220   0.030939   0.104  0.91783   
+## fnocig       0.003445   0.004013   0.858  0.39769   
+## fheight     -0.013293   0.009614  -1.383  0.17731   
+## aveheight          NA         NA      NA       NA   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3342 on 29 degrees of freedom
+## Multiple R-squared:  0.7834, Adjusted R-squared:  0.6938 
+## F-statistic: 8.742 on 12 and 29 DF,  p-value: 1.011e-06</code></pre>
+<p>As you see the <span class="math inline">\(\beta_j\)</span> that corresponds to the new variable cannot be calculated (hence the <code>NA</code>), since <code>aveheight</code> is linearly dependent on both <code>mheight</code> and <code>fheight</code>. At the same time, although the matrix <span class="math inline">\(\mathbf{X}\)</span> is not of full rank, <code>R</code> produces solutions for the rest of the <span class="math inline">\(\beta\)</span>s and the fitted model is valid for prediction purposes. The predictions derived from this model will align with those obtained from fitting a linear regression model excluding the columns with NA coefficient.</p>
+<p><br></p>
+<p>This issue can be easily fixed, by removing one or more variables. Which variable will be removed depends on the context. For example, we need to (conceptually) answer the question on whether we prefer to have the <code>aveheight</code> or each parent’s height individually.
+<br></p>
+<p>A harder issue to resolve is when two predictors are not exaclty linearly dependent, but approximately - this means that they are highly correlated, but not an exact function of one another. This is more challenging to deal with and we will discuss it later.</p>
+<br>
+<hr>
+<p><br></p>
+</div>
+<div id="test-for-the-significance-of-predictors" class="section level4 hasAnchor" number="2.11.0.5">
+<h4><span class="header-section-number">2.11.0.5</span> Test for the Significance of Predictors<a href="birthweight-data-set-example.html#test-for-the-significance-of-predictors" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><br>
+We use the partial <span class="math inline">\(F\)</span> test
+<span class="math display">\[F=\frac{\bigl(RSS_0 - RSS_{\alpha}\bigr)/p_{\alpha} - p_0}{RSS_{\alpha}/ \bigl(n-p_{\alpha} \bigr)}\,  \sim \, F_{p_{\alpha} - p_0, n-p_{\alpha}}\]</span>
+to compare the full model with all available predictors versus the model that exclude father-related variables. That is, the hypothesis test is formulated as
+<span class="math display">\[\begin{cases}
+&amp;H_0: Y \sim  1+  \beta_{1} X_{1} + \ldots + \beta_{8}X_{8} \\
+&amp; H_{\alpha}:  Y \sim  1+  \beta_1 X_1 + \ldots + \beta_{8}X_{8}+ \ldots + \beta_{12} X_{12}
+\end{cases}
+\]</span></p>
+<p><br></p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="birthweight-data-set-example.html#cb36-1" tabindex="-1"></a><span class="do">## Full Model was fitted before </span></span>
+<span id="cb36-2"><a href="birthweight-data-set-example.html#cb36-2" tabindex="-1"></a><span class="do">## and is stored in birthweight.mlr.full</span></span>
+<span id="cb36-3"><a href="birthweight-data-set-example.html#cb36-3" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="birthweight-data-set-example.html#cb36-4" tabindex="-1"></a><span class="do">## Reduced Model </span></span>
+<span id="cb36-5"><a href="birthweight-data-set-example.html#cb36-5" tabindex="-1"></a>birthweight.mlr.reduced1 <span class="ot">=</span> <span class="fu">lm</span>(Birthweight<span class="sc">~</span> Length<span class="sc">+</span>Headcirc<span class="sc">+</span>Gestation<span class="sc">+</span>smoker<span class="sc">+</span>mage<span class="sc">+</span>mnocig<span class="sc">+</span>mheight<span class="sc">+</span>mppwt,  <span class="at">data=</span>birthweight)</span></code></pre></div>
+<p><br>
+We can use one function to perform the test:
+<br></p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="birthweight-data-set-example.html#cb37-1" tabindex="-1"></a><span class="fu">anova</span>(birthweight.mlr.reduced1, birthweight.mlr.full)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: Birthweight ~ Length + Headcirc + Gestation + smoker + mage + 
+##     mnocig + mheight + mppwt
+## Model 2: Birthweight ~ Length + Headcirc + Gestation + smoker + mage + 
+##     mnocig + mheight + mppwt + fage + fedyrs + fnocig + fheight
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+## 1     33 3.5610                           
+## 2     29 3.2383  4   0.32271 0.7225 0.5837</code></pre>
+<p><br>
+The <span class="math inline">\(F\)</span> statistic value is 0.7225, and the corresponding <span class="math inline">\(p\)</span>-value is 0.5837 which means that we fail to reject the null and conclude that the model under the <span class="math inline">\(H_0\)</span> is preferred. In other words, we prefer the smaller model which implies that the father-related predictors can be removed from the model.<br></p>
+<p>We can also build the <span class="math inline">\(F\)</span> statistic, by extracting all necessary components:
+<br></p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="birthweight-data-set-example.html#cb39-1" tabindex="-1"></a>RSS0 <span class="ot">=</span> <span class="fu">deviance</span>(birthweight.mlr.reduced1)</span>
+<span id="cb39-2"><a href="birthweight-data-set-example.html#cb39-2" tabindex="-1"></a>RSS0</span></code></pre></div>
+<pre><code>## [1] 3.560996</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="birthweight-data-set-example.html#cb41-1" tabindex="-1"></a>RSSalpha <span class="ot">=</span> <span class="fu">deviance</span>(birthweight.mlr.full)</span>
+<span id="cb41-2"><a href="birthweight-data-set-example.html#cb41-2" tabindex="-1"></a>RSSalpha</span></code></pre></div>
+<pre><code>## [1] 3.238285</code></pre>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="birthweight-data-set-example.html#cb43-1" tabindex="-1"></a>p0 <span class="ot">=</span><span class="dv">9</span>;</span>
+<span id="cb43-2"><a href="birthweight-data-set-example.html#cb43-2" tabindex="-1"></a>palpha <span class="ot">=</span> <span class="dv">13</span>;</span>
+<span id="cb43-3"><a href="birthweight-data-set-example.html#cb43-3" tabindex="-1"></a>n<span class="ot">=</span><span class="dv">42</span>;</span>
+<span id="cb43-4"><a href="birthweight-data-set-example.html#cb43-4" tabindex="-1"></a></span>
+<span id="cb43-5"><a href="birthweight-data-set-example.html#cb43-5" tabindex="-1"></a><span class="do">## Partial F test</span></span>
+<span id="cb43-6"><a href="birthweight-data-set-example.html#cb43-6" tabindex="-1"></a>F <span class="ot">=</span> ((RSS0 <span class="sc">-</span> RSSalpha)<span class="sc">/</span>(palpha<span class="sc">-</span>p0))<span class="sc">/</span>(RSSalpha<span class="sc">/</span>(n<span class="sc">-</span>palpha))</span>
+<span id="cb43-7"><a href="birthweight-data-set-example.html#cb43-7" tabindex="-1"></a>F</span></code></pre></div>
+<pre><code>## [1] 0.7224983</code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="birthweight-data-set-example.html#cb45-1" tabindex="-1"></a><span class="do">## Critical value use to compare with the F statistic.</span></span>
+<span id="cb45-2"><a href="birthweight-data-set-example.html#cb45-2" tabindex="-1"></a><span class="fu">qf</span>(<span class="fl">0.95</span>, palpha<span class="sc">-</span>p0, n<span class="sc">-</span>palpha)</span></code></pre></div>
+<pre><code>## [1] 2.701399</code></pre>
+<p><br>
+the conclusion is the same since <span class="math inline">\(F &lt; F_{p_{\alpha}-p_0, n-p_{\alpha}}\)</span>.
+<br><br></p>
+</div>
+<div id="testing-for-a-single-beta_j" class="section level4 hasAnchor" number="2.11.0.6">
+<h4><span class="header-section-number">2.11.0.6</span> Testing for a Single <span class="math inline">\(\beta_j\)</span><a href="birthweight-data-set-example.html#testing-for-a-single-beta_j" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Let’s test for the significance of variable <code>Length</code> (<span class="math inline">\(X_1\)</span>), i.e.
+<span class="math display">\[\begin{cases}
+&amp;H_0: Y \sim  1 + \qquad \quad  \beta_2 X_2 + \ldots + \beta_{12}X_{12} \\
+&amp; H_{\alpha}:  Y \sim  1+  \beta_1 X_1+  \beta_2 X_2 + \ldots + \beta_{12} X_{12} \\
+\end{cases}
+\]</span></p>
+<p>We fit the full model and then compare by means of the partial <span class="math inline">\(F\)</span> test:</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="birthweight-data-set-example.html#cb47-1" tabindex="-1"></a><span class="do">## Full Model was fitted before </span></span>
+<span id="cb47-2"><a href="birthweight-data-set-example.html#cb47-2" tabindex="-1"></a><span class="do">## and is stored in birthweight.mlr.full</span></span>
+<span id="cb47-3"><a href="birthweight-data-set-example.html#cb47-3" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="birthweight-data-set-example.html#cb47-4" tabindex="-1"></a><span class="do">## Reduced Model </span></span>
+<span id="cb47-5"><a href="birthweight-data-set-example.html#cb47-5" tabindex="-1"></a>birthweight.mlr.reduced2 <span class="ot">=</span> <span class="fu">lm</span>(Birthweight<span class="sc">~</span> Headcirc<span class="sc">+</span>Gestation<span class="sc">+</span>smoker<span class="sc">+</span>mage<span class="sc">+</span>mnocig<span class="sc">+</span>mheight<span class="sc">+</span>mppwt<span class="sc">+</span>fage<span class="sc">+</span>fedyrs<span class="sc">+</span>fnocig<span class="sc">+</span>fheight,  <span class="at">data=</span>birthweight)</span>
+<span id="cb47-6"><a href="birthweight-data-set-example.html#cb47-6" tabindex="-1"></a></span>
+<span id="cb47-7"><a href="birthweight-data-set-example.html#cb47-7" tabindex="-1"></a><span class="do">## Partial $F$ test</span></span>
+<span id="cb47-8"><a href="birthweight-data-set-example.html#cb47-8" tabindex="-1"></a><span class="fu">anova</span>(birthweight.mlr.reduced2, birthweight.mlr.full)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: Birthweight ~ Headcirc + Gestation + smoker + mage + mnocig + 
+##     mheight + mppwt + fage + fedyrs + fnocig + fheight
+## Model 2: Birthweight ~ Length + Headcirc + Gestation + smoker + mage + 
+##     mnocig + mheight + mppwt + fage + fedyrs + fnocig + fheight
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+## 1     30 3.3699                           
+## 2     29 3.2383  1   0.13162 1.1787 0.2866</code></pre>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="birthweight-data-set-example.html#cb49-1" tabindex="-1"></a><span class="do">## Compare the $F$ value above with the square of the $t$ test </span></span>
+<span id="cb49-2"><a href="birthweight-data-set-example.html#cb49-2" tabindex="-1"></a><span class="do">## for the length variable in the output below:</span></span>
+<span id="cb49-3"><a href="birthweight-data-set-example.html#cb49-3" tabindex="-1"></a><span class="fu">summary</span>(birthweight.mlr.full)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Birthweight ~ ., data = birthweight)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.37925 -0.25558 -0.05541  0.21700  0.60329 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept) -3.812311   2.080150  -1.833  0.07713 . 
+## Length       0.034152   0.031456   1.086  0.28656   
+## Headcirc     0.086594   0.029489   2.937  0.00644 **
+## Gestation    0.096565   0.031323   3.083  0.00447 **
+## smoker      -0.243895   0.168516  -1.447  0.15854   
+## mage        -0.019004   0.018537  -1.025  0.31374   
+## mnocig       0.001064   0.006854   0.155  0.87770   
+## mheight      0.004187   0.014153   0.296  0.76944   
+## mppwt        0.010346   0.011228   0.921  0.36443   
+## fage         0.007187   0.016327   0.440  0.66305   
+## fedyrs       0.003220   0.030939   0.104  0.91783   
+## fnocig       0.003445   0.004013   0.858  0.39769   
+## fheight     -0.013293   0.009614  -1.383  0.17731   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3342 on 29 degrees of freedom
+## Multiple R-squared:  0.7834, Adjusted R-squared:  0.6938 
+## F-statistic: 8.742 on 12 and 29 DF,  p-value: 1.011e-06</code></pre>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="birthweight-data-set-example.html#cb51-1" tabindex="-1"></a><span class="do">## The square of the t-value is obtained by</span></span>
+<span id="cb51-2"><a href="birthweight-data-set-example.html#cb51-2" tabindex="-1"></a><span class="fu">summary</span>(birthweight.mlr.full)<span class="sc">$</span>coefficients[<span class="dv">2</span>,<span class="dv">3</span>]<span class="sc">^</span><span class="dv">2</span></span></code></pre></div>
+<pre><code>## [1] 1.178721</code></pre>
+<p><br></p>
+</div>
+<div id="testing-for-all-the-predictors" class="section level4 hasAnchor" number="2.11.0.7">
+<h4><span class="header-section-number">2.11.0.7</span> Testing for all the predictors<a href="birthweight-data-set-example.html#testing-for-all-the-predictors" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The <span class="math inline">\(F\)</span> test statistic and corresponding <span class="math inline">\(p\)</span>-value in the <code>summary</code> output correspond to the following hypothesis:
+<span class="math display">\[\begin{cases}
+&amp;H_0: Y \sim  1 \\
+&amp; H_{\alpha}:  Y \sim  1+  \beta_1 X_1 + \ldots + \beta_{j-1}X_{j-1} +  \beta_{j} X_{j} + \beta_{j+1} X_{j+1} + \ldots + \beta_p X_p \\
+\end{cases}
+\]</span>
+which is the so-called <strong>overall <span class="math inline">\(F\)</span> test</strong>.
+<br></p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="birthweight-data-set-example.html#cb53-1" tabindex="-1"></a><span class="fu">summary</span>(birthweight.mlr.full)<span class="sc">$</span>fstatistic</span></code></pre></div>
+<pre><code>##     value     numdf     dendf 
+##  8.741902 12.000000 29.000000</code></pre>
+<p><br>
+In this case, the <span class="math inline">\(F\)</span> value is equal to 8.74 and it follows an <span class="math inline">\(F_{12, 29}\)</span> distribution.The corresponding <span class="math inline">\(p\)</span>-value is equal to 1.011e-06 which is much less than <span class="math inline">\(\alpha=0.05\)</span>. This implies that we reject the null and conclude that the model with all the predictors is more adequate compared to the intercept-only model.</p>
+<br>
+<hr>
+<p><br></p>
+</div>
+<div id="categorical-variables" class="section level4 hasAnchor" number="2.11.0.8">
+<h4><span class="header-section-number">2.11.0.8</span> Categorical Variables<a href="birthweight-data-set-example.html#categorical-variables" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><br>
+In the <code>birthweight</code> data set we only have binary variables, so for illustration purposes, we will create a new categorical variable, <code>mage.group</code> with 3 levels: <span class="math inline">\(a\)</span>=below 20, <span class="math inline">\(b\)</span>=20-30, and <span class="math inline">\(c\)</span>=above 30:
+<br></p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="birthweight-data-set-example.html#cb55-1" tabindex="-1"></a>birthweight.new <span class="ot">=</span> birthweight</span>
+<span id="cb55-2"><a href="birthweight-data-set-example.html#cb55-2" tabindex="-1"></a>birthweight.new<span class="sc">$</span>mage.group <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">ifelse</span>(birthweight.new<span class="sc">$</span>mage <span class="sc">&lt;</span><span class="dv">20</span>, <span class="st">&#39;a&#39;</span>, <span class="fu">ifelse</span>(birthweight.new<span class="sc">$</span>mage <span class="sc">&gt;</span><span class="dv">30</span>, <span class="st">&#39;c&#39;</span>, <span class="st">&#39;b&#39;</span>) ) )</span></code></pre></div>
+<p><br>
+Let’s fit the model with the age group variable and look at the design matrix:
+<br></p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="birthweight-data-set-example.html#cb56-1" tabindex="-1"></a>birthweight.mlr.categorical <span class="ot">=</span> <span class="fu">lm</span>(Birthweight<span class="sc">~</span>., <span class="at">data=</span>birthweight.new[,<span class="sc">-</span><span class="dv">6</span>])</span>
+<span id="cb56-2"><a href="birthweight-data-set-example.html#cb56-2" tabindex="-1"></a><span class="fu">model.matrix</span>(birthweight.mlr.categorical)</span></code></pre></div>
+<pre><code>##    (Intercept) Length Headcirc Gestation smoker mnocig mheight mppwt fage
+## 1            1     56       34        44      0      0     162    57   23
+## 2            1     53       36        40      0      0     171    62   19
+## 3            1     58       39        41      0      0     172    58   31
+## 4            1     53       38        44      0      0     174    68   26
+## 5            1     54       37        42      0      0     175    66   30
+## 6            1     51       38        38      0      0     165    61   31
+## 7            1     52       34        40      0      0     157    50   31
+## 8            1     53       33        42      0      0     165    61   21
+## 9            1     54       38        38      0      0     172    50   20
+## 10           1     50       35        38      0      0     157    48   22
+## 11           1     53       33        41      0      0     164    62   37
+## 12           1     51       36        40      0      0     168    53   29
+## 13           1     52       36        38      0      0     164    57   35
+## 14           1     53       33        41      0      0     155    55   25
+## 15           1     53       34        40      0      0     167    60   30
+## 16           1     48       33        37      0      0     158    54   39
+## 17           1     48       35        39      0      0     162    62   27
+## 18           1     48       33        34      0      0     167    64   25
+## 19           1     53       34        39      0      0     165    57   23
+## 20           1     43       32        33      0      0     149    45   26
+## 21           1     53       38        40      1      2     170    59   24
+## 22           1     51       33        41      1      7     160    53   24
+## 23           1     50       30        37      1      7     165    60   20
+## 24           1     50       35        39      1      7     159    52   23
+## 25           1     48       30        37      1      7     163    47   20
+## 26           1     46       32        35      1      7     166    57   37
+## 27           1     48       30        33      1      7     161    50   20
+## 28           1     58       39        41      1     12     173    70   38
+## 29           1     53       34        40      1     12     163    49   41
+## 30           1     49       36        40      1     12     152    48   37
+## 31           1     52       35        38      1     12     165    64   38
+## 32           1     51       38        39      1     17     157    48   32
+## 33           1     50       33        39      1     17     156    53   24
+## 34           1     50       33        45      1     25     163    54   30
+## 35           1     52       36        39      1     25     170    78   40
+## 36           1     53       37        41      1     25     161    66   46
+## 37           1     52       37        40      1     25     170    62   30
+## 38           1     52       33        39      1     25     181    69   23
+## 39           1     49       34        38      1     25     162    57   32
+## 40           1     53       34        41      1     35     163    51   31
+## 41           1     47       33        35      1     35     170    57   23
+## 42           1     53       32        40      1     50     168    61   31
+##    fedyrs fnocig fheight mage.groupb mage.groupc
+## 1      10     35     179           1           0
+## 2      12      0     183           0           0
+## 3      16     25     185           0           1
+## 4      14     25     189           1           0
+## 5      12      0     184           1           0
+## 6      16      0     180           1           0
+## 7      16      0     173           1           0
+## 8      10     25     185           1           0
+## 9      12      7     172           0           0
+## 10     14      0     179           1           0
+## 11     14      0     170           1           0
+## 12     16      0     181           1           0
+## 13     16      0     183           0           1
+## 14     14     25     183           1           0
+## 15     16     25     182           1           0
+## 16     10      0     171           1           0
+## 17     14      0     178           1           0
+## 18     12     25     175           1           0
+## 19     14      2     193           0           0
+## 20     16      0     169           1           0
+## 21     12     12     185           1           0
+## 22     16     12     176           1           0
+## 23     14      0     183           0           0
+## 24     14     25     200           1           0
+## 25     10     35     185           1           0
+## 26     14     25     173           0           1
+## 27     10     35     180           1           0
+## 28     14     25     180           0           1
+## 29     12     50     191           0           1
+## 30     12     25     170           1           0
+## 31     14     50     180           1           0
+## 32     12     25     169           1           0
+## 33     12      7     179           1           0
+## 34     16      0     183           1           0
+## 35     16     50     178           1           0
+## 36     16      0     175           0           1
+## 37     10     25     181           1           0
+## 38     16      2     181           1           0
+## 39     16     50     194           0           1
+## 40     16     25     185           1           0
+## 41     12     50     186           1           0
+## 42     16      0     173           0           1
+## attr(,&quot;assign&quot;)
+##  [1]  0  1  2  3  4  5  6  7  8  9 10 11 12 12
+## attr(,&quot;contrasts&quot;)
+## attr(,&quot;contrasts&quot;)$mage.group
+## [1] &quot;contr.treatment&quot;</code></pre>
+<p><br>
+When fitting the regression model, <code>R</code> automatically converted the factor to the appropriate number of indicator/variables which were included in the design matrix. We observe that level <span class="math inline">\(a\)</span> is the baseline and the two generated columns are levels <span class="math inline">\(b\)</span> and <span class="math inline">\(c\)</span>.<br></p>
+<p>In general, the reference level can be changed as well as the coding. Those changes will affect the estimated <span class="math inline">\(\beta\)</span> coefficients, but they will not affect the fitted or predicted values.</p>
+<br>
+<hr>
+<p><br></p>
+</div>
+<div id="mean-response-estimation-prediction" class="section level4 hasAnchor" number="2.11.0.9">
+<h4><span class="header-section-number">2.11.0.9</span> Mean Response Estimation &amp; Prediction<a href="birthweight-data-set-example.html#mean-response-estimation-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><br>
+In practice, we have target values for which we need to estimate the mean response of values for which we want to do prediction.
+<br></p>
+<p>Since this is not the case here, in order to illustrate both methods, we use as inputs the mean value of every predictor. This is done as follows:
+<br></p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="birthweight-data-set-example.html#cb58-1" tabindex="-1"></a>meanvalue <span class="ot">=</span> <span class="fu">apply</span>(birthweight[,<span class="sc">-</span><span class="dv">2</span>], <span class="dv">2</span>, mean)</span></code></pre></div>
+<p><br></p>
+<p>Now, we create the <span class="math inline">\(X\)</span> <code>data.frame</code> to use as an <em>input</em> in the <code>predict()</code> function:
+<br></p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="birthweight-data-set-example.html#cb59-1" tabindex="-1"></a>x<span class="ot">=</span><span class="fu">data.frame</span>(<span class="fu">t</span>(meanvalue))</span></code></pre></div>
+<p><br>
+Using the predict function we have:
+<br></p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="birthweight-data-set-example.html#cb60-1" tabindex="-1"></a><span class="fu">predict.lm</span>(birthweight.mlr.full, x)</span></code></pre></div>
+<pre><code>##        1 
+## 3.312857</code></pre>
+<br>
+<hr>
+<p><br></p>
+</div>
+<div id="training-vs.-testing-error" class="section level4 hasAnchor" number="2.11.0.10">
+<h4><span class="header-section-number">2.11.0.10</span> Training vs. Testing Error<a href="birthweight-data-set-example.html#training-vs.-testing-error" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In this example, and in linear regression models, as we introduce more variables, training error (measured by <span class="math inline">\(RSS\)</span> or <span class="math inline">\(MSE\)</span>) consistently decreases. However, this reduction in training error does not guarantee a corresponding decrease in test error, which measures prediction accuracy on independent test data. To demonstrate this, we randomly split our dataset into 60% training and 40% test portions, progressively adding predictors. This approach highlights how additional predictors can lower training error while test error may not follow the same trend!</p>
+<p><br></p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="birthweight-data-set-example.html#cb62-1" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">dim</span>(birthweight)[<span class="dv">1</span>]     <span class="do">## sample size</span></span>
+<span id="cb62-2"><a href="birthweight-data-set-example.html#cb62-2" tabindex="-1"></a>p <span class="ot">=</span> <span class="fu">dim</span>(birthweight)[<span class="dv">2</span>]<span class="sc">-</span><span class="dv">1</span>   <span class="do">## number of non-intercept predictors</span></span>
+<span id="cb62-3"><a href="birthweight-data-set-example.html#cb62-3" tabindex="-1"></a></span>
+<span id="cb62-4"><a href="birthweight-data-set-example.html#cb62-4" tabindex="-1"></a>ntrain <span class="ot">=</span>  <span class="fu">round</span>(n<span class="sc">*</span><span class="fl">0.6</span>)</span>
+<span id="cb62-5"><a href="birthweight-data-set-example.html#cb62-5" tabindex="-1"></a>train.id <span class="ot">=</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, ntrain)</span>
+<span id="cb62-6"><a href="birthweight-data-set-example.html#cb62-6" tabindex="-1"></a>train.id</span></code></pre></div>
+<pre><code>##  [1] 16  2 32 22  6 37  3 33 36  4 40 38 21 14 19 41 34 31 15 13  1 26 12  5  8</code></pre>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="birthweight-data-set-example.html#cb64-1" tabindex="-1"></a>train.MSE <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">0</span>, p)</span>
+<span id="cb64-2"><a href="birthweight-data-set-example.html#cb64-2" tabindex="-1"></a>test.MSE <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">0</span>, p)</span>
+<span id="cb64-3"><a href="birthweight-data-set-example.html#cb64-3" tabindex="-1"></a></span>
+<span id="cb64-4"><a href="birthweight-data-set-example.html#cb64-4" tabindex="-1"></a>train.Y <span class="ot">=</span> birthweight[train.id, <span class="dv">2</span>]</span>
+<span id="cb64-5"><a href="birthweight-data-set-example.html#cb64-5" tabindex="-1"></a>train.Y</span></code></pre></div>
+<pre><code>##  [1] 3.11 4.32 3.32 3.14 3.93 3.53 4.10 2.74 3.55 4.07 3.19 3.41 3.64 3.20 2.90
+## [16] 2.66 3.87 3.00 3.15 3.23 4.55 2.05 3.27 3.94 3.65</code></pre>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="birthweight-data-set-example.html#cb66-1" tabindex="-1"></a>test.Y <span class="ot">=</span> birthweight[<span class="sc">-</span>train.id, <span class="dv">2</span>]</span>
+<span id="cb66-2"><a href="birthweight-data-set-example.html#cb66-2" tabindex="-1"></a>test.Y</span></code></pre></div>
+<pre><code>##  [1] 3.77 3.63 3.42 3.35 3.03 2.92 2.65 2.78 2.51 2.37 1.92 4.57 3.59 3.32 3.86
+## [16] 3.18 2.75</code></pre>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="birthweight-data-set-example.html#cb68-1" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>p){</span>
+<span id="cb68-2"><a href="birthweight-data-set-example.html#cb68-2" tabindex="-1"></a>  myfit <span class="ot">=</span> <span class="fu">lm</span>( birthweight[train.id, <span class="dv">2</span>]<span class="sc">~</span>., birthweight[ train.id, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>i, (p<span class="sc">+</span><span class="dv">1</span>)) ] )</span>
+<span id="cb68-3"><a href="birthweight-data-set-example.html#cb68-3" tabindex="-1"></a></span>
+<span id="cb68-4"><a href="birthweight-data-set-example.html#cb68-4" tabindex="-1"></a>  train.Y.pred <span class="ot">=</span> myfit<span class="sc">$</span>fitted</span>
+<span id="cb68-5"><a href="birthweight-data-set-example.html#cb68-5" tabindex="-1"></a>  train.MSE[i] <span class="ot">=</span> <span class="fu">mean</span>((train.Y <span class="sc">-</span> train.Y.pred)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb68-6"><a href="birthweight-data-set-example.html#cb68-6" tabindex="-1"></a>  </span>
+<span id="cb68-7"><a href="birthweight-data-set-example.html#cb68-7" tabindex="-1"></a></span>
+<span id="cb68-8"><a href="birthweight-data-set-example.html#cb68-8" tabindex="-1"></a>  test.Y.pred <span class="ot">=</span> <span class="fu">predict</span>(myfit, <span class="at">newdata =</span> birthweight[<span class="sc">-</span>train.id, ])</span>
+<span id="cb68-9"><a href="birthweight-data-set-example.html#cb68-9" tabindex="-1"></a>  test.MSE[i] <span class="ot">=</span> <span class="fu">mean</span>((test.Y <span class="sc">-</span> test.Y.pred)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb68-10"><a href="birthweight-data-set-example.html#cb68-10" tabindex="-1"></a>}</span>
+<span id="cb68-11"><a href="birthweight-data-set-example.html#cb68-11" tabindex="-1"></a></span>
+<span id="cb68-12"><a href="birthweight-data-set-example.html#cb68-12" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">c</span>(<span class="dv">1</span>, p), <span class="fu">range</span>(train.MSE, test.MSE), <span class="at">type=</span><span class="st">&quot;n&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;# of variables&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;MSE&quot;</span>)</span>
+<span id="cb68-13"><a href="birthweight-data-set-example.html#cb68-13" tabindex="-1"></a><span class="fu">points</span>(train.MSE, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">pch =</span> <span class="dv">5</span>)</span>
+<span id="cb68-14"><a href="birthweight-data-set-example.html#cb68-14" tabindex="-1"></a><span class="fu">lines</span>(train.MSE, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">pch =</span> <span class="dv">5</span>)</span>
+<span id="cb68-15"><a href="birthweight-data-set-example.html#cb68-15" tabindex="-1"></a><span class="fu">points</span>(test.MSE, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>)</span>
+<span id="cb68-16"><a href="birthweight-data-set-example.html#cb68-16" tabindex="-1"></a><span class="fu">lines</span>(test.MSE, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p>In this example both errors are very small which makes it hard to illustrate the differences in the two errors, but feel free to use this code in other examples to observe more patterns between training/testing errors.</p>
+<p>In general, we expect that in each iteration, the blue line (representing the training error) consistently exhibits a monotonically decreasing trend, signifying the reduction of training error as more predictors are incorporated. On the other hand, the red line’s (testing error) trajectory may not uniformly decrease.
+<br><br></p>
+</div>
+<div id="test-for-outliers" class="section level4 hasAnchor" number="2.11.0.11">
+<h4><span class="header-section-number">2.11.0.11</span> Test for Outliers<a href="birthweight-data-set-example.html#test-for-outliers" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In this example, we check the data set for unusual observations. Specifically, we will check for:</p>
+<p>To identify outliers, we use the Bonferroni test. For that purpose, we need to compute the studentized residuals <span class="math inline">\(t_{i}\)</span> ( an externally standardized version of residuals ). Under the null hypothesis <span class="math inline">\(H_{0}\)</span>, <span class="math inline">\(t_{i} \sim t_{n-p}\)</span>, where <span class="math inline">\(n\)</span> is the sample size and <span class="math inline">\(p\)</span> is the number of predictors without the intercept. We perform this test for all <span class="math inline">\(n\)</span> observations testing case at level <span class="math inline">\(\frac{\alpha}{n}\)</span>:</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="birthweight-data-set-example.html#cb69-1" tabindex="-1"></a><span class="do">## We work with the full model again.</span></span>
+<span id="cb69-2"><a href="birthweight-data-set-example.html#cb69-2" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">dim</span>(birthweight)[<span class="dv">1</span>]; </span>
+<span id="cb69-3"><a href="birthweight-data-set-example.html#cb69-3" tabindex="-1"></a>p <span class="ot">=</span> <span class="fu">length</span>(<span class="fu">variable.names</span>(birthweight.mlr.full)); </span></code></pre></div>
+<p>We first compute the studentized residuals using the <code>rstudent</code> R function and the Bonferroni critical value using Student’s distribution:</p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="birthweight-data-set-example.html#cb70-1" tabindex="-1"></a><span class="do">## Computing Studentized Residuals #</span></span>
+<span id="cb70-2"><a href="birthweight-data-set-example.html#cb70-2" tabindex="-1"></a>birthweight.resid <span class="ot">=</span> <span class="fu">rstudent</span>(birthweight.mlr.full); </span>
+<span id="cb70-3"><a href="birthweight-data-set-example.html#cb70-3" tabindex="-1"></a></span>
+<span id="cb70-4"><a href="birthweight-data-set-example.html#cb70-4" tabindex="-1"></a><span class="do">## Critical value WITH Bonferroni correction #</span></span>
+<span id="cb70-5"><a href="birthweight-data-set-example.html#cb70-5" tabindex="-1"></a>bonferroni_cv <span class="ot">=</span> <span class="fu">qt</span>(.<span class="dv">05</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>n), n<span class="sc">-</span>p<span class="dv">-1</span>) </span>
+<span id="cb70-6"><a href="birthweight-data-set-example.html#cb70-6" tabindex="-1"></a>bonferroni_cv</span></code></pre></div>
+<pre><code>## [1] -3.60755</code></pre>
+<p>Now, we need to find which (if any) studentized residuals exceed the Bonferroni critical value:</p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="birthweight-data-set-example.html#cb72-1" tabindex="-1"></a><span class="do">## Sorting the residuals in descending order to find outliers (if any) </span></span>
+<span id="cb72-2"><a href="birthweight-data-set-example.html#cb72-2" tabindex="-1"></a>birthweight.resid.sorted <span class="ot">=</span> <span class="fu">sort</span>(<span class="fu">abs</span>(birthweight.resid), <span class="at">decreasing=</span><span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
+<span id="cb72-3"><a href="birthweight-data-set-example.html#cb72-3" tabindex="-1"></a><span class="fu">print</span>(birthweight.resid.sorted)</span></code></pre></div>
+<pre><code>##        2       29       34        1       28       20       42       24 
+## 2.068621 1.890299 1.830714 1.682375 1.645611 1.613154 1.435773 1.411769 
+##       19       39 
+## 1.347956 1.324123</code></pre>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="birthweight-data-set-example.html#cb74-1" tabindex="-1"></a>birthweight.outliers <span class="ot">=</span> birthweight.resid.sorted[<span class="fu">abs</span>(birthweight.resid.sorted) <span class="sc">&gt;</span> <span class="fu">abs</span>(bonferroni_cv)]</span>
+<span id="cb74-2"><a href="birthweight-data-set-example.html#cb74-2" tabindex="-1"></a><span class="fu">print</span>(birthweight.outliers)</span></code></pre></div>
+<pre><code>## named numeric(0)</code></pre>
+<p>Above, we computed a t-value of <span class="math inline">\(|-3.61|\)</span> at <span class="math inline">\(\alpha=0.05\)</span>. If an observation’s studentized residual is higher (in absolute value) than the critical value of the <span class="math inline">\(T\)</span> distribution with Bonferroni correction, then this observation will be considered an outlier. According to this criterion, we can see that <strong>we don’t have any outliers in the data set, since none of the studentized residuals is higher than <span class="math inline">\(|-3.61|\)</span>.</strong></p>
+<br>
+<hr>
+<p><br></p>
+</div>
+<div id="checking-model-assumptions" class="section level4 hasAnchor" number="2.11.0.12">
+<h4><span class="header-section-number">2.11.0.12</span> Checking Model Assumptions<a href="birthweight-data-set-example.html#checking-model-assumptions" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We start by using residual plots and specifically the residuals against fitted values:</p>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="birthweight-data-set-example.html#cb76-1" tabindex="-1"></a><span class="fu">plot</span>(birthweight.mlr.full, <span class="at">which=</span><span class="dv">1</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<p>The points on the plot are randomly scattered around the zero line, so we conclude that the constant variance assumption is satisfied.</p>
+<p>We continue by checking the normality assumption:</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="birthweight-data-set-example.html#cb77-1" tabindex="-1"></a><span class="fu">plot</span>(birthweight.mlr.full, <span class="at">which=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="birthweight-data-set-example.html#cb78-1" tabindex="-1"></a><span class="fu">hist</span>(birthweight.mlr.full<span class="sc">$</span>residuals)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-36-2.png" width="672" /></p>
+<p>We seem to have some departures from the normality assumption in this case.</p>
+<br>
+<hr>
+<p><br></p>
+</div>
+<div id="collinearity-car-seat-position-data-a-faraway-data-set" class="section level4 hasAnchor" number="2.11.0.13">
+<h4><span class="header-section-number">2.11.0.13</span> Collinearity: Car Seat Position Data (a Faraway data set)<a href="birthweight-data-set-example.html#collinearity-car-seat-position-data-a-faraway-data-set" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+Car drivers like to adjust the seat position for their own comfort.
+Car designers would find it helpful to know how different drivers
+will position the seat depending on their <em>size</em> and <em>age.</em> Researchers
+at the HuMoSim laboratory at the University of Michigan collected the following data on <strong>38</strong> drivers:
+<ul>
+<li>
+<code>Age</code>: Drivers age in years
+</li>
+<li>
+<code>Weight</code>: Drivers weight in lbs
+</li>
+<li>
+<code>HtShoes</code>: height with shoes in cm
+</li>
+<li>
+<code>Ht</code>: height without shoes in cm
+</li>
+<li>
+<code>Seated</code>: seated height in cm
+</li>
+<li>
+<code>Arm</code>: lower arm length in cm
+</li>
+<li>
+<code>Thigh</code>: thigh length in cm
+</li>
+<li>
+<code>Leg</code>: lower leg length in cm
+</li>
+<li>
+<code>hipcenter</code>: horizontal distance of the midpoint of the hips from a
+fixed location in the car in mm
+</li>
+</ul>
+<p><br></p>
+<p>To read the data we need to load the <code>faraway</code> library and then open the <code>seatpos</code> data set.</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="birthweight-data-set-example.html#cb79-1" tabindex="-1"></a><span class="fu">library</span>(faraway)</span>
+<span id="cb79-2"><a href="birthweight-data-set-example.html#cb79-2" tabindex="-1"></a><span class="fu">data</span>(seatpos)</span>
+<span id="cb79-3"><a href="birthweight-data-set-example.html#cb79-3" tabindex="-1"></a><span class="fu">attach</span>(seatpos)</span></code></pre></div>
+<p>Let’s start by fitting the <strong>full</strong> model with <code>hipcenter</code> as a response and everything else as a predictor:</p>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="birthweight-data-set-example.html#cb80-1" tabindex="-1"></a><span class="co"># Fit the FULL model</span></span>
+<span id="cb80-2"><a href="birthweight-data-set-example.html#cb80-2" tabindex="-1"></a>position.full<span class="ot">=</span><span class="fu">lm</span>(hipcenter <span class="sc">~</span> ., seatpos)</span>
+<span id="cb80-3"><a href="birthweight-data-set-example.html#cb80-3" tabindex="-1"></a><span class="fu">summary</span>(position.full)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = hipcenter ~ ., data = seatpos)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -73.827 -22.833  -3.678  25.017  62.337 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept) 436.43213  166.57162   2.620   0.0138 *
+## Age           0.77572    0.57033   1.360   0.1843  
+## Weight        0.02631    0.33097   0.080   0.9372  
+## HtShoes      -2.69241    9.75304  -0.276   0.7845  
+## Ht            0.60134   10.12987   0.059   0.9531  
+## Seated        0.53375    3.76189   0.142   0.8882  
+## Arm          -1.32807    3.90020  -0.341   0.7359  
+## Thigh        -1.14312    2.66002  -0.430   0.6706  
+## Leg          -6.43905    4.71386  -1.366   0.1824  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 37.72 on 29 degrees of freedom
+## Multiple R-squared:  0.6866, Adjusted R-squared:  0.6001 
+## F-statistic:  7.94 on 8 and 29 DF,  p-value: 1.306e-05</code></pre>
+<p>Note that the <span class="math inline">\(p\)</span>-value of the overall <span class="math inline">\(F\)</span> test is very small (1.306e-05), which means that <em>at least one of the predictors is statistically significant</em>, but at the same time none of the predictors is statistically significant according to the individual <span class="math inline">\(t\)</span> tests. This is strange and definitely a <em>red flag</em> that we may have collinearity issues.</p>
+<p>To investigate the presence of high correlated predictors as well as the linear correlation of the response with each of the predictors, we start by checking the <strong>correlation matrix</strong>:</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="birthweight-data-set-example.html#cb82-1" tabindex="-1"></a><span class="do">## We use the round function with 2 digits, to round the numbers in the output</span></span>
+<span id="cb82-2"><a href="birthweight-data-set-example.html#cb82-2" tabindex="-1"></a><span class="do">## This only affects the printed numbers, not the ones R has stored.</span></span>
+<span id="cb82-3"><a href="birthweight-data-set-example.html#cb82-3" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cor</span>(seatpos), <span class="at">dig=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##             Age Weight HtShoes    Ht Seated   Arm Thigh   Leg hipcenter
+## Age        1.00   0.08   -0.08 -0.09  -0.17  0.36  0.09 -0.04      0.21
+## Weight     0.08   1.00    0.83  0.83   0.78  0.70  0.57  0.78     -0.64
+## HtShoes   -0.08   0.83    1.00  1.00   0.93  0.75  0.72  0.91     -0.80
+## Ht        -0.09   0.83    1.00  1.00   0.93  0.75  0.73  0.91     -0.80
+## Seated    -0.17   0.78    0.93  0.93   1.00  0.63  0.61  0.81     -0.73
+## Arm        0.36   0.70    0.75  0.75   0.63  1.00  0.67  0.75     -0.59
+## Thigh      0.09   0.57    0.72  0.73   0.61  0.67  1.00  0.65     -0.59
+## Leg       -0.04   0.78    0.91  0.91   0.81  0.75  0.65  1.00     -0.79
+## hipcenter  0.21  -0.64   -0.80 -0.80  -0.73 -0.59 -0.59 -0.79      1.00</code></pre>
+<p>We observe that the response is <em>highly correlated with most of the variables</em> which justifies the low <span class="math inline">\(p\)</span>-value in the overall <span class="math inline">\(F\)</span> test. However, we have <strong>highly correlated predictors</strong> (e.g. Corr(<code>Leg</code>, <code>HtShoes</code>)=0.91) which means that we will have <em>collinearity.</em></p>
+<p>Let’s look at the <strong>condition number</strong> of the <span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span> matrix. Recall that the condition number is <em>not scale invariant</em>. This implies that calculating it before standardizing the matrix might lead to incorrect conclusions. So, let’s standardize it first:</p>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="birthweight-data-set-example.html#cb84-1" tabindex="-1"></a><span class="do">## Extract the design matrix and remove the column of 1s that corresponds to the intercept.</span></span>
+<span id="cb84-2"><a href="birthweight-data-set-example.html#cb84-2" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">model.matrix</span>(position.full)[,<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb84-3"><a href="birthweight-data-set-example.html#cb84-3" tabindex="-1"></a></span>
+<span id="cb84-4"><a href="birthweight-data-set-example.html#cb84-4" tabindex="-1"></a><span class="do">## Standardize the matrix</span></span>
+<span id="cb84-5"><a href="birthweight-data-set-example.html#cb84-5" tabindex="-1"></a>x <span class="ot">=</span> x <span class="sc">-</span> <span class="fu">matrix</span>(<span class="fu">apply</span>(x,<span class="dv">2</span>, mean), <span class="dv">38</span>,<span class="dv">8</span>, <span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb84-6"><a href="birthweight-data-set-example.html#cb84-6" tabindex="-1"></a>x <span class="ot">=</span> x <span class="sc">/</span> <span class="fu">matrix</span>(<span class="fu">apply</span>(x, <span class="dv">2</span>, sd), <span class="dv">38</span>,<span class="dv">8</span>, <span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb84-7"><a href="birthweight-data-set-example.html#cb84-7" tabindex="-1"></a><span class="fu">apply</span>(x,<span class="dv">2</span>,mean)</span></code></pre></div>
+<pre><code>##           Age        Weight       HtShoes            Ht        Seated 
+## -5.843279e-18  2.534522e-16  9.524545e-16  1.577685e-16 -1.079546e-15 
+##           Arm         Thigh           Leg 
+## -1.285521e-16  9.860533e-17 -1.029878e-16</code></pre>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="birthweight-data-set-example.html#cb86-1" tabindex="-1"></a><span class="fu">apply</span>(x,<span class="dv">2</span>,var)</span></code></pre></div>
+<pre><code>##     Age  Weight HtShoes      Ht  Seated     Arm   Thigh     Leg 
+##       1       1       1       1       1       1       1       1</code></pre>
+<p>Compute the condition number using the standardized matrix:</p>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="birthweight-data-set-example.html#cb88-1" tabindex="-1"></a><span class="do">## Compute the eigenvalues of the matrix</span></span>
+<span id="cb88-2"><a href="birthweight-data-set-example.html#cb88-2" tabindex="-1"></a>eigenvalues.x <span class="ot">=</span> <span class="fu">eigen</span>(<span class="fu">t</span>(x) <span class="sc">%*%</span> x) </span>
+<span id="cb88-3"><a href="birthweight-data-set-example.html#cb88-3" tabindex="-1"></a>eigenvalues.x<span class="sc">$</span>val</span></code></pre></div>
+<pre><code>## [1] 209.90786979  45.76108236  17.15850736   8.91545889   7.18612386
+## [6]   5.14944541   1.86274750   0.05876483</code></pre>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="birthweight-data-set-example.html#cb90-1" tabindex="-1"></a><span class="do">## Compute the condition number:</span></span>
+<span id="cb90-2"><a href="birthweight-data-set-example.html#cb90-2" tabindex="-1"></a><span class="fu">sqrt</span>(eigenvalues.x<span class="sc">$</span>val[<span class="dv">1</span>]<span class="sc">/</span>eigenvalues.x<span class="sc">$</span>val[<span class="dv">8</span>])</span></code></pre></div>
+<pre><code>## [1] 59.7662</code></pre>
+<p>The condition number is <strong>59.77</strong>, larger than 30, so we conclude that <em>collinearity is present</em>.</p>
+<p>Let’s also check the <strong>Variance Inflation Factor (VIF)</strong>:</p>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="birthweight-data-set-example.html#cb92-1" tabindex="-1"></a><span class="do">## Variance Inflation Factor (VIF)</span></span>
+<span id="cb92-2"><a href="birthweight-data-set-example.html#cb92-2" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">vif</span>(x), <span class="at">dig=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##     Age  Weight HtShoes      Ht  Seated     Arm   Thigh     Leg 
+##    2.00    3.65  307.43  333.14    8.95    4.50    2.76    6.69</code></pre>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="birthweight-data-set-example.html#cb94-1" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fl">307.43</span>)</span></code></pre></div>
+<pre><code>## [1] 17.53368</code></pre>
+<p>Note that the <em>standard error</em> for the coefficient associated with <code>HtShoes</code> is <strong>17.5 times larger</strong> than it would have been without collinearity.
+<br></p>
+<p>The next step is to <strong>investigate which variable to remove</strong>. To do so, we study the <em>pairwise correlations</em> and perform <em>partial <span class="math inline">\(F\)</span>-tests</em> as follows:
+<br></p>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="birthweight-data-set-example.html#cb96-1" tabindex="-1"></a><span class="fu">cor</span>(Seated<span class="sc">+</span>Thigh, Ht)</span></code></pre></div>
+<pre><code>## [1] 0.9389819</code></pre>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="birthweight-data-set-example.html#cb98-1" tabindex="-1"></a><span class="fu">cor</span>(Seated<span class="sc">+</span>Leg, Ht)</span></code></pre></div>
+<pre><code>## [1] 0.965607</code></pre>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="birthweight-data-set-example.html#cb100-1" tabindex="-1"></a><span class="fu">cor</span>(Seated<span class="sc">+</span>Arm, Ht)</span></code></pre></div>
+<pre><code>## [1] 0.9465523</code></pre>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="birthweight-data-set-example.html#cb102-1" tabindex="-1"></a>position.red1 <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> Age <span class="sc">+</span> Weight <span class="sc">+</span> Ht <span class="sc">+</span> Seated, <span class="at">data=</span>seatpos)</span>
+<span id="cb102-2"><a href="birthweight-data-set-example.html#cb102-2" tabindex="-1"></a><span class="fu">summary</span>(position.red1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = hipcenter ~ Age + Weight + Ht + Seated, data = seatpos)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -90.869 -21.163  -3.144  26.773  59.423 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept) 478.65890  159.73362   2.997  0.00515 **
+## Age           0.58396    0.42573   1.372  0.17943   
+## Weight       -0.01535    0.31640  -0.049  0.96159   
+## Ht           -4.99025    1.64389  -3.036  0.00466 **
+## Seated        2.04632    3.41283   0.600  0.55287   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 36.83 on 33 degrees of freedom
+## Multiple R-squared:  0.6599, Adjusted R-squared:  0.6186 
+## F-statistic: 16.01 on 4 and 33 DF,  p-value: 2.224e-07</code></pre>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="birthweight-data-set-example.html#cb104-1" tabindex="-1"></a>position.red2 <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> Ht, <span class="at">data=</span>seatpos)</span>
+<span id="cb104-2"><a href="birthweight-data-set-example.html#cb104-2" tabindex="-1"></a><span class="fu">summary</span>(position.red2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = hipcenter ~ Ht, data = seatpos)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -99.956 -27.850   5.656  20.883  72.066 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 556.2553    90.6704   6.135 4.59e-07 ***
+## Ht           -4.2650     0.5351  -7.970 1.83e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 36.37 on 36 degrees of freedom
+## Multiple R-squared:  0.6383, Adjusted R-squared:  0.6282 
+## F-statistic: 63.53 on 1 and 36 DF,  p-value: 1.831e-09</code></pre>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="birthweight-data-set-example.html#cb106-1" tabindex="-1"></a><span class="fu">anova</span>(position.red2, position.red1)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: hipcenter ~ Ht
+## Model 2: hipcenter ~ Age + Weight + Ht + Seated
+##   Res.Df   RSS Df Sum of Sq      F Pr(&gt;F)
+## 1     36 47616                           
+## 2     33 44774  3    2841.6 0.6981 0.5599</code></pre>
+<p>Based on the <span class="math inline">\(F\)</span> test provided in the ANOVA table, we conclude that <em>the reduced model with <code>Ht</code> as the only variable is better than the model that includes <code>Age</code>, <code>Weight</code>, <code>Ht</code> and <code>Seated</code></em>.</p>
+
+</div>
+</div>
+<!-- </div> -->
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="model-diagnostics.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="variable-selection-regularization.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans serif",
+    "size": 1
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/02-regression.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section",
+    "toc_depth": 4,
+    "toc_float": true,
+    "scroll_highlight": true
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

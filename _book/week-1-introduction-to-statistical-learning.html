@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 1 Week 1 Introduction to Statistical Learning | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 1 Week 1 Introduction to Statistical Learning | CS 598 Practical Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 1 Week 1 Introduction to Statistical Learning | CS 598 Practical Statistical Learning" />
+  
+  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  
+
+<meta name="author" content="Alexandra Chronopoulou" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="1" data-path="week-1-introduction-to-statistical-learning.html"><a href="week-1-introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Week 1 Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="week-1-introduction-to-statistical-learning.html"><a href="week-1-introduction-to-statistical-learning.html#what-do-we-mean-by-statistical-learning"><i class="fa fa-check"></i><b>1.1</b> What do we mean by Statistical Learning?</a></li>
+<li class="chapter" data-level="1.2" data-path="week-1-introduction-to-statistical-learning.html"><a href="week-1-introduction-to-statistical-learning.html#types-of-statistical-learning"><i class="fa fa-check"></i><b>1.2</b> Types of Statistical Learning</a></li>
+<li class="chapter" data-level="1.3" data-path="week-1-introduction-to-statistical-learning.html"><a href="week-1-introduction-to-statistical-learning.html#statistical-learning-examples"><i class="fa fa-check"></i><b>1.3</b> Statistical Learning Examples</a>
+<ul>
+<li class="chapter" data-level="1.3.1" data-path="week-1-introduction-to-statistical-learning.html"><a href="week-1-introduction-to-statistical-learning.html#supervised-learning-setup"><i class="fa fa-check"></i><b>1.3.1</b> Supervised Learning Setup</a></li>
+<li class="chapter" data-level="1.3.2" data-path="week-1-introduction-to-statistical-learning.html"><a href="week-1-introduction-to-statistical-learning.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>1.3.2</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.3.3" data-path="week-1-introduction-to-statistical-learning.html"><a href="week-1-introduction-to-statistical-learning.html#birds-eye-overview"><i class="fa fa-check"></i><b>1.3.3</b> Birds-Eye Overview</a></li>
+<li class="chapter" data-level="1.3.4" data-path="week-1-introduction-to-statistical-learning.html"><a href="week-1-introduction-to-statistical-learning.html#two-toy-examples"><i class="fa fa-check"></i><b>1.3.4</b> Two Toy Examples</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="week-1-introduction-to-statistical-learning" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Chapter 1</span> Week 1 Introduction to Statistical Learning<a href="week-1-introduction-to-statistical-learning.html#week-1-introduction-to-statistical-learning" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="what-do-we-mean-by-statistical-learning" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> What do we mean by Statistical Learning?<a href="week-1-introduction-to-statistical-learning.html#what-do-we-mean-by-statistical-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We <em>learn</em> from data:</p>
+<p><span class="math inline">\(\rightarrow\)</span> outcome/measurement (quantitative <em>or</em> categorical)
+<span class="math inline">\(\rightarrow\)</span> predict based on a set of features</p>
+<p>A <strong>prediction model</strong>, or <em>learner</em> enables us to predict the outcome
+for new <em>unseen</em> objects.</p>
+</div>
+<div id="types-of-statistical-learning" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> Types of Statistical Learning<a href="week-1-introduction-to-statistical-learning.html#types-of-statistical-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><strong>Supervised Learning</strong>: when an outcome variable is present to guide the learning process.</p>
+<ul>
+<li>Regression: Response is quantitative, i.e. a <em>number.</em></li>
+<li>Classification: Response is qualitative, i.e. categorical, discrete, or a factor – a <em>label</em> (binary or multi-class).</li>
+</ul>
+<p><strong>Unsupervised Learning</strong>: when an outcome variable is not present.</p>
+<p>Identify latent structures in the data, e.g. clustering, association rules, HMM, etc.</p>
+</div>
+<div id="statistical-learning-examples" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Statistical Learning Examples<a href="week-1-introduction-to-statistical-learning.html#statistical-learning-examples" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Birthweight (Regression)</p>
+<p><img src="images/week1/birthpairs.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>Scatterplot matrix of the <code>birthweight</code> data. The first row shows
+the response against each of the predictors in turn. Three of the predictors, <code>smoker</code>, <code>lowbwt</code>, and <code>mage35</code> are categorical.</p>
+<p>Trees and Shrubs (Binary Classification)}</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="right">Height</th>
+<th align="right">Diameter</th>
+<th align="right">GrowthRate</th>
+<th align="right">Longevity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Silver Fir</td>
+<td align="right">55.0</td>
+<td align="right">1.50</td>
+<td align="right">0.5</td>
+<td align="right">500</td>
+</tr>
+<tr class="even">
+<td align="left">European Beech</td>
+<td align="right">40.0</td>
+<td align="right">1.00</td>
+<td align="right">0.5</td>
+<td align="right">200</td>
+</tr>
+<tr class="odd">
+<td align="left">Common Hazel</td>
+<td align="right">5.0</td>
+<td align="right">0.10</td>
+<td align="right">0.5</td>
+<td align="right">70</td>
+</tr>
+<tr class="even">
+<td align="left">Red Raspberry</td>
+<td align="right">1.5</td>
+<td align="right">0.01</td>
+<td align="right">0.4</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">European Spruce</td>
+<td align="right">50.0</td>
+<td align="right">1.20</td>
+<td align="right">0.5</td>
+<td align="right">600</td>
+</tr>
+</tbody>
+</table>
+<p>Species of Woody Plants common in the Black Forest region in Southwestern Germany (Ref: Lederer)</p>
+<p>Handiwritten Digits (Multiclass Classification)}</p>
+<p><img src="images/week1/SLEx_digits.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>Handwritten Digits from U.S. postal envelopes (Ref: ESL)</p>
+<p>Proteomics Data (Clustering)}</p>
+<p><img src="images/week1/chemistry.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>Proteomics Data: Expression matrix of 437 proteins only 101 proteins of interest are shown. The display is a map of missing values: red for present/ grey for missing. (Ref: Romanova et al. – STAT 427 dataset)</p>
+<div id="supervised-learning-setup" class="section level3 hasAnchor" number="1.3.1">
+<h3><span class="header-section-number">1.3.1</span> Supervised Learning Setup<a href="week-1-introduction-to-statistical-learning.html#supervised-learning-setup" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Framework</p>
+<p><img src="images/week1/SL_setup.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>Objective Function to be minimized:
+<span class="math display">\[F(w) = \sum_{i=1}^{n} loss\Bigl( y_i, f\bigl( x_i; w\bigr)\Bigr)\]</span></p>
+<p>Loss Function Examples
+<span class="math display">\[\begin{align*}
+loss &amp;= \Bigl[ y_i - f\bigl(x_i; w \bigr)\Bigr]^2\\
+loss &amp;= \mathbf{1}_{ \left \{ y_i \neq f\bigl(x_i; w \bigr) \right\} } = \begin{cases}
+&amp; 1, \,\, \text{ if } y_i \neq f\bigl(x_i; w \bigr) \\
+&amp; 0,\,\, \text{ if } y_i = f\bigl(x_i; w \bigr)
+\end{cases}
+\\
+loss &amp;= \begin{cases}
+&amp;-\log f \bigl(x_i; w \bigr), \,\, \text{ if } y_i=1\\
+&amp;-\log \Bigl(1- f\bigl(x_i; w \bigr) \Bigr),\,\, \text{ if } y_i=0
+\end{cases}
+\end{align*}\]</span></p>
+<ul>
+<li>The minimizer <span class="math inline">\(w^*\)</span> may or may not be in closed form.</li>
+</ul>
+<p>Challenges
+Learning is difficult because</p>
+<ul>
+<li>the training error underestimates the test/generalization error.</li>
+<li>model performance might be good for training data, but poor for future data (overfitting).</li>
+<li>the number of parameters in the regression/</li>
+<li>classification function <span class="math inline">\(f\)</span>, denoted by <span class="math inline">\(p\)</span>, that is the number of</li>
+<li>parameters we need to learn from the data, might be large.</li>
+<li>the testing error increases significantly when the number of model parameters, <span class="math inline">\(p\)</span>, becomes larger.</li>
+</ul>
+<p>Curse of Dimensionality</p>
+<p>In Classification…</p>
+<p>One-nearest-neighbor predicts perfectly on the training data, but poorly on testing data.</p>
+<p>An interesting illustration on how dimensionality changes the performance of linear classifiers can be found here: <a href="https://www.visiondummy.com/2014/04/curse-dimensionality-affect-classification/" class="uri">https://www.visiondummy.com/2014/04/curse-dimensionality-affect-classification/</a></p>
+<p>In Regression…</p>
+<p>Response vector: <span class="math inline">\(y_{n\times 1}\)</span>, where <span class="math inline">\(n\)</span> is the sample size.
+Design matrix (i.e. matrix of predictors): <span class="math inline">\(\mathbf{X}_{n\times p}\)</span>, where <span class="math inline">\(p\)</span> is the number of predictors.</p>
+<p>Regression model
+<span class="math display">\[y_{n\times 1} = X_{n\times p} \, \textcolor{blue}{w_{p\times 1}}\]</span>
+where <span class="math inline">\(w_{p\times 1}\)</span> are the model coefficients (i.e. parameters to estimate).</p>
+<p><span class="math display">\[y_{n\times 1} = X_{n\times p} \, \textcolor{blue}{w_{p\times 1}}\]</span>
+where <span class="math inline">\(w_{p\times 1}\)</span> are the model coefficients.</p>
+<p><span class="math inline">\(p&lt;n\)</span>: Typically when regression methods are used and are successful, since we have <span class="math inline">\(n\)</span> (more) equations than the <span class="math inline">\(p\)</span> parameters.
+<span class="math inline">\(p=n\)</span>: Perfect Fit on training data, since we have <span class="math inline">\(n\)</span> equations and <span class="math inline">\(n\)</span> parameters.
+<span class="math inline">\(p&gt;n\)</span>: Classical regression methods do not work, since we have fewer equations than parameters.</p>
+</div>
+<div id="bias-variance-trade-off" class="section level3 hasAnchor" number="1.3.2">
+<h3><span class="header-section-number">1.3.2</span> Bias-Variance Trade-Off<a href="week-1-introduction-to-statistical-learning.html#bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Two Main Sources of Error</p>
+<p>Bias: Difference between parameter to be estimated and its ``true’’ unknown value.</p>
+<p>High bias leads to under-fitting and an inaccurate model.</p>
+<p>Variance (of an estimated function): ability of the function to ``adapt’’ to small changes in the data.</p>
+<p>High variance leads to over-fitting and an unreliable model.</p>
+<p><img src="images/week1/tradeoff1.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>Illustration of bias-variance trade-off.</p>
+<p>When we are interested in :</p>
+<p><img src="images/week1/traintest.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>Goal of Statistical Learning</p>
+<p>Minimize the generalization error, i.e., the error on unseen
+future datasets – not the training error.</p>
+<p><img src="images/week1/traintest2.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>Testing and Training Error as a function of Model Complexity</p>
+</div>
+<div id="birds-eye-overview" class="section level3 hasAnchor" number="1.3.3">
+<h3><span class="header-section-number">1.3.3</span> Birds-Eye Overview<a href="week-1-introduction-to-statistical-learning.html#birds-eye-overview" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In this class, we will discuss:</p>
+<ol style="list-style-type: lower-roman">
+<li><p>Flexible modeling techniques to reduce bias.</p></li>
+<li><p>Useful strategies to achieve the trade-off between bias and variance.\ </p></li>
+</ol>
+<p>As an example, two successful approaches:</p>
+<ol style="list-style-type: lower-roman">
+<li><p>Regularization: Restrict the parameters to a low-dimensional space, which is adaptively determined by the data.</p></li>
+<li><p>Ensemble: Average many low-bias high-variance models <span class="math inline">\(\longrightarrow\)</span> averaging reduces
+variance.</p></li>
+</ol>
+</div>
+<div id="two-toy-examples" class="section level3 hasAnchor" number="1.3.4">
+<h3><span class="header-section-number">1.3.4</span> Two Toy Examples<a href="week-1-introduction-to-statistical-learning.html#two-toy-examples" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><span class="math inline">\(k\)</span>NN vs. Linear Regression</p>
+<p>Review two simple approaches for supervised learning:</p>
+<ol style="list-style-type: lower-roman">
+<li><span class="math inline">\(k\)</span>-Nearest Neighbors (<span class="math inline">\(k\)</span>NN)</li>
+<li>Linear Regression</li>
+</ol>
+<p>Examine their performance to understand the bias-variance trade-off.</p>
+<p><span class="math inline">\(k\)</span>-Nearest Neighbors</p>
+<p><span class="math inline">\(k\)</span>NN Method
+Use observations in the training set closest to <span class="math inline">\(x\)</span> to form <span class="math inline">\(y\)</span>.</p>
+<p>The <span class="math inline">\(k\)</span>-Nearest Neighbor fit for <span class="math inline">\(\hat{y}\)</span> is
+<span class="math display">\[\hat{y}(x) = \frac{1}{k} \sum_{x_i \in N_k(x)} y_i\]</span>
+where <span class="math inline">\(N_k(x)\)</span> is the neighborhood of <span class="math inline">\(x\)</span> defined by the <span class="math inline">\(k\)</span> closest points <span class="math inline">\(x_i\)</span> in the training sample.</p>
+<p>Regression Context: <span class="math inline">\(k\)</span>NN predicts <span class="math inline">\(y\)</span> via a local average.</p>
+<p>Classification Context: <span class="math inline">\(k\)</span>NN returns the majority vote in <span class="math inline">\(N_k(x)\)</span> or a probability calculated on the frequencies in <span class="math inline">\(N_k(x)\)</span>.</p>
+<p>Tuning <span class="math inline">\(k\)</span>-Nearest Neighbors: Input Parameters</p>
+<p><span class="math inline">\(k\)</span>: the neighborhood size</p>
+<p>The complexity is roughly equal to <span class="math inline">\(n/k\)</span>.
+When <span class="math inline">\(k=1\)</span>, the prediction at <span class="math inline">\(x_i\)</span> is exactly <span class="math inline">\(y_i\)</span>, i.e. zero training error.
+When <span class="math inline">\(k=n\)</span>, every neighborhood contains all the <span class="math inline">\(n\)</span> training samples, so the prediction is the same no matter <span class="math inline">\(x\)</span>.</p>
+<p>The metric to define the neighborhood
+The default is the Euclidean distance:
+<span class="math display">\[d\bigl( x, \tilde{x} \bigr) = \sum_{j=1}^{p} w_j \bigl( x_j - \tilde{x}_j \bigr)^2,\]</span>
+where we would like to learn the <span class="math inline">\(w_j\)</span>’s from the data.</p>
+<p>Given a vector of inputs <span class="math inline">\(\mathbf{x}^T = (x_1, x_2, \ldots, x_p)\)</span>, approximate <span class="math inline">\(Y\)</span> via a linear function</p>
+<p><span class="math display">\[f(\mathbf{x}) \approx \beta_0 + \sum_{j=1}^{p} x_j \beta_j\]</span></p>
+<p>Estimate the parameters <span class="math inline">\(\beta_j\)</span> using the Least-Squares (LS) method by minimizing the Residual Sum of Squares</p>
+<p><span class="math display">\[\min_{\beta_0, \ldots, \beta_p} \sum_{i=1}^{n} \Bigl( y_i - \beta_0 - x_{i1}\beta_1 - \ldots - x_{ip} \beta_p \Bigr)^2\]</span></p>
+<p>The solution is easy to obtain } (both in R/Python and analytically under certain assumptions) and the fitted value for the <span class="math inline">\(i\)</span>th input <span class="math inline">\(x_i\)</span> is
+<span class="math display">\[\hat{y}_i = \hat{y}(x_i) = x_i^T \hat{\beta}\]</span></p>
+<p>We omit the details to focus on the concepts here. All the details will be discussed next week.</p>
+<p>Linear Regression in a Classification Context</p>
+<p>We can apply linear regression on classification problems with <span class="math inline">\(Y=0 \text{ or } 1\)</span>, and predict <span class="math inline">\(Y\)</span> to be 1 if the LS prediction <span class="math inline">\(f(x)\)</span> is bigger than 0.5, and 0 otherwise}.</p>
+<p>Drawbacks</p>
+<ol style="list-style-type: lower-roman">
+<li><p>The squared difference <span class="math inline">\(\Bigl(y_i - f(\mathbf{x}_i) \Bigr)^2\)</span> is not a good evaluation metric for classification;</p></li>
+<li><p>Ideally, we would like to estimate is <span class="math inline">\(\mathbb{P}\Bigl(Y=1|X=\mathbf{x}\Bigr)\)</span>. However, the linear function <span class="math inline">\(f(\mathbf{x})\)</span> could return values outside <span class="math inline">\([0,1]\)</span>.</p></li>
+</ol>
+<p><span class="math inline">\(\longrightarrow\)</span> A Logistic regression could remedy the situation, in which
+<span class="math display">\[\log \frac{p(\mathbf{x})}{1-p(\mathbf{x}) } \approx \beta_0 + \sum_{j=1}^{p} x_j \beta_j\]</span></p>
+<p>Simulated Binary Classification Example}</p>
+<p>%<span class="math display">\[X|Y=1 \sim \mathcal{N}\Bigl( \mu_0, \,\, \sigma^2 \mathbf{I}_{p} \Bigr)\]</span>
+%<span class="math display">\[X|Y=0 \sim \mathcal{N}\Bigl( \mu_1, \,\, \sigma^2 \mathbf{I}_{p} \Bigr)\]</span></p>
+<p>Simulate 100 points in each class.
+Linear Regression method: \Response <span class="math inline">\(Y\)</span> is coded as 1 for Blue and 0 for Orange. \
+The fitted values <span class="math inline">\(\hat{Y}\)</span> are converted to a fitted class variable <span class="math inline">\(\hat{G}\)</span> according to
+<span class="math display">\[\hat{G} = \begin{cases}
+&amp; Blue, \text{ if } \hat{Y} &gt; 0.5\\
+&amp; Orange, \text{ otherwise } \\
+\end{cases} \]</span>
+<span class="math inline">\(k\)</span> Nearest-Neighbor method: \ Response <span class="math inline">\(Y\)</span> is coded using a 15-nearest-neighbor averaging of the binary coded response. So, if <span class="math inline">\(\hat{Y}\)</span> is the proportion of blue’s in the neighborhood, then the class variable is
+<span class="math display">\[\hat{G} = \begin{cases}
+&amp; Blue, \text{ if } \hat{Y} &gt; 0.5\\
+&amp; Orange,\text{ otherwise } \\
+\end{cases} \]</span></p>
+<p>Linear Regression of 0/1 Response Classifier</p>
+<p><img src="images/week1/regclass.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>A classification example in two dimensions:
+The black line is the decision boundary defined by <span class="math inline">\(x^T \hat{\beta} = 0.5\)</span>.</p>
+<p>15-Nearest Neighbor Classifier</p>
+<p><img src="images/week1/kNN15.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>Same example: The fit is done via a 15-nearest-neighbor average. The predicted class is chosen by majority vote among the 15-nearest neighbors.</p>
+<p>15-Nearest Neighbor Classifier</p>
+<p><img src="images/week1/kNN1.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>Same example: The fit is done via a 15-nearest-neighbor average. The predicted class is chosen by majority vote among the 1-nearest neighbor.</p>
+<p>Misclassification Errors</p>
+<p><img src="images/week1/traintesterror.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>The magenta curves are test and the blue are training errors for the <span class="math inline">\(k\)</span>NN classification. The results for the Optimal <span class="math inline">\(k\)</span> in <span class="math inline">\(k\)</span>NN are denoted with a diamond. The results for linear regression are the
+magenta and blue triangles at 3 DFs.</p>
+<p><span class="math inline">\(k\)</span>NN vs. Linear Regression</p>
+<p>Linear regression: <span class="math inline">\(f\)</span> is linear</p>
+<p>low variance: need to estimate <span class="math inline">\(p = 3\)</span> parameters
+high bias (underfit): linear assumption is very restrictive</p>
+<p><span class="math inline">\(k\)</span>NN: no assumption on <span class="math inline">\(f\)</span>, except some local smoothness.</p>
+<p>low bias (overfit): flexible and adaptive. It can be shown that as <span class="math inline">\(k, n \rightarrow \infty\)</span> such that <span class="math inline">\(k/n \rightarrow 0\)</span>, <span class="math inline">\(k\)</span>NN is consistent.
+high variance: number of parameters for <span class="math inline">\(k\)</span>NN is roughly <span class="math inline">\(n=k\)</span>, which goes
+to <span class="math inline">\(\infty\)</span> in order to achieve consistency.</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/01-intro.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.pdf", "_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

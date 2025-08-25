@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3.4 The Student Performance Example | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3.4 The Student Performance Example | CS 598 Practical Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3.4 The Student Performance Example | CS 598 Practical Statistical Learning" />
+  
+  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  
+
+<meta name="author" content="Alexandra Chronopoulou" />
+
+
+<meta name="date" content="2025-08-25" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="shrinkage-methods.html"/>
+<link rel="next" href="nonlinear-regression.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
+<li class="chapter" data-level="1.5.4" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures"><i class="fa fa-check"></i><b>1.5.4</b> Code for the Examples in the Lectures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>2.1</b> Multiple Linear Regression (MLR) Model</a></li>
+<li class="chapter" data-level="2.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>2.2</b> MLR Model Fitting</a></li>
+<li class="chapter" data-level="2.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>2.3</b> Least-Squares &amp; Normal Equations</a></li>
+<li class="chapter" data-level="2.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>2.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
+<li class="chapter" data-level="2.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>2.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
+<li class="chapter" data-level="2.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>2.6</b> Rank deficiency</a></li>
+<li class="chapter" data-level="2.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>2.7</b> Hypothesis Testing in MLR</a></li>
+<li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
+<li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
+<li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
+<li class="chapter" data-level="2.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Data Set Example</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="training-vs.-testing-errors.html"><a href="training-vs.-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training vs. Testing Errors</a></li>
+<li class="chapter" data-level="3.2" data-path="subset-selection.html"><a href="subset-selection.html"><i class="fa fa-check"></i><b>3.2</b> Subset Selection</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria-based-procedures"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria-based procedures</a></li>
+<li class="chapter" data-level="3.2.2" data-path="subset-selection.html"><a href="subset-selection.html#search-algorithms"><i class="fa fa-check"></i><b>3.2.2</b> Search Algorithms</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html"><i class="fa fa-check"></i><b>3.3</b> Shrinkage Methods</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
+<ul>
+<li class="chapter" data-level="4.0.1" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html#a-note-on-nonlinearity"><i class="fa fa-check"></i><b>4.0.1</b> A Note on Nonlinearity</a></li>
+<li class="chapter" data-level="4.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html"><i class="fa fa-check"></i><b>4.1</b> Polynomial Regression</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-basis-functions"><i class="fa fa-check"></i><b>4.1.1</b> Polynomial Basis Functions</a></li>
+<li class="chapter" data-level="4.1.2" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-regression-1"><i class="fa fa-check"></i><b>4.1.2</b> Polynomial Regression</a></li>
+<li class="chapter" data-level="4.1.3" data-path="polynomial-regression.html"><a href="polynomial-regression.html#orthogonal-polynomials"><i class="fa fa-check"></i><b>4.1.3</b> Orthogonal Polynomials</a></li>
+<li class="chapter" data-level="4.1.4" data-path="polynomial-regression.html"><a href="polynomial-regression.html#piece-wise-polynomials"><i class="fa fa-check"></i><b>4.1.4</b> Piece-wise Polynomials</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="splines-regression.html"><a href="splines-regression.html"><i class="fa fa-check"></i><b>4.2</b> Splines Regression</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="splines-regression.html"><a href="splines-regression.html#examples-of-cubic-splines-basis"><i class="fa fa-check"></i><b>4.2.1</b> Examples of Cubic Splines Basis</a></li>
+<li class="chapter" data-level="4.2.2" data-path="splines-regression.html"><a href="splines-regression.html#b-splines-basis-functions-in-r"><i class="fa fa-check"></i><b>4.2.2</b> B-Splines Basis Functions in <code>R</code></a></li>
+<li class="chapter" data-level="4.2.3" data-path="splines-regression.html"><a href="splines-regression.html#natural-cubic-splines-ncs"><i class="fa fa-check"></i><b>4.2.3</b> Natural Cubic Splines (NCS)</a></li>
+<li class="chapter" data-level="4.2.4" data-path="splines-regression.html"><a href="splines-regression.html#regression-splines"><i class="fa fa-check"></i><b>4.2.4</b> Regression Splines</a></li>
+<li class="chapter" data-level="4.2.5" data-path="splines-regression.html"><a href="splines-regression.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>4.2.5</b> K-Fold Cross-Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="smoothing-splines.html"><a href="smoothing-splines.html"><i class="fa fa-check"></i><b>4.3</b> Smoothing Splines</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="smoothing-splines.html"><a href="smoothing-splines.html#the-roughness-penalty-approach"><i class="fa fa-check"></i><b>4.3.1</b> The Roughness Penalty Approach</a></li>
+<li class="chapter" data-level="4.3.2" data-path="smoothing-splines.html"><a href="smoothing-splines.html#proof"><i class="fa fa-check"></i><b>4.3.2</b> Proof</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
+<li class="chapter" data-level="4.5" data-path="the-birthrates-example-in-r.html"><a href="the-birthrates-example-in-r.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example in R</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="the-student-performance-example" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> The <code>Student Performance</code> Example<a href="the-student-performance-example.html#the-student-performance-example" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <code>student-mat.csv</code> data set contains data from a study on student achievement in secondary education of two Portuguese schools. The data are based on the following publication:</p>
+<blockquote>
+<p>“Using data mining to predict secondary school student performance”
+By P. Cortez, A. M. G. Silva. 2008. Published in Proceedings of 5th Annual Future Business Technology Conference.</p>
+</blockquote>
+<p>and can be found in the UCI data repository: <a href="https://archive.ics.uci.edu/dataset/320/student+performance">here</a></p>
+<p>The variables in the data set are the following:</p>
+<ul>
+<li><code>school</code> Student’s school (<em>binary</em>: <code>GP</code> - Gabriel Pereira or <code>MS</code> - Mousinho da Silveira)</li>
+<li><code>sex</code> Sex student’s sex (<em>binary</em>: <code>F</code> - female or <code>M</code> - male)</li>
+<li><code>age</code> Student’s age (<em>numeric</em>: from 15 to 22)</li>
+<li><code>address</code> Student’s home address type (<em>binary</em>: <code>U</code> - urban or <code>R</code> - rural)</li>
+<li><code>famsize</code> Family size (<em>binary</em>: <code>LE3</code> - less or equal to 3 or <code>GT3</code> - greater than 3)</li>
+<li><code>Pstatus</code> Parent’s cohabitation status (<em>binary</em>: <code>T</code> - living together or <code>A</code> - apart)</li>
+<li><code>Medu</code> Μother’s education level (<em>numeric</em>: <code>0</code> - none, <code>1</code> - primary education (4th grade), <code>2</code> - 5th to 9th grade, <code>3</code> - secondary education or <code>4</code> - higher education)</li>
+<li><code>Fedu</code> Father’s education level (<em>numeric</em>: <code>0</code> - none, <code>1</code> - primary education (4th grade), <code>2</code> 5th to 9th grade, <code>3</code> - secondary education or <code>4</code> higher education)</li>
+<li><code>Mjob</code> Mother’s occupation (<em>nominal</em>: <code>teacher</code>, <code>healthcare</code> related, <code>civil services</code> (e.g. administrative or police), <code>at_home</code> or <code>other</code>)</li>
+<li><code>Fjob</code> Father’s occupation (<em>nominal</em>: <code>teacher</code>, <code>healthcare</code> related, <code>civil services</code> (e.g. administrative or police), <code>at_home</code> or <code>other</code>)</li>
+<li><code>reason</code> Reason to choose this school (<em>nominal</em>: close to <code>home</code>, school <code>reputation</code>, <code>course</code> preference or <code>other</code>)</li>
+<li><code>guardian</code> Student’s guardian (<em>nominal</em>: <code>mother</code>, <code>father</code> or <code>other</code>)</li>
+<li><code>traveltime</code> Home to school travel time (<em>numeric</em>: <code>1</code> - &lt;15 min., <code>2</code> - 15 to 30 min., <code>3</code> - 30 min. to 1 hour, or <code>4</code> - &gt;1 hour)</li>
+<li><code>studytime</code> Weekly study time (<em>numeric</em>: <code>1</code> - &lt;2 hours, <code>2</code> - 2 to 5 hours, <code>3</code> - 5 to 10 hours, or <code>4</code> - &gt;10 hours)</li>
+<li><code>failures</code> Number of past class failures (<em>numeric</em>: <code>n</code> if 1&lt;=n&lt;3, else <code>4</code>)</li>
+<li><code>schoolsup</code> Extra educational support (<em>binary</em>: <code>yes</code> or <code>no</code>)</li>
+<li><code>famsup</code> Family educational support (<em>binary</em>: <code>yes</code> or <code>no</code>)</li>
+<li><code>paid</code> Extra paid classes within the course subject (Math or Portuguese) (<em>binary</em>: <code>yes</code> or <code>no</code>)</li>
+<li><code>activities</code> Extra-curricular activities (<em>binary</em>: <code>yes</code> or <code>no</code>)</li>
+<li><code>nursery</code> Attended nursery school (<em>binary</em>: <code>yes</code> or <code>no</code>)</li>
+<li><code>higher</code> Wants to take higher education (<em>binary</em>: <code>yes</code> or <code>no</code>)<br />
+</li>
+<li><code>internet</code> Internet access at home (<em>binary</em>: <code>yes</code> or <code>no</code>)<br />
+</li>
+<li><code>romantic</code> With a romantic relationship (<em>binary</em>: <code>yes</code> or <code>no</code>)<br />
+</li>
+<li><code>famrel</code> Quality of family relationships (<em>numeric</em>: from <code>1</code> - very bad to <code>5</code> - excellent)</li>
+<li><code>freetime</code> Free time after school (<em>numeric</em>: from <code>1</code> - very low to <code>5</code> - very high)<br />
+</li>
+<li><code>goout</code> Going out with friends (<em>numeric</em>: from <code>1</code> - very low to <code>5</code> - very high)<br />
+</li>
+<li><code>Dalc</code> Workday alcohol consumption (<em>numeric</em>: from <code>1</code> - very low to <code>5</code> - very high)</li>
+<li><code>Walc</code> Weekend alcohol consumption (<em>numeric</em>: from <code>1</code> - very low to <code>5</code> - very high)</li>
+<li><code>health</code> Current health status (<em>numeric</em>: from <code>1</code> - very bad to <code>5</code> - very good)<br />
+</li>
+<li><code>absences</code> Number of school absences (<em>numeric</em>: from <code>0</code> to <code>93</code>)<br />
+</li>
+<li><code>G1</code> First period grade (<em>numeric</em>: from <code>0</code> to <code>20</code>)</li>
+<li><code>G2</code> Second period grade (<em>numeric</em>: from <code>0</code> to <code>20</code>)</li>
+<li><code>G3</code> Final grade (<em>numeric</em>: from <code>0</code> to <code>20</code>, output target)</li>
+</ul>
+<p><br><br></p>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="the-student-performance-example.html#cb125-1" tabindex="-1"></a>stu_performance0 <span class="ot">=</span> <span class="fu">read.csv2</span>(<span class="st">&quot;data/week3/student-mat.csv&quot;</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>In our example, we want to focus on predicting the final grade (column <code>G3</code>) using penalized regression methods. A special variation of penalized regression is required when using categorical variables (e.g. <em>group lasso</em>), thus in this example we only focus on numerical predictors.</p>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="the-student-performance-example.html#cb126-1" tabindex="-1"></a><span class="do">## Remove categorical predictors</span></span>
+<span id="cb126-2"><a href="the-student-performance-example.html#cb126-2" tabindex="-1"></a>stu_performance <span class="ot">=</span> stu_performance0[,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">9</span>,<span class="dv">10</span>, <span class="dv">11</span>, <span class="dv">12</span>, <span class="dv">16</span>, <span class="dv">17</span>, <span class="dv">18</span>, <span class="dv">19</span>, <span class="dv">20</span>, <span class="dv">21</span>, <span class="dv">22</span>, <span class="dv">23</span>,<span class="dv">31</span>, <span class="dv">32</span>)]</span>
+<span id="cb126-3"><a href="the-student-performance-example.html#cb126-3" tabindex="-1"></a></span>
+<span id="cb126-4"><a href="the-student-performance-example.html#cb126-4" tabindex="-1"></a><span class="do">## Rename the response to &quot;Grades&quot;</span></span>
+<span id="cb126-5"><a href="the-student-performance-example.html#cb126-5" tabindex="-1"></a><span class="fu">names</span>(stu_performance)[<span class="dv">14</span>] <span class="ot">=</span> <span class="st">&#39;Grades&#39;</span></span>
+<span id="cb126-6"><a href="the-student-performance-example.html#cb126-6" tabindex="-1"></a></span>
+<span id="cb126-7"><a href="the-student-performance-example.html#cb126-7" tabindex="-1"></a><span class="fu">head</span>(stu_performance)</span></code></pre></div>
+<pre><code>##   age Medu Fedu traveltime studytime failures famrel freetime goout Dalc Walc
+## 1  18    4    4          2         2        0      4        3     4    1    1
+## 2  17    1    1          1         2        0      5        3     3    1    1
+## 3  15    1    1          1         2        3      4        3     2    2    3
+## 4  15    4    2          1         3        0      3        2     2    1    1
+## 5  16    3    3          1         2        0      4        3     2    1    2
+## 6  16    4    3          1         2        0      5        4     2    1    2
+##   health absences Grades
+## 1      3        6      6
+## 2      3        4      6
+## 3      3       10     10
+## 4      5        2     15
+## 5      5        4     10
+## 6      5       10     15</code></pre>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="the-student-performance-example.html#cb128-1" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">dim</span>(stu_performance)[<span class="dv">1</span>] <span class="do">## sample size</span></span>
+<span id="cb128-2"><a href="the-student-performance-example.html#cb128-2" tabindex="-1"></a>p <span class="ot">=</span> <span class="fu">dim</span>(stu_performance)[<span class="dv">2</span>] <span class="sc">-</span> <span class="dv">1</span> <span class="do">## number of non-intercept predictors</span></span></code></pre></div>
+<p>We start by fitting the <strong>full linear model</strong> including all the predictors:</p>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="the-student-performance-example.html#cb129-1" tabindex="-1"></a>performance.full <span class="ot">=</span> <span class="fu">lm</span>(Grades <span class="sc">~</span> ., <span class="at">data=</span>stu_performance)</span>
+<span id="cb129-2"><a href="the-student-performance-example.html#cb129-2" tabindex="-1"></a><span class="fu">summary</span>(performance.full)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Grades ~ ., data = stu_performance)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -12.2769  -2.1753   0.4053   2.7927   8.7122 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 13.53702    3.33724   4.056 6.05e-05 ***
+## age         -0.25623    0.17880  -1.433  0.15268    
+## Medu         0.58494    0.25650   2.280  0.02313 *  
+## Fedu        -0.09135    0.25465  -0.359  0.72000    
+## traveltime  -0.40184    0.31439  -1.278  0.20197    
+## studytime    0.26583    0.26903   0.988  0.32373    
+## failures    -1.83146    0.31201  -5.870 9.49e-09 ***
+## famrel       0.28018    0.24537   1.142  0.25422    
+## freetime     0.34139    0.23096   1.478  0.14021    
+## goout       -0.62638    0.22179  -2.824  0.00499 ** 
+## Dalc        -0.13723    0.32034  -0.428  0.66862    
+## Walc         0.35312    0.23834   1.482  0.13928    
+## health      -0.17429    0.15620  -1.116  0.26521    
+## absences     0.03197    0.02760   1.158  0.24745    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4.211 on 381 degrees of freedom
+## Multiple R-squared:  0.183,  Adjusted R-squared:  0.1551 
+## F-statistic: 6.564 on 13 and 381 DF,  p-value: 2.525e-11</code></pre>
+<p><br></p>
+<p>We may want to do model selection using the <em>testing approach</em> (either via a backward/forward selection) removing or adding one variable at a time, or we can even compare the full model with a reduced containing only the variables that seem to be statistically significant:</p>
+<p><br></p>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="the-student-performance-example.html#cb131-1" tabindex="-1"></a>performance.red <span class="ot">=</span> <span class="fu">lm</span>(Grades <span class="sc">~</span> failures <span class="sc">+</span> goout <span class="sc">+</span> Medu, <span class="at">data=</span>stu_performance)</span>
+<span id="cb131-2"><a href="the-student-performance-example.html#cb131-2" tabindex="-1"></a></span>
+<span id="cb131-3"><a href="the-student-performance-example.html#cb131-3" tabindex="-1"></a><span class="do">## Model comparison based on a partial F test</span></span>
+<span id="cb131-4"><a href="the-student-performance-example.html#cb131-4" tabindex="-1"></a><span class="fu">anova</span>(performance.red, performance.full)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: Grades ~ failures + goout + Medu
+## Model 2: Grades ~ age + Medu + Fedu + traveltime + studytime + failures + 
+##     famrel + freetime + goout + Dalc + Walc + health + absences
+##   Res.Df    RSS Df Sum of Sq     F Pr(&gt;F)
+## 1    391 6956.9                          
+## 2    381 6756.7 10    200.22 1.129  0.339</code></pre>
+<p><br>
+In this case, we fail to reject the null so the reduced model is preferred. However, this approach is not efficient nor optimal. Therefore, we use algorithms to search the space of models and a penalty to penalize the inclusion of terms that are not as useful.</p>
+<p><br></p>
+<div id="subset-selection-via-level-wise-algorithms-the-leaps-package" class="section level4 hasAnchor" number="3.4.0.1">
+<h4><span class="header-section-number">3.4.0.1</span> Subset Selection via Level-wise algorithms &amp; the <code>leaps</code> package<a href="the-student-performance-example.html#subset-selection-via-level-wise-algorithms-the-leaps-package" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><br></p>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="the-student-performance-example.html#cb133-1" tabindex="-1"></a><span class="fu">library</span>(leaps)</span>
+<span id="cb133-2"><a href="the-student-performance-example.html#cb133-2" tabindex="-1"></a>regsubsets_model <span class="ot">=</span> <span class="fu">regsubsets</span>(Grades<span class="sc">~</span> ., <span class="at">data=</span>stu_performance, <span class="at">nvmax =</span> p)</span>
+<span id="cb133-3"><a href="the-student-performance-example.html#cb133-3" tabindex="-1"></a>rs <span class="ot">=</span> <span class="fu">summary</span>(regsubsets_model)</span></code></pre></div>
+<p><br>
+The <code>rs</code> object above contains all the different criteria for all the models that have been evaluated. The default maximum size of models is <strong>8</strong> and this is changed above with the <code>nvmax</code> option to <span class="math inline">\(p=13\)</span>.</p>
+<p>Below we extract the <span class="math inline">\(R^2\)</span>, Adjusted <span class="math inline">\(R^2\)</span>, <span class="math inline">\(AIC\)</span>, <span class="math inline">\(BIC\)</span> and <span class="math inline">\(C_p\)</span>-Mallows criteria for the 13 models that have been evaluated:</p>
+<p><br></p>
+<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="the-student-performance-example.html#cb134-1" tabindex="-1"></a><span class="do">## Extract the models&#39; R^2</span></span>
+<span id="cb134-2"><a href="the-student-performance-example.html#cb134-2" tabindex="-1"></a>rs<span class="sc">$</span>rsq</span></code></pre></div>
+<pre><code>##  [1] 0.1298989 0.1483134 0.1587670 0.1633698 0.1668323 0.1696634 0.1724079
+##  [8] 0.1746913 0.1773575 0.1800384 0.1823149 0.1827012 0.1829771</code></pre>
+<p>The best model is the 13th model (as expected).
+<br></p>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="the-student-performance-example.html#cb136-1" tabindex="-1"></a><span class="do">## Extract the models&#39; Adjusted R^2</span></span>
+<span id="cb136-2"><a href="the-student-performance-example.html#cb136-2" tabindex="-1"></a>rs<span class="sc">$</span>adjr2</span></code></pre></div>
+<pre><code>##  [1] 0.1276849 0.1439681 0.1523125 0.1547890 0.1561232 0.1568231 0.1574385
+##  [8] 0.1575865 0.1581269 0.1586853 0.1588305 0.1570269 0.1550997</code></pre>
+<p>The best model is the 11th model.
+<br></p>
+<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="the-student-performance-example.html#cb138-1" tabindex="-1"></a><span class="do">## Extract the models&#39; Cp Mallows</span></span>
+<span id="cb138-2"><a href="the-student-performance-example.html#cb138-2" tabindex="-1"></a>rs<span class="sc">$</span>cp</span></code></pre></div>
+<pre><code>##  [1] 14.751803  8.164618  5.289832  5.143431  5.528772  6.208548  6.928720
+##  [8]  7.863899  8.620578  9.370388 10.308796 12.128682 14.000000</code></pre>
+<p>The best model is the 4th model.
+<br></p>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="the-student-performance-example.html#cb140-1" tabindex="-1"></a><span class="do">## Extract the models&#39; BIC</span></span>
+<span id="cb140-2"><a href="the-student-performance-example.html#cb140-2" tabindex="-1"></a>rs<span class="sc">$</span>bic</span></code></pre></div>
+<pre><code>##  [1] -43.004859 -45.475340 -44.374670 -40.562949 -36.222213 -31.587827 -26.916684
+##  [8] -22.029154 -17.328400 -12.638892  -7.758187  -1.965927   3.879571</code></pre>
+<p>The best model is the 2nd model.</p>
+<p><br></p>
+<p>If we want to identify which variables are included in each model, then we use the <code>rs$which</code> command, where the rows correspond to the model and the columns to the variable. TRUE means that the variable is included in the model and FALSE means otherwise.
+<br></p>
+<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="the-student-performance-example.html#cb142-1" tabindex="-1"></a>rs<span class="sc">$</span>which</span></code></pre></div>
+<pre><code>##    (Intercept)   age  Medu  Fedu traveltime studytime failures famrel freetime
+## 1         TRUE FALSE FALSE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE
+## 2         TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE
+## 3         TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE
+## 4         TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE     TRUE
+## 5         TRUE FALSE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE
+## 6         TRUE FALSE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE
+## 7         TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE
+## 8         TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE
+## 9         TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE   TRUE     TRUE
+## 10        TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE   TRUE     TRUE
+## 11        TRUE  TRUE  TRUE FALSE       TRUE      TRUE     TRUE   TRUE     TRUE
+## 12        TRUE  TRUE  TRUE FALSE       TRUE      TRUE     TRUE   TRUE     TRUE
+## 13        TRUE  TRUE  TRUE  TRUE       TRUE      TRUE     TRUE   TRUE     TRUE
+##    goout  Dalc  Walc health absences
+## 1  FALSE FALSE FALSE  FALSE    FALSE
+## 2  FALSE FALSE FALSE  FALSE    FALSE
+## 3   TRUE FALSE FALSE  FALSE    FALSE
+## 4   TRUE FALSE FALSE  FALSE    FALSE
+## 5   TRUE FALSE FALSE  FALSE    FALSE
+## 6   TRUE FALSE  TRUE  FALSE    FALSE
+## 7   TRUE FALSE FALSE  FALSE     TRUE
+## 8   TRUE FALSE  TRUE  FALSE     TRUE
+## 9   TRUE FALSE  TRUE   TRUE    FALSE
+## 10  TRUE FALSE  TRUE   TRUE     TRUE
+## 11  TRUE FALSE  TRUE   TRUE     TRUE
+## 12  TRUE  TRUE  TRUE   TRUE     TRUE
+## 13  TRUE  TRUE  TRUE   TRUE     TRUE</code></pre>
+<p><br></p>
+<p>For example, Model 1 only contains <code>failures</code>, and the <code>intercept.</code></p>
+<p><br></p>
+<p>Next, compute “by hand” the AIC/BIC for those <span class="math inline">\(p\)</span> models and find the one that achieves the the smallest score:
+<br></p>
+<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="the-student-performance-example.html#cb144-1" tabindex="-1"></a>msize <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span>p;</span>
+<span id="cb144-2"><a href="the-student-performance-example.html#cb144-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb144-3"><a href="the-student-performance-example.html#cb144-3" tabindex="-1"></a>Aic <span class="ot">=</span> n<span class="sc">*</span><span class="fu">log</span>(rs<span class="sc">$</span>rss<span class="sc">/</span>n) <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>msize;</span>
+<span id="cb144-4"><a href="the-student-performance-example.html#cb144-4" tabindex="-1"></a>Bic <span class="ot">=</span> n<span class="sc">*</span><span class="fu">log</span>(rs<span class="sc">$</span>rss<span class="sc">/</span>n) <span class="sc">+</span> msize<span class="sc">*</span><span class="fu">log</span>(n);</span></code></pre></div>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="the-student-performance-example.html#cb145-1" tabindex="-1"></a>Aic</span></code></pre></div>
+<pre><code>##  [1] 1148.427 1141.978 1139.100 1138.932 1139.294 1139.950 1140.642 1141.551
+##  [9] 1142.272 1142.983 1143.885 1145.698 1147.565</code></pre>
+<p>AIC chooses the 4th model.</p>
+<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="the-student-performance-example.html#cb147-1" tabindex="-1"></a>Bic</span></code></pre></div>
+<pre><code>##  [1] 1152.406 1149.936 1151.036 1154.848 1159.189 1163.823 1168.494 1173.382
+##  [9] 1178.082 1182.772 1187.653 1193.445 1199.290</code></pre>
+<p>As we saw before, BIC selects the 2nd model.
+<br>
+We can also plot the results for the various models. So, we have
+<br></p>
+<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="the-student-performance-example.html#cb149-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb149-2"><a href="the-student-performance-example.html#cb149-2" tabindex="-1"></a><span class="fu">plot</span>(msize, rs<span class="sc">$</span>adjr2, <span class="at">xlab=</span><span class="st">&quot;No. of Parameters&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Adjusted Rsquare&quot;</span>);</span>
+<span id="cb149-3"><a href="the-student-performance-example.html#cb149-3" tabindex="-1"></a><span class="fu">plot</span>(msize, rs<span class="sc">$</span>cp, <span class="at">xlab=</span><span class="st">&quot;No. of Parameters&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Mallow&#39;s Cp&quot;</span>);</span>
+<span id="cb149-4"><a href="the-student-performance-example.html#cb149-4" tabindex="-1"></a><span class="fu">plot</span>(msize, Aic, <span class="at">xlab=</span><span class="st">&quot;No. of Parameters&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;AIC&quot;</span>)</span>
+<span id="cb149-5"><a href="the-student-performance-example.html#cb149-5" tabindex="-1"></a><span class="fu">plot</span>(msize, Bic, <span class="at">xlab=</span><span class="st">&quot;No. of Parameters&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;BIC&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-81-1.png" width="672" />
+<br></p>
+<p>For this particular data set, AIC and BIC end up selecting different models. <strong>The model selected by AIC is larger than the one selected by BIC</strong>, which is common. AIC favors larger models while BIC favors smaller models. Although the model selected by BIC does not have the smallest AIC score, its AIC score is very close to the smallest one.
+<br></p>
+<div class="sourceCode" id="cb150"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb150-1"><a href="the-student-performance-example.html#cb150-1" tabindex="-1"></a><span class="fu">cbind</span>(rs<span class="sc">$</span>which[<span class="fu">which.min</span>(Aic),], rs<span class="sc">$</span>which[<span class="fu">which.min</span>(Bic), ])</span></code></pre></div>
+<pre><code>##              [,1]  [,2]
+## (Intercept)  TRUE  TRUE
+## age         FALSE FALSE
+## Medu         TRUE  TRUE
+## Fedu        FALSE FALSE
+## traveltime  FALSE FALSE
+## studytime   FALSE FALSE
+## failures     TRUE  TRUE
+## famrel      FALSE FALSE
+## freetime     TRUE FALSE
+## goout        TRUE FALSE
+## Dalc        FALSE FALSE
+## Walc        FALSE FALSE
+## health      FALSE FALSE
+## absences    FALSE FALSE</code></pre>
+<p><br></p>
+<p><code>leaps</code> does not return AIC, but BIC. Its BIC differs from what has been computed above, but the difference is a constant, so the two BIC formulas (ours and the one used by leaps) are essentially the same.
+<br></p>
+<div class="sourceCode" id="cb152"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb152-1"><a href="the-student-performance-example.html#cb152-1" tabindex="-1"></a><span class="fu">cbind</span>(rs<span class="sc">$</span>bic, Bic, rs<span class="sc">$</span>bic <span class="sc">-</span> Bic)</span></code></pre></div>
+<pre><code>##                       Bic          
+##  [1,] -43.004859 1152.406 -1195.411
+##  [2,] -45.475340 1149.936 -1195.411
+##  [3,] -44.374670 1151.036 -1195.411
+##  [4,] -40.562949 1154.848 -1195.411
+##  [5,] -36.222213 1159.189 -1195.411
+##  [6,] -31.587827 1163.823 -1195.411
+##  [7,] -26.916684 1168.494 -1195.411
+##  [8,] -22.029154 1173.382 -1195.411
+##  [9,] -17.328400 1178.082 -1195.411
+## [10,] -12.638892 1182.772 -1195.411
+## [11,]  -7.758187 1187.653 -1195.411
+## [12,]  -1.965927 1193.445 -1195.411
+## [13,]   3.879571 1199.290 -1195.411</code></pre>
+<p><br></p>
+<p>What are the 2nd and 3rd best models in terms of AIC/BIC?
+This cannot be answered by looking at the AIC/BIC plots shown above. Instead, we need to run the following code.
+<br></p>
+<div class="sourceCode" id="cb154"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb154-1"><a href="the-student-performance-example.html#cb154-1" tabindex="-1"></a>regsubsets_model<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">regsubsets</span>(Grades <span class="sc">~</span> ., <span class="at">data=</span>stu_performance, <span class="at">nbest =</span> <span class="dv">3</span>, <span class="at">nvmax =</span> p)</span>
+<span id="cb154-2"><a href="the-student-performance-example.html#cb154-2" tabindex="-1"></a>rs<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">summary</span>(regsubsets_model<span class="fl">.1</span>)</span>
+<span id="cb154-3"><a href="the-student-performance-example.html#cb154-3" tabindex="-1"></a><span class="co">#rs.1$which</span></span>
+<span id="cb154-4"><a href="the-student-performance-example.html#cb154-4" tabindex="-1"></a>msize<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">apply</span>(rs<span class="fl">.1</span><span class="sc">$</span>which, <span class="dv">1</span>, sum) <span class="sc">-</span> <span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb155-1"><a href="the-student-performance-example.html#cb155-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb155-2"><a href="the-student-performance-example.html#cb155-2" tabindex="-1"></a>Aic<span class="fl">.1</span> <span class="ot">=</span> n<span class="sc">*</span><span class="fu">log</span>(rs<span class="fl">.1</span><span class="sc">$</span>rss<span class="sc">/</span>n) <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>msize<span class="fl">.1</span></span>
+<span id="cb155-3"><a href="the-student-performance-example.html#cb155-3" tabindex="-1"></a>Bic<span class="fl">.1</span> <span class="ot">=</span> n<span class="sc">*</span><span class="fu">log</span>(rs<span class="fl">.1</span><span class="sc">$</span>rss<span class="sc">/</span>n) <span class="sc">+</span> msize<span class="fl">.1</span><span class="sc">*</span><span class="fu">log</span>(n)</span>
+<span id="cb155-4"><a href="the-student-performance-example.html#cb155-4" tabindex="-1"></a><span class="fu">plot</span>(msize<span class="fl">.1</span>, Aic<span class="fl">.1</span>, <span class="at">xlab=</span><span class="st">&quot;No. of Parameters&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;AIC&quot;</span>)</span>
+<span id="cb155-5"><a href="the-student-performance-example.html#cb155-5" tabindex="-1"></a><span class="fu">plot</span>(msize<span class="fl">.1</span>, Bic<span class="fl">.1</span>, <span class="at">xlab=</span><span class="st">&quot;No. of Parameters&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;BIC&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-85-1.png" width="672" /></p>
+<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb156-1"><a href="the-student-performance-example.html#cb156-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb156-2"><a href="the-student-performance-example.html#cb156-2" tabindex="-1"></a><span class="fu">plot</span>(msize<span class="fl">.1</span>, Aic<span class="fl">.1</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">1135</span>, <span class="dv">1152</span>), <span class="at">xlab=</span><span class="st">&quot;No. of Parameters&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;AIC&quot;</span>)</span>
+<span id="cb156-3"><a href="the-student-performance-example.html#cb156-3" tabindex="-1"></a><span class="fu">plot</span>(msize<span class="fl">.1</span>, Bic<span class="fl">.1</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">1140</span>, <span class="dv">1230</span>), <span class="at">xlab=</span><span class="st">&quot;No. of Parameters&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;BIC&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-86-1.png" width="672" /></p>
+<div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb157-1"><a href="the-student-performance-example.html#cb157-1" tabindex="-1"></a><span class="co"># top three models by AIC</span></span>
+<span id="cb157-2"><a href="the-student-performance-example.html#cb157-2" tabindex="-1"></a>rs<span class="fl">.1</span><span class="sc">$</span>which[<span class="fu">order</span>(Aic<span class="fl">.1</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],]</span></code></pre></div>
+<pre><code>##   (Intercept)   age Medu  Fedu traveltime studytime failures famrel freetime
+## 4        TRUE FALSE TRUE FALSE      FALSE     FALSE     TRUE  FALSE     TRUE
+## 3        TRUE FALSE TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE
+## 5        TRUE FALSE TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE
+##   goout  Dalc  Walc health absences
+## 4  TRUE FALSE FALSE  FALSE    FALSE
+## 3  TRUE FALSE FALSE  FALSE    FALSE
+## 5  TRUE FALSE FALSE  FALSE    FALSE</code></pre>
+<div class="sourceCode" id="cb159"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb159-1"><a href="the-student-performance-example.html#cb159-1" tabindex="-1"></a><span class="co"># top three models by BIC</span></span>
+<span id="cb159-2"><a href="the-student-performance-example.html#cb159-2" tabindex="-1"></a>rs<span class="fl">.1</span><span class="sc">$</span>which[<span class="fu">order</span>(Bic<span class="fl">.1</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],]</span></code></pre></div>
+<pre><code>##   (Intercept)   age  Medu  Fedu traveltime studytime failures famrel freetime
+## 2        TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE
+## 3        TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE
+## 1        TRUE FALSE FALSE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE
+##   goout  Dalc  Walc health absences
+## 2 FALSE FALSE FALSE  FALSE    FALSE
+## 3  TRUE FALSE FALSE  FALSE    FALSE
+## 1 FALSE FALSE FALSE  FALSE    FALSE</code></pre>
+<p><br><br></p>
+</div>
+<div id="subset-selection-via-the-step-fucntion" class="section level4 hasAnchor" number="3.4.0.2">
+<h4><span class="header-section-number">3.4.0.2</span> Subset Selection via the <code>step</code> fucntion<a href="the-student-performance-example.html#subset-selection-via-the-step-fucntion" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><br></p>
+<p><br>
+We can use the <strong>stepwise</strong> approach to search possible models moving forward, backwards or in both directions (stepwise).</p>
+<p>The <code>R</code> function to do this is the <code>step</code> function. The default is the stepwise method, so if we want to change this, we choose the <code>direction</code> option. The method by default outputs <strong>all</strong> the steps of the algorithm, so we can set <code>trace=0</code> if we do not want to see the intermediate results. Also, the default criterion for model selection is the <code>AIC</code>. However, we can select the BIC criterion by selecting <code>k = long(n)</code>.</p>
+<p><br></p>
+<div class="sourceCode" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb161-1"><a href="the-student-performance-example.html#cb161-1" tabindex="-1"></a><span class="do">## Stepwise AIC</span></span>
+<span id="cb161-2"><a href="the-student-performance-example.html#cb161-2" tabindex="-1"></a></span>
+<span id="cb161-3"><a href="the-student-performance-example.html#cb161-3" tabindex="-1"></a>stepAIC <span class="ot">=</span> <span class="fu">step</span>(performance.full, <span class="at">trace=</span><span class="dv">0</span>, <span class="at">direction=</span><span class="st">&quot;both&quot;</span>)  </span>
+<span id="cb161-4"><a href="the-student-performance-example.html#cb161-4" tabindex="-1"></a><span class="co">#stepAIC = step(performance.full, direction=&quot;both&quot;)</span></span></code></pre></div>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="the-student-performance-example.html#cb162-1" tabindex="-1"></a><span class="do">## Stepwise BIC</span></span>
+<span id="cb162-2"><a href="the-student-performance-example.html#cb162-2" tabindex="-1"></a></span>
+<span id="cb162-3"><a href="the-student-performance-example.html#cb162-3" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">dim</span>(stu_performance)[<span class="dv">1</span>]</span>
+<span id="cb162-4"><a href="the-student-performance-example.html#cb162-4" tabindex="-1"></a>stepBIC <span class="ot">=</span> <span class="fu">step</span>(performance.full, <span class="at">trace=</span><span class="dv">0</span>, <span class="at">direction=</span><span class="st">&quot;both&quot;</span>, <span class="at">k=</span><span class="fu">log</span>(n))      </span></code></pre></div>
+<p><br></p>
+<p>If we want to retrieve the output from the <code>step</code> function, then we can use the following code:
+<br></p>
+<div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb163-1"><a href="the-student-performance-example.html#cb163-1" tabindex="-1"></a>sel.var.AIC <span class="ot">=</span> <span class="fu">attr</span>(stepAIC<span class="sc">$</span>terms, <span class="st">&quot;term.labels&quot;</span>)</span>
+<span id="cb163-2"><a href="the-student-performance-example.html#cb163-2" tabindex="-1"></a>sel.var.BIC <span class="ot">=</span> <span class="fu">attr</span>(stepBIC<span class="sc">$</span>terms, <span class="st">&quot;term.labels&quot;</span>)</span>
+<span id="cb163-3"><a href="the-student-performance-example.html#cb163-3" tabindex="-1"></a>sel.var.AIC</span></code></pre></div>
+<pre><code>## [1] &quot;Medu&quot;     &quot;failures&quot; &quot;freetime&quot; &quot;goout&quot;</code></pre>
+<div class="sourceCode" id="cb165"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb165-1"><a href="the-student-performance-example.html#cb165-1" tabindex="-1"></a><span class="fu">length</span>(sel.var.AIC)</span></code></pre></div>
+<pre><code>## [1] 4</code></pre>
+<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb167-1"><a href="the-student-performance-example.html#cb167-1" tabindex="-1"></a><span class="fu">length</span>(sel.var.BIC)</span></code></pre></div>
+<pre><code>## [1] 2</code></pre>
+<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="the-student-performance-example.html#cb169-1" tabindex="-1"></a><span class="fu">c</span>(<span class="st">&quot;Medu&quot;</span>, <span class="st">&quot;failures&quot;</span>,<span class="st">&quot;freetime&quot;</span>, <span class="st">&quot;goout&quot;</span>) <span class="sc">%in%</span> sel.var.AIC</span></code></pre></div>
+<pre><code>## [1] TRUE TRUE TRUE TRUE</code></pre>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="the-student-performance-example.html#cb171-1" tabindex="-1"></a>sel.var.BIC <span class="sc">%in%</span> sel.var.AIC</span></code></pre></div>
+<pre><code>## [1] TRUE TRUE</code></pre>
+<p><br><br></p>
+</div>
+<div id="lasso-and-ridge-regression" class="section level4 hasAnchor" number="3.4.0.3">
+<h4><span class="header-section-number">3.4.0.3</span> LASSO and RIDGE Regression<a href="the-student-performance-example.html#lasso-and-ridge-regression" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><br><br></p>
+<p><code>glmnet</code> is the library needed for both lasso (<span class="math inline">\(\alpha=1\)</span>) and ridge (<span class="math inline">\(\alpha=0\)</span>). Check more <code>glmnet</code> examples at <a href="https://web.stanford.edu/~hastie/glmnet/glmnet_beta.html" class="uri">https://web.stanford.edu/~hastie/glmnet/glmnet_beta.html</a></p>
+<p><br></p>
+<div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb173-1"><a href="the-student-performance-example.html#cb173-1" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code></pre></div>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## Loaded glmnet 4.1-10</code></pre>
+<div class="sourceCode" id="cb176"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb176-1"><a href="the-student-performance-example.html#cb176-1" tabindex="-1"></a><span class="do">## The input in the glmnet function should be in matrix format:</span></span>
+<span id="cb176-2"><a href="the-student-performance-example.html#cb176-2" tabindex="-1"></a></span>
+<span id="cb176-3"><a href="the-student-performance-example.html#cb176-3" tabindex="-1"></a>X <span class="ot">=</span> <span class="fu">as.matrix</span>(stu_performance[, <span class="fu">names</span>(stu_performance) <span class="sc">!=</span> <span class="st">&quot;Grades&quot;</span>])</span>
+<span id="cb176-4"><a href="the-student-performance-example.html#cb176-4" tabindex="-1"></a>Y <span class="ot">=</span> stu_performance<span class="sc">$</span>Grades</span></code></pre></div>
+<p><br></p>
+<p>We are going to split the data in training (80%) and testing (20%) data sets. Then, we will select the variables in the training set and estimate the coefficients and compute the average MSE on the testing data.</p>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="the-student-performance-example.html#cb177-1" tabindex="-1"></a><span class="do">## Training/ Testing Data Sets</span></span>
+<span id="cb177-2"><a href="the-student-performance-example.html#cb177-2" tabindex="-1"></a></span>
+<span id="cb177-3"><a href="the-student-performance-example.html#cb177-3" tabindex="-1"></a>ntest <span class="ot">=</span> <span class="fu">round</span>(n<span class="sc">*</span><span class="fl">0.2</span>);    <span class="do">## testing set sample size</span></span>
+<span id="cb177-4"><a href="the-student-performance-example.html#cb177-4" tabindex="-1"></a>ntrain <span class="ot">=</span> n <span class="sc">-</span> ntest;      <span class="do">## training set sample size</span></span>
+<span id="cb177-5"><a href="the-student-performance-example.html#cb177-5" tabindex="-1"></a>test.id <span class="ot">=</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, ntest);   <span class="do">## sampling indices for the test data</span></span>
+<span id="cb177-6"><a href="the-student-performance-example.html#cb177-6" tabindex="-1"></a></span>
+<span id="cb177-7"><a href="the-student-performance-example.html#cb177-7" tabindex="-1"></a>Ytest <span class="ot">=</span> Y[test.id]; <span class="do">## Response in the Testing data</span></span></code></pre></div>
+<p><br>
+Training the <strong>full model</strong> in the <em>training</em> data set:
+<br></p>
+<div class="sourceCode" id="cb178"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb178-1"><a href="the-student-performance-example.html#cb178-1" tabindex="-1"></a><span class="do">## Fit the Full model in the training data</span></span>
+<span id="cb178-2"><a href="the-student-performance-example.html#cb178-2" tabindex="-1"></a>full.model <span class="ot">=</span> <span class="fu">lm</span>(Y[<span class="sc">-</span>test.id]<span class="sc">~</span>., <span class="at">data =</span> stu_performance[<span class="sc">-</span>test.id, ])</span></code></pre></div>
+<p><br>
+We then use the full model to <strong>predict</strong> values and <em>compute the MSE on the testing data set</em>:
+<br></p>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="the-student-performance-example.html#cb179-1" tabindex="-1"></a><span class="do">## Predicted values on the testing data set</span></span>
+<span id="cb179-2"><a href="the-student-performance-example.html#cb179-2" tabindex="-1"></a>Ytest.pred <span class="ot">=</span> <span class="fu">predict</span>(full.model, <span class="at">newdata=</span> stu_performance[test.id, ]);</span>
+<span id="cb179-3"><a href="the-student-performance-example.html#cb179-3" tabindex="-1"></a></span>
+<span id="cb179-4"><a href="the-student-performance-example.html#cb179-4" tabindex="-1"></a><span class="do">## Averaged MSE on the test set</span></span>
+<span id="cb179-5"><a href="the-student-performance-example.html#cb179-5" tabindex="-1"></a><span class="fu">sum</span>((Ytest <span class="sc">-</span> Ytest.pred)<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>ntest </span></code></pre></div>
+<pre><code>## [1] 7.933741e-30</code></pre>
+
+</div>
+</div>
+<!-- </div> -->
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="shrinkage-methods.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="nonlinear-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans serif",
+    "size": 1
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/03-variableselection.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section",
+    "toc_depth": 4,
+    "toc_float": true,
+    "scroll_highlight": true
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

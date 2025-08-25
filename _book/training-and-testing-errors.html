@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3.1 Training and Testing Errors | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3.1 Training and Testing Errors | CS 598 Practical Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3.1 Training and Testing Errors | CS 598 Practical Statistical Learning" />
+  
+  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  
+
+<meta name="author" content="Alexandra Chronopoulou" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="variable-selection-regularization.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>2.1</b> Multiple Linear Regression (MLR) Model</a></li>
+<li class="chapter" data-level="2.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>2.2</b> MLR Model Fitting</a></li>
+<li class="chapter" data-level="2.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>2.3</b> Least-Squares &amp; Normal Equations</a></li>
+<li class="chapter" data-level="2.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>2.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
+<li class="chapter" data-level="2.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>2.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
+<li class="chapter" data-level="2.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>2.6</b> Rank deficiency</a></li>
+<li class="chapter" data-level="2.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>2.7</b> Hypothesis Testing in MLR</a></li>
+<li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
+<li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
+<li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
+<li class="chapter" data-level="2.11" data-path="the-birthweight-example-in-r.html"><a href="the-birthweight-example-in-r.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Example in <code>R</code></a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="training-and-testing-errors.html"><a href="training-and-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training and Testing Errors</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="training-and-testing-errors" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Training and Testing Errors<a href="training-and-testing-errors.html#training-and-testing-errors" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Let’s consider the multiple linear regression model with <span class="math inline">\(p\)</span> predictors <strong>plus</strong> the intercept, i.e.
+<span class="math display">\[Y \sim X_1+X_2+ \ldots+X_p\]</span></p>
+<p>In many applications, the number of explanatory variables, i.e., <span class="math inline">\(p\)</span> is large and in some cases we could even have <span class="math inline">\(n\ll p\)</span>. But, this does not necessarily mean that all the variables are relevant to the response <span class="math inline">\(Y\)</span>. In fact, <em>only a small portion</em> of the <span class="math inline">\(p\)</span> variables are believed to be relevant to <span class="math inline">\(Y\)</span>.</p>
+<p>Our <strong>goal</strong> in this chapter is to develop methods that will allow us to efficiently identify the set of predictors that are useful estimating/predicting the response. That is, we need to identify
+<font color=Darkblue>
+<span class="math display">\[S=\left\{j: \beta_j \neq 0\right\}\]</span>
+</font></p>
+<p>So far in this course, we have discussed the importance of creating a model that is good for estimation purposes, that satisfies all model assumptions and includes variables that are statistically significant. We also mentioned that when our main purpose is to build a strong predictive model, we can allow our model to deviate from some of the assumptions. So, if our task is to go well on prediction, then <font color=blue><em>why is it important to remove unnecessary variables from the model</em></font>?</p>
+<p>Recall that the least squares estimator <span class="math inline">\(\hat{\mathbf{\beta}}\)</span> is unbiased, which means that estimators for irrelevant <span class="math inline">\(\hat{\beta}_j\)</span> (with <span class="math inline">\(j \in S^c\)</span>) will eventually go to zero anyway.<br></p>
+<p>To better understand the implications of unnecessary parameters in a MLR model, let us further discuss and quantify the <font color=Darkblue><strong>Training</strong></font> and <font color=Darkblue><strong>Testing Errors</strong></font>.</p>
+<p><br></p>
+<p>Multiple Linear Regression Model</p>
+<p><span class="math display">\[Y \sim 1+ X_1+X_2+ \ldots+X_p\]</span>
+where we have <span class="math inline">\(p\)</span> non-intercept} predictors.</p>
+<p>In many applications, we have a lot of explanatory variables, i.e., <span class="math inline">\(p\)</span> is large and we could even have <span class="math inline">\(p \gg n\)</span>, but only} a small portion of the <span class="math inline">\(p\)</span> variables are believed to be relevant to <span class="math inline">\(Y\)</span>.</p>
+<p>Of interest is to find which variables among the <span class="math inline">\(p\)</span>} are really effective in predicting <span class="math inline">\(Y\)</span>.</p>
+<p>If our goal is simply to do well on prediction, then should we care about variable selection?</p>
+<p><span class="math inline">\(\longrightarrow\)</span> Training vs. Testing Errors</p>
+<p>Test Error vs. Training Error</p>
+<p>Training data: <span class="math inline">\(\{\mathbf{x}_i, y_i \}_{i=1}^n\)</span></p>
+<p>Test data: <span class="math inline">\(\{\mathbf{x}_i, y_i^* \}_{i=1}^n\)</span> is an independent data set collected at the same location <span class="math inline">\(\mathbf{x}_i\)</span>’s (also known as in-sample prediction)</p>
+<p>Assume both data sets come from a linear model:
+<span class="math display">\[  
+    \mathbf{y}_{n\times 1},\,\,  \mathbf{y}^*_{n\times 1}  \sim^{iid} N_n(\mathbf{\mu},\sigma^2 \mathbf{I}_n) \text{ and } \mathbf{\mu}=\mathbf{X}\mathbf{\beta}\]</span></p>
+<p>Equivalently,
+<span class="math display">\[
+      \mathbf{y}=\mathbf{X}\mathbf{\beta} + \mathbf{\varepsilon} \qquad
+    \mathbf{y}^*=\mathbf{X}\mathbf{\beta} + \mathbf{\varepsilon}^*
+\]</span>
+with <span class="math inline">\(\mathbf{\varepsilon}_{n\times1} \sim^{iid} \mathcal{N}_n(\mathbf{0},\sigma^2 \mathbf{I}_n)\)</span>, <span class="math inline">\(\mathbf{\varepsilon}_{n\times 1}^* \sim^{iid} \mathcal{N}_n(\mathbf{0},\sigma^2 \mathbf{I}_n)\)</span> independent.</p>
+<p>MSE Testing} &amp; MSE Training under the true model</p>
+<p>If this is the true model, we can compute
+<span class="math display">\[\begin{align*}
+  \mathbb{E}(Train Error) &amp;=
+    \mathbb{E}\Bigl(||\mathbf{y} - \mathbf{X} \hat{\beta} ||^2 \Bigr) =   n\sigma^2 \mathbf{-} p \sigma^2, \\
+  \mathbb{E}(Test Error)  &amp;=  \mathbb{E}\bigl(||\mathbf{y}^* - \mathbf{X} \hat{\beta} ||^2 \bigr) =  n \sigma^2 \mathbf{+}  p \sigma^2
+\end{align*}\]</span></p>
+<p>Training error decreases with <span class="math inline">\(p\)</span>.</p>
+<p>Testing error increases with <span class="math inline">\(p\)</span>:
+If our goal is pure prediction, adding more variables to matrix <span class="math inline">\(\mathbf{X}\)</span> is not the best option!</p>
+<p>Assumptions</p>
+<p>The mean of <span class="math inline">\(\mathbf{y}\)</span>, i.e. <span class="math inline">\(E(\mathbf{Y}|\mathbf{X})\)</span> is in <span class="math inline">\(\mathcal{C}(\mathbf{X})\)</span>, i.e., there exists some coefficient vector <span class="math inline">\(\mathbf{\beta}\)</span> such that <span class="math inline">\(E(\mathbf{Y}|\mathbf{X}) = \mathbf{X}\mathbf{\beta}\)</span>.</p>
+<p>The design matrix <span class="math inline">\(\mathbf{X}\)</span> contains all available predictors. In reality, we run a linear regression model using only a subset} of the columns of <span class="math inline">\(\mathbf{X}\)</span>. Thus, in practice there will be an additional bias term}.</p>
+<p>MSE Testing} &amp; MSE Training in practice</p>
+<p>In practice:</p>
+<p><span class="math inline">\(E(\mathbf{Y}|\mathbf{X})\)</span> is not} necessarily linear. We may approximate it with a linear function, but in this case we need to consider the error we introduce.</p>
+<p>Even if linearity holds, we may consider only a subset} of the available predictors, again introducing an additional source of error.</p>
+<p>So, generally we may have
+<span class="math display">\[\text{Model}:  Y = f(X) + \varepsilon\]</span>
+in which the <span class="math inline">\(f\)</span> may only be approximated by a linear <span class="math inline">\(f^*\)</span> and <span class="math inline">\(\mathbf{X}\)</span> may only include a subset of the full <span class="math inline">\(\mathbf{X}\)</span>, i.e. the model misses some relevant variables. In both cases, we have bias.</p>
+<p>MSE Testing} &amp; MSE Training in practice</p>
+<p>The presence of bias changes the calculations for the MSE for training and testing. With technical details omitted, we have
+<span class="math display">\[\begin{align*}
+    \mathbb{E}(Test Error) &amp;= n\sigma^2 + p\sigma^2 + Bias\\
+    \mathbb{E}(Training Error) &amp;= n\sigma^2 - p\sigma^2 + Bias
+\end{align*}\]</span></p>
+<p><span class="math inline">\(p\sigma^2\)</span> is the unavoidable error (modeled via <span class="math inline">\(\varepsilon\)</span>).</p>
+<p>Bigger model (i.e., <span class="math inline">\(p\)</span> large) <span class="math inline">\(\rightarrow\)</span> small Bias, but large Variance (<span class="math inline">\(p\sigma^2\)</span>);</p>
+<p>Smaller model (i.e., <span class="math inline">\(p\)</span> small) <span class="math inline">\(\rightarrow\)</span> large Bias}, but small Variance} (<span class="math inline">\(p\sigma^2\)</span>).</p>
+<p>To reduce the test error (i.e., prediction error), the key is to find the best trade-off between Bias and Variance}.</p>
+<p>Subset Selection</p>
+<p>Best Subset Selection</p>
+<p>Which variables to keep, and which to drop?</p>
+<p>Why not just use a testing-based procedure to select the best model based on statistical tests, e.g. drop all variables not significant at <span class="math inline">\(\alpha_0\%\)</span>?</p>
+<p>Criterion-based procedures}: Select best model based on an information criteria (combining model fit and model complexity) for model comparison.</p>
+<p>Criterion-based procedures</p>
+<p>Subset Selection: Best Subset</p>
+<p>Score each model according to an information criteria.
+Use a searching algorithm to find the optimal model.</p>
+<p>Model selection criteria often takes the following form:</p>
+<p><span class="math display">\[raining Error + ComplexityPenalty\]</span></p>
+<p>In the context of linear regression models, complexity of a model increases with the number of predictor variables}.</p>
+<p>Training Error: an increasing} function of <span class="math inline">\(RSS\)</span>.</p>
+<p>Complexity Penalty: an increasing} function of <span class="math inline">\(p\)</span>.</p>
+<p>Why we do not use <span class="math inline">\(R^2\)</span> or <span class="math inline">\(RSS\)</span>?</p>
+<p>Model Selection Criteria}</p>
+<p>Akaike Information Criterion &amp; Bayesian Information Criterion}</p>
+<p><span class="math display">\[\begin{align*}
+AIC &amp;= -2 loglik + 2\;p}\\
+BIC &amp;= -2 loglik  + \log(n)\;p
+\end{align*}\]</span>
+where <span class="math inline">\(p\)</span> is the number of predictors included in model under consideration.</p>
+<p>For the linear regression model, the first term computes:
+<span class="math display">\[-2 loglik = n\log \frac{RSS}{n} \]</span></p>
+<p>The lower the AIC/BIC the better.<br />
+Note that when <span class="math inline">\(n\)</span> is large, adding an additional predictor costs a lot more in BIC than AIC. So, AIC tends to pick a bigger model than BIC.</p>
+<p>Model Selection Criteria</p>
+<p>Adjusted-<span class="math inline">\(R^2\)</span> for model with <span class="math inline">\(p\)</span> predictors</p>
+<p><span class="math display">\[\begin{align*}
+R^2_a &amp; = 1-\frac{RSS/(n-p-1)}{TSS/(n-1)}\\
+&amp; = 1- (1-R^2)\Bigl(\frac{n-1}{n-p -1}\Bigr)  =1-\frac{\hat{\sigma}^2}{\hat{\sigma}^2_0}}
+\end{align*}\]</span>
+where <span class="math inline">\(\hat{\sigma}\)</span> is the estimated <span class="math inline">\(\sigma^2\)</span> for the current fitted model, and <span class="math inline">\(\hat{\sigma}^2_0\)</span> is the estimated <span class="math inline">\(\sigma^2\)</span> for the full} fitted model. The higher the <span class="math inline">\(R^2_a\)</span> the better.</p>
+<p>Mallow’s <span class="math inline">\(C_p\)</span>
+<span class="math display">\[ C_p = \frac{RSS_{\mathbf{p}}}{\hat{\sigma}_0^2} +2p-n \]</span>
+where <span class="math inline">\(\hat{\sigma}_0^2\)</span> is the estimate of the error variance of the full model. Mallow’s <span class="math inline">\(C_p\)</span> behaves very similar to AIC and the lower the <span class="math inline">\(C_p\)</span> the better.</p>
+<p>Searching Algorithms</p>
+<p>Level-wise search algorithms}: return the global optimal solution among all possible models <span class="math inline">\(\longrightarrow\)</span> feasible for less than 40 variables.</p>
+<p>Find the model with the smallest <span class="math inline">\(RSS\)</span> among all models of the same size.</p>
+<p>Then, evaluate the score on the <span class="math inline">\(p\)</span> models and report the optimal one.</p>
+<ul>
+<li>Note that the penalty is the same for model of the same size.</li>
+</ul>
+<p>Searching Algorithms</p>
+<p>Greedy algorithms: fast, but only return a local optimal solution (which might be good enough in practice).</p>
+<p>Backward: start with the full model and sequentially delete predictors until the score does not improve.</p>
+<p>Forward: start with the null model and sequentially add predictors until the score does not improve.</p>
+<p>Stepwise: consider both deleting and adding one predictor at each stage.</p>
+<p>What if <span class="math inline">\(p&gt;n\)</span>?</p>
+<p>Model Selection Criteria Illustration}</p>
+<p>
+Complexity penalties (<span class="math inline">\(R^2_{\text{adjusted}}\)</span>, Mallow’s <span class="math inline">\(C_p\)</span>, AIC, and BIC) as a function of the number of parameters in the model.</p>
+<p>Some considerations</p>
+<p>Variable Screening</p>
+<p>When <span class="math inline">\(p\gg n\)</span>: starting with the full model and using the stepwise procedure cannot be used. So,</p>
+<p>pick a smaller initial model as a starting point by ranking the <span class="math inline">\(p\)</span> predictors by the absolute value of their (marginal) correlation with <span class="math inline">\(Y\)</span> ; keep the top <span class="math inline">\(K\)</span> predictors (e.g., <span class="math inline">\(K = n/3\)</span>).</p>
+<p>Variables removed with the screening process can still be added back by the stepwise procedure.</p>
+<p>Shrinkage Methods</p>
+<p>What to do if we have too many predictors?</p>
+<p>Too many predictors can create collinearity problems.</p>
+<p>Increasing the number of predictors will increase the prediction error.</p>
+<p>More predictors do not necessarily mean a better model, but more predictors would mean more information.</p>
+<p>We will study two methods to shrink the number of predictors in order to find a trade-off} between model bias and prediction error.</p>
+<p>Ridge Regression
+LASSO Regression</p>
+<p>Regression with Penalization</p>
+<p>What we have been doing so far:
+<span class="math display">\[\begin{align*}
+\hat{\beta} &amp;= \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2\\
+&amp;=  \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2 + \underbrace{\lambda ||\beta||_0}_{\text{penalty}}
+\end{align*}\]</span>
+where <span class="math inline">\(||\beta||_0 = \sum_{j=1}^{p} \mathbf{1}_{\beta_j \neq 0}\)</span>. Choosing <span class="math inline">\(\lambda\)</span> properly gives rise to: <span class="math inline">\(AIC\)</span>, <span class="math inline">\(BIC\)</span>, Mallow’s <span class="math inline">\(C_p\)</span>.</p>
+<p>Ridge Regression
+<span class="math display">\[\hat{\beta} =  \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2 + \lambda ||\beta||^2}, \text{ where } ||\beta||^2 = \sum_{j=1}^{p} \beta_j^2\]</span></p>
+<p>LASSO Regression}}
+<span class="math display">\[\hat{\beta} =  \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2 + \lambda |\beta|, \text{ where }  |\beta| = \sum_{j=1}^{p} |\beta_j|\]</span></p>
+<p>Regression with Penalization</p>
+<p>Remark</p>
+<p>The penalty term is not} location or scale invariant. What is the implication of this?</p>
+<p>Center} and Scale} each column of the design matrix <span class="math inline">\(\mathbf{X}\)</span>, that is, if <span class="math inline">\(\mathbf{x}_{j}\)</span>, <span class="math inline">\(j=1, \ldots, p\)</span> is a column of <span class="math inline">\(\mathbf{X}\)</span>
+<span class="math display">\[\tilde{\mathbf{x}}_{j} = \frac{ \mathbf{x}_{j} - \bar{\mathbf{x}}_{j} } { sd_{\mathbf{x}_{j}}} }\]</span></p>
+<p>Center} <span class="math inline">\(\mathbf{y}\)</span> to supress the incercept, i.e. <span class="math inline">\(\tilde{\mathbf{y}} = \mathbf{y}_{j} - \bar{\mathbf{y}}\)</span>}</p>
+<p>Strategy</p>
+<p>Center/scale variables as necessary before running penalized regression.
+Transform the variables back.
+Estimate the intercept.</p>
+<p>Ridge Regression}</p>
+<p>Ridge regression assumes that after normalization, some of the regression coefficients should not be very large.</p>
+<p>Ridge regression is very useful when you have collinearity and the LS regression coefficients are unstable.</p>
+<p>The method uses a penalized regression by adding a penalty term to the LS minimization problem :
+<span class="math display">\[minimize \,  (y-X\boldsymbol{\beta})^\top(y-X\boldsymbol{\beta}) + \lambda \sum_j \boldsymbol{\beta}_j^2}\]</span>
+with respect to <span class="math inline">\(\beta\)</span> for some <span class="math inline">\(\lambda \ge 0\)</span>.
+The penalty term is <span class="math inline">\(\sum_j \beta_j^2\)</span>.</p>
+<p>Ridge Regression</p>
+<p>Predictors are standardized first, and the response <span class="math inline">\(\mathbf{y}\)</span> is centered.</p>
+<p>The ridge regression LS estimates are:</p>
+<p><span class="math display">\[\boldsymbol{\hat{\beta}}= \Bigl(\mathbf{X}^T \mathbf{X} + \underbrace{\lambda I}_{\text{ridge}} \Bigr)^{-1} \mathbf{X}^T \mathbf{y}\]</span></p>
+<p>% The difference with standard LS is that the problem solution <span class="math inline">\(\boldsymbol{\beta}\)</span> minimizes:
+<span class="math display">\[\Bigl(\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\Bigr )^\top \Bigl(\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\Bigr)\;\;\;\mbox{subject to}\;\;\; \sum_{j=1}^p\boldsymbol{\beta}_j^2\leq t^2\]</span></p>
+<p>The parameter <span class="math inline">\(\lambda\)</span> should be chosen to have stable estimates of <span class="math inline">\(\beta\)</span>.</p>
+<p>Ridge was initially introduced to address multicollinearity issues, by adding a non-negative constant to the diagonal of the design matrix}.</p>
+<p>Ridge Regression LS Coefficients</p>
+<p>If we assume that <span class="math inline">\(\mathbf{X}^T\mathbf{X} = \mathbf{I}_p\)</span>, that is the columns of the design matrix are orthogonal:</p>
+<p>If the columns of the design matrix are not orthogonal, then we can run the regression against an orthonormal version of <span class="math inline">\(\mathbf{X}\)</span>, known as principal components analysis}, or singular value decomposition}.</p>
+<p>Singular Value Decomposition (SVD)</p>
+<p>SVD of <span class="math inline">\(\mathbf{X}_{n\times p}\)</span></p>
+<p><span class="math display">\[\mathbf{X} = \mathbf{U}_{n\times p} \; \mathbf{D}_{p\times p}\, \mathbf{V}_{p\times p}^T\]</span></p>
+<p><span class="math inline">\(\mathbf{U}_{n\times p}\)</span> columns are spanning the column space of <span class="math inline">\(\mathbf{X}\)</span>.</p>
+<p><span class="math inline">\(\mathbf{V}_{p\times p}\)</span> spanning the row space of <span class="math inline">\(\mathbf{X}\)</span>.</p>
+<p><span class="math inline">\(\mathbf{D}_{p\times p}\)</span> diagonal values with <span class="math inline">\(d_1 \geq \ldots \geq d_p \geq 0\)</span> the singular values of <span class="math inline">\(\mathbf{X}\)</span>. If one or more <span class="math inline">\(d_j = 0\)</span>, then <span class="math inline">\(\mathbf{X}\)</span> is singular.</p>
+<p>Singular Value Decomposition (SVD)</p>
+<p>SVD of Fitted Values: LS} vs. Ridge</p>
+<p>The ridge estimate <span class="math inline">\(\hat{\beta}_{ridge}\)</span> shrinks the LS estimate <span class="math inline">\(\hat{\beta}_{LS}\)</span> by a factor of <span class="math inline">\(\frac{d_j^2}{d_j^2 + \lambda}\)</span>}, and the smaller <span class="math inline">\(d_j^2\)</span> the greater the shrinkage.
+<span class="math inline">\(\longrightarrow\)</span> the smaller the eigenvalues the more the shrinkage.</p>
+<p>Understanding the Shrinkage</p>
+<p>Ridge regression computes the coordinates of <span class="math inline">\(\mathbf{y}\)</span> with respect to an orthonormal basis <span class="math inline">\(\mathbf{U}\)</span>.</p>
+<p>It shrinks the coordinates by the factors <span class="math inline">\(\frac{d_j^2}{d_j^2 + \lambda\)</span>, and the smaller <span class="math inline">\(d_j^2\)</span> the greater the shrinkage.</p>
+<p>The SVD of <span class="math inline">\(\mathbf{X}^T \mathbf{X}\)</span> can be written as
+<span class="math display">\[\mathbf{X}^T \mathbf{X} =  \bigl(\mathbf{U}\; \mathbf{D}\;\mathbf{V}\bigr)^T\mathbf{U}\; \mathbf{D}\;\mathbf{V} =  \mathbf{V} \; \mathbf{D}^2\; \mathbf{V}^T\]</span>
+which is the eigen-decomposition of <span class="math inline">\(\mathbf{X}^T \mathbf{X}\)</span>.</p>
+<p>The eigenvectors <span class="math inline">\(v_j\)</span>} are also called the principal components directions} of the columns of <span class="math inline">\(\mathbf{X}\)</span>.</p>
+<p>The first principal component} direction <span class="math inline">\(v_1\)</span> has the property that <span class="math inline">\(z_1 = \mathbf{X} v_1 = \mathbf{u}_1 d_1\)</span> has the largest sample variance} among all normalized linear combinations of the columns of <span class="math inline">\(\mathbf{X}\)</span>.</p>
+<p>Ridge regression projects <span class="math inline">\(\mathbf{y}\)</span> onto the principal components, and then shrinks the coefficients of the low–variance components more than the high-variance components.</p>
+<p>Degrees of Freedom of a Regression Model</p>
+<p>Computing the Degrees of Freedom
+<span class="math display">\[df = \sum_{i=1}^{n} Cor \bigl(y_i,\; \hat{y}_i \bigr)\]</span></p>
+<p>In linear regression : <span class="math inline">\(\hat{\mathbf{y}} = \mathbf{H} \mathbf{y}\)</span>, in which case
+<span class="math display">\[df = \sum_{i=1}^{n} Cor \bigl(y_i,\; \hat{y}_i \bigr) = \sum_{i=1}^{n} H_{ii} = tr \bigl( \mathbf{H} \bigr) = p\]</span>
+where (recall) <span class="math inline">\(\mathbf{H}\)</span> is the hat matrix equal to <span class="math inline">\(\mathbf{X} \bigl( \mathbf{X}^T \mathbf{X} \bigr)^{-1} \mathbf{X}^T \mathbf{y}\)</span>.</p>
+<p>In ridge regression: <span class="math inline">\(\hat{y} = \underbrace{ \mathbf{X} \bigl(\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I} \bigr)^{-1} \mathbf{X}^T}_{:= \mathbf{S}_{\lambda}} \mathbf{y}\)</span>. So, the effective df of ridge</p>
+<p><span class="math display">\[df(\lambda) = tr(\mathbf{S}_{\lambda}) = tr\Biggl( \sum_{j=1}^{p} \frac{d_j^2}{d_j^2 + \lambda} \mathbf{u}_i \mathbf{u}_i^T\Biggr) =  \sum_{j=1}^{p} \frac{d_j^2}{d_j^2 + \lambda}   \]</span></p>
+<p>Complexity of Ridge Regression</p>
+<p>Note that when <span class="math inline">\(\lambda=0\)</span> the ridge regression estimation problem reduces to the standard LS problem.</p>
+<p>When <span class="math inline">\(\lambda \rightarrow \infty\)</span> <span class="math inline">\(\Rightarrow\)</span> <span class="math inline">\(\boldsymbol{\hat{\beta}} = \Bigl(\mathbf{X}^T \mathbf{X} + \underbrace{\lambda I}_{\text{ridge}} \Bigr)^{-1} \mathbf{X}^T \mathbf{y} \rightarrow \mathbf{0}\)</span>.</p>
+<p>Although <span class="math inline">\(\hat{\beta}_{ridge}\)</span> is <span class="math inline">\(p\)</span>-dimensional, the ridge regression doesn’t seem to use the full strength of the <span class="math inline">\(p\)</span> covariates due to the shrinkage.</p>
+<p>The DF of the ridge regression should be some continuous} number between 0 and <span class="math inline">\(p\)</span>, and is decreasing with respect to <span class="math inline">\(\lambda\)</span>.</p>
+<p>Ridge regression coefficient estimates are biased}, the shrinkage can help reduce the variance, which could lead to an overall smaller <span class="math inline">\(MSE\)</span>.</p>
+<p>LASSO Regression}</p>
+<p>In this case the estimated <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> minimizes:
+<span class="math display">\[\mbox{minimize } (y-X\boldsymbol{\beta})^\top(y-X\boldsymbol{\beta}) +\lambda \sum_j |\beta_j|\]</span>
+for some <span class="math inline">\(\lambda \ge 0\)</span>.
+The penalty term is <span class="math inline">\(\sum_j |\beta_j|\)</span> (<span class="math inline">\(L_1\)</span> constraint).</p>
+<p>In two-dimensions the constraint defines a square}. In higher dimensions it defines a polytope.</p>
+<p>LASSO is useful when the response can be explained by few predictors with zero effect on the remaining predictors (LASSO is similar to a variable selection method).</p>
+<p>When <span class="math inline">\(\beta_j=0\)</span> the corresponding predictor is eliminated. This is not the case for ridge regression.</p>
+<p>Obtaining the LASSO Solution</p>
+<p>The LASSO solution is defined as
+<span class="math display">\[\hat{\beta}_{lasso} = \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl((y-X\boldsymbol{\beta})^\top(y-X\boldsymbol{\beta}) + \lambda \sum_j |\beta_j| \Bigr)\]</span></p>
+<p>If we assume that <span class="math inline">\(\mathbf{X}^T\mathbf{X} = \mathbf{I}_p\)</span>}, then
+<span class="math display">\[\begin{align*}
+||\mathbf{y} - \mathbf{X}\beta||^2 &amp;= ||\mathbf{y} - \mathbf{X}\hat{\beta}_{LS} + \mathbf{X}\hat{\beta}_{LS} - \mathbf{X}\beta||^2\\
+&amp;=||\mathbf{y} - \mathbf{X}\hat{\beta}_{LS}||^2 + ||\mathbf{X}\hat{\beta}_{LS} - \mathbf{X}\beta||^2
+\end{align*}\]</span>
+where
+<span class="math display">\[2  \bigl( \mathbf{y} - \mathbf{X}\hat{\beta}_{LS}\bigr)^T \bigl(  \mathbf{X}\hat{\beta}_{LS} - \mathbf{X}\beta \bigr) = 2 \; r^T \; \bigl(  \mathbf{X}\hat{\beta}_{LS} - \mathbf{X} \beta\bigr) =0\]</span>
+%since then-dim vector in red (which is a linear combination of columns of <span class="math inline">\(\mathbf{X}\)</span> no matter what value <span class="math inline">\(\beta\)</span> takes) is in <span class="math inline">\(\mathcal{C}(\mathbf{X})\)</span>, therefore orthogonal to t he residual vector <span class="math inline">\(r\)</span>.</p>
+<p>Obtaining the LASSO Solution</p>
+<p><span class="math display">\[\begin{align*}
+\hat{\beta}_{lasso} &amp;= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( ||\mathbf{y}-\mathbf{X} \beta||^2 + \lambda |\beta| \Bigr)\\
+&amp;= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( ||\mathbf{X} \hat{\beta}_{ls} -\mathbf{X} \beta||^2 + \lambda |\beta| \Bigr)\\
+&amp;= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( \bigl(  \hat{\beta}_{LS} - \beta \bigr)^T \mathbf{X}^T \mathbf{X}  \bigl(  \hat{\beta}_{LS} - \beta \bigr) + \lambda |\beta| \Bigr)\\
+&amp;= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( \bigl(  \hat{\beta}_{LS} - \beta \bigr)^T  \bigl(  \hat{\beta}_{LS} - \beta \bigr) + \lambda |\beta| \Bigr)\\
+&amp;= \arg \min_{\beta_1, \ldots, \beta_p} \sum_{i=1}^{p}  \Bigl( \bigl(  \beta_{j} - \hat{\beta}_{j}^{ls} \bigr)^2  + \lambda |\beta_j| \Bigr)\\
+\end{align*}\]</span>
+So, we can solve the optimal <span class="math inline">\(\beta_j\)</span> for each of <span class="math inline">\(j=1, \ldots, p\)</span> separately } by solving the following generic problem:
+<span class="math display">\[\arg \min_{x} \bigl( x-a \bigr )^2 + \lambda |x|,\,\, \lambda &gt;0\]</span></p>
+<p>How to solve an one-dim LASSO?
+Define <span class="math display">\[f(x)  = \bigl( x-a \bigr )^2 + \lambda |x|,\]</span> where <span class="math inline">\(a\in\mathbb{R}\)</span> and <span class="math inline">\(\lambda &gt;0\)</span>.</p>
+<p>How to find <span class="math inline">\(x^*\)</span> that minimizes <span class="math inline">\(f(x)\)</span>?</p>
+<p>The solution} <span class="math inline">\(x^*\)</span> must satisfy
+<span class="math display">\[\begin{align*}
+0 &amp;= \frac{\partial}{\partial x} \bigl(x^* - a \bigr)^2 + \lambda \;\frac{\partial}{\partial x} |x^*| \\
+&amp; = 2\bigl(x^* - a \bigr) +\lambda z^*
+\end{align*}\]</span>
+where <span class="math inline">\(z^*\)</span> is the sub-gradient} of the absolute value function evaluated at <span class="math inline">\(x^*\)</span>, which equals to <span class="math inline">\(sign(x^*)\)</span> if <span class="math inline">\(x^*\neq 0\)</span> and any number in [-1,1], if <span class="math inline">\(x^*=0\)</span>.</p>
+<p>How to solve an one-dim LASSO?</p>
+<p>The minimizer of <span class="math inline">\(f(x) = \bigl( x-a \bigr )^2 + \lambda |x|\)</span> is given by
+<span class="math display">\[x^* = S_{\lambda/2}(}a)} = sign(a) \bigl(|a|-\lambda/2 \bigr)_{+} =
+\begin{cases}
+&amp; a-\lambda/2,  \text{ if } \,\,  a \; &gt;\lambda/2\\
+&amp; 0, \qquad \quad \text{ if } |a| \leq \lambda/2\\
+&amp; a+\lambda/2,  \text{ if } \,\,  a \; &lt; -\lambda/2\\
+\end{cases}
+\]</span>
+<span class="math inline">\(S_{\lambda/2}(\cdot)\)</span>} is often referred to as the soft-thresholding operator.</p>
+<p>How to solve an one-dim LASSO?</p>
+<p>When the design matrix <span class="math inline">\(\mathbf{X}\)</span> is orthogonal, the LASSO solution is given by</p>
+<p><span class="math display">\[\hat{\beta}_{j}^{lasso} = \begin{cases}
+&amp; sign (\hat{\beta}_{j}^{ls} - \lambda/2), \text{ if }|\hat{\beta}_{j}^{ls}| &gt; \lambda/2\\
+&amp; 0, \text{ if }|\hat{\beta}_{j}^{ls}| \leq \lambda/2\\
+\end{cases}
+\]</span></p>
+<p>A large <span class="math inline">\(\lambda\)</span> will cause some of the coefficients to be exactly zero. So, LASSO does both variable (subset) selection and (soft) shrinkage.</p>
+<p>LASSO regression</p>
+<p>Remarks</p>
+<p>Use LASSO when the effect of predictors is sparse.
+This means that only few predictors will have an effect on the response (e.g. gene expression data) or when number of predictors is large (<span class="math inline">\(p&gt;n\)</span>)</p>
+<p>Select <span class="math inline">\(t\)</span> in the constraint <span class="math inline">\(\sum_{j=1}^p |\beta|_j\leq t\)</span> by using Cross-Validation (CV).</p>
+<p>As <span class="math inline">\(t\)</span> increases, the number of predictors increases.</p>
+<p>Comparing LASSO &amp; Ridge Regression</p>
+<p>Comparing LASSO &amp; Ridge Regression</p>
+
+<p>Comparing LASSO &amp; Ridge Regression</p>
+<p>LASSO selects a subset of predictors <span class="math inline">\(\longrightarrow\)</span> some coefficients equal to zero.</p>
+<p>Ridge regression performs better when the response is a function of many predictors with coefficients around the same size.</p>
+<p>LASSO will perform better when a relatively small number of predictors have large coefficients and the rest are very small or equal to zero.</p>
+<p>Since the number of predictors is never known a priori, cross-validation can be used to decide which approach is better for a particular data set.</p>
+<p>LASSO with <span class="math inline">\(p&gt;n\)</span></p>
+<p>When <span class="math inline">\(\mathbf{X}\)</span> is of full rank:</p>
+<p>the LASSO solution is the minimizer of a convex} function over a convex} set<br />
+the LASSO solution is unique since the first term is a strictly convex function.</p>
+<p>When <span class="math inline">\(\mathbf{X}\)</span> is not of full rank, or when <span class="math inline">\(p&gt;n\)</span>:</p>
+<p>the first term is no longer strictly convex.<br />
+Then, <span class="math inline">\(\hat{\beta}_{lasso}\)</span> may be</p>
+<p>unique if <span class="math inline">\(\mathbf{X}_S\)</span> is of full rank where <span class="math inline">\(S\)</span> is selected variable set, or
+not unique, however <span class="math inline">\(\mathbf{X}\hat{\beta}_{lasso}\)</span> and <span class="math inline">\(|\hat{\beta}_{lasso}|\)</span> are still unique.</p>
+
+</div>
+<!-- </div> -->
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="variable-selection-regularization.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans serif",
+    "size": 1
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/03-variableselection.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section",
+    "toc_depth": 4,
+    "toc_float": true,
+    "scroll_highlight": true
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
