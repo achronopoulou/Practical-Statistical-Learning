@@ -170,7 +170,7 @@ R^2_a & = 1-\frac{RSS/(n-p-1)}{TSS/(n-1)}\\
 & = 1- (1-R^2)\Bigl(\frac{n-1}{n-p-1}\Bigr)\\
 & = {\color{blue}{1-\frac{\hat{\sigma}^2}{\hat{\sigma}^2_0}}}
 \end{align*}
-where $\hat{\sigma}$ is the estimated error variance for the current fitted model, and $\hat{\sigma}^2_0$ is the estimated error variance for the full fitted model.  
+where $\hat{\sigma}$ is the estimated error variance for the current fitted model, and $\hat{\sigma}^2_0$ is the estimated error variance for the intercept-only fitted model.  
 </div>
 The **higher** the $R^2_a$ the **better**.
     

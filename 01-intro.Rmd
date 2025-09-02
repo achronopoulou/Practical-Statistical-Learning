@@ -349,6 +349,8 @@ On the other hand, the $k$NN approach has no assumption of the shape of the unde
 
 We  replicate one of the examples in the ESL book to illustrate the differences between the two simplest prediction methods for binary outcomes: the *Regression method* and the *$k$-Nearest-Neighbors method*.
 
+The python version of the example below was written by our TA Jim Yici Yan and can be found here: <a href="data/week1/W1_kNNvsLR.html"> <b>Python Version</b> </a> <br>
+
 </br>
 
 #### Simulation

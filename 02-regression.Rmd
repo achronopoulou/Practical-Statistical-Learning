@@ -439,7 +439,7 @@ _Hypothesis Test:_
 \]
 
 _Test Statistic:_
-\[F=\frac{\bigl(RSS_0 - RSS_{\alpha}\bigr)/p_{\alpha} - p_0}{RSS_{\alpha}/ \bigl(n-p_{\alpha} \bigr)}\,  \sim \, F_{p_{\alpha} - p_0, n-p_{\alpha}}\]
+\[F=\frac{\bigl(RSS_0 - RSS_{\alpha}\bigr)/(p_{\alpha} - p_0)}{RSS_{\alpha}/ \bigl(n-p_{\alpha} \bigr)}\,  \sim \, F_{p_{\alpha} - p_0, n-p_{\alpha}}\]
 
 _Decision Rule:_
 Reject $H_0$, if the $F$ test statistic is large (or larger than $F_{p_{\alpha} - p_0, n-p_{\alpha}}$), i.e. the variation missed by the reduced model, when being compared with the error variance, is significantly large.
@@ -619,6 +619,12 @@ The `birthweight.csv` data set contains data from a study on the birth weight of
 
 <br>
 
+The python version of the example below can be found here: <a href="data/week2/W2_MLR_Python.html"> <b>Python Version</b> </a> <br>
+
+You can also download the birthweight and seatpos here: <a href="data/week2/Birthweight.csv" download> Birthweight.csv </a> and <a href="data/week2/seatpos.csv" download>seatpos.csv</a> 
+
+<br>
+
 ```{r}
 birthweight <- read.csv("data/week2/Birthweight.csv", header=TRUE)
 dim(birthweight)
@@ -634,7 +640,7 @@ birthweight = birthweight[,-1]
 <br><br>
 
 
-#### Fitting a Multiple Linear Regression
+#### Fitting a Multiple Linear Regression {-}
 
 
 <br>
@@ -712,7 +718,7 @@ summary(birthweight.mlr.full)$r.squared
 
 <br><br>
 
-#### Invariance of $R^2$ & Fitted Values
+#### Invariance of $R^2$ & Fitted Values {-}
 
 We can also check the invariance property of $R^2$ by rescaling one of the variables:
 <br>
@@ -744,7 +750,7 @@ Note that the difference is not exactly 0, since there are rounding errors that 
 
 <br><br>
 
-#### $R^2$ and $RSS$ behavior when adding more $X$s
+#### $R^2$ and $RSS$ behavior when adding more $X$s {-}
 
 We can also visualize how the $R^2$ and $RSS$ change as a function of the number of variables in the model to observe that adding a new predictor, even if it is randomly generated and has nothing to do with $Y$ will decrease $RSS$ and therefore increase $R^2$. 
 
@@ -808,7 +814,7 @@ This is to illustrate why $R^2$ and $RSS$ are not good metrics when it comes to 
 
 
 
-#### Rank Deficiency
+#### Rank Deficiency {-}
 
 We have rank deficiency when $\mathbf{X}$ is not of full rank which leads to the $(\mathbf{X}^T\mathbf{X})$ matrix not being invertible.
 
@@ -836,7 +842,7 @@ A harder issue to resolve is when two predictors are not exaclty linearly depend
 
 
 
-#### Test for the Significance of Predictors
+#### Test for the Significance of Predictors {-}
 
 <br>
 We use the partial $F$ test 
@@ -893,7 +899,7 @@ the conclusion is the same since $F < F_{p_{\alpha}-p_0, n-p_{\alpha}}$.
 <br><br>
 
 
-#### Testing for a Single $\beta_j$ 
+#### Testing for a Single $\beta_j$  {-}
 
 Let's test for the significance of variable `Length` ($X_1$), i.e.
  \[\begin{cases}
@@ -925,7 +931,7 @@ summary(birthweight.mlr.full)$coefficients[2,3]^2
 
 
 
-#### Testing for all the predictors
+#### Testing for all the predictors {-}
 
 The $F$ test statistic and corresponding $p$-value in the `summary` output correspond to the following hypothesis:
  \[\begin{cases}
@@ -946,7 +952,7 @@ summary(birthweight.mlr.full)$fstatistic
  <br><hr><br>
 
 
-#### Categorical Variables
+#### Categorical Variables {-}
 
 <br>
 In the `birthweight` data set we only have binary variables, so for illustration purposes, we will create a new categorical variable, `mage.group` with 3 levels: $a$=below 20, $b$=20-30, and $c$=above 30:
@@ -975,7 +981,7 @@ In general, the reference level can be changed as well as the coding. Those chan
 
 
 
-#### Mean Response Estimation & Prediction
+#### Mean Response Estimation & Prediction {-}
 
 <br>
 In practice, we have target values for which we need to estimate the mean response of values for which we want to do prediction.
@@ -1009,7 +1015,7 @@ predict.lm(birthweight.mlr.full, x)
 
 <br><hr><br>
 
-#### Training vs. Testing Error
+#### Training vs. Testing Error {-}
 
 In this example, and in linear regression models, as we introduce more variables, training error (measured by $RSS$ or $MSE$) consistently decreases. However, this reduction in training error does not guarantee a corresponding decrease in test error, which measures prediction accuracy on independent test data. To demonstrate this, we randomly split our dataset into 60% training and 40% test portions, progressively adding predictors. This approach highlights how additional predictors can lower training error while test error may not follow the same trend!
 
@@ -1021,7 +1027,9 @@ n = dim(birthweight)[1]     ## sample size
 p = dim(birthweight)[2]-1   ## number of non-intercept predictors
 
 ntrain =  round(n*0.6)
+set.seed(598)
 train.id = sample(1:n, ntrain)
+rm(.Random.seed, envir=globalenv())
 train.id
 
 train.MSE = rep(0, p)
@@ -1033,7 +1041,9 @@ test.Y = birthweight[-train.id, 2]
 test.Y
   
 for(i in 1:p){
-  myfit = lm( birthweight[train.id, 2]~., birthweight[ train.id, c(1:i, (p+1)) ] )
+  var_id = c(1:i, (p+1))
+  var_id = var_id[var_id != 2] # remove the response variable
+  myfit = lm( birthweight[train.id, 2]~., birthweight[ train.id, var_id ] )
 
   train.Y.pred = myfit$fitted
   train.MSE[i] = mean((train.Y - train.Y.pred)^2)
@@ -1050,7 +1060,7 @@ points(test.MSE, col = "red", pch = 16)
 lines(test.MSE, col = "red", pch = 16)
 ```
 
-In this example both errors are very small which makes it hard to illustrate the differences in the two errors, but feel free to use this code in other examples to observe more patterns between training/testing errors. 
+In this example, the test errors initially decreased but began to rise again as more variables were added. Feel free to use this code in other examples to observe more patterns between training/testing errors.
 
 In general, we expect that in each iteration, the blue line (representing the training error) consistently exhibits a monotonically decreasing trend, signifying the reduction of training error as more predictors are incorporated. On the other hand, the red line’s (testing error) trajectory may not uniformly decrease. 
 <br><br>
@@ -1058,7 +1068,7 @@ In general, we expect that in each iteration, the blue line (representing the tr
 
 
 
-#### Test for Outliers
+#### Test for Outliers {-}
 
 
 In this example, we check the data set for unusual observations. Specifically, we will check for:
@@ -1101,7 +1111,7 @@ Above, we computed a t-value of $|-3.61|$ at $\alpha=0.05$. If an observation's 
 
 
 
-#### Checking Model Assumptions
+#### Checking Model Assumptions {-}
 
 
 
@@ -1126,7 +1136,7 @@ We seem to have some departures from the normality assumption in this case.
 <br><hr><br>
 
 
-#### Collinearity: Car Seat Position Data (a Faraway data set)
+#### Collinearity: Car Seat Position Data (a Faraway data set) {-}
 
 
 

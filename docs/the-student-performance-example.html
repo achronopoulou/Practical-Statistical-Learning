@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandra Chronopoulou" />
 
 
-<meta name="date" content="2025-08-25" />
+<meta name="date" content="2025-09-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -291,20 +291,13 @@ By P. Cortez, A. M. G. Silva. 2008. Published in Proceedings of 5th Annual Futur
 <span id="cb126-5"><a href="the-student-performance-example.html#cb126-5" tabindex="-1"></a><span class="fu">names</span>(stu_performance)[<span class="dv">14</span>] <span class="ot">=</span> <span class="st">&#39;Grades&#39;</span></span>
 <span id="cb126-6"><a href="the-student-performance-example.html#cb126-6" tabindex="-1"></a></span>
 <span id="cb126-7"><a href="the-student-performance-example.html#cb126-7" tabindex="-1"></a><span class="fu">head</span>(stu_performance)</span></code></pre></div>
-<pre><code>##   age Medu Fedu traveltime studytime failures famrel freetime goout Dalc Walc health absences
-## 1  18    4    4          2         2        0      4        3     4    1    1      3        6
-## 2  17    1    1          1         2        0      5        3     3    1    1      3        4
-## 3  15    1    1          1         2        3      4        3     2    2    3      3       10
-## 4  15    4    2          1         3        0      3        2     2    1    1      5        2
-## 5  16    3    3          1         2        0      4        3     2    1    2      5        4
-## 6  16    4    3          1         2        0      5        4     2    1    2      5       10
-##   Grades
-## 1      6
-## 2      6
-## 3     10
-## 4     15
-## 5     10
-## 6     15</code></pre>
+<pre><code>##   age Medu Fedu traveltime studytime failures famrel freetime goout Dalc Walc health absences Grades
+## 1  18    4    4          2         2        0      4        3     4    1    1      3        6      6
+## 2  17    1    1          1         2        0      5        3     3    1    1      3        4      6
+## 3  15    1    1          1         2        3      4        3     2    2    3      3       10     10
+## 4  15    4    2          1         3        0      3        2     2    1    1      5        2     15
+## 5  16    3    3          1         2        0      4        3     2    1    2      5        4     10
+## 6  16    4    3          1         2        0      5        4     2    1    2      5       10     15</code></pre>
 <div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="the-student-performance-example.html#cb128-1" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">dim</span>(stu_performance)[<span class="dv">1</span>] <span class="do">## sample size</span></span>
 <span id="cb128-2"><a href="the-student-performance-example.html#cb128-2" tabindex="-1"></a>p <span class="ot">=</span> <span class="fu">dim</span>(stu_performance)[<span class="dv">2</span>] <span class="sc">-</span> <span class="dv">1</span> <span class="do">## number of non-intercept predictors</span></span></code></pre></div>
 <p>We start by fitting the <strong>full linear model</strong> including all the predictors:</p>
@@ -370,59 +363,45 @@ The <code>rs</code> object above contains all the different criteria for all the
 <p><br></p>
 <div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="the-student-performance-example.html#cb134-1" tabindex="-1"></a><span class="do">## Extract the models&#39; R^2</span></span>
 <span id="cb134-2"><a href="the-student-performance-example.html#cb134-2" tabindex="-1"></a>rs<span class="sc">$</span>rsq</span></code></pre></div>
-<pre><code>##  [1] 0.1298989 0.1483134 0.1587670 0.1633698 0.1668323 0.1696634 0.1724079 0.1746913 0.1773575
-## [10] 0.1800384 0.1823149 0.1827012 0.1829771</code></pre>
+<pre><code>##  [1] 0.1298989 0.1483134 0.1587670 0.1633698 0.1668323 0.1696634 0.1724079 0.1746913 0.1773575 0.1800384 0.1823149
+## [12] 0.1827012 0.1829771</code></pre>
 <p>The best model is the 13th model (as expected).
 <br></p>
 <div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="the-student-performance-example.html#cb136-1" tabindex="-1"></a><span class="do">## Extract the models&#39; Adjusted R^2</span></span>
 <span id="cb136-2"><a href="the-student-performance-example.html#cb136-2" tabindex="-1"></a>rs<span class="sc">$</span>adjr2</span></code></pre></div>
-<pre><code>##  [1] 0.1276849 0.1439681 0.1523125 0.1547890 0.1561232 0.1568231 0.1574385 0.1575865 0.1581269
-## [10] 0.1586853 0.1588305 0.1570269 0.1550997</code></pre>
+<pre><code>##  [1] 0.1276849 0.1439681 0.1523125 0.1547890 0.1561232 0.1568231 0.1574385 0.1575865 0.1581269 0.1586853 0.1588305
+## [12] 0.1570269 0.1550997</code></pre>
 <p>The best model is the 11th model.
 <br></p>
 <div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="the-student-performance-example.html#cb138-1" tabindex="-1"></a><span class="do">## Extract the models&#39; Cp Mallows</span></span>
 <span id="cb138-2"><a href="the-student-performance-example.html#cb138-2" tabindex="-1"></a>rs<span class="sc">$</span>cp</span></code></pre></div>
-<pre><code>##  [1] 14.751803  8.164618  5.289832  5.143431  5.528772  6.208548  6.928720  7.863899  8.620578
-## [10]  9.370388 10.308796 12.128682 14.000000</code></pre>
+<pre><code>##  [1] 14.751803  8.164618  5.289832  5.143431  5.528772  6.208548  6.928720  7.863899  8.620578  9.370388 10.308796
+## [12] 12.128682 14.000000</code></pre>
 <p>The best model is the 4th model.
 <br></p>
 <div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="the-student-performance-example.html#cb140-1" tabindex="-1"></a><span class="do">## Extract the models&#39; BIC</span></span>
 <span id="cb140-2"><a href="the-student-performance-example.html#cb140-2" tabindex="-1"></a>rs<span class="sc">$</span>bic</span></code></pre></div>
-<pre><code>##  [1] -43.004859 -45.475340 -44.374670 -40.562949 -36.222213 -31.587827 -26.916684 -22.029154
-##  [9] -17.328400 -12.638892  -7.758187  -1.965927   3.879571</code></pre>
+<pre><code>##  [1] -43.004859 -45.475340 -44.374670 -40.562949 -36.222213 -31.587827 -26.916684 -22.029154 -17.328400 -12.638892
+## [11]  -7.758187  -1.965927   3.879571</code></pre>
 <p>The best model is the 2nd model.</p>
 <p><br></p>
 <p>If we want to identify which variables are included in each model, then we use the <code>rs$which</code> command, where the rows correspond to the model and the columns to the variable. TRUE means that the variable is included in the model and FALSE means otherwise.
 <br></p>
 <div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="the-student-performance-example.html#cb142-1" tabindex="-1"></a>rs<span class="sc">$</span>which</span></code></pre></div>
-<pre><code>##    (Intercept)   age  Medu  Fedu traveltime studytime failures famrel freetime goout  Dalc  Walc
-## 1         TRUE FALSE FALSE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE FALSE FALSE FALSE
-## 2         TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE FALSE FALSE FALSE
-## 3         TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE  TRUE FALSE FALSE
-## 4         TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE FALSE
-## 5         TRUE FALSE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE FALSE
-## 6         TRUE FALSE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE  TRUE
-## 7         TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE FALSE
-## 8         TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE  TRUE
-## 9         TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE   TRUE     TRUE  TRUE FALSE  TRUE
-## 10        TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE   TRUE     TRUE  TRUE FALSE  TRUE
-## 11        TRUE  TRUE  TRUE FALSE       TRUE      TRUE     TRUE   TRUE     TRUE  TRUE FALSE  TRUE
-## 12        TRUE  TRUE  TRUE FALSE       TRUE      TRUE     TRUE   TRUE     TRUE  TRUE  TRUE  TRUE
-## 13        TRUE  TRUE  TRUE  TRUE       TRUE      TRUE     TRUE   TRUE     TRUE  TRUE  TRUE  TRUE
-##    health absences
-## 1   FALSE    FALSE
-## 2   FALSE    FALSE
-## 3   FALSE    FALSE
-## 4   FALSE    FALSE
-## 5   FALSE    FALSE
-## 6   FALSE    FALSE
-## 7   FALSE     TRUE
-## 8   FALSE     TRUE
-## 9    TRUE    FALSE
-## 10   TRUE     TRUE
-## 11   TRUE     TRUE
-## 12   TRUE     TRUE
-## 13   TRUE     TRUE</code></pre>
+<pre><code>##    (Intercept)   age  Medu  Fedu traveltime studytime failures famrel freetime goout  Dalc  Walc health absences
+## 1         TRUE FALSE FALSE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE FALSE FALSE FALSE  FALSE    FALSE
+## 2         TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE FALSE FALSE FALSE  FALSE    FALSE
+## 3         TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE  TRUE FALSE FALSE  FALSE    FALSE
+## 4         TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE FALSE  FALSE    FALSE
+## 5         TRUE FALSE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE FALSE  FALSE    FALSE
+## 6         TRUE FALSE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE  TRUE  FALSE    FALSE
+## 7         TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE FALSE  FALSE     TRUE
+## 8         TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE  TRUE  FALSE     TRUE
+## 9         TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE   TRUE     TRUE  TRUE FALSE  TRUE   TRUE    FALSE
+## 10        TRUE  TRUE  TRUE FALSE       TRUE     FALSE     TRUE   TRUE     TRUE  TRUE FALSE  TRUE   TRUE     TRUE
+## 11        TRUE  TRUE  TRUE FALSE       TRUE      TRUE     TRUE   TRUE     TRUE  TRUE FALSE  TRUE   TRUE     TRUE
+## 12        TRUE  TRUE  TRUE FALSE       TRUE      TRUE     TRUE   TRUE     TRUE  TRUE  TRUE  TRUE   TRUE     TRUE
+## 13        TRUE  TRUE  TRUE  TRUE       TRUE      TRUE     TRUE   TRUE     TRUE  TRUE  TRUE  TRUE   TRUE     TRUE</code></pre>
 <p><br></p>
 <p>For example, Model 1 only contains <code>failures</code>, and the <code>intercept.</code></p>
 <p><br></p>
@@ -433,12 +412,12 @@ The <code>rs</code> object above contains all the different criteria for all the
 <span id="cb144-3"><a href="the-student-performance-example.html#cb144-3" tabindex="-1"></a>Aic <span class="ot">=</span> n<span class="sc">*</span><span class="fu">log</span>(rs<span class="sc">$</span>rss<span class="sc">/</span>n) <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>msize;</span>
 <span id="cb144-4"><a href="the-student-performance-example.html#cb144-4" tabindex="-1"></a>Bic <span class="ot">=</span> n<span class="sc">*</span><span class="fu">log</span>(rs<span class="sc">$</span>rss<span class="sc">/</span>n) <span class="sc">+</span> msize<span class="sc">*</span><span class="fu">log</span>(n);</span></code></pre></div>
 <div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="the-student-performance-example.html#cb145-1" tabindex="-1"></a>Aic</span></code></pre></div>
-<pre><code>##  [1] 1148.427 1141.978 1139.100 1138.932 1139.294 1139.950 1140.642 1141.551 1142.272 1142.983
-## [11] 1143.885 1145.698 1147.565</code></pre>
+<pre><code>##  [1] 1148.427 1141.978 1139.100 1138.932 1139.294 1139.950 1140.642 1141.551 1142.272 1142.983 1143.885 1145.698
+## [13] 1147.565</code></pre>
 <p>AIC chooses the 4th model.</p>
 <div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="the-student-performance-example.html#cb147-1" tabindex="-1"></a>Bic</span></code></pre></div>
-<pre><code>##  [1] 1152.406 1149.936 1151.036 1154.848 1159.189 1163.823 1168.494 1173.382 1178.082 1182.772
-## [11] 1187.653 1193.445 1199.290</code></pre>
+<pre><code>##  [1] 1152.406 1149.936 1151.036 1154.848 1159.189 1163.823 1168.494 1173.382 1178.082 1182.772 1187.653 1193.445
+## [13] 1199.290</code></pre>
 <p>As we saw before, BIC selects the 2nd model.
 <br>
 We can also plot the results for the various models. So, we have
@@ -506,24 +485,16 @@ This cannot be answered by looking at the AIC/BIC plots shown above. Instead, we
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-86-1.png" width="672" /></p>
 <div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb157-1"><a href="the-student-performance-example.html#cb157-1" tabindex="-1"></a><span class="co"># top three models by AIC</span></span>
 <span id="cb157-2"><a href="the-student-performance-example.html#cb157-2" tabindex="-1"></a>rs<span class="fl">.1</span><span class="sc">$</span>which[<span class="fu">order</span>(Aic<span class="fl">.1</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],]</span></code></pre></div>
-<pre><code>##   (Intercept)   age Medu  Fedu traveltime studytime failures famrel freetime goout  Dalc  Walc
-## 4        TRUE FALSE TRUE FALSE      FALSE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE FALSE
-## 3        TRUE FALSE TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE  TRUE FALSE FALSE
-## 5        TRUE FALSE TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE FALSE
-##   health absences
-## 4  FALSE    FALSE
-## 3  FALSE    FALSE
-## 5  FALSE    FALSE</code></pre>
+<pre><code>##   (Intercept)   age Medu  Fedu traveltime studytime failures famrel freetime goout  Dalc  Walc health absences
+## 4        TRUE FALSE TRUE FALSE      FALSE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE FALSE  FALSE    FALSE
+## 3        TRUE FALSE TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE  TRUE FALSE FALSE  FALSE    FALSE
+## 5        TRUE FALSE TRUE FALSE       TRUE     FALSE     TRUE  FALSE     TRUE  TRUE FALSE FALSE  FALSE    FALSE</code></pre>
 <div class="sourceCode" id="cb159"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb159-1"><a href="the-student-performance-example.html#cb159-1" tabindex="-1"></a><span class="co"># top three models by BIC</span></span>
 <span id="cb159-2"><a href="the-student-performance-example.html#cb159-2" tabindex="-1"></a>rs<span class="fl">.1</span><span class="sc">$</span>which[<span class="fu">order</span>(Bic<span class="fl">.1</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],]</span></code></pre></div>
-<pre><code>##   (Intercept)   age  Medu  Fedu traveltime studytime failures famrel freetime goout  Dalc  Walc
-## 2        TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE FALSE FALSE FALSE
-## 3        TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE  TRUE FALSE FALSE
-## 1        TRUE FALSE FALSE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE FALSE FALSE FALSE
-##   health absences
-## 2  FALSE    FALSE
-## 3  FALSE    FALSE
-## 1  FALSE    FALSE</code></pre>
+<pre><code>##   (Intercept)   age  Medu  Fedu traveltime studytime failures famrel freetime goout  Dalc  Walc health absences
+## 2        TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE FALSE FALSE FALSE  FALSE    FALSE
+## 3        TRUE FALSE  TRUE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE  TRUE FALSE FALSE  FALSE    FALSE
+## 1        TRUE FALSE FALSE FALSE      FALSE     FALSE     TRUE  FALSE    FALSE FALSE FALSE FALSE  FALSE    FALSE</code></pre>
 <p><br><br></p>
 </div>
 <div id="subset-selection-via-the-step-fucntion" class="section level4 hasAnchor" number="3.4.0.2">
@@ -592,7 +563,7 @@ We then use the full model to <strong>predict</strong> values and <em>compute th
 <span id="cb179-3"><a href="the-student-performance-example.html#cb179-3" tabindex="-1"></a></span>
 <span id="cb179-4"><a href="the-student-performance-example.html#cb179-4" tabindex="-1"></a><span class="do">## Averaged MSE on the test set</span></span>
 <span id="cb179-5"><a href="the-student-performance-example.html#cb179-5" tabindex="-1"></a><span class="fu">sum</span>((Ytest <span class="sc">-</span> Ytest.pred)<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>ntest </span></code></pre></div>
-<pre><code>## [1] 1.254959e-29</code></pre>
+<pre><code>## [1] 4.087847e-30</code></pre>
 
 </div>
 </div>
