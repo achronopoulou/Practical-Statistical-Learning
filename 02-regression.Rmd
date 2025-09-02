@@ -619,7 +619,7 @@ The `birthweight.csv` data set contains data from a study on the birth weight of
 
 <br>
 
-The python version of the example below can be found here: <a href="data/week2/W2_MLR_Python.html"> <b>Python Version</b> </a> <br>
+The python version of the example below was written by our TA Peng Xu and can be found here: <a href="data/week2/W2_MLR_Python.html"> <b>Python Version</b> </a> <br>
 
 You can also download the birthweight and seatpos here: <a href="data/week2/Birthweight.csv" download> Birthweight.csv </a> and <a href="data/week2/seatpos.csv" download>seatpos.csv</a> 
 
