@@ -453,17 +453,17 @@ Generate <span class="math inline">\(N\)</span> <em>test</em> samples in a simil
 <span id="cb6-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb6-17" tabindex="-1"></a></span>
 <span id="cb6-18"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb6-18" tabindex="-1"></a><span class="fu">cbind</span>(train.err.knn, test.err.knn)    <span class="do">## matrix containing the train and test errors</span></span></code></pre></div>
 <pre><code>##       train.err.knn test.err.knn
-##  [1,]         0.155      0.23960
-##  [2,]         0.170      0.23690
-##  [3,]         0.150      0.23865
-##  [4,]         0.145      0.23865
-##  [5,]         0.140      0.24020
-##  [6,]         0.140      0.23995
-##  [7,]         0.160      0.24605
-##  [8,]         0.160      0.24810
-##  [9,]         0.160      0.25530
-## [10,]         0.115      0.26455
-## [11,]         0.000      0.29590</code></pre>
+##  [1,]         0.285      0.25490
+##  [2,]         0.265      0.24635
+##  [3,]         0.285      0.25090
+##  [4,]         0.275      0.25175
+##  [5,]         0.265      0.25215
+##  [6,]         0.265      0.25410
+##  [7,]         0.215      0.26535
+##  [8,]         0.195      0.28405
+##  [9,]         0.190      0.29080
+## [10,]         0.150      0.30310
+## [11,]         0.000      0.32945</code></pre>
 <p><br></p>
 </div>
 <div id="fold-cross-validation-for-choosing-optimal-k" class="section level4 hasAnchor" number="1.5.4.7">
@@ -525,16 +525,16 @@ We run a regression of <code>Ytrain</code> vs. the <code>traindata</code>, and 
 <span id="cb9-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-14" tabindex="-1"></a><span class="fu">table</span>(Ytrain, Ytrain_pred_LS);   </span></code></pre></div>
 <pre><code>##       Ytrain_pred_LS
 ## Ytrain  0  1
-##      0 84 16
-##      1 15 85</code></pre>
+##      0 71 29
+##      1 30 70</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-1" tabindex="-1"></a>train.err.LS <span class="ot">=</span> <span class="fu">sum</span>(Ytrain <span class="sc">!=</span>  Ytrain_pred_LS) <span class="sc">/</span> (<span class="dv">2</span><span class="sc">*</span>n);  </span>
 <span id="cb11-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-2" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-3" tabindex="-1"></a><span class="do">## Cross-tab for test data and test error</span></span>
 <span id="cb11-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-4" tabindex="-1"></a><span class="fu">table</span>(Ytest, Ytest_pred_LS);     </span></code></pre></div>
 <pre><code>##      Ytest_pred_LS
 ## Ytest    0    1
-##     0 7471 2529
-##     1 2257 7743</code></pre>
+##     0 7164 2836
+##     1 2182 7818</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb13-1" tabindex="-1"></a>test.err.LS <span class="ot">=</span> <span class="fu">sum</span>(Ytest <span class="sc">!=</span>  Ytest_pred_LS) <span class="sc">/</span> (<span class="dv">2</span><span class="sc">*</span>N);</span></code></pre></div>
 <br>
 <hr>
