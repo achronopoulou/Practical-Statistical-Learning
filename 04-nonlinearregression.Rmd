@@ -1,0 +1,1076 @@
+# NonLinear Regression
+
+As we discussed in the previous sections, a  Multiple Linear Regression model has a set of assumptions on the error terms (normality, homoscedasticity, independence) as well as limitations, such as the linearity assumption.
+
+If one or more of these assumptions are not satisfied, then the applicability of our model is restricted. In this section, we will introduce models that lift the linearity assumption. Therefore, we are going to discuss the _three_ most popular _nonlinear_ regression models:
+
+(i) Polynomial Regression
+(ii) Splines Regression
+(iii) Smoothing Splines
+
+
+
+### A Note on  Nonlinearity {.hidden .unlisted}
+
+
+
+Assume that the true underlying model is of the following form:
+\[Y = f(\mathbf{X}) + \varepsilon\]
+where $\varepsilon$ satisfies the usual assumptions.  So far we have been **approximating** the unknown function $f$ via a multiple linear regression model:
+\[Y_i = \beta_0 + \beta_1 X_{i1} +  \beta_2 X_{i2} +\ldots +  \beta_p X_{ip} +\varepsilon_i \]
+The MLR model above is **linear** **both** with respect to the predictors ($X_{ij}$) **and** with respect to the coefficients ($\beta_j$).
+
+
+
+Consider now the following models:
+\[Y_i = \beta_1 X_{i1} +  \beta_2 X_{i1}^2 +\beta_3 X_{i2} + \beta_4 X_{i2}^2 +  \beta_5 X_{i1} X_{i2} +\varepsilon_i \]
+or
+\[\log_{10}Y_i = \beta_1 X_{i1} +  \beta_2 \sqrt{X_{i1}} +\beta_3 e^{X_{i3}} +\varepsilon_i\]
+These two models are both _non-linear_ with respect to the predictors but **linear** with respect to the coefficients $\beta_j$.
+
+On the other side, the model below
+\[Y_i =  \frac{\gamma_0}{1+ \gamma_1 e^{\gamma_2 X_i}} + \varepsilon_i \]
+is non-linear both with respect to the parameters _and_ the predictors. 
+
+During the course of this week, we are going to approximate the general nonlinear model, using nonlinear models with respect to the predictors (so that we describe the underlying nonlinear relationship between response and features), but all the models that we will introduce with be _linear with respect to the coefficients/parameters_. In this way, one can think of the models we will work with as models in which the features have been transformed to a new predictor in a nonlinear fashion.
+
+The main advantage of this approach is that we manage to describe (quite efficientily most of the time) a nonlinear relationship between predictor and features, but at the same time we are able to estimate the model parameters easily.
+
+To be more specific, the coefficients will still be obtained via a least-squares approach which (due to the linearity wrt predictor assumption) will result in a system of linear equations as before.
+
+
+
+
+
+## Polynomial Regression
+
+
+The simplest form of nonlinear regression is the polynomial regression which is an extension of the linear model by adding higher order terms of the predictor(s). To study this type of regression, we need to first define the polynomial basis functions.
+<br>
+
+### Polynomial Basis Functions
+
+
+
+If $b_j(x)$ is the $j$th  basis function, then $f$ has the following representation
+\[f(x) = \sum_{j=0}^{d} b_j(x) \beta_j\]
+for some values  $\beta_j$. Therefore, we can write the nonlinear  model $y_i = f(x_i) + \varepsilon_i$ as a linear model (with respect to the coefficients)
+\[y_i = \beta_0 + \sum_{j=1}^{d} b_j(x_i) \beta_j + \varepsilon_i\]
+Suppose that $f$ is believed to be a 4th order polynomial, so _the space of polynomials of order 4 and below contains $f$_. 
+
+A basis for this space is
+\begin{align*}
+b_0(x) &= 1\\
+b_1(x) &= x\\
+b_2(x) &= x^2\\
+b_3(x) &= x^3\\
+b_4(x) &= x^4
+\end{align*}
+so that the model becomes
+\[y_i = \underbrace{\beta_0 + \beta_1 x_i+\beta_2 x^2_i+ \beta_3 x^3_i + \beta_4 x^4_i}_{= \beta_0 + \sum_{j=1}^{d} b_j(x_i) \beta_j} +\varepsilon_i\]
+<br>
+
+<div class=examplebox>
+**Illustration of the Polynomial Basis Functions**
+
+Representation of a function in terms of basis functions using a polynomial basis. The following code creates the plots the polynomial basis function up to order 4
+```{r}
+x=seq(0, 1, by=0.001)
+b0 = rep(1, length(x))
+b1 = x
+b2 = x^2
+b3 = x^3
+b4 = x^4
+
+fun1 = 4*b0 -10* b1 + 16*b2 + 2*b3 -10*b4
+
+par(mfrow = c(2,3))
+plot(x, b0, type='l', lty=3, ylab=expression("b"[0]*"(x)=1"))
+plot(x, b1, type='l',lty=3, ylab=expression("b"[1]*"(x)=x"))
+plot(x, b2, type='l',lty=3, ylab=expression("b"[2]*"(x)=x"^2))
+plot(x, b3, type='l',lty=3, ylab=expression("b"[3]*"(x)=x"^3))
+plot(x, b4, type='l',lty=3, ylab=expression("b"[4]*"(x)=x"^4))
+plot(x, fun1, type='l', ylab="f(x)", main=expression("f(x) =  4 - 10 x + 16 x"^2*"+ 2 x"^3*"- 10 x"^4), col="blue", lwd=2)
+```
+
+</div>
+
+
+<br>
+
+### Polynomial Regression
+
+From now on, assume $x \in \mathbb{R}$ is one-dimensional, and extensions to multi-dimensional cases will be discussed later. So, for  $x_i \in \mathbb{R}$,
+\[
+y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \cdots + \beta_d x_i^d + \varepsilon_i
+\]
+
+Then, we create the new variables $X_2 = X^2, \ldots, X_d = X^d$, and  treat this as a multiple linear regression model:
+\[
+\begin{pmatrix}
+y_1 \\ y_2 \\ \vdots \\ y_n
+\end{pmatrix}_{n \times 1}
+=
+\begin{pmatrix}
+1 & x_1 & x_1^2 & \cdots & x_1^d \\
+1 & x_2 & x_2^2 & \cdots & x_2^d \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & x_n & x_n^2 & \cdots & x_n^d
+\end{pmatrix}_{n \times (d+1)}
+\begin{pmatrix}
+\beta_0 \\ \beta_1 \\ \vdots \\ \beta_d
+\end{pmatrix}_{(d+1) \times 1}
++ \varepsilon
+\]
+
+Therefore, we can say that a polynomial regression model is defined as follows:
+
+<div class=motivationbox>
+**Polynomial Regression Model**
+
+A _non-linear_ model can be represented using a basis of polynomial functions as follows:
+\[y_i = f(x_i) + \varepsilon_i \,\,\, \longrightarrow \,\,\, y_i =\beta_0 + \sum_{j=1}^{d} b_j(x_i) \beta_j + \varepsilon_i\]
+where $d$ is the degree of the polynomial component.
+</div>
+
+<br>
+
+#### <font color=Darkblue>How do we choose $d$? </font> {-}
+
+1. <font color=blue>_Forward Approach_</font>: Keep _adding_ terms until the _last_ added term is not significant.
+
+
+2. <font color=blue>_Backward Approach_</font>: Start with a large $d$, and keep _eliminating_ the  terms that are not statistically significant, starting with the highest order term.
+    
+
+
+Once we pick  a value of $d$, then we usually  do **not** test the significance of the lower-order terms. Therefore, when we decide to use a polynomial of degree $d$, by default, we include _all the lower-order terms in our model_.
+
+<br>
+
+<u>Reasoning</u>
+ In regression analysis, we  do not want our results to be affected by a change of location/scale of the data.  Consider the following example:
+ <br>
+Suppose the data $\{y_i,x_i\}_{i=1}^n$ are generated by the model:
+\[y_i=x_i^2 + \varepsilon_i,\quad \varepsilon_i \sim \mathcal{N}(0,\sigma^2)\]
+But, they are instead recorded as $\{z_i,x_i\}_{i=1}^n$, where $z_i=x_i+2$, that is,
+\[y_i=(z_i-2)^2 + \varepsilon_i=4 -4z_i +z_i^2+\varepsilon_i\]
+The  linear term could become significant, if we shift the $x$ values.
+
+<font color=orange><u>**Exception**</u></font>: When we have a particular polynomial function in mind, e.g. the data are collected to test a particular physics formula $Y\approx X^2 + constant$, then you should test whether you can drop the linear term.
+
+<br>
+
+<div class=examplebox>
+**The Chicago Pumpkins Example**
+
+
+
+The `pumpkins.csv` data set contains information regarding the `size` and `price` of pumpkins sold in the <font color=orange>Chicago area</font> (data can be found <a href="data/week4/chicagopumpkins.csv" target="_blank">here</a>.). Our goal in this example is to _predict_ the `size of the pumpkin` (response) based on its `price` (predictor).
+
+The scatter plot of the data is shown below:
+
+```{r}
+pumpkins = read.csv("data/week4/chicagopumpkins.csv",header=TRUE)
+plot(pumpkins$price, pumpkins$size, pch=20, xlab="Pumpkin's Price", ylab="Pumpkins' Size")
+```
+We see that a linear fit is probably _not_ a good idea. Indeed, 
+```{r}
+lm.pumpkins = lm(size ~ price, data=pumpkins)
+summary(lm.pumpkins)
+```
+Although the predictor is significant at explaining the response, the $R^2$ is on the lower end and the scatter plot does not support a straight line as a good fit. 
+
+```{r}
+plot(size ~ price, data=pumpkins)
+points(size ~ price, data=pumpkins, pch=8)
+abline(lm.pumpkins, col="blue", lwd=2)
+```
+
+<br>
+We want to select a _higher order_ model and we will do so following a Forward Selection approach first and a Backward Selection method second:
+
+(1) We start with a <b>Forward Selection</b> approach, i.e. we start by a linear model, and we keep **adding** higher order terms until the added term becomes _statistically insignificant_.
+
+
+```{r}
+# Forward Selection
+lm.pumpkins =  lm(size ~ price , data=pumpkins)
+summary(lm.pumpkins)
+
+lm.pumpkins2 =  lm(size ~ price + I(price^2), data=pumpkins)
+summary(lm.pumpkins2)
+
+lm.pumpkins3 =  lm(size ~ price + I(price^2) + I(price^3), data=pumpkins)
+summary(lm.pumpkins3)
+
+lm.pumpkins4 =  lm(size ~ price + I(price^2) + I(price^3) + I(price^4), data=pumpkins)
+summary(lm.pumpkins4)
+
+lm.pumpkins5 =  lm(size ~ price + I(price^2) + I(price^3) + I(price^4)+ I(price^5), data=pumpkins)
+summary(lm.pumpkins5)
+```
+
+We see that the _5th order model_ has a 5th order term with _$p$-value equal to 0.0519_, which is **higher than 5%**, so we conclude that the optimal order for the polynomial, according to the forward selection method is <font color="blue">$d=4$</font>. So, the fitted model is:
+\[\hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x + \hat{\beta}_2 x^2 + \hat{\beta}_3 x^4 + \hat{\beta}_4 x^4 \]
+
+If we plot all the fitted models, we have:
+
+```{r}
+newprice = data.frame(price=seq(17, 255, 1))
+plot(pumpkins$price, pumpkins$size, pch=20, ylim=c(0,5), xlab="Pumpkin's Price", ylab="Pumpkins' Size", main="Forward Selection Models")
+lines(newprice$price, predict(lm.pumpkins, newprice), col="yellow", lty=1, lwd=2);
+lines(newprice$price, predict(lm.pumpkins2, newprice), col="blue", lty=1, lwd=2);
+lines(newprice$price, predict(lm.pumpkins3, newprice), col="orange", lty=1, lwd=2);
+lines(newprice$price, predict(lm.pumpkins4, newprice), col="magenta", lty=1, lwd=2);
+lines(newprice$price, predict(lm.pumpkins5, newprice), col="green", lty=1, lwd=2);
+legend(230, 1.45, legend=c("d=1", "d=2", "d=3", "d=4", "d=5"),
+       col=c("yellow", "blue", "orange", "magenta", "green"), lty=c(1,1,1,1,1), cex=0.8, lwd=c(2,2,2,2,2))
+```
+The magenta line is the one that corresponds to the 4th order model.
+<br><br>
+
+
+(2) We can also select $d$ using the <b>Backward Elimination</b> approach, that is we start with a large value for $d$ and we eliminate terms _until the highest order term in the model is statistically significant_:
+
+```{r}
+lm.pumpkins10 =  lm(size ~ price + I(price^2) + I(price^3) + I(price^4)+ I(price^5)+ I(price^6) + I(price^7)+ I(price^8)+ I(price^9)+ I(price^10), data=pumpkins)
+summary(lm.pumpkins10)
+
+lm.pumpkins9 =  lm(size ~ price + I(price^2) + I(price^3) + I(price^4)+ I(price^5)+ I(price^6) + I(price^7)+ I(price^8)+ I(price^9), data=pumpkins)
+summary(lm.pumpkins9)
+
+lm.pumpkins8 =  lm(size ~ price + I(price^2) + I(price^3)+ I(price^4)+ I(price^5)+ I(price^6) + I(price^7)+ I(price^8), data=pumpkins)
+summary(lm.pumpkins8)
+```
+
+
+Starting with an order _10_ model, we identify that an <font color="blue">_9th_ order</font> model is _optimal_ according to the backward elimination criterion. If we plot all the fitted models, we have:
+
+```{r}
+newprice = data.frame(price=seq(17, 255, 1))
+plot(pumpkins$price, pumpkins$size, ylim=c(0,5), pch=20, xlab="Pumpkin's Price", ylab="Pumpkins' Size", main="Backward Selection Models")
+lines(newprice$price, predict(lm.pumpkins10, newprice), col="blue", lty=2, lwd=2);
+lines(newprice$price, predict(lm.pumpkins9, newprice), col="orange", lty=2, lwd=2);
+lines(newprice$price, predict(lm.pumpkins8, newprice), col="magenta", lty=2, lwd=2);
+legend(226, 1, legend=c("d=10", "d=9", "d=8"),
+       col=c("blue", "orange", "magenta"), lty=c(2,2,2), cex=0.8, lwd=2)
+```
+
+The magenta line is the one that corresponds to the _9th_ order model.
+
+<br>
+
+For the fitted model we finally choose, we should (as always) perform diagnostic tests.
+
+</div>
+
+
+
+<br><br>
+
+### Orthogonal Polynomials
+
+Fitting high order polynomials is generally  **not recommended**, since they are very _unstable_ and _difficult to interpret_. In addition, successive predictors $x^j$ are _highly correlated_ introducing multicollinearity problems. One way around this is to fit <font color=orange>**orthogonal polynomials**</font> of the form:
+\[y_i=\beta_0+\beta_1z_1+\ldots+\beta_d z_d+\varepsilon_i\]
+where each $z_j=a_{1} + b_{2} x + \ldots+ \kappa_j x^j$ is a polynomial of order $j$ with coefficients  chosen such that <font color=Darkblue>$z_i^\top z_j=0$</font> (i.e. the inner product of any two polynomials is zero).
+    
+<br>
+
+<div class=examplebox>
+**The Chicago Pumpkins Example**
+
+
+In `R`, we can fit orthogonal polynomials using the `poly` function. In the code below, we repeat the same process as before (for choosing $d$) using the orthogonal polynomials.
+
+
+```{r}
+# Forward Selection
+lm.pumpkinsO2 =  lm(size ~ poly(price,2), data=pumpkins)
+summary(lm.pumpkinsO2)
+lm.pumpkinsO3 =  lm(size ~ poly(price,3), data=pumpkins)
+summary(lm.pumpkinsO3)
+lm.pumpkinsO4 =  lm(size ~ poly(price,4), data=pumpkins)
+summary(lm.pumpkinsO4)
+lm.pumpkinsO5 =  lm(size ~ poly(price,5), data=pumpkins)
+summary(lm.pumpkinsO5)
+
+newprice = data.frame(price=seq(17, 255, 1))
+plot(pumpkins$price, pumpkins$size, pch=20,  ylim=c(0,5),xlab="Pumpkin's Price", ylab="Pumpkins' Size", main="Forward Selection Models: Orthogonal Polynomials")
+lines(newprice$price, predict(lm.pumpkinsO2, newprice), col="blue", lty=1, lwd=2);
+lines(newprice$price, predict(lm.pumpkinsO3, newprice), col="orange", lty=1, lwd=2);
+lines(newprice$price, predict(lm.pumpkinsO4, newprice), col="magenta", lty=1, lwd=2);
+lines(newprice$price, predict(lm.pumpkinsO5, newprice), col="green", lty=1, lwd=2);
+legend(230, 1.3, legend=c("d=2", "d=3", "d=4", "d=5"),
+       col=c("blue", "orange", "magenta", "green"), lty=c(1,1,1,1), cex=0.8, lwd=c(2,2,2,2))
+
+
+# Backward Selection
+lm.pumpkinsO10 =  lm(size ~ poly(price,10), data=pumpkins)
+summary(lm.pumpkinsO10)
+lm.pumpkinsO9 =  lm(size ~ poly(price,9), data=pumpkins)
+summary(lm.pumpkinsO9)
+lm.pumpkinsO8 =  lm(size ~ poly(price,8), data=pumpkins)
+summary(lm.pumpkinsO8)
+
+plot(pumpkins$price, pumpkins$size, pch=20, ylim=c(0,5), xlab="Pumpkin's Price", ylab="Pumpkins' Size", main="Backward Selection Models: Orthogonal Polynomials")
+lines(newprice$price, predict(lm.pumpkinsO10, newprice), col="blue", lty=2, lwd=2);
+lines(newprice$price, predict(lm.pumpkinsO9, newprice), col="orange", lty=2, lwd=2);
+lines(newprice$price, predict(lm.pumpkinsO8, newprice), col="magenta", lty=2, lwd=2);
+legend(225, 1.2, legend=c("d=10", "d=9", "d=8"),  col=c("blue", "orange", "magenta"), lty=c(2,2,2), cex=0.8, lwd=2)
+```
+
+
+</div>
+
+ <br><br>
+ 
+### Piece-wise Polynomials
+
+If the true mean of $\mathbb{E}(Y|X=x) = f(x)$ is _too wiggly_, we might need to fit a higher order polynomial, which is not always a good idea. Instead we  consider **piece-wise polynomials**: 
+
+1. we divide the range of $x$ into several intervals, and
+
+2. within each interval, $f(x)$ is a low-order polynomial, e.g., cubic or quadratic, but the polynomial coefficients will be different from interval to interval
+
+3. we require the overall $f(x)$ to be continuous up to certain derivatives.
+
+
+This method is also called _"broken-stick regression"_. Its benefit is that it localizes the influence of each data point to a particular segment, but overall it is not a very smooth line as the one we obtain by fitting a single polynomial for the whole data set.
+
+<br><br>
+
+## Splines Regression
+
+
+_Splines_ are piecewise polynomials thar are constructed so that thay can be both sensitive and smooth, but also capture local features of the data.
+
+A <font color=Darkblue>**Cubic Spline**</font> is a curve constructed from sections of cubic polynomials, joined together so that the curve is _continuous up to second derivative_.  The points at which the sections join are called the <font color=blue>**knots**</font> of the spline. For a conventional spline, the knots occur wherever there is a datum, but for the regression splines the locations of the knots must be chosen. Typically, the knots would either be _evenly spaced_ through the range of observed $x$ values, or placed at the _quantiles_ of the distribution of unique $x$ values. Each section of cubic has different coefficients, but at the knots _it will match its neighboring sections in value and first two derivatives_.
+
+
+
+<div class=motivationbox>
+**Cubic Splines (Mathematical) Definition**
+
+
+A function $g$ defined on $[a,b]$ is a <font color=Darkblue>**cubic spline**</font> with respect to **knots** $\{\xi_i\}_{i=1}^m$ (specifically $a<\xi_1<\xi_2<\ldots<\xi_m<b$) if:
+
+*  <font color=Darkblue>$g$</font> is a cubic polynomial in each of the $m+1$ intervals, i.e.
+<font color=blue>
+\[g(x) =d_ix^3+c_ix^2+b_ix+a_i,\quad x\in [\xi_i,\xi_{i+1}]\]
+</font>
+where $i=0,\ldots, m$, $\xi_0=a$ and $\xi_{m+1}=b$.
+        
+* <font color=Darkblue>$g$ is continuous up to the _2nd_ derivative</font>. Since $g$ is continuous up to the _2nd_ derivative _for any point inside an interval_, it suffices to check the following conditions:
+<font color=blue>
+\[g^{(0,1,2)} (\xi_i^+)=g^{(0,1,2)}(\xi_i^-),\quad i=1, \ldots, m\]
+</font>
+This expression indicates that the function and the first and second order derivatives are continuous at the knots.
+
+</div>
+
+<br>
+
+<font color=Darkblue><u>**How many free parameters do we need to represent a cubic spline?**</u> </font> 
+        
+
+**(+)** <font color=blue>4</font> parameters $(d_i,c_i,b_i,a_i)$ _for each of the $(m+1)$ intervals_.
+
+**(-)** <font color=blue>3</font> constraints _at each of the $m$ knots_ (continuity constraints).
+
+The total number of free parameters (similar to the number of degrees of freedom) is:
+<font color=Darkblue>
+\[4(m+1) - 3m = m + 4\]
+</font>
+
+<br>
+
+<font color=Darkblue><u>**A property of the cubic splines**</u> </font> 
+ 
+Suppose the knots $\{\xi_i\}_{i=1}^m$ are given.
+
+* If $g_1(x)$ and $g_2(x)$ are cubic splines, the linear combination 
+\[a_1g_1(x)+a_2g_2(x)\] 
+is also a cubic spline, where $a_1$ and $a_2$ are known constants.<br>
+
+That is, for a set of given knots, the corresponding _cubic splines form a linear space (of functions) with dim $(m + 4)$_.
+
+     
+<br>
+
+### Examples of Cubic Splines Basis 
+
+1.   A set of basis functions for cubic splines (w.r.t knots $\{\xi_i\}_{i=1}^m$) is given by:
+     \begin{align*}
+       h_0(x)&= 1\\
+        h_1(x)&=x\\
+       h_2(x)&=x^2\\
+       h_3(x)&=x^3;\\
+       h_{i+3}(x) &= (x-\xi_i)_+^3,\quad i=1,2,\ldots,m\\
+     \end{align*}
+That is, any cubic spline  can be uniquely expressed as:
+\[ \beta_0 +\sum_{j=1}^{m+3}\beta_j h_j(x)\]
+
+<br>
+
+2. Given knot locations, there are many alternative, but equivalent ways of writing down a basis for cubic splines. For example, _another_ basis for cubic splines can be written as:
+\begin{align*}
+h_0(x) &= 1\\
+h_1(x) &= x\\
+h_{i+1}(x) &= R(x, \xi_i^*),\,\, i=1, \ldots, q-1
+\end{align*}
+where
+\begin{align*}
+R(x,z) &= \left[  (z-1/2)^2 - 1/12\right] \left[  (x-1/2)^2 - 1/12\right]/4\\
+& \quad \,- \left[  (|x-z|-1/2)^4 - 1/2   (|x-z|-1/2)^2 + 7/240\right] /24\\
+\end{align*}
+
+
+
+<div class=examplebox>
+**An Example of a Cubic Splines Basis**
+
+We first define the function $R(x,z)$ as above in `R`:
+```{r}
+R_xz <- function(x,z){
+  ((z-0.5)^2-1/12)*((x-0.5)^2-1/12)/4-((abs(x-z)-0.5)^4-(abs(x-z)-0.5)^2/2+7/240)/24
+}
+```
+
+We then need to define the knots
+```{r}
+new.knots= c(1/6, 3/6, 5/6)
+```
+
+In regression examples the $x$ variable will be the predictor (there is  no need to generate any $x$ values). Here, we need a "generic" $x$  for illustration purposes.
+
+```{r}
+x=seq(0, 1, by=0.01)
+```
+
+Finally, we defined the splines functions, based on the definition given above:
+```{r}
+spline1 = rep(1, length(x)) # First basis function
+spline2 = x # Second basis function
+spline3 = R_xz(x,new.knots[1]) # Third basis function 
+spline4 = R_xz(x,new.knots[2]) # Fourth basis function 
+spline5 = R_xz(x,new.knots[3]) # Fifth basis function 
+```
+
+If we want to represent a function using the basis above, we have:
+```{r}
+fun1s = 4*spline1 - 0.05*spline2 - 6*spline3 +2*spline4 +10*spline5
+```
+
+For illustration purposes, we plot the basis functions defined above as well as the function $f$:
+```{r}
+par(mfrow = c(2,3))
+plot(x, spline1, type='l', lty=3, ylab=expression("h"[0]*"(x)=1"))
+plot(x, spline2, type='l',lty=3, ylab=expression("h"[1]*"(x)=x"))
+plot(x, spline3, type='l',lty=3, ylab=expression(paste(h[2](x))*"="*paste(R(x,xi[1])))  )
+plot(x, spline4, type='l',lty=3, ylab=expression(paste(h[3](x))*"="*paste(R(x,xi[2])))  )
+plot(x, spline5, type='l',lty=3, ylab=expression(paste(h[4](x))*"="*paste(R(x,xi[3])))  )
+plot(x, fun1s, type='l', ylab="f(x)", main=expression("f(x) =  4 - 0.05 h"[1]*" - 6 h"[2]*"+ 2 h"[3]*"+ 10 h"[4]), col="blue", lwd=2)
+```
+
+</div>
+
+
+<br><br>
+
+### B-Splines Basis Functions in `R` 
+
+In this class, one of the cubic splines basis that we are going to use is called **B-Splines**. 
+
+<div class=motivationbox>
+**Cubic B Splines Definition**
+
+The cubic B Splines basis is defined on an interval $[a,b]$ by the following requirements on the interior basis functions with knotpoints at $\{\xi_i\}_{i=1}^m$:
+
+1. A given basis function is nonzero on an interval defined by _four successive knots and zero elsewhere_.
+
+2. The basis function is a cubic polynomial for each subinterval between successive knots.
+
+3. The basis function is continuous and is also continuous in its first and second derivatives at each knotpoint.
+
+4. The basis function integrates to 1 over its support.
+
+5. The boundary function definitions are adjusted to account for continuity in derivatives at the boundaries of the interval.
+
+</div>
+
+
+
+
+
+
+These are part of the `splines` library in `R` and the function to generate then is called  `bs`. The arguments of the `bs` function are:
+<font color=blue>
+\[ bs(x, df, knots, degree, intercept, Boundary.knots) \]
+ </font>
+ The `R` documentation can be found <a href="https://www.rdocumentation.org/packages/splines/versions/3.6.2/topics/bs" target=blank>here</a>.
+
+<u>Arguments in the `bs` function:</u>
+
+* `x` is the predictor, i.e. the variable to which we want to apply the splines function.
+
+* `df` are the degrees of freedom for the splines functions. 
+
+* `knots` are the _internal_ breakpoints/knots that define the spline, i.e. location where the knots should be placed.
+
+* `degree` is the degree of the piecewise polynomial. The default is `degree=3` for cubic splines.
+
+* `intercept` is whether we want to add an intercept in the splines basis or not. _This is not the intercept in the regression we perform_. The default is `intercept=FALSE`.
+
+* `Boundary.knots` are the boundary points at which we "anchor" the B-splines basis. The default values are obtained from the range of non-NA values of `x`, i.e. `Boundary.knots=FALSE`.
+
+So, _in our examples_, we will need to feed the appropriate predictor `x` and then the desired `knots` **or** degrees of freedom, `df`, _not both_. The rest we leave them at their default values.
+
+<br>
+The <font color=Darkblue>**output**</font> of the `bs()` function is a *matrix* of dimension `c(length(x), df)`, if `df` was supplied or of dimension `df = length(knots) + degree (+1 if intercept=TRUE)` if `knots` were supplied.
+<br>
+
+
+<u>**Knots or Degrees of Freedom in `bs()`**</u>
+
+As we mentioned, we need to  supply the degrees of freedom or the location of the knots in the `bs()` function, and of course there is an equivalence between the two. Some details to keep in mind on how you can correctly specify  these arguments:
+
+* If you know where the knots should be placed, then you need to define a vector of the **locations** of the knots and input that in the `knots` argument in the `bs()` function. For example,
+
+<div class=examplebox>
+**Defining `knots` location in `bs()`**
+<br>
+```{r}
+library(splines)
+x=seq(0, 1, by=0.01) # generic `x` for illustration purposes
+new.knots= c(1/6, 3/6, 5/6)  # define three knots at locations 1/6, 3/6, 5/6.
+Bsplines.basis1 = bs(x, knots=new.knots)
+head(Bsplines.basis1)
+```
+</div>
+
+In this case, `R` calculates the degrees of freedom using the following formula:
+\[\text{df = length(knots) + degree}\]
+or **if `intercept=TRUE`** then
+\[\text{df = length(knots) + degree + 1}\]
+<br>
+
+* If you prefer to specify the degrees of freedom, then the function `bs()` chooses `df-degree` many knots at suitable quantiles of $x$ (ignoring any missing values). If you specified `intercept=TRUE`, then the number of knots will be `df-degree-1`. For example,
+
+<div class=examplebox>
+**Defining `knots` location in `bs()`**
+<br>
+```{r}
+x=seq(0, 1, by=0.01) # generic `x` for illustration purposes
+Bsplines.basis2 = bs(x, df=4)
+head(Bsplines.basis2)
+```
+</div>
+
+<br>
+
+As an example, below we plot the first 7 B Splines basis functions:
+
+<div class=examplebox>
+**Illustration of B Splines Basis Function**
+
+```{r}
+Bsplines.basis = bs(x, knots=new.knots)
+dim(Bsplines.basis)
+head(Bsplines.basis)
+```
+
+```{r}
+par(mfrow = c(2,4))
+plot(x, Bsplines.basis[,1], type='l', lty=3, ylab=expression(paste(h[1](x))))
+plot(x, Bsplines.basis[,2], type='l',lty=3, ylab=expression(paste(h[2](x))))
+plot(x, Bsplines.basis[,3], type='l',lty=3, ylab=expression(paste(h[3](x)) ))
+plot(x, Bsplines.basis[,4], type='l',lty=3, ylab=expression(paste(h[4](x))))
+plot(x, Bsplines.basis[,5], type='l',lty=3, ylab=expression(paste(h[5](x))))
+plot(x, Bsplines.basis[,6], type='l',lty=3, ylab=expression(paste(h[6](x))))
+```
+
+</div>
+
+
+<br><br>
+
+### Natural Cubic Splines (NCS)
+
+
+A cubic spline on $[a, b]$ is a <font color=Darkblue>**Natural Cubic Spline**</font> if its _second_ and _third_ derivatives are _zero at $a$ and $b$_.    This condition implies that NCS is a linear function in the two extreme intervals $[a,\xi_1]$ and $[\xi_m,b]$. The linear functions in the two extreme intervals are completely determined by their neighboring intervals. The degrees of freedom of NCS’s with $m$ knots are:
+\[4(m+1)-3m -4=m\]
+since we have 4 additional constraints (the ones on the boundary points).
+
+<font color=orange>**<u>Remark</u>**</font>: For a curve estimation problem with data $(x_i,y_i)^n_{i=1}$, if we put $n$ knots at the $n$ data points (assumed to be unique), then using NCS we obtain a _smooth_ curve passing through **all** $y$’s.
+     
+<div class=motivationbox>
+**Natural Cubic Spline**
+
+A Natural Cubic Spline with $m$ knots is represented by $m$ basis functions, for example one such basis is given by
+ \begin{align*}
+ N_1(x) &= 1\\
+ N_2(x) &= x\\
+ N_{k+2} (x) &= d_k(x) - d_{k-1}(x)
+ \end{align*}
+ where
+ \[d_k(x) = \frac{(x-\xi_k)_{+}^{3} - (x-\xi_{m})_{+}^{3}}{\xi_m - \xi_k}\]
+ Each of these derivatives can be seen to have zero second and third derivative for $x\geq \xi_m$.
+ </div>
+ <br>
+ 
+In `R` we can find the NCS as part of the `splines` library, by calling the `ns()` function. Specifically, we have that 
+
+<font color=blue>
+\[ ns(x, df, knots, intercept=TRUE, Boundary.knots) \]
+</font>
+
+<div class=examplebox>
+**Natural Cubic Splines in `R`**
+
+```{r}
+NCS.basis =ns(x, knots=new.knots, Boundary.knots=c(0,1))
+dim(NCS.basis)
+
+par(mfrow = c(2,3))
+plot(x, NCS.basis[,1], type='l', lty=3, ylab=expression(paste(h[1](x))))
+plot(x, NCS.basis[,2], type='l',lty=3, ylab=expression(paste(h[2](x))))
+plot(x, NCS.basis[,3], type='l',lty=3, ylab=expression(paste(h[3](x)) ))
+plot(x, NCS.basis[,4], type='l',lty=3, ylab=expression(paste(h[4](x))))
+```
+
+</div>
+
+<br>
+     
+Recall that the linear functions in the two extreme intervals are completely determined by the other cubic splines. This means that  data points in the two extreme intervals (i.e., outside the two boundary knots) are wasted since they do not affect the fitting. Therefore, by default, `R` puts the two boundary knots as the _min_ and _max_ of the $x_i$’s.
+     
+As in the case of the `bs()` function:
+
+* You can tell `R` the location of knots, which are the interior knots. Recall that a NCS with $m$ knots has $m$ df. So, the df is equal to the number of (interior) knots plus $2$, where $2$ means the two boundary knots.
+     
+* Or you can tell  `R` the df. If intercept = TRUE, then we need $m= df - 2$ knots, otherwise we need $m = df - 1$ knots. Again, by default, `R`  puts knots at the $1/(m+1),...,m/(m+1)$ quantiles of $x_{1:n}$.
+
+ <br><br>
+ 
+### Regression Splines
+
+
+Recall that for a given set of  knots, the corresponding cubic splines form a *linear space* of functions with dimension $(m + 4)$. So, the   **Regression Splines** use a basis expansion approach:
+  $$g(x)=\beta_1 h_1(x)+\beta_2 h_2(x)+\ldots+\beta_p h_p(x)$$
+* If Cubic Splines are used as basis functions $p=m+4$.
+
+* If Natural Cubic Splines (NCS) are used as basis functions $p=m$.
+
+
+We can represent the model on the observed $n$ data points using matrix notation:
+\[
+      \begin{pmatrix}
+        y_1\\
+        y_2\\
+        \ldots\\
+        y_n
+      \end{pmatrix}_{n\times 1} =
+      \begin{pmatrix}
+         h_1(x_1)& \ldots & h_{p}(x_1)\\
+          h_1(x_2)& \ldots & h_{p}(x_2)\\
+         \\
+           h_1(x_n)& \ldots & h_{p}(x_n)
+      \end{pmatrix}_{n\times p}
+      \begin{pmatrix}
+      \beta_1\\
+      \beta_2\\
+      \ldots\\
+      \beta_p
+      \end{pmatrix}_{p\times 1}
+\] 
+where our _"design"_ matrix is the matrix $\mathbf{F}$ of basis functions. Therefore, we can estimate the coefficients $\mathbf{\beta}$ by solving the following Least-Squares problem:
+$$\hat{\mathbf{\beta}}= \arg\min_{\mathbf{\beta}}||\mathbf{y} - \mathbf{F}{\mathbf{\beta}|}|^2$$
+<br>
+
+### K-Fold Cross-Validation
+
+One of the challenges in using splines regression is the choice of the degrees of freedom/ knots. One way to optimally select the number of knots or degrees of freedom is the so-called K-fold cross-validation approach. This is outlined in the steps below:
+
+1. Set a fixed number of knots (or df).
+2. Divide the set of observations into $k$ groups (or _folds_).
+3. Leave the first fold as a validation set (not used to fit the model). Fit the Regression Spline with a fixed number of knots  using the remaining $k-1$ folds.
+4.  Calculate the Mean Square Error for fold 1: $MSE_1$.
+5. Repeat the previous steps $k$ times. Each time a new validation set is used to calculate $MSE_i$.
+6. Calculate the average $k$-fold Cross-Validation error: \[CV(k)=\frac{1}{k}\sum_{i=1}^k MSE_i\]
+7. Repeat 2 to 6 with a new number of knots (or df).
+8. Select the number of knots that minimizes the $k$-fold CV error or $CV(k)$.
+
+Then, we repeat the same process for a different number of knots and in the end we select the one that minimizes the $CV(k)$. A sketch of this approach is shown below:
+
+```{r ,echo=FALSE, message=FALSE, warning=FALSE, fig.align="center", out.width="60%"}
+knitr::include_graphics("images/week4/kfold.png")
+```
+
+
+    
+## Smoothing Splines
+
+
+ 
+ In Regression Splines, we need to choose the number and the location of knots (or the degrees of freedom). As we discussed, B-splines and NCS are both methods that construct a $n \times p$ basis matrix $\mathbf{F}$, and then model the outcome using a linear regression on $\mathbf{F}$. Inevitably, we need to select the order of the spline, the number of knots (AIC, BIC, CV) and even the location of knots, which is a quite challenging task. So, we need to consider whether there is an alternative approach that we can use to select the number and location of knots automatically.
+
+
+
+
+A Smoothing Spline is a spline designed to balance fit with smoothness, and it starts by suggesting a very bad solution to our problem: by putting knots at \textit{all} the observed data points $(x_1, \ldots, x_n)$:
+\[\mathbf{y}_{n\times 1} = \mathbf{F}_{n\times p} \beta_{p\times 1}\]
+Then, we can construct $n$ NCS basis.  However, we know that with this approach we are going to run into overfitting problems. So, instead of selecting the knots, we recall last week's discussion on penalizing models with many parameters. This leads to minimizing the following objective functions with a ridge-type shrinkage:
+\[\min_{\beta} \Bigl\{ ||\mathbf{y}-\mathbf{F} \beta ||^2 + \lambda \beta^T \Omega \beta \Bigr\}\]
+where the tuning parameter $\lambda$ is often chosen by CV ($\Omega$ will be defined later).
+
+
+So, now we want to understand whether solving such a minimzation problem can provide us with a good solution with desirable properties.
+
+
+### The Roughness Penalty Approach
+
+ Let $S[a,b]$ be the space of all ``smooth'' functions defined on $[a,b]$. This is a second order Sobolev space where global polynomial functions and cubic splines functions live ($S[a,b]$ is an infinite-dimensional function space.  Our goal is to find the best function in $S[a,b]$ to approximate $f$.
+
+
+Let us consider solving the following Penalized Residual Sum of Squares problem:
+\[
+RSS_\lambda(g) = \sum_{i=1}^n [y_i - g(x_i)]^2  + \lambda \int_a^b [g''(x)]^2 dx.
+\]
+where $\lambda$ is a smoothing parameter.  The first term measures the closeness of the model to the data, while the second term penalizes the roughness/curvature of the function. We solve this problem on $[a,b]=[\min x_i, \max _i]$ for functions with finite roughness penalty $\int_a^b [g''(x)]^2 dx < \infty$. This is known as a second order Sobolev space.
+
+<br>
+Note that $\int_a^b [g''(x)]^2 dx$ is called the <font color="blue">**roughness penalty**</font>. 
+<br>
+
+From the expression above, we can see that  $\lambda$ is the smoothing parameter that controls the bias-variance trade-off. Therefore, when $\lambda=0$, we interpolate the data and that leads us to overfitting. When  $\lambda=\infty$, then we return to linear least-squares regression. It turns out that the solution to the penalized residual sum of squares has to be a NCS. Indeed,
+
+
+<div class=motivationbox>
+**Theorem**
+\[\min_g RSS_{\lambda}(g) = \min_{\tilde{g}} RSS_{\lambda}(\tilde{g}) \]}
+where $\tilde{g}$ is a NCS with knots at the $n$ data points.
+</div>
+
+Let's call $g(x)$ the as the optimal solution. Since the loss part in $RSS_\lambda(g)$ only involves  $n$ data points, we can find define a natural cubic spline (NCS) fit that we can call $\tilde{g}(x)$ such that it  matches $g(x)$ at the observations $x_i$, $i=1, \ldots, n$, i.e.
+\[g(x_i) = \tilde{g}(x_i), i=1, \ldots, n\]
+ We can always find such $\tilde{g}$ since our space consists of $n$ basis. Then, we can show that 
+\[\int g^{''2} dx \geq \int  \tilde{g}^{''2} dx\]
+meaning that we will _always_ prefer the $\tilde{g}$, the NCS ``representation'' of
+$g$, since the _penalty_ is smaller, and the _loss_ doesn't change.
+
+### Proof
+
+To establish the Theorem, we essentially need to show that 
+\[\int g''^{2} dx \geq \int  \tilde{g}''^{2} dx\]
+
+Thus, we define $h(x) = g(x) - \tilde{g}(x)$ for which we know that  $h(x_i)=0$ for $i=1, \ldots, n$. Then
+\[ \int g''^2 \, dx  = \int \tilde{g}''^2 \, dx  + \int h''^2 \, dx  + 2 \int \tilde{g}'' h'' \, dx
+\]
+and without loss of generality assuming that the $x_i$s are ordered, we obtain:
+\begin{align*}
+\int \tilde{g}'' h'' \, dx  &= \tilde{g}'' h' \Big|_a^b 
+- \int_a^b h' \tilde{g}^{(3)} \, dx\\
+&= - \sum_{i=1}^{n-1} \tilde{g}^{(3)}\!\left(x_j^+\right) 
+\int_{x_j}^{x_{j+1}} h' \, dx 
+\quad (\tilde{g}^{(3)} \text{ constant piecewise})\\
+&= - \sum_{i=1}^{n-1} \tilde{g}^{(3)}\!\left(x_j^+\right) 
+\left(h(x_{j+1}) - h(x_j)\right)
+\end{align*}
+The second equation is because $\tilde{g}$ is a NCS and therefore we know that it has zero second derivative on the two boundaries  $a$ and $b$. The third equation is true, because  $\tilde{g}$ is at most a 3rd order polynomial on any region and as a consequence has  constant third derivatives, which we can pull out of the integration. The last equation holds because we said that $h(x)=0$ on all the observation points $x_i$. Therefore, this shows that the roughness penalty of our NCS solution is no larger than the best solution $g$. If we also take into account that $\tilde{g}$ is also in the space $S[a,b]$, then $g$ must be our NCS solution.
+
+<br>
+<br>
+
+## Fitting Smoothing Splines 
+  
+From the previous discussion, we conclude that $g$ has a **finite sample representation**
+\[\hat{g}(x) = \sum_i \beta_i N_i(x)\]
+where $N_i$ are a set of NCS basis functions with knots at each of the $x$ _unique_ values. Therefore, the penalty function becomes
+\begin{align*}
+\int_{a}^{b} g^{''2} dx &= \int  \left( \sum_i \beta_i N_i^{''}(x)\right)^2 dx\\
+&= \sum_{i,j} \beta_i \beta_j \int N_i^{''}(x) N_j^{''}(x) dx\\
+&=\beta^T \Omega \beta
+\end{align*}
+where $\Omega_{n\times n}$ with $\Omega_{ij} = \int N^{''}_{i}(x) N^{''}_{j}(x) dx$.
+
+
+Hence our goal is to find $\beta$ that minimizes 
+\[RSS_{\lambda}(\beta) = (\mathbf{y} - \mathbf{F}\beta)^T(\mathbf{y} - \mathbf{F}\beta) + \lambda  \beta^T \Omega \beta \]
+This is a ridge penalized function and the solution is
+\[\hat{\beta} = \arg \min_{\beta} RSS_{\lambda}(\beta)\]
+\[=(\mathbf{F}^T \mathbf{F} +\lambda \Omega)^{-1} \mathbf{F}^T \mathbf{y}\]
+
+The smoothing spline version of the ``hat'' matrix is called the **smoother matrix**
+\[\mathbf{\hat{y}} = \mathbf{F} (\mathbf{F}^T \mathbf{F} +\lambda \Omega)^{-1} \mathbf{F}^T \mathbf{y} = S_{\lambda} \mathbf{y}\]
+
+
+<br><br>
+
+**Remarks**
+
+We have done the analysis of degrees of freedom for ridge type regression. The degrees of freedom of a smoothing spline are
+\[df = tr(S_{\lambda})\]
+which ranges between 0 and $n$. Under some special constructions (Demmler and Reinsch,
+1975), a basis with double orthogonality property, can lead to
+\[\mathbf{F}^T \mathbf{F} = \mathbf{I}, \Omega = diag(d_i)\]
+where $d_i$s are arranges in an increasing order and in addition $d_2=d_1=0$.  Using this basis we have
+\[\hat{\beta} = (\mathbf{F}^T \mathbf{F} +\lambda \Omega)^{-1} \mathbf{F}^T \mathbf{y} = \Bigl(\mathbf{I} + \lambda diag(d_i) \Bigr)^{-1} \mathbf{F}^T \mathbf{y}\]
+i.e.
+\[\hat{\beta}_i = \frac{1}{1+\lambda d_i} \hat{\beta}_i^{LS}\]
+
+
+
+**Choosing $\lambda$**
+
+ Choosing the penalty $\lambda$ is the same as in ridge regression.
+
+-- Leave-one-out CV:
+  \[
+  \text{CV}(\lambda) = \frac{1}{n} \sum_{i=1}^n \left( \frac{y_i - \hat g(x_i)}{1 - S_\lambda(i,i)} \right)^2.
+  \]
+
+  
+-- Generalized CV:
+  \[
+  \text{GCV}(\lambda) = \frac{1}{n} \sum_{i=1}^n \left( \frac{y_i - \hat g(x_i)}{1 - \tfrac{1}{n}\text{tr}(S_\lambda)} \right)^2.
+  \]
+  <br>
+  
+  
+## The `Birthrates` Example in R
+
+
+
+The Birthrate data set contains U.S. birth rate data from 1917 to 2003.
+
+```{r}
+birthrates= read.csv("data/week4/birthrates.csv")
+head(birthrates)
+```
+
+Plotting the data we have
+
+```{r}
+plot(birthrates, pch = 19, col = "blue")
+```
+
+which is an highly nonlinear trend.
+
+We first try to fit a polynomial regression with orthogonal polynomials for polynomials with degrees 3, and 6. The fitted lines can be shown below:
+
+```{r}
+par(mfrow=c(1,2))
+
+    poly3.fit <- lm(Birthrate ~ poly(Year, 3), data = birthrates)
+    plot(birthrates, pch = 19, col = "blue")
+    lines(birthrates$Year, poly3.fit$fitted.values, lty = 1, col = "magenta", lwd = 2)
+    title("degree = 3")
+    
+    par(mar = c(2,3,2,0))
+    poly6.fit <- lm(Birthrate ~ poly(Year, 6), data = birthrates)
+    plot(birthrates, pch = 19, col = "blue")
+    lines(birthrates$Year, poly6.fit$fitted.values, lty = 1, col = "magenta", lwd = 2)
+    title("degree = 6")
+
+```
+
+
+
+We can see that the 6th order polynomial is better, but it is not very good. We can try fitting local polynomials - piecewise polynomials of lower order (we try constant functions and linear function in the example below:
+
+```{r}
+ myknots = c(1936, 1960, 1978)
+
+ bounds = c(1917, myknots, 2003)  
+    
+ # Piecewise Constant Polynomials
+    mybasis = cbind("x_1" = (birthrates$Year < myknots[1]), 
+                    "x_2" = (birthrates$Year >= myknots[1])*(birthrates$Year < myknots[2]), 
+                    "x_3" = (birthrates$Year >= myknots[2])*(birthrates$Year < myknots[3]),
+                    "x_4" = (birthrates$Year >= myknots[3]))
+        
+    const.fit <- lm(birthrates$Birthrate ~ . -1, data = data.frame(mybasis))
+    par(mar = c(2,3,2,0))    
+    plot(birthrates, pch = 19, col = "blue")
+    abline(v = myknots, lty = 2)
+    title("Piecewise constant")
+    
+    for (k in 1:4)
+        points(c(bounds[k], bounds[k+1]), rep(const.fit$coefficients[k], 2), type = "l", lty = 1, col = "magenta", lwd = 4)
+    
+    # Piecewise Linear Polynomials
+    mybasis = cbind("x_1" = (birthrates$Year < myknots[1]), 
+                    "x_2" = (birthrates$Year >= myknots[1])*(birthrates$Year < myknots[2]), 
+                    "x_3" = (birthrates$Year >= myknots[2])*(birthrates$Year < myknots[3]),
+                    "x_4" = (birthrates$Year >= myknots[3]),
+                    "x_11" = birthrates$Year*(birthrates$Year < myknots[1]), 
+                    "x_21" = birthrates$Year*(birthrates$Year >= myknots[1])*(birthrates$Year < myknots[2]), 
+                    "x_31" = birthrates$Year*(birthrates$Year >= myknots[2])*(birthrates$Year < myknots[3]),
+                    "x_41" = birthrates$Year*(birthrates$Year >= myknots[3]))
+        
+    line.fit <- lm(birthrates$Birthrate ~ .-1, data = data.frame(mybasis))
+    par(mar = c(2,3,2,0))  
+    plot(birthrates, pch = 19, col = "blue")
+    abline(v = myknots, lty = 2)
+    title("Piecewise linear")
+    
+    for (k in 1:4)
+        points(c(bounds[k], bounds[k+1]), line.fit$coefficients[k] + c(bounds[k], bounds[k+1])*line.fit$coefficients[k+4], 
+               type = "l", lty = 1, col = "magenta", lwd = 4)
+```
+
+
+As we discussed in the lecture, it is a localized fit, but there are discontinuities and the overall fit is not good.
+
+
+#### Splines Regression
+
+
+Instead, we can use **splines** to fit the data. Let us first try to use the B-Splines. We will first try a **linear spline**
+
+```{r}
+bsplines.lin.fit <- lm(Birthrate ~ splines::bs(Year, degree = 1, knots = myknots), data = birthrates)
+    plot(birthrates, pch = 19, col = "blue")
+    lines(birthrates$Year, bsplines.lin.fit$fitted.values, lty = 1, col = "magenta", lwd = 4)
+    title("Linear pline with the bs() function")
+```
+
+
+
+and then a **cubic spline** (as the ones discussed in class)
+
+```{r}
+bsplines.3.fit <- lm(Birthrate ~ splines::bs(Year, degree = 3, knots = myknots), data = birthrates)
+    plot(birthrates, pch = 19, col = "blue")
+    lines(birthrates$Year, bsplines.3.fit$fitted.values, lty = 1, col = "magenta", lwd = 4)
+    title("Cubic spline with 3 knots")
+
+```
+
+
+In the plot below, we used our pre-defined knots. We can alternatively determine the degrees of freedom in the function `bs`:
+
+```{r}
+bsplines.3.fit.new <- lm(Birthrate ~ splines::bs(Year, df = 5), data = birthrates)
+    plot(birthrates, pch = 19, col = "blue")
+    lines(birthrates$Year, bsplines.3.fit.new$fitted.values, lty = 1, col = "magenta", lwd = 4)
+    title("Cubic spline with 6 degrees of parameters")
+```
+
+
+Let us now try the **Natural Cubic Splines**
+
+```{r}
+library(splines)
+    ns.splines.fit = lm(Birthrate ~ ns(Year, df=6), data=birthrates)    
+    plot(birthrates, pch = 19, col = "blue")
+    lines(birthrates$Year, ns.splines.fit$fitted.values, lty = 1, col = "magenta", lwd = 4)
+    title("Natural Cubic Splines with df=6")
+```
+
+
+<br><br>
+
+#### A Simulated Example of Smoothing Splines
+
+
+
+
+In this example, we are going to reproduce the example from the ESL book in section 5.5.2 in which we the true function of the data is given by
+\[f(x) = \frac{sin(12 (x+0.2))}{x+0.2}, \, x\in[0,1]\]
+
+So, we are first going to simulate data from this curve:
+
+```{r}
+set.seed(598)
+n=100
+
+x = sort(runif(n))
+y = sin(12*(x+0.2))/(x+0.2) + rnorm(n, 0, 1)
+
+plot(x, y, col="blue", pch=16 )
+
+funf_x = 1:50/50
+funf_y = sin(12*(funf_x+0.2))/(funf_x+0.2)
+lines(funf_x, funf_y, col=8, lwd=2)
+
+```
+
+#### Fitting a Smoothing Spline model to the simulated data above
+
+The function to use is `smooth.spline` and is part of the `splines` library in `R`.
+
+```{r}
+library(splines)
+?smooth.spline
+```
+
+The model is fitted as follows:
+
+```{r}
+spline.model = smooth.spline(x, y, df=5)
+spline.model
+```
+
+We can compute the fitted values as follows:
+
+```{r}
+fitted.y = predict(spline.model, funf_x)
+```
+
+To illustrate the fit of the model, we can plot the fitted line on top of the data:
+
+```{r}
+plot(x,y, xlab='x', ylab='y');
+lines(funf_x, funf_y, col=8, lwd=1.5);
+lines(fitted.y,  lty=2, col='blue', lwd=1.5);
+title('df=8');
+```
+
+The blue line is the true model, while the gray line is the fitted model with 5 degrees of freedom. As we discussed, if we change the degrees of freedom, e.g. df=8, then the line will be more/less sensitive to the data. For example for df=8 we have
+
+```{r}
+plot(x,y, xlab='x', ylab='y');
+lines(funf_x, funf_y, col=8, lwd=1.5);
+lines(predict(smooth.spline(x, y, df=8), funf_x),  lty=2, col='blue', lwd=1.5);
+title('df=8');
+```
+
+
+#### Choice of Lambda
+
+Many R packages come with an inbuilt option for determining lambda, primarily based on leave-one-out cross-validation (LOOCV) and generalized cross-validation (GCV).
+
+There’s no need to specify lambda directly. Instead, we indicate the desired degrees of freedom (df), ranging from 0 to n. `R` then determines the appropriate lambda. We can then consult both CV and GCV curves to decide the best lambda or df.
+
+```{r}
+model.fit = smooth.spline(x, y, df=9);
+```
+
+When using the `smooth.spline` function with a degree of freedom set at 9, the returned value `model.fit$df` may have a slight deviation due to rounding errors.
+
+The leverage output is equivalent to the diagonal entries of the smoothing matrix.
+
+```{r}
+model.fit$df
+model.fit$lev  # leveage = diagonal entries of the smoother matrix
+sum(model.fit$lev)
+```
+
+By default, the function offers a GCV score, but you can alter it to LOOCV for comparison.
+
+```{r}
+model.fit$cv  # default: GCV
+sum((y-model.fit$y)^2)/(1-model.fit$df/n)^2/n
+
+fit=smooth.spline(x, y, df=9, cv=T) # set 'cv=T' to return CV 
+fit$cv
+sum(((y-fit$y)/(1-fit$lev))^2)/n
+```
+
+
+
+
+
+  

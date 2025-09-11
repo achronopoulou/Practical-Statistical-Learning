@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Linear Models | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Linear Models | CS 598 Practical Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Linear Models | CS 598 Practical Statistical Learning" />
+  
+  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  
+
+<meta name="author" content="Alexandra Chronopoulou" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="introduction-to-statistical-learning.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html#examples-of-statistical-learning-problems"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html#supervised-learning-framework"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html#why-is-statistical-learning-is-challenging"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html#two-toy-examples-knn-vs.-linear-regression"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="linear-models.html"><a href="linear-models.html"><i class="fa fa-check"></i><b>2</b> Linear Models</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="linear-models" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Linear Models<a href="linear-models.html#linear-models" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Birthweight Data</p>
+<p>Goal: Predict the birthweight (Response/ Outcome) of a baby given a set of Predictors}/Features This particular data set was collected to study babies born with lower birthweight than expected..</p>
+<p></p>
+<p>Birthweight Data}</p>
+<p>Goal: Predict the birthweight (Response/ Outcome) of a baby given a set of Predictors/Features.</p>
+<p></p>
+<p>Birthweight Data</p>
+<p>Goal: Predict the birthweight (Response/ Outcome) of a baby given a set of Predictors/Features.</p>
+<p></p>
+<p>Birthweight Data</p>
+<p>Goal: Predict the birthweight (Response}/ Outcome) of a baby given a set of Predictors/Features.</p>
+<p></p>
+<p>The predictors can also be: transformations of quantitative inputs}, e.g. <span class="math inline">\(X_3^3\)</span>, <span class="math inline">\(\log X_5\)</span>; basic expansions leading to a polynomial representation , e.g. <span class="math inline">\(\sum_{k=1}^{n} c_k X_{7k}\)</span>; interactions}, e.g. <span class="math inline">\(X_1\cdot X_2\)</span>.</p>
+<p>Multiple Linear Regression</p>
+<p>Linear Regression Model</p>
+<p><span class="math display">\[ Y = \beta_0 + \beta_1 X_1 + \ldots + \beta_p X_p + \varepsilon \]</span>}
+where</p>
+<p><span class="math inline">\(\beta_0\)</span> is the intercept
+<span class="math inline">\(\beta_j\)</span> is the regression coefficient} associated with predictor <span class="math inline">\(X_j\)</span>
+<span class="math inline">\(\varepsilon\)</span> is the error term. Usual assumptions for the error terms: <span class="math inline">\(\varepsilon \sim IID \bigl(0, \sigma^2 \mathbf{I} \bigr)\)</span></p>
+<p>Training Data <span class="math inline">\(\bigl\{ x_{i1},\; x_{i2}, \ldots, x_{ip};\, y_i\bigr\}_{i=1}^{n}\)</span>\
+<span class="math display">\[ y_i = \beta_0 + \beta_1 x_{i1} + \ldots + \beta_p x_{ip} + \varepsilon_i,\,\, i=1, \ldots, n\]</span></p>
+<p>Matrix Representation</p>
+<p><span class="math display">\[
+    \mathbf{y}=\left(\begin{array}{c}
+      y_{1} \\ y_{2} \\ \vdots \\ y_{n}
+    \end{array}\right)
+    \quad
+    \mathbf{\varepsilon}=\left(\begin{array}{c}
+      \varepsilon_{1} \\ \varepsilon_{2} \\ \vdots \\ \varepsilon_{n}
+    \end{array}\right)
+    \quad
+    \mathbf{\beta}=\left(\begin{array}{c}
+      \beta_{0} \\ \beta_{1} \\ \vdots \\ \beta_p
+    \end{array}\right)\quad
+    \mathbf{X}=\left(\begin{array}{cccc}
+    1 &amp; x_{11} &amp; \cdots &amp; x_{1p} \\
+    1 &amp; x_{21} &amp; \cdots &amp; x_{2p}   \\
+      \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+   1 &amp; x_{n1} &amp; \cdots &amp; x_{np}  \\
+    \end{array} \right)
+  \]</span></p>
+<p>So, the model equation can be written as:
+<span class="math display">\[\left(\begin{array}{c}
+      y_{1} \\ y_{2} \\ \vdots \\ y_{n}
+    \end{array}\right) = \left(\begin{array}{ccccc}
+   1&amp;x_{11}&amp; \cdots &amp;x_{1p} \\
+   1&amp; x_{21}&amp; \cdots&amp;x_{2p}   \\
+   \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+  1 &amp; x_{n1} &amp; \cdots &amp; x_{np}  \\
+    \end{array} \right) \left(\begin{array}{c}
+      \beta_{0} \\ \beta_{1} \\ \vdots \\ \beta_p
+    \end{array}\right)\quad +
+\left(\begin{array}{c}
+      \varepsilon_{1} \\ \varepsilon_{2} \\ \vdots \\ \varepsilon_{n}
+    \end{array}\right)
+  \]</span></p>
+<p>Matrix Representation</p>
+<p>Matrix Representation of the MLR Model</p>
+<p><span class="math display">\[
+  \begin{array}{cccccc}
+\mathbf{y}_{ \textcolor{gray}{n\times 1 &amp;=&amp;\mathbf{X}_{\textcolor{gray}{n\times (p+1)  &amp;\mathbf{\beta}_{\textcolor{gray}{(p+1)\times 1&amp;+&amp;\mathbf{\varepsilon}_{\textcolor{gray}{n\times 1\\
+\uparrow &amp; &amp; \uparrow &amp; \uparrow &amp; &amp; \uparrow\\
+\text{Response} &amp;&amp;\text{Design &amp; \text{Coefficients} &amp; &amp; \text{Error}\\
+&amp;&amp;\text{Matrix &amp; &amp;&amp; \text{Term}\\
+\end{array}
+\]</span></p>
+<p><span class="math inline">\(n\)</span>: sample size
+<span class="math inline">\(p+1\)</span>: number of predictors or columns of <span class="math inline">\(\mathbf{X}\)</span>, including the intercept</p>
+<p>Model Fitting</p>
+<p>Given the training data <span class="math inline">\(\bigl\{ x_{i1},\; x_{i2}, \ldots, x_{ip};\, y_i\bigr\}_{i=1}^{n}\)</span>, we want to estimate <span class="math inline">\(\mathbf{\beta}\)</span> , i.e. obtain:
+<span class="math display">\[
+    \hat{\mathbf{\beta}} \;=\;
+      \left(\hat{\beta}_0,\hat{\beta}_1,\ldots,\hat{\beta}_p\right)^{T}
+  \]</span> }
+as a function of the data.</p>
+<p>The regression coefficients <span class="math inline">\(\beta\)</span> are obtained by minimizing the Residual Sum of Squares (RSS):
+<span class="math display">\[RSS \;\;=\;\; ||\mathbf{y} - \mathbf{X} \beta||^2 = (\mathbf{y} - \mathbf{X} \beta)^{T} (\mathbf{y} - \mathbf{X}\beta)\]</span></p>
+<p>Is RSS a good criterion?</p>
+<p>
+Fitted regression surface.</p>
+<p>Yes, since it only assumes that <span class="math inline">\((x_i, y_i)\)</span> are random draws from their population. It</p>
+<p>makes no assumptions about model validity.
+simply finds the best linear fit.
+usually gives good results, no matter how the data were obtained.
+is simply a criterion that measures a Lack-Of-Fit.</p>
+<p>Least-Squares Estimation
+In order to minimize <span class="math inline">\(RSS = (\mathbf{y} - \mathbf{X} \beta)^{T} (\mathbf{y} - \mathbf{X}\beta)\)</span>, we take derivatives with respect to <span class="math inline">\(\beta\)</span>’s and set to zero:</p>
+<p><span class="math display">\[\begin{align*}
+\frac{\partial RSS}{\partial \beta}  = -2 \;\mathbf{X}^T_{\textcolor{gray}{(p+1)\times n (\mathbf{y} - \mathbf{X}\beta)_{\textcolor{gray}{n\times 1 &amp;= \mathbf{0}_{\textcolor{gray}{(p+1)\times 1\\
+\mathbf{X}^T (\mathbf{y} - \mathbf{X}\beta)} &amp;= \mathbf{0\\
+(\mathbf{X}^T\mathbf{X})\;\beta  = \mathbf{X}^T\; \mathbf{y} &amp;\Rightarrow
+   \hat{\beta} = (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\; \mathbf{y} }\\
+&amp; \quad \longrightarrow \text{ LS Estimators }
+\end{align*}\]</span></p>
+<p>Remarks</p>
+<p>We assume} that the rank of <span class="math inline">\(\mathbf{X}\)</span> is <span class="math inline">\(p+1\)</span>}, i.e. no columns of <span class="math inline">\(\mathbf{X}\)</span> is a linear combinations of the other columns of <span class="math inline">\(\mathbf{X}\)</span>.</p>
+<p>Since <span class="math inline">\(\mathbf{X}\)</span> has rank <span class="math inline">\(p+1\)</span>, the inverse of $ (^T)$ exists.</p>
+<p>Fitted &amp; Predicted Values &amp; Residuals</p>
+<p>Prediction at <span class="math inline">\(x_i^* = \bigl( x_{i1}^*, x_{i2}^*, \ldots , x_{ip}^*\bigr)\)</span>
+<span class="math display">\[\hat{\mathbf{y^*}} = \hat{\beta}_0 + \hat{\beta}_1 x_{i1}^* + \hat{\beta}_2 x_{i2}^* + \ldots + \hat{\beta}_p x_{ip}^*\]</span>
+<span class="math inline">\(\longrightarrow\)</span> In matrix format: <span class="math inline">\(\hat{\mathbf{y}}^* = \mathbf{X}^* \hat{\beta}\)</span></p>
+<p>Fitted Value at <span class="math inline">\(x_i = \bigl( x_{i1}, x_{i2}, \ldots , x_{ip}\bigr)\)</span>
+<span class="math display">\[\hat{\mathbf{y_{i}}} = \hat{\beta}_0 + \hat{\beta}_1 x_{i1}+ \hat{\beta}_2 x_{i2} + \ldots + \hat{\beta}_p x_{ip}\]</span>
+<span class="math inline">\(\longrightarrow\)</span> In matrix format: <span class="math inline">\(\hat{\mathbf{y}} = \mathbf{X} \hat{\beta}\)</span></p>
+<p>Residuals</p>
+<p>Residual at <span class="math inline">\(x_i = \bigl( x_{i1}, x_{i2}, \ldots , x_{ip}\bigr)\)</span>
+<span class="math display">\[r_{i} = y_i - \hat{y}_i \]</span>%= y_i - _0 - <em>1 x</em>{i1} - <em>2 x</em>{i2} - - <em>p x</em>{ip}]
+In matrix format: <span class="math inline">\(r = \mathbf{y} -\hat{\mathbf{y}}\)</span></p>
+<p>The residuals <span class="math inline">\(\mathbf{r}\)</span> are used to estimate the error variance}:
+<span class="math display">\[\hat{\sigma}^2 = \frac{1}{n-p-1}\sum_i r_i^2 = \frac{RSS}{n-p-1}\]</span></p>
+<p><span class="math inline">\(\longrightarrow\)</span> <span class="math inline">\(n-p-1\)</span>} are the degrees of freedom of the residuals.</p>
+<p>Properties of Residuals</p>
+<p>The LS estimator is the <span class="math inline">\(\beta\)</span> that satisfies the normal equations}, that is
+<span class="math display">\[\mathbf{X}^T (\mathbf{y} - \hat{\mathbf{y}}) = \mathbf{X}^T (\mathbf{y} - \mathbf{X}\hat{\beta}) = \mathbf{0}\]</span></p>
+<p>This implies the following properties for the residuals, <span class="math inline">\(r = \mathbf{y}-\mathbf{X}\hat{\beta}\)</span>:</p>
+<p>The cross-products between the residual vector <span class="math inline">\(r\)</span> and each column of <span class="math inline">\(\mathbf{X}\)</span> are zero, i.e. 
+<span class="math display">\[\begin{align*}
+\mathbf{X}^T\;r} &amp;= \mathbf{X}^T (\mathbf{y}-\mathbf{X}\hat{\beta})} = \mathbf{X}^T \mathbf{y}-\mathbf{X}^T\mathbf{X}\, \textcolor{red}{\hat{\beta\\
+&amp;= \mathbf{X}^T \mathbf{y} -  \underbrace{(\mathbf{X}^T \mathbf{X} ) \textcolor{red}{(\mathbf{X}^T\mathbf{X})^{-1}_{=\mathbf{I \textcolor{red}{\mathbf{X}^T} \; \mathbf{y} = 0
+\end{align*}\]</span></p>
+<p>The cross-product between the fitted value <span class="math inline">\(\hat{y}\)</span> and the residual vector <span class="math inline">\(r\)</span> is zero, i.e.
+<span class="math display">\[\hat{\mathbf{y^T}} \;r = \hat{\beta}^{T \underbrace{\mathbf{X}^{T \;r}_{=0} = 0\]</span></p>
+<p>This implies that the residual vector <span class="math inline">\(r\)</span> is orthogonal to each column of <span class="math inline">\(\mathbf{X}\)</span> and <span class="math inline">\(\hat{\mathbf{y}}\)</span>.</p>
+<p>Least-Squares &amp; Normal Equations</p>
+<p>Least-Squares Problem &amp; Solutions</p>
+<p>Find a vector <span class="math inline">\(\hat{\beta}\)</span> that minimizes:
+<span class="math display">\[\min_{\beta} ||\mathbf{y} - \mathbf{X} \beta||^2\]</span>
+Any vector that provides a minimum value for this expression is called a least-squares solution.</p>
+<p>The set of all least squares solutions is precisely the set of solutions to
+<span class="math display">\[(\mathbf{X}^T \mathbf{X}) \beta = \mathbf{X}^T \mathbf{y}\]</span>
+There is a unique} solution if and only if <span class="math inline">\(rank(\mathbf{X}) = p+1\)</span> in which case <span class="math inline">\(\bigl(\mathbf{X}^T \mathbf{X}\bigr)\)</span> is invertible.</p>
+<p>Linear System of Equations</p>
+<p>For simplicity in the notation, we use a <code>generic</code> system of equations:
+<span class="math display">\[\mathbf{A} z = c\]</span>
+where
+<span class="math display">\[ \mathbf{A}=\left(\begin{array}{cccc}
+    a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1k} \\
+    a_{21} &amp; a_{22} &amp; \cdots &amp; a_{2k}   \\
+      \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+  a_{m1} &amp; a_{m2} &amp; \cdots &amp; a_{mk}  \\
+    \end{array} \right),\quad
+    z =\left(\begin{array}{c}
+    z_{1} \\
+    z_{2}   \\
+   \vdots\\
+    z_{m}  \\
+    \end{array} \right),\quad
+    c =\left(\begin{array}{c}
+    c_{1} \\
+    c_{2}   \\
+   \vdots\\
+    c_{m}  \\
+    \end{array} \right)
+    \]</span></p>
+<p>$ <em>{i = ( a</em>{1i}, a_{2i}, , a_{mi})^T$ is the vector representing the columns of <span class="math inline">\(\mathbf{A}\)</span>.</p>
+<p><span class="math inline">\(\mathcal{C}(\mathbf{A})\)</span> is the space generated by the columns of <span class="math inline">\(\mathbf{A}\)</span>, or in other words the <span class="math inline">\(span \bigl(\mathbf{A}_1, \mathbf{A}_2, \ldots, \mathbf{A}_{k}\bigr)\)</span>.</p>
+<p>Linear System of Equations</p>
+<p>The span of a collection of vectors <span class="math inline">\(\bigl(\mathbf{A}_1, \mathbf{A}_2, \ldots, \mathbf{A}_{k}\bigr)\)</span> is the set of all linear combinations of these vectors:
+<span class="math display">\[\begin{align*}
+&amp;span \bigl(\mathbf{A}_1, \mathbf{A}_2, \ldots, \mathbf{A}_{k}\bigr) \\
+&amp;= \Bigl\{ d_1 \mathbf{A}_1 + d_2 \mathbf{A}_2 + \ldots + d_k \mathbf{A}_{k}, \text{ for any constants } d_1, \ldots, d_k
+\Bigr\}
+\end{align*}\]</span></p>
+<p>Subspace</p>
+<p>A linear subspace of <span class="math inline">\(\mathbb{R}^n\)</span> is thought of as a ``flat’’ surface within <span class="math inline">\(\mathbb{R}^n\)</span>.</p>
+<p>It is a collection of vectors that is closed under linear combinations.</p>
+<p>The column space of <span class="math inline">\(\mathbf{A}\)</span>, <span class="math inline">\(\mathcal{C}(\mathbf{A})\)</span>, is a subspace in <span class="math inline">\(\mathbb{R}^n\)</span>.</p>
+<p>Examples of Subspaces</p>
+<p>
+</p>
+<p>Solution to <span class="math inline">\(\mathbf{A}z=c\)</span></p>
+<p>System of Equations <span class="math inline">\(\mathbf{A}z=c\)</span></p>
+<p>For the system of equations, <span class="math inline">\(\mathbf{A} z = c\)</span> to have a solutions, <span class="math inline">\(c\)</span> must be a linear combination of the columns of <span class="math inline">\(\mathbf{A}\)</span>, i.e. <span class="math inline">\(c \in \mathcal{C}(\mathbf{A})\)</span>.</p>
+<p>This is simply the definition of matrix multiplication and equality:
+<span class="math display">\[\mathbf{A} z = c \, \Leftrightarrow \, c = z_1 \mathbf{A}_1 + \ldots + z_k \mathbf{A}_k\]</span></p>
+<p>What happens when <span class="math inline">\(c \notin \mathcal{C}(\mathbf{A})\)</span>?</p>
+<p>Solution to <span class="math inline">\(\mathbf{A}z=c\)</span>, when <span class="math inline">\(c \notin \mathcal{C}(\mathbf{A})\)</span></p>
+<p>Find <span class="math inline">\(\hat{c}\)</span> that is closest to <span class="math inline">\(c\)</span> living in <span class="math inline">\(\mathcal{C}(\mathbf{A})\)</span>.</p>
+<p><span class="math inline">\(\mathbf{A} z = \hat{c}\)</span> does have a unique solution, and <span class="math inline">\(\hat{c}\)</span> comes as close to the original data as possible.</p>
+<p>Project <span class="math inline">\(c\)</span> orthogonally onto <span class="math inline">\(\mathcal{C}(\mathbf{A})\)</span>, by multiplying both sides by <span class="math inline">\(\mathbf{A}^T\)</span>:
+<span class="math display">\[\mathbf{A}^T\mathbf{A} z = \mathbf{A}^T c\]</span>
+<span class="math display">\[[Normal\, Equations]\]</span></p>
+<p>% what we are really doing is projecting <span class="math inline">\(c\)</span> orthogonally onto the column space of <span class="math inline">\(\mathcal{C}(\mathbf{A})\)</span>.</p>
+<p>
+Projection of vector <span class="math inline">\(c\)</span> to the subspace spanned by <span class="math inline">\(A_1\)</span> and <span class="math inline">\(A_2\)</span>, i.e. <span class="math inline">\(\mathcal{C}(A)\)</span>.</p>
+<p>Solution to <span class="math inline">\(\mathbf{A}z=c\)</span>, when <span class="math inline">\(c \notin \mathcal{C}(\mathbf{A})\)</span></p>
+<p><span class="math inline">\(\mathcal{C}(\mathbf{A})\)</span> is <code>flat</code> surface, and <span class="math inline">\(c\)</span> as a point that exists off of that flat surface.</p>
+<p>The shortest distance from the point <span class="math inline">\(c\)</span> to the plane <span class="math inline">\(span(A_1, A_2)\)</span> is the one orthogonal to the plane.</p>
+<p>%You may recall from undergraduate calculus or physics that a normal vector to a plane is a vector that is orthogonal to that plane.</p>
+<p>The normal equations help us find the closest point to <span class="math inline">\(c\)</span> that belongs <span class="math inline">\(\mathcal{C}\bigl(\mathbf{A}\Bigr)\)</span> by means of an orthogonal projection.</p>
+<p>
+Projection of vector <span class="math inline">\(c\)</span> to the subspace spanned by <span class="math inline">\(A_1\)</span> and <span class="math inline">\(A_2\)</span>, i.e. <span class="math inline">\(\mathcal{C}(A)\)</span>.</p>
+<p>Geometric Representation of LS</p>
+<p>
+Projection of response <span class="math inline">\(\mathbf{y}\)</span> to the subspace spanned by predictors <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>, i.e. <span class="math inline">\(\mathcal{C}(\mathbf{X})\)</span>.</p>
+<p><span class="math inline">\(\mathcal{C}\bigl(\mathbf{X}\Bigr)\)</span>: space spanned by the columns of the design matrix;
+a subspace of <span class="math inline">\(\mathbb{R}^n\)</span>.</p>
+<p><span class="math inline">\(\hat{\mathbf{y}}\)</span> orthogonal projection of <span class="math inline">\(\mathbf{y}\)</span> onto <span class="math inline">\(\mathcal{C}\bigl(\mathbf{X}\Bigr)\)</span>.</p>
+<p>The residuals <span class="math inline">\(r = \mathbf{y} - \hat{\mathbf{y}}\)</span> are orthogonal to <span class="math inline">\(\hat{\mathbf{y}}\)</span> and to <span class="math inline">\(\mathcal{C}\bigl( \mathbf{X} \bigr)\)</span>.</p>
+<p>The essence of LS</p>
+<p>Decompose the data vector <span class="math inline">\(\mathbf{y}\)</span> into two orthogonal components:
+<span class="math display">\[\mathbf{y}_{n\times 1} = \hat{\mathbf{y}}_{n\times 1} + r_{n\times 1}\]</span></p>
+<p>Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</p>
+<p>A measure of how well the model fits the data is the <span class="math inline">\(R\)</span>-square or the so-called coefficient of determination or percentage of variance explained:</p>
+<p><span class="math display">\[\begin{align*}
+R^2 &amp;=  \frac{\sum_i (\hat{y}_i - \bar{y})^2}{\sum_i (y_i - \bar{y})^2}\quad = \frac{\text{distance of ``model&#39;&#39; from grand mean}}{\text{distance of observations from grand mean }}\\
+&amp; =  \frac{||\hat{\mathbf{y}} - \bar{\mathbf{y}}||^2}{||\mathbf{y} - \bar{\mathbf{y}}||^2} \\
+&amp;= \frac{||\mathbf{y} - \bar{\mathbf{y}}||^2 - ||\hat{\mathbf{y}} - \mathbf{y}||^2  }{||\mathbf{y} - \bar{\mathbf{y}}||^2} \\
+&amp;= 1 - \frac{||\hat{\mathbf{y}} - \mathbf{y}||^2 }{||\mathbf{y} - \bar{\mathbf{y}}||^2}\, := 1 - \frac{RSS}{TSS}
+\end{align*}\]</span>
+where we used orthogonality</p>
+<p>to get <span class="math inline">\(\underbrace{||\mathbf{y} - \bar{\mathbf{y}}||^2}_{\mathclap{\substack{\text{{\small \textcolor{gray}{total}}}\\\text{{\small \textcolor{gray}{variation} } }}}} = \underbrace{||\hat{\mathbf{y}} - \bar{\mathbf{y}}||^2}_{\mathclap{\substack{\text{{\small \textcolor{gray}{model variation} }}\\ \text{{\textcolor{gray}{\small from mean}} }}}} + \underbrace{|| \hat{\mathbf{y}} - \mathbf{y}||^2}_{\text{{\small \textcolor{gray}{error} } }}\)</span>.</p>
+<p>Goodness of Fit: <span class="math inline">\(R\)</span>-Square</p>
+<p><span class="math inline">\(0\leq R^2 \leq 1\)</span>}</p>
+<p><span class="math inline">\(R^2\)</span> is invariant of any location and/or scale change of <span class="math inline">\(Y\)</span> or <span class="math inline">\(X\)</span>.</p>
+<p><span class="math inline">\(R^2\)</span> alone does not tell us much about the effectiveness of the LS method.</p>
+<p>A small <span class="math inline">\(R^2\)</span> does not imply that the LS model is bad.</p>
+<p>Adding a new predictor, even if it is randomly generated and has nothing to do with <span class="math inline">\(Y\)</span> will decrease <span class="math inline">\(RSS\)</span> and therefore increase <span class="math inline">\(R^2\)</span>.</p>
+<p>
+<span class="math inline">\(R^2\)</span> as a function of the number of parameters.</p>
+<p>
+<span class="math inline">\(RSS\)</span> as a function of the number of parameters.</p>
+<p>Linear Transformation on <span class="math inline">\(X\)</span></p>
+<p>Suppose we have a linear regression model of <span class="math inline">\(Y\)</span> on <span class="math inline">\(X\)</span>. If you scale or shift a predictor, then</p>
+<p>Fitted values, <span class="math inline">\(\hat{y}\)</span>, and <span class="math inline">\(R^2\)</span> stay the same, but} LS estimators, <span class="math inline">\(\hat{\beta}\)</span>, change!</p>
+<p>Examples}</p>
+<p>Scale} a variable, i.e. <span class="math inline">\(\tilde{x}_{i2} =  2 x_{i2}\)</span> or <span class="math inline">\(\tilde{x}_{i3} =  x_{i3}/4\)</span>.</p>
+<p>In the birthweight example: length of a baby is given in cm; we may want to change it to inches by dividing by 2.54 the column that corresponds to length: <span class="math display">\[\tilde{X}_1 = X_1/2.54\]</span></p>
+<p>%Center} a variable, i.e. <span class="math inline">\(\tilde{x}_{i2} =  x_{i2} - \bar{x}_{i2}\)</span></p>
+<p>%Center and scale}…</p>
+<p>These statements hold true, if we apply any linear transformation on the <span class="math inline">\(p\)</span> predictors as long as the transformation does not change the rank of <span class="math inline">\(\mathbf{X}\)</span>.</p>
+<p>Rank deficiency</p>
+<p>The design matrix <span class="math inline">\(\mathbf{X}\)</span> is an <span class="math inline">\(n\times p\)</span> matrix. If this matrix is not of full rank (i.e., its columns are not linearly independent), the matrix <span class="math inline">\(\mathbf{X^T X}\)</span> can not be inverted (singular matrix}).</p>
+<p>This implies that there is some redundancy in the columns of <span class="math inline">\(\mathbf{X}\)</span>, i.e. one column can be written as a linear combination of other columns.</p>
+<p>If the matrix <span class="math inline">\(\mathbf{X^T X}\)</span> is singular, the LS solution is not unique (identifiability proble}m).</p>
+<p>However, <span class="math inline">\(\mathcal{C}(\mathbf{X})\)</span> is well defined and thus <span class="math inline">\(\hat{y}\)</span> is well-defined and can be computed.</p>
+<p>R/ Python can cope well with this problem, and the returned model can be used for prediction.</p>
+%
+<p>Hypothesis Testing</p>
+<p>Test for the significance of predictors
+Testing for the statistical significance of one (or more) predictor(s), can be formulated as testing whether the corresponding <span class="math inline">\(\beta\)</span> is zero, or as a model comparison test.</p>
+<p>We can summarize all testing questions as the following hypothesis test:</p>
+<p><span class="math display">\[
+\begin{cases}
+&amp; H_0: \text{ Reduced Model with } p_0 \text{ coefficients}\\
+&amp; H_{\alpha}: \text{ Full/ Larger Model with } p_{\alpha} \text{ coefficients}\\
+\end{cases}
+\]</span>
+}</p>
+<p>The reduced model is a subset/special case of the full model.</p>
+<p>The reduced model has <span class="math inline">\(RSS_0\)</span> smaller than <span class="math inline">\(RSS_{\alpha}\)</span>, the full model <span class="math inline">\(RSS\)</span>, since <span class="math inline">\(p_{\alpha} &gt; p_0\)</span>}.</p>
+<p>Partial <span class="math inline">\(F\)</span> test</p>
+<p><span class="math display">\[\text{Test statistic: } \quad F=\frac{\bigl(RSS_0 - RSS_{\alpha}\bigr)/p_{\alpha} - p_0}{RSS_{\alpha}/ \bigl(n-p_{\alpha} \bigr)}\,  \sim \, F_{p_{\alpha} - p_0, n-p_{\alpha\]</span>}
+% where <span class="math inline">\(RRS_0\)</span> = Residual sum of squares for the model under <span class="math inline">\(H_0\)</span>; <span class="math inline">\(RRS_a\)</span> = Residual sum of squares for the model under <span class="math inline">\(H_{\alpha}\)</span>.</p>
+<p>{Numerator}: variation in the data not explained by the reduced model, but explained by the full model.</p>
+<p>{Denominator}: variation in the data not explained by the full model (i.e., not explained by either model), which is used to estimate the error variance.</p>
+<p>Reject <span class="math inline">\(H_0\)</span> if <span class="math inline">\(F\)</span> test statistic is large},
+i.e. the variation missed by the reduced model, when being compared with the error variance, is significantly large. }</p>
+<p>
+Illustration of overall <span class="math inline">\(F\)</span> test decision rule.</p>
+<p>Birthweight Example</p>
+<p>We want to decide whether the group of the predictors that refer to father’s characteristics (i.e. variables <span class="math inline">\(X_9\)</span> – <span class="math inline">\(X_{12}\)</span>) are significant –as a group:</p>
+<p><span class="math display">\[\begin{cases}
+&amp;H_0: Y \sim  1+  \beta_{1} X_{1} + \ldots + \beta_{8}X_{8} \\
+&amp; H_{\alpha}:  Y \sim  1+  \beta_1 X_1 + \ldots + \beta_{8}X_{8}+ \ldots + \beta_{12} X_{12}
+\end{cases}
+\]</span>}</p>
+<p><span class="math inline">\(p_0 = 8+1\)</span>: number of <span class="math inline">\(\beta\)</span>’s in the reduced model; <span class="math inline">\(p_{\alpha}=12+1\)</span>: number of <span class="math inline">\(\beta\)</span>’s in the full model.</p>
+<p>Using R/Python, we extract <span class="math inline">\(RSS_0\)</span>, <span class="math inline">\(RSS_{\alpha}\)</span> to perform the partial <span class="math inline">\(F\)</span> test and make a decision.</p>
+<p>It turns out <span class="math inline">\(F = 0.7225\)</span> is smaller than <span class="math inline">\(F_{p_{\alpha} - p_0, n-p_{\alpha}}=2.7\)</span> meaning that the model under the null (reduced) is preferred.</p>
+<p>Partial <span class="math inline">\(F\)</span> Test: Special Cases</p>
+<p>Test for a Single Predictor <span class="math inline">\(\beta_j\)</span></p>
+<p><span class="math display">\[\begin{cases}
+&amp;H_0: Y \sim  1+  \beta_1 X_1 + \ldots + \beta_{j-1}X_{j-1} + \qquad \quad \; \beta_{j+1} X_{j+1} + \ldots + \beta_p X_p \\
+&amp; H_{\alpha}:  Y \sim  1+  \beta_1 X_1 + \ldots + \beta_{j-1}X_{j-1} +  \beta_{j} X_{j + \beta_{j+1} X_{j+1} + \ldots + \beta_p X_p \\
+\end{cases}
+\]</span>
+the so-called <span class="math inline">\(t\)</span>-test for each regression parameter.</p>
+<p>Test for all Predictors</p>
+<p><span class="math display">\[\begin{cases}
+&amp;H_0: Y \sim  1 \qquad \text{{\small \textcolor{gray}{[intercept-only model]} \\
+&amp; H_{\alpha}:  Y \sim  1+  \beta_1 X_1 + \ldots + \beta_{j-1}X_{j-1} +  \beta_{j} X_{j} + \beta_{j+1} X_{j+1} + \ldots + \beta_p X_p \\
+\end{cases}
+\]</span>
+the overall <span class="math inline">\(F\)</span> test that can be thought of as a goodness-of-fit test.</p>
+%
+<p>Categorical Variables</p>
+<p>Consider a categorical predictor with <span class="math inline">\(k\)</span> levels.</p>
+<p>A categorical predictor when added in a linear regression model, it is coded as <span class="math inline">\(k-1\)</span> numerical predictors:
+<span class="math display">\[D_i=\left\{\begin{array}{cl}
+            0, &amp; \mbox{if not level $i$} \\
+            1, &amp; \mbox{if level $i$}
+        \end{array}\right .\]</span></p>
+<p>where Level <span class="math inline">\(1\)</span> is the reference level.</p>
+<p>Categorical Variables: An Example</p>
+<p>Consider a categorical predictor with three levels (<span class="math inline">\(a\)</span>, <span class="math inline">\(b\)</span>, <span class="math inline">\(c\)</span>):</p>
+\begin{tabular}{cc}
+<p>&amp;
+\begin{minipage}{0.6}</p>
+<p>Col 1 corresponds to level <span class="math inline">\(a\)</span>, i.e. <span class="math inline">\(X_1 = 1\)</span> if in column 1, and <span class="math inline">\(0\)</span> otherwise.</p>
+<p>Col 2 corresponds to level <span class="math inline">\(b\)</span>, i.e. <span class="math inline">\(X_2 = 1\)</span> if in column 2, and <span class="math inline">\(0\)</span> otherwise.</p>
+<p>Col 3 corresponds to level <span class="math inline">\(c\)</span>: this is the reference level, since its value is absorbed by the intercept.</p>
+<p>Any level can be chosen to be the reference level.</p>
+<p>%There are alternative ways to choose the coding - this will affect the estimated regression coefficients, but it won’t affect the predicted/fitted response.</p>
+%
+<p>Collinearity</p>
+<p>In practice, we often encounter problems in which many of the predictors are highly correlated.</p>
+<p>In such cases, the values and sampling variance of regression coefficients can be highly dependent on the particular predictors chosen for the model.</p>
+<p>Possible symptoms of collinearity: high pair-wise (sample) correlation between predictors, <span class="math inline">\(R^2\)</span> is relatively large, <span class="math inline">\(F\)</span> test is significant, but none of the predictors is significant.</p>
+<p>What to do with collinearity?</p>
+<p>Remove some predictors from highly correlated groups of predictors.
+Other approaches: PCA, regularization using penalized Least Squares.</p>
+<p>Model Diagnostics: Checking Error Assumptions</p>
+<p>Model Assumptions
+<span class="math display">\[\mathbf{y} = \beta \mathbf{X} + \varepsilon,\,\, \text{ where } \epsilon \sim IID(0, \sigma^2)}\]</span> </p>
+<pre><code>Linearity
+Constant Variance
+ Uncorrelated errors
+ (Normality)</code></pre>
+<p>No assumptions on <span class="math inline">\(X\)</span>’s.</p>
+<p>How to check these assumptions?</p>
+<p>Remedial Measures?</p>
+<p>Outliers</p>
+<p>Perform an outlier test based on leave-one-out prediction error:</p>
+<p>This is equivalent to removing the <span class="math inline">\(i\)</span>-th point, running LS on the remaining <span class="math inline">\((n-1)\)</span> data points, and then forming a prediction interval (PI) at <span class="math inline">\(\mathbf{x}_i\)</span>; if PI covers <span class="math inline">\(y_i\)</span>, then the <span class="math inline">\(i\)</span>-th point is not} an outlier.</p>
+<p>If the data set is really large, then this test is not useful. It is suggested to adjust for multiple comparisons or consider alternative approaches.</p>
+<p>If outliers seem to be an issue:</p>
+<p>Know the range of each variable.
+Apply log, square-root or other transformations on right skewed predictors and <span class="math inline">\(Y\)</span>.
+Apply winsorization to remove the effect of extreme values.</p>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="introduction-to-statistical-learning.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans serif",
+    "size": 1
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/02-regression.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section",
+    "toc_depth": 4,
+    "toc_float": true,
+    "scroll_highlight": true
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
