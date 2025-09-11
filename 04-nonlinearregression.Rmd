@@ -1,3 +1,11 @@
+---
+title: "NonLinear Regression"
+author: "A. Chronopoulou"
+date: "`r Sys.Date()`"
+output: bookdown::gitbook
+---
+
+
 # NonLinear Regression
 
 As we discussed in the previous sections, a  Multiple Linear Regression model has a set of assumptions on the error terms (normality, homoscedasticity, independence) as well as limitations, such as the linearity assumption.

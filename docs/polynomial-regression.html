@@ -4,26 +4,26 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>4.1 Polynomial Regression | CS 598 Practical Statistical Learning</title>
+  <title>4.1 Polynomial Regression | Logistic Regression</title>
   <meta name="description" content="Lecture notes for “CS 598 PSL”." />
   <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="4.1 Polynomial Regression | CS 598 Practical Statistical Learning" />
+  <meta property="og:title" content="4.1 Polynomial Regression | Logistic Regression" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="4.1 Polynomial Regression | CS 598 Practical Statistical Learning" />
+  <meta name="twitter:title" content="4.1 Polynomial Regression | Logistic Regression" />
   
   <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
   
 
-<meta name="author" content="Alexandra Chronopoulou" />
+<meta name="author" content="A. Chronopoulou" />
 
 
-<meta name="date" content="2025-08-25" />
+<meta name="date" content="2025-09-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -182,7 +182,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
 <li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a></li>
+<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#ridge-regression-1"><i class="fa fa-check"></i><b>3.4.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.4.2" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#lasso-regression-1"><i class="fa fa-check"></i><b>3.4.2</b> LASSO Regression</a></li>
+<li class="chapter" data-level="3.4.3" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#refit-to-reduce-bias"><i class="fa fa-check"></i><b>3.4.3</b> Refit to Reduce Bias</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
 <ul>
@@ -210,6 +215,55 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
 <li class="chapter" data-level="4.5" data-path="the-birthrates-example-in-r.html"><a href="the-birthrates-example-in-r.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example in R</a></li>
 </ul></li>
+<li class="chapter" data-level="5" data-path="regression-trees.html"><a href="regression-trees.html"><i class="fa fa-check"></i><b>5</b> Regression Trees</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="single-tree-building.html"><a href="single-tree-building.html"><i class="fa fa-check"></i><b>5.1</b> Single-Tree Building</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="single-tree-building.html"><a href="single-tree-building.html#prediction-at-leaf-nodes"><i class="fa fa-check"></i><b>5.1.1</b> Prediction at Leaf Nodes</a></li>
+<li class="chapter" data-level="5.1.2" data-path="single-tree-building.html"><a href="single-tree-building.html#split-criterion"><i class="fa fa-check"></i><b>5.1.2</b> Split Criterion</a></li>
+<li class="chapter" data-level="5.1.3" data-path="single-tree-building.html"><a href="single-tree-building.html#single-tree-pruning"><i class="fa fa-check"></i><b>5.1.3</b> Single-Tree Pruning</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="regression-forests.html"><a href="regression-forests.html"><i class="fa fa-check"></i><b>5.2</b> Regression Forests</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="regression-forests.html"><a href="regression-forests.html#weak-and-strong-learners"><i class="fa fa-check"></i><b>5.2.1</b> Weak and Strong Learners</a></li>
+<li class="chapter" data-level="5.2.2" data-path="regression-forests.html"><a href="regression-forests.html#bootstrap-aggregation-bagging"><i class="fa fa-check"></i><b>5.2.2</b> Bootstrap Aggregation (Bagging)</a></li>
+<li class="chapter" data-level="5.2.3" data-path="regression-forests.html"><a href="regression-forests.html#random-forests"><i class="fa fa-check"></i><b>5.2.3</b> Random Forests</a></li>
+<li class="chapter" data-level="5.2.4" data-path="regression-forests.html"><a href="regression-forests.html#out-of-bag-oob-samples"><i class="fa fa-check"></i><b>5.2.4</b> Out-of-Bag (OOB) Samples</a></li>
+<li class="chapter" data-level="5.2.5" data-path="regression-forests.html"><a href="regression-forests.html#boosting-trees"><i class="fa fa-check"></i><b>5.2.5</b> Boosting Trees</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html"><i class="fa fa-check"></i><b>5.3</b> Tree-Based Regression Models in R</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="introduction-to-classification.html"><a href="introduction-to-classification.html"><i class="fa fa-check"></i><b>6</b> Introduction to Classification</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html"><i class="fa fa-check"></i><b>6.1</b> Discriminant Analysis</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#quadratic-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.1</b> Quadratic Discriminant Analysis</a></li>
+<li class="chapter" data-level="6.1.2" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#linear-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.2</b> Linear Discriminant Analysis</a></li>
+<li class="chapter" data-level="6.1.3" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#reduced-rank-lda"><i class="fa fa-check"></i><b>6.1.3</b> Reduced Rank LDA</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="fisher-discriminant-analysis-fda.html"><a href="fisher-discriminant-analysis-fda.html"><i class="fa fa-check"></i><b>6.2</b> Fisher Discriminant Analysis (FDA)</a></li>
+<li class="chapter" data-level="6.3" data-path="naive-bayes-classifiers.html"><a href="naive-bayes-classifiers.html"><i class="fa fa-check"></i><b>6.3</b> Naive Bayes Classifiers</a></li>
+<li class="chapter" data-level="6.4" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html"><i class="fa fa-check"></i><b>6.4</b> The <code>Digits</code> Recognition Example</a>
+<ul>
+<li class="chapter" data-level="" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html#naive-bayes-prediction"><i class="fa fa-check"></i>Naive Bayes Prediction</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>7</b> Logistic Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html"><i class="fa fa-check"></i><b>7.1</b> Fitting a Logistic Regression model</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html#maximum-likelihood-approach"><i class="fa fa-check"></i><b>7.1.1</b> Maximum Likelihood Approach</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="logistic-regression-with-separable-data.html"><a href="logistic-regression-with-separable-data.html"><i class="fa fa-check"></i><b>7.2</b> Logistic Regression with Separable Data</a></li>
+<li class="chapter" data-level="7.3" data-path="retrospective-sampling.html"><a href="retrospective-sampling.html"><i class="fa fa-check"></i><b>7.3</b> Retrospective Sampling</a></li>
+<li class="chapter" data-level="7.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html"><i class="fa fa-check"></i><b>7.4</b> Logistic Regression for the <code>Heart</code> dataset in R</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#goodness-of-fit"><i class="fa fa-check"></i><b>7.4.1</b> Goodness-of-Fit</a></li>
+<li class="chapter" data-level="7.4.2" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#variable-selection"><i class="fa fa-check"></i><b>7.4.2</b> Variable Selection</a></li>
+<li class="chapter" data-level="7.4.3" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#penalized-logistic-regression"><i class="fa fa-check"></i><b>7.4.3</b> Penalized Logistic Regression</a></li>
+<li class="chapter" data-level="7.4.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#illustration-of-divergence-of-ml-estimators"><i class="fa fa-check"></i><b>7.4.4</b> Illustration of divergence of ML estimators</a></li>
+</ul></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -222,7 +276,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Logistic Regression</a>
           </h1>
         </div>
 
@@ -255,23 +309,23 @@ so that the model becomes
 <div class="examplebox">
 <p><strong>Illustration of the Polynomial Basis Functions</strong></p>
 <p>Representation of a function in terms of basis functions using a polynomial basis. The following code creates the plots the polynomial basis function up to order 4</p>
-<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="polynomial-regression.html#cb181-1" tabindex="-1"></a>x<span class="ot">=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by=</span><span class="fl">0.001</span>)</span>
-<span id="cb181-2"><a href="polynomial-regression.html#cb181-2" tabindex="-1"></a>b0 <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">length</span>(x))</span>
-<span id="cb181-3"><a href="polynomial-regression.html#cb181-3" tabindex="-1"></a>b1 <span class="ot">=</span> x</span>
-<span id="cb181-4"><a href="polynomial-regression.html#cb181-4" tabindex="-1"></a>b2 <span class="ot">=</span> x<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb181-5"><a href="polynomial-regression.html#cb181-5" tabindex="-1"></a>b3 <span class="ot">=</span> x<span class="sc">^</span><span class="dv">3</span></span>
-<span id="cb181-6"><a href="polynomial-regression.html#cb181-6" tabindex="-1"></a>b4 <span class="ot">=</span> x<span class="sc">^</span><span class="dv">4</span></span>
-<span id="cb181-7"><a href="polynomial-regression.html#cb181-7" tabindex="-1"></a></span>
-<span id="cb181-8"><a href="polynomial-regression.html#cb181-8" tabindex="-1"></a>fun1 <span class="ot">=</span> <span class="dv">4</span><span class="sc">*</span>b0 <span class="sc">-</span><span class="dv">10</span><span class="sc">*</span> b1 <span class="sc">+</span> <span class="dv">16</span><span class="sc">*</span>b2 <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>b3 <span class="sc">-</span><span class="dv">10</span><span class="sc">*</span>b4</span>
-<span id="cb181-9"><a href="polynomial-regression.html#cb181-9" tabindex="-1"></a></span>
-<span id="cb181-10"><a href="polynomial-regression.html#cb181-10" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>))</span>
-<span id="cb181-11"><a href="polynomial-regression.html#cb181-11" tabindex="-1"></a><span class="fu">plot</span>(x, b0, <span class="at">type=</span><span class="st">&#39;l&#39;</span>, <span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;b&quot;</span>[<span class="dv">0</span>]<span class="sc">*</span><span class="st">&quot;(x)=1&quot;</span>))</span>
-<span id="cb181-12"><a href="polynomial-regression.html#cb181-12" tabindex="-1"></a><span class="fu">plot</span>(x, b1, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;b&quot;</span>[<span class="dv">1</span>]<span class="sc">*</span><span class="st">&quot;(x)=x&quot;</span>))</span>
-<span id="cb181-13"><a href="polynomial-regression.html#cb181-13" tabindex="-1"></a><span class="fu">plot</span>(x, b2, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;b&quot;</span>[<span class="dv">2</span>]<span class="sc">*</span><span class="st">&quot;(x)=x&quot;</span><span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb181-14"><a href="polynomial-regression.html#cb181-14" tabindex="-1"></a><span class="fu">plot</span>(x, b3, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;b&quot;</span>[<span class="dv">3</span>]<span class="sc">*</span><span class="st">&quot;(x)=x&quot;</span><span class="sc">^</span><span class="dv">3</span>))</span>
-<span id="cb181-15"><a href="polynomial-regression.html#cb181-15" tabindex="-1"></a><span class="fu">plot</span>(x, b4, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;b&quot;</span>[<span class="dv">4</span>]<span class="sc">*</span><span class="st">&quot;(x)=x&quot;</span><span class="sc">^</span><span class="dv">4</span>))</span>
-<span id="cb181-16"><a href="polynomial-regression.html#cb181-16" tabindex="-1"></a><span class="fu">plot</span>(x, fun1, <span class="at">type=</span><span class="st">&#39;l&#39;</span>, <span class="at">ylab=</span><span class="st">&quot;f(x)&quot;</span>, <span class="at">main=</span><span class="fu">expression</span>(<span class="st">&quot;f(x) =  4 - 10 x + 16 x&quot;</span><span class="sc">^</span><span class="dv">2</span><span class="sc">*</span><span class="st">&quot;+ 2 x&quot;</span><span class="sc">^</span><span class="dv">3</span><span class="sc">*</span><span class="st">&quot;- 10 x&quot;</span><span class="sc">^</span><span class="dv">4</span>), <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-96-1.png" width="672" /></p>
+<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="polynomial-regression.html#cb253-1" tabindex="-1"></a>x<span class="ot">=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by=</span><span class="fl">0.001</span>)</span>
+<span id="cb253-2"><a href="polynomial-regression.html#cb253-2" tabindex="-1"></a>b0 <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">length</span>(x))</span>
+<span id="cb253-3"><a href="polynomial-regression.html#cb253-3" tabindex="-1"></a>b1 <span class="ot">=</span> x</span>
+<span id="cb253-4"><a href="polynomial-regression.html#cb253-4" tabindex="-1"></a>b2 <span class="ot">=</span> x<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb253-5"><a href="polynomial-regression.html#cb253-5" tabindex="-1"></a>b3 <span class="ot">=</span> x<span class="sc">^</span><span class="dv">3</span></span>
+<span id="cb253-6"><a href="polynomial-regression.html#cb253-6" tabindex="-1"></a>b4 <span class="ot">=</span> x<span class="sc">^</span><span class="dv">4</span></span>
+<span id="cb253-7"><a href="polynomial-regression.html#cb253-7" tabindex="-1"></a></span>
+<span id="cb253-8"><a href="polynomial-regression.html#cb253-8" tabindex="-1"></a>fun1 <span class="ot">=</span> <span class="dv">4</span><span class="sc">*</span>b0 <span class="sc">-</span><span class="dv">10</span><span class="sc">*</span> b1 <span class="sc">+</span> <span class="dv">16</span><span class="sc">*</span>b2 <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>b3 <span class="sc">-</span><span class="dv">10</span><span class="sc">*</span>b4</span>
+<span id="cb253-9"><a href="polynomial-regression.html#cb253-9" tabindex="-1"></a></span>
+<span id="cb253-10"><a href="polynomial-regression.html#cb253-10" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>))</span>
+<span id="cb253-11"><a href="polynomial-regression.html#cb253-11" tabindex="-1"></a><span class="fu">plot</span>(x, b0, <span class="at">type=</span><span class="st">&#39;l&#39;</span>, <span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;b&quot;</span>[<span class="dv">0</span>]<span class="sc">*</span><span class="st">&quot;(x)=1&quot;</span>))</span>
+<span id="cb253-12"><a href="polynomial-regression.html#cb253-12" tabindex="-1"></a><span class="fu">plot</span>(x, b1, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;b&quot;</span>[<span class="dv">1</span>]<span class="sc">*</span><span class="st">&quot;(x)=x&quot;</span>))</span>
+<span id="cb253-13"><a href="polynomial-regression.html#cb253-13" tabindex="-1"></a><span class="fu">plot</span>(x, b2, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;b&quot;</span>[<span class="dv">2</span>]<span class="sc">*</span><span class="st">&quot;(x)=x&quot;</span><span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb253-14"><a href="polynomial-regression.html#cb253-14" tabindex="-1"></a><span class="fu">plot</span>(x, b3, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;b&quot;</span>[<span class="dv">3</span>]<span class="sc">*</span><span class="st">&quot;(x)=x&quot;</span><span class="sc">^</span><span class="dv">3</span>))</span>
+<span id="cb253-15"><a href="polynomial-regression.html#cb253-15" tabindex="-1"></a><span class="fu">plot</span>(x, b4, <span class="at">type=</span><span class="st">&#39;l&#39;</span>,<span class="at">lty=</span><span class="dv">3</span>, <span class="at">ylab=</span><span class="fu">expression</span>(<span class="st">&quot;b&quot;</span>[<span class="dv">4</span>]<span class="sc">*</span><span class="st">&quot;(x)=x&quot;</span><span class="sc">^</span><span class="dv">4</span>))</span>
+<span id="cb253-16"><a href="polynomial-regression.html#cb253-16" tabindex="-1"></a><span class="fu">plot</span>(x, fun1, <span class="at">type=</span><span class="st">&#39;l&#39;</span>, <span class="at">ylab=</span><span class="st">&quot;f(x)&quot;</span>, <span class="at">main=</span><span class="fu">expression</span>(<span class="st">&quot;f(x) =  4 - 10 x + 16 x&quot;</span><span class="sc">^</span><span class="dv">2</span><span class="sc">*</span><span class="st">&quot;+ 2 x&quot;</span><span class="sc">^</span><span class="dv">3</span><span class="sc">*</span><span class="st">&quot;- 10 x&quot;</span><span class="sc">^</span><span class="dv">4</span>), <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-124-1.png" width="672" /></p>
 </div>
 <p><br></p>
 </div>
@@ -328,12 +382,12 @@ The linear term could become significant, if we shift the <span class="math inli
 <p><strong>The Chicago Pumpkins Example</strong></p>
 <p>The <code>pumpkins.csv</code> data set contains information regarding the <code>size</code> and <code>price</code> of pumpkins sold in the <font color=orange>Chicago area</font> (data can be found <a href="data/week4/chicagopumpkins.csv" target="_blank">here</a>.). Our goal in this example is to <em>predict</em> the <code>size of the pumpkin</code> (response) based on its <code>price</code> (predictor).</p>
 <p>The scatter plot of the data is shown below:</p>
-<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="polynomial-regression.html#cb182-1" tabindex="-1"></a>pumpkins <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">&quot;data/week4/chicagopumpkins.csv&quot;</span>,<span class="at">header=</span><span class="cn">TRUE</span>)</span>
-<span id="cb182-2"><a href="polynomial-regression.html#cb182-2" tabindex="-1"></a><span class="fu">plot</span>(pumpkins<span class="sc">$</span>price, pumpkins<span class="sc">$</span>size, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">xlab=</span><span class="st">&quot;Pumpkin&#39;s Price&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Pumpkins&#39; Size&quot;</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-97-1.png" width="672" />
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="polynomial-regression.html#cb254-1" tabindex="-1"></a>pumpkins <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">&quot;data/week4/chicagopumpkins.csv&quot;</span>,<span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb254-2"><a href="polynomial-regression.html#cb254-2" tabindex="-1"></a><span class="fu">plot</span>(pumpkins<span class="sc">$</span>price, pumpkins<span class="sc">$</span>size, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">xlab=</span><span class="st">&quot;Pumpkin&#39;s Price&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Pumpkins&#39; Size&quot;</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-125-1.png" width="672" />
 We see that a linear fit is probably <em>not</em> a good idea. Indeed,</p>
-<div class="sourceCode" id="cb183"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb183-1"><a href="polynomial-regression.html#cb183-1" tabindex="-1"></a>lm.pumpkins <span class="ot">=</span> <span class="fu">lm</span>(size <span class="sc">~</span> price, <span class="at">data=</span>pumpkins)</span>
-<span id="cb183-2"><a href="polynomial-regression.html#cb183-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins)</span></code></pre></div>
+<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="polynomial-regression.html#cb255-1" tabindex="-1"></a>lm.pumpkins <span class="ot">=</span> <span class="fu">lm</span>(size <span class="sc">~</span> price, <span class="at">data=</span>pumpkins)</span>
+<span id="cb255-2"><a href="polynomial-regression.html#cb255-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ price, data = pumpkins)
@@ -353,18 +407,18 @@ We see that a linear fit is probably <em>not</em> a good idea. Indeed,</p>
 ## Multiple R-squared:  0.4475, Adjusted R-squared:  0.4453 
 ## F-statistic: 199.3 on 1 and 246 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Although the predictor is significant at explaining the response, the <span class="math inline">\(R^2\)</span> is on the lower end and the scatter plot does not support a straight line as a good fit.</p>
-<div class="sourceCode" id="cb185"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb185-1"><a href="polynomial-regression.html#cb185-1" tabindex="-1"></a><span class="fu">plot</span>(size <span class="sc">~</span> price, <span class="at">data=</span>pumpkins)</span>
-<span id="cb185-2"><a href="polynomial-regression.html#cb185-2" tabindex="-1"></a><span class="fu">points</span>(size <span class="sc">~</span> price, <span class="at">data=</span>pumpkins, <span class="at">pch=</span><span class="dv">8</span>)</span>
-<span id="cb185-3"><a href="polynomial-regression.html#cb185-3" tabindex="-1"></a><span class="fu">abline</span>(lm.pumpkins, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-99-1.png" width="672" /></p>
+<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="polynomial-regression.html#cb257-1" tabindex="-1"></a><span class="fu">plot</span>(size <span class="sc">~</span> price, <span class="at">data=</span>pumpkins)</span>
+<span id="cb257-2"><a href="polynomial-regression.html#cb257-2" tabindex="-1"></a><span class="fu">points</span>(size <span class="sc">~</span> price, <span class="at">data=</span>pumpkins, <span class="at">pch=</span><span class="dv">8</span>)</span>
+<span id="cb257-3"><a href="polynomial-regression.html#cb257-3" tabindex="-1"></a><span class="fu">abline</span>(lm.pumpkins, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-127-1.png" width="672" /></p>
 <p><br>
 We want to select a <em>higher order</em> model and we will do so following a Forward Selection approach first and a Backward Selection method second:</p>
 <ol style="list-style-type: decimal">
 <li>We start with a <b>Forward Selection</b> approach, i.e. we start by a linear model, and we keep <strong>adding</strong> higher order terms until the added term becomes <em>statistically insignificant</em>.</li>
 </ol>
-<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="polynomial-regression.html#cb186-1" tabindex="-1"></a><span class="co"># Forward Selection</span></span>
-<span id="cb186-2"><a href="polynomial-regression.html#cb186-2" tabindex="-1"></a>lm.pumpkins <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price , <span class="at">data=</span>pumpkins)</span>
-<span id="cb186-3"><a href="polynomial-regression.html#cb186-3" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins)</span></code></pre></div>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="polynomial-regression.html#cb258-1" tabindex="-1"></a><span class="co"># Forward Selection</span></span>
+<span id="cb258-2"><a href="polynomial-regression.html#cb258-2" tabindex="-1"></a>lm.pumpkins <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price , <span class="at">data=</span>pumpkins)</span>
+<span id="cb258-3"><a href="polynomial-regression.html#cb258-3" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ price, data = pumpkins)
@@ -383,8 +437,8 @@ We want to select a <em>higher order</em> model and we will do so following a Fo
 ## Residual standard error: 0.9477 on 246 degrees of freedom
 ## Multiple R-squared:  0.4475, Adjusted R-squared:  0.4453 
 ## F-statistic: 199.3 on 1 and 246 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb188"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb188-1"><a href="polynomial-regression.html#cb188-1" tabindex="-1"></a>lm.pumpkins2 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb188-2"><a href="polynomial-regression.html#cb188-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins2)</span></code></pre></div>
+<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="polynomial-regression.html#cb260-1" tabindex="-1"></a>lm.pumpkins2 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb260-2"><a href="polynomial-regression.html#cb260-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins2)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ price + I(price^2), data = pumpkins)
@@ -404,8 +458,8 @@ We want to select a <em>higher order</em> model and we will do so following a Fo
 ## Residual standard error: 0.8754 on 245 degrees of freedom
 ## Multiple R-squared:  0.5305, Adjusted R-squared:  0.5267 
 ## F-statistic: 138.4 on 2 and 245 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="polynomial-regression.html#cb190-1" tabindex="-1"></a>lm.pumpkins3 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb190-2"><a href="polynomial-regression.html#cb190-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins3)</span></code></pre></div>
+<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="polynomial-regression.html#cb262-1" tabindex="-1"></a>lm.pumpkins3 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb262-2"><a href="polynomial-regression.html#cb262-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins3)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ price + I(price^2) + I(price^3), data = pumpkins)
@@ -426,8 +480,8 @@ We want to select a <em>higher order</em> model and we will do so following a Fo
 ## Residual standard error: 0.7182 on 244 degrees of freedom
 ## Multiple R-squared:  0.6853, Adjusted R-squared:  0.6814 
 ## F-statistic: 177.1 on 3 and 244 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="polynomial-regression.html#cb192-1" tabindex="-1"></a>lm.pumpkins4 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">4</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb192-2"><a href="polynomial-regression.html#cb192-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins4)</span></code></pre></div>
+<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="polynomial-regression.html#cb264-1" tabindex="-1"></a>lm.pumpkins4 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">4</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb264-2"><a href="polynomial-regression.html#cb264-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins4)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ price + I(price^2) + I(price^3) + I(price^4), 
@@ -450,8 +504,8 @@ We want to select a <em>higher order</em> model and we will do so following a Fo
 ## Residual standard error: 0.6941 on 243 degrees of freedom
 ## Multiple R-squared:  0.7073, Adjusted R-squared:  0.7025 
 ## F-statistic: 146.8 on 4 and 243 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="polynomial-regression.html#cb194-1" tabindex="-1"></a>lm.pumpkins5 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">5</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb194-2"><a href="polynomial-regression.html#cb194-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins5)</span></code></pre></div>
+<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="polynomial-regression.html#cb266-1" tabindex="-1"></a>lm.pumpkins5 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">5</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb266-2"><a href="polynomial-regression.html#cb266-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins5)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ price + I(price^2) + I(price^3) + I(price^4) + 
@@ -478,23 +532,23 @@ We want to select a <em>higher order</em> model and we will do so following a Fo
 <p>We see that the <em>5th order model</em> has a 5th order term with <em><span class="math inline">\(p\)</span>-value equal to 0.0519</em>, which is <strong>higher than 5%</strong>, so we conclude that the optimal order for the polynomial, according to the forward selection method is <font color="blue"><span class="math inline">\(d=4\)</span></font>. So, the fitted model is:
 <span class="math display">\[\hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x + \hat{\beta}_2 x^2 + \hat{\beta}_3 x^4 + \hat{\beta}_4 x^4 \]</span></p>
 <p>If we plot all the fitted models, we have:</p>
-<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="polynomial-regression.html#cb196-1" tabindex="-1"></a>newprice <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">price=</span><span class="fu">seq</span>(<span class="dv">17</span>, <span class="dv">255</span>, <span class="dv">1</span>))</span>
-<span id="cb196-2"><a href="polynomial-regression.html#cb196-2" tabindex="-1"></a><span class="fu">plot</span>(pumpkins<span class="sc">$</span>price, pumpkins<span class="sc">$</span>size, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>), <span class="at">xlab=</span><span class="st">&quot;Pumpkin&#39;s Price&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Pumpkins&#39; Size&quot;</span>, <span class="at">main=</span><span class="st">&quot;Forward Selection Models&quot;</span>)</span>
-<span id="cb196-3"><a href="polynomial-regression.html#cb196-3" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins, newprice), <span class="at">col=</span><span class="st">&quot;yellow&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb196-4"><a href="polynomial-regression.html#cb196-4" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins2, newprice), <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb196-5"><a href="polynomial-regression.html#cb196-5" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins3, newprice), <span class="at">col=</span><span class="st">&quot;orange&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb196-6"><a href="polynomial-regression.html#cb196-6" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins4, newprice), <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb196-7"><a href="polynomial-regression.html#cb196-7" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins5, newprice), <span class="at">col=</span><span class="st">&quot;green&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb196-8"><a href="polynomial-regression.html#cb196-8" tabindex="-1"></a><span class="fu">legend</span>(<span class="dv">230</span>, <span class="fl">1.45</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;d=1&quot;</span>, <span class="st">&quot;d=2&quot;</span>, <span class="st">&quot;d=3&quot;</span>, <span class="st">&quot;d=4&quot;</span>, <span class="st">&quot;d=5&quot;</span>),</span>
-<span id="cb196-9"><a href="polynomial-regression.html#cb196-9" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;yellow&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;magenta&quot;</span>, <span class="st">&quot;green&quot;</span>), <span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">cex=</span><span class="fl">0.8</span>, <span class="at">lwd=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-101-1.png" width="672" />
+<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="polynomial-regression.html#cb268-1" tabindex="-1"></a>newprice <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">price=</span><span class="fu">seq</span>(<span class="dv">17</span>, <span class="dv">255</span>, <span class="dv">1</span>))</span>
+<span id="cb268-2"><a href="polynomial-regression.html#cb268-2" tabindex="-1"></a><span class="fu">plot</span>(pumpkins<span class="sc">$</span>price, pumpkins<span class="sc">$</span>size, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>), <span class="at">xlab=</span><span class="st">&quot;Pumpkin&#39;s Price&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Pumpkins&#39; Size&quot;</span>, <span class="at">main=</span><span class="st">&quot;Forward Selection Models&quot;</span>)</span>
+<span id="cb268-3"><a href="polynomial-regression.html#cb268-3" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins, newprice), <span class="at">col=</span><span class="st">&quot;yellow&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb268-4"><a href="polynomial-regression.html#cb268-4" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins2, newprice), <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb268-5"><a href="polynomial-regression.html#cb268-5" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins3, newprice), <span class="at">col=</span><span class="st">&quot;orange&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb268-6"><a href="polynomial-regression.html#cb268-6" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins4, newprice), <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb268-7"><a href="polynomial-regression.html#cb268-7" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins5, newprice), <span class="at">col=</span><span class="st">&quot;green&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb268-8"><a href="polynomial-regression.html#cb268-8" tabindex="-1"></a><span class="fu">legend</span>(<span class="dv">230</span>, <span class="fl">1.45</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;d=1&quot;</span>, <span class="st">&quot;d=2&quot;</span>, <span class="st">&quot;d=3&quot;</span>, <span class="st">&quot;d=4&quot;</span>, <span class="st">&quot;d=5&quot;</span>),</span>
+<span id="cb268-9"><a href="polynomial-regression.html#cb268-9" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;yellow&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;magenta&quot;</span>, <span class="st">&quot;green&quot;</span>), <span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">cex=</span><span class="fl">0.8</span>, <span class="at">lwd=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-129-1.png" width="672" />
 The magenta line is the one that corresponds to the 4th order model.
 <br><br></p>
 <ol start="2" style="list-style-type: decimal">
 <li>We can also select <span class="math inline">\(d\)</span> using the <b>Backward Elimination</b> approach, that is we start with a large value for <span class="math inline">\(d\)</span> and we eliminate terms <em>until the highest order term in the model is statistically significant</em>:</li>
 </ol>
-<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="polynomial-regression.html#cb197-1" tabindex="-1"></a>lm.pumpkins10 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">5</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">6</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">7</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">8</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">9</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">10</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb197-2"><a href="polynomial-regression.html#cb197-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins10)</span></code></pre></div>
+<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="polynomial-regression.html#cb269-1" tabindex="-1"></a>lm.pumpkins10 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">5</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">6</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">7</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">8</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">9</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">10</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb269-2"><a href="polynomial-regression.html#cb269-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins10)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ price + I(price^2) + I(price^3) + I(price^4) + 
@@ -522,8 +576,8 @@ The magenta line is the one that corresponds to the 4th order model.
 ## Residual standard error: 0.6483 on 237 degrees of freedom
 ## Multiple R-squared:  0.7509, Adjusted R-squared:  0.7404 
 ## F-statistic: 71.45 on 10 and 237 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="polynomial-regression.html#cb199-1" tabindex="-1"></a>lm.pumpkins9 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">5</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">6</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">7</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">8</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">9</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb199-2"><a href="polynomial-regression.html#cb199-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins9)</span></code></pre></div>
+<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="polynomial-regression.html#cb271-1" tabindex="-1"></a>lm.pumpkins9 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">5</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">6</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">7</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">8</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">9</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb271-2"><a href="polynomial-regression.html#cb271-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins9)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ price + I(price^2) + I(price^3) + I(price^4) + 
@@ -552,8 +606,8 @@ The magenta line is the one that corresponds to the 4th order model.
 ## Residual standard error: 0.6483 on 238 degrees of freedom
 ## Multiple R-squared:  0.7499, Adjusted R-squared:  0.7404 
 ## F-statistic: 79.27 on 9 and 238 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb201-1"><a href="polynomial-regression.html#cb201-1" tabindex="-1"></a>lm.pumpkins8 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">5</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">6</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">7</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">8</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb201-2"><a href="polynomial-regression.html#cb201-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins8)</span></code></pre></div>
+<div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb273-1"><a href="polynomial-regression.html#cb273-1" tabindex="-1"></a>lm.pumpkins8 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> price <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">3</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">5</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">6</span>) <span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">7</span>)<span class="sc">+</span> <span class="fu">I</span>(price<span class="sc">^</span><span class="dv">8</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb273-2"><a href="polynomial-regression.html#cb273-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkins8)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ price + I(price^2) + I(price^3) + I(price^4) + 
@@ -581,14 +635,14 @@ The magenta line is the one that corresponds to the 4th order model.
 ## Multiple R-squared:  0.7441, Adjusted R-squared:  0.7355 
 ## F-statistic: 86.87 on 8 and 239 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Starting with an order <em>10</em> model, we identify that an <font color="blue"><em>9th</em> order</font> model is <em>optimal</em> according to the backward elimination criterion. If we plot all the fitted models, we have:</p>
-<div class="sourceCode" id="cb203"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb203-1"><a href="polynomial-regression.html#cb203-1" tabindex="-1"></a>newprice <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">price=</span><span class="fu">seq</span>(<span class="dv">17</span>, <span class="dv">255</span>, <span class="dv">1</span>))</span>
-<span id="cb203-2"><a href="polynomial-regression.html#cb203-2" tabindex="-1"></a><span class="fu">plot</span>(pumpkins<span class="sc">$</span>price, pumpkins<span class="sc">$</span>size, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>), <span class="at">pch=</span><span class="dv">20</span>, <span class="at">xlab=</span><span class="st">&quot;Pumpkin&#39;s Price&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Pumpkins&#39; Size&quot;</span>, <span class="at">main=</span><span class="st">&quot;Backward Selection Models&quot;</span>)</span>
-<span id="cb203-3"><a href="polynomial-regression.html#cb203-3" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins10, newprice), <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb203-4"><a href="polynomial-regression.html#cb203-4" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins9, newprice), <span class="at">col=</span><span class="st">&quot;orange&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb203-5"><a href="polynomial-regression.html#cb203-5" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins8, newprice), <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb203-6"><a href="polynomial-regression.html#cb203-6" tabindex="-1"></a><span class="fu">legend</span>(<span class="dv">226</span>, <span class="dv">1</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;d=10&quot;</span>, <span class="st">&quot;d=9&quot;</span>, <span class="st">&quot;d=8&quot;</span>),</span>
-<span id="cb203-7"><a href="polynomial-regression.html#cb203-7" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;magenta&quot;</span>), <span class="at">lty=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>), <span class="at">cex=</span><span class="fl">0.8</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-103-1.png" width="672" /></p>
+<div class="sourceCode" id="cb275"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb275-1"><a href="polynomial-regression.html#cb275-1" tabindex="-1"></a>newprice <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">price=</span><span class="fu">seq</span>(<span class="dv">17</span>, <span class="dv">255</span>, <span class="dv">1</span>))</span>
+<span id="cb275-2"><a href="polynomial-regression.html#cb275-2" tabindex="-1"></a><span class="fu">plot</span>(pumpkins<span class="sc">$</span>price, pumpkins<span class="sc">$</span>size, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>), <span class="at">pch=</span><span class="dv">20</span>, <span class="at">xlab=</span><span class="st">&quot;Pumpkin&#39;s Price&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Pumpkins&#39; Size&quot;</span>, <span class="at">main=</span><span class="st">&quot;Backward Selection Models&quot;</span>)</span>
+<span id="cb275-3"><a href="polynomial-regression.html#cb275-3" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins10, newprice), <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb275-4"><a href="polynomial-regression.html#cb275-4" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins9, newprice), <span class="at">col=</span><span class="st">&quot;orange&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb275-5"><a href="polynomial-regression.html#cb275-5" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkins8, newprice), <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb275-6"><a href="polynomial-regression.html#cb275-6" tabindex="-1"></a><span class="fu">legend</span>(<span class="dv">226</span>, <span class="dv">1</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;d=10&quot;</span>, <span class="st">&quot;d=9&quot;</span>, <span class="st">&quot;d=8&quot;</span>),</span>
+<span id="cb275-7"><a href="polynomial-regression.html#cb275-7" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;magenta&quot;</span>), <span class="at">lty=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>), <span class="at">cex=</span><span class="fl">0.8</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-131-1.png" width="672" /></p>
 <p>The magenta line is the one that corresponds to the <em>9th</em> order model.</p>
 <p><br></p>
 <p>For the fitted model we finally choose, we should (as always) perform diagnostic tests.</p>
@@ -605,9 +659,9 @@ where each <span class="math inline">\(z_j=a_{1} + b_{2} x + \ldots+ \kappa_j x^
 <div class="examplebox">
 <p><strong>The Chicago Pumpkins Example</strong></p>
 <p>In <code>R</code>, we can fit orthogonal polynomials using the <code>poly</code> function. In the code below, we repeat the same process as before (for choosing <span class="math inline">\(d\)</span>) using the orthogonal polynomials.</p>
-<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="polynomial-regression.html#cb204-1" tabindex="-1"></a><span class="co"># Forward Selection</span></span>
-<span id="cb204-2"><a href="polynomial-regression.html#cb204-2" tabindex="-1"></a>lm.pumpkinsO2 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">2</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb204-3"><a href="polynomial-regression.html#cb204-3" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO2)</span></code></pre></div>
+<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="polynomial-regression.html#cb276-1" tabindex="-1"></a><span class="co"># Forward Selection</span></span>
+<span id="cb276-2"><a href="polynomial-regression.html#cb276-2" tabindex="-1"></a>lm.pumpkinsO2 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">2</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb276-3"><a href="polynomial-regression.html#cb276-3" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO2)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ poly(price, 2), data = pumpkins)
@@ -627,8 +681,8 @@ where each <span class="math inline">\(z_j=a_{1} + b_{2} x + \ldots+ \kappa_j x^
 ## Residual standard error: 0.8754 on 245 degrees of freedom
 ## Multiple R-squared:  0.5305, Adjusted R-squared:  0.5267 
 ## F-statistic: 138.4 on 2 and 245 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="polynomial-regression.html#cb206-1" tabindex="-1"></a>lm.pumpkinsO3 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">3</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb206-2"><a href="polynomial-regression.html#cb206-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO3)</span></code></pre></div>
+<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="polynomial-regression.html#cb278-1" tabindex="-1"></a>lm.pumpkinsO3 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">3</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb278-2"><a href="polynomial-regression.html#cb278-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO3)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ poly(price, 3), data = pumpkins)
@@ -649,8 +703,8 @@ where each <span class="math inline">\(z_j=a_{1} + b_{2} x + \ldots+ \kappa_j x^
 ## Residual standard error: 0.7182 on 244 degrees of freedom
 ## Multiple R-squared:  0.6853, Adjusted R-squared:  0.6814 
 ## F-statistic: 177.1 on 3 and 244 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="polynomial-regression.html#cb208-1" tabindex="-1"></a>lm.pumpkinsO4 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">4</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb208-2"><a href="polynomial-regression.html#cb208-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO4)</span></code></pre></div>
+<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="polynomial-regression.html#cb280-1" tabindex="-1"></a>lm.pumpkinsO4 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">4</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb280-2"><a href="polynomial-regression.html#cb280-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO4)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ poly(price, 4), data = pumpkins)
@@ -672,8 +726,8 @@ where each <span class="math inline">\(z_j=a_{1} + b_{2} x + \ldots+ \kappa_j x^
 ## Residual standard error: 0.6941 on 243 degrees of freedom
 ## Multiple R-squared:  0.7073, Adjusted R-squared:  0.7025 
 ## F-statistic: 146.8 on 4 and 243 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="polynomial-regression.html#cb210-1" tabindex="-1"></a>lm.pumpkinsO5 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">5</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb210-2"><a href="polynomial-regression.html#cb210-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO5)</span></code></pre></div>
+<div class="sourceCode" id="cb282"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb282-1"><a href="polynomial-regression.html#cb282-1" tabindex="-1"></a>lm.pumpkinsO5 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">5</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb282-2"><a href="polynomial-regression.html#cb282-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO5)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ poly(price, 5), data = pumpkins)
@@ -696,18 +750,18 @@ where each <span class="math inline">\(z_j=a_{1} + b_{2} x + \ldots+ \kappa_j x^
 ## Residual standard error: 0.6901 on 242 degrees of freedom
 ## Multiple R-squared:  0.7118, Adjusted R-squared:  0.7059 
 ## F-statistic: 119.6 on 5 and 242 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="polynomial-regression.html#cb212-1" tabindex="-1"></a>newprice <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">price=</span><span class="fu">seq</span>(<span class="dv">17</span>, <span class="dv">255</span>, <span class="dv">1</span>))</span>
-<span id="cb212-2"><a href="polynomial-regression.html#cb212-2" tabindex="-1"></a><span class="fu">plot</span>(pumpkins<span class="sc">$</span>price, pumpkins<span class="sc">$</span>size, <span class="at">pch=</span><span class="dv">20</span>,  <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="at">xlab=</span><span class="st">&quot;Pumpkin&#39;s Price&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Pumpkins&#39; Size&quot;</span>, <span class="at">main=</span><span class="st">&quot;Forward Selection Models: Orthogonal Polynomials&quot;</span>)</span>
-<span id="cb212-3"><a href="polynomial-regression.html#cb212-3" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO2, newprice), <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb212-4"><a href="polynomial-regression.html#cb212-4" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO3, newprice), <span class="at">col=</span><span class="st">&quot;orange&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb212-5"><a href="polynomial-regression.html#cb212-5" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO4, newprice), <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb212-6"><a href="polynomial-regression.html#cb212-6" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO5, newprice), <span class="at">col=</span><span class="st">&quot;green&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb212-7"><a href="polynomial-regression.html#cb212-7" tabindex="-1"></a><span class="fu">legend</span>(<span class="dv">230</span>, <span class="fl">1.3</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;d=2&quot;</span>, <span class="st">&quot;d=3&quot;</span>, <span class="st">&quot;d=4&quot;</span>, <span class="st">&quot;d=5&quot;</span>),</span>
-<span id="cb212-8"><a href="polynomial-regression.html#cb212-8" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;magenta&quot;</span>, <span class="st">&quot;green&quot;</span>), <span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">cex=</span><span class="fl">0.8</span>, <span class="at">lwd=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-104-1.png" width="672" /></p>
-<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="polynomial-regression.html#cb213-1" tabindex="-1"></a><span class="co"># Backward Selection</span></span>
-<span id="cb213-2"><a href="polynomial-regression.html#cb213-2" tabindex="-1"></a>lm.pumpkinsO10 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">10</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb213-3"><a href="polynomial-regression.html#cb213-3" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO10)</span></code></pre></div>
+<div class="sourceCode" id="cb284"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb284-1"><a href="polynomial-regression.html#cb284-1" tabindex="-1"></a>newprice <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">price=</span><span class="fu">seq</span>(<span class="dv">17</span>, <span class="dv">255</span>, <span class="dv">1</span>))</span>
+<span id="cb284-2"><a href="polynomial-regression.html#cb284-2" tabindex="-1"></a><span class="fu">plot</span>(pumpkins<span class="sc">$</span>price, pumpkins<span class="sc">$</span>size, <span class="at">pch=</span><span class="dv">20</span>,  <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="at">xlab=</span><span class="st">&quot;Pumpkin&#39;s Price&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Pumpkins&#39; Size&quot;</span>, <span class="at">main=</span><span class="st">&quot;Forward Selection Models: Orthogonal Polynomials&quot;</span>)</span>
+<span id="cb284-3"><a href="polynomial-regression.html#cb284-3" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO2, newprice), <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb284-4"><a href="polynomial-regression.html#cb284-4" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO3, newprice), <span class="at">col=</span><span class="st">&quot;orange&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb284-5"><a href="polynomial-regression.html#cb284-5" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO4, newprice), <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb284-6"><a href="polynomial-regression.html#cb284-6" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO5, newprice), <span class="at">col=</span><span class="st">&quot;green&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb284-7"><a href="polynomial-regression.html#cb284-7" tabindex="-1"></a><span class="fu">legend</span>(<span class="dv">230</span>, <span class="fl">1.3</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;d=2&quot;</span>, <span class="st">&quot;d=3&quot;</span>, <span class="st">&quot;d=4&quot;</span>, <span class="st">&quot;d=5&quot;</span>),</span>
+<span id="cb284-8"><a href="polynomial-regression.html#cb284-8" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;magenta&quot;</span>, <span class="st">&quot;green&quot;</span>), <span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">cex=</span><span class="fl">0.8</span>, <span class="at">lwd=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-132-1.png" width="672" /></p>
+<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="polynomial-regression.html#cb285-1" tabindex="-1"></a><span class="co"># Backward Selection</span></span>
+<span id="cb285-2"><a href="polynomial-regression.html#cb285-2" tabindex="-1"></a>lm.pumpkinsO10 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">10</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb285-3"><a href="polynomial-regression.html#cb285-3" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO10)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ poly(price, 10), data = pumpkins)
@@ -735,8 +789,8 @@ where each <span class="math inline">\(z_j=a_{1} + b_{2} x + \ldots+ \kappa_j x^
 ## Residual standard error: 0.6483 on 237 degrees of freedom
 ## Multiple R-squared:  0.7509, Adjusted R-squared:  0.7404 
 ## F-statistic: 71.45 on 10 and 237 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb215-1"><a href="polynomial-regression.html#cb215-1" tabindex="-1"></a>lm.pumpkinsO9 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">9</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb215-2"><a href="polynomial-regression.html#cb215-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO9)</span></code></pre></div>
+<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="polynomial-regression.html#cb287-1" tabindex="-1"></a>lm.pumpkinsO9 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">9</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb287-2"><a href="polynomial-regression.html#cb287-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO9)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ poly(price, 9), data = pumpkins)
@@ -763,8 +817,8 @@ where each <span class="math inline">\(z_j=a_{1} + b_{2} x + \ldots+ \kappa_j x^
 ## Residual standard error: 0.6483 on 238 degrees of freedom
 ## Multiple R-squared:  0.7499, Adjusted R-squared:  0.7404 
 ## F-statistic: 79.27 on 9 and 238 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="polynomial-regression.html#cb217-1" tabindex="-1"></a>lm.pumpkinsO8 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">8</span>), <span class="at">data=</span>pumpkins)</span>
-<span id="cb217-2"><a href="polynomial-regression.html#cb217-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO8)</span></code></pre></div>
+<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="polynomial-regression.html#cb289-1" tabindex="-1"></a>lm.pumpkinsO8 <span class="ot">=</span>  <span class="fu">lm</span>(size <span class="sc">~</span> <span class="fu">poly</span>(price,<span class="dv">8</span>), <span class="at">data=</span>pumpkins)</span>
+<span id="cb289-2"><a href="polynomial-regression.html#cb289-2" tabindex="-1"></a><span class="fu">summary</span>(lm.pumpkinsO8)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = size ~ poly(price, 8), data = pumpkins)
@@ -790,12 +844,12 @@ where each <span class="math inline">\(z_j=a_{1} + b_{2} x + \ldots+ \kappa_j x^
 ## Residual standard error: 0.6544 on 239 degrees of freedom
 ## Multiple R-squared:  0.7441, Adjusted R-squared:  0.7355 
 ## F-statistic: 86.87 on 8 and 239 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="polynomial-regression.html#cb219-1" tabindex="-1"></a><span class="fu">plot</span>(pumpkins<span class="sc">$</span>price, pumpkins<span class="sc">$</span>size, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>), <span class="at">xlab=</span><span class="st">&quot;Pumpkin&#39;s Price&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Pumpkins&#39; Size&quot;</span>, <span class="at">main=</span><span class="st">&quot;Backward Selection Models: Orthogonal Polynomials&quot;</span>)</span>
-<span id="cb219-2"><a href="polynomial-regression.html#cb219-2" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO10, newprice), <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb219-3"><a href="polynomial-regression.html#cb219-3" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO9, newprice), <span class="at">col=</span><span class="st">&quot;orange&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb219-4"><a href="polynomial-regression.html#cb219-4" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO8, newprice), <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
-<span id="cb219-5"><a href="polynomial-regression.html#cb219-5" tabindex="-1"></a><span class="fu">legend</span>(<span class="dv">225</span>, <span class="fl">1.2</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;d=10&quot;</span>, <span class="st">&quot;d=9&quot;</span>, <span class="st">&quot;d=8&quot;</span>),  <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;magenta&quot;</span>), <span class="at">lty=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>), <span class="at">cex=</span><span class="fl">0.8</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-104-2.png" width="672" /></p>
+<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="polynomial-regression.html#cb291-1" tabindex="-1"></a><span class="fu">plot</span>(pumpkins<span class="sc">$</span>price, pumpkins<span class="sc">$</span>size, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>), <span class="at">xlab=</span><span class="st">&quot;Pumpkin&#39;s Price&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Pumpkins&#39; Size&quot;</span>, <span class="at">main=</span><span class="st">&quot;Backward Selection Models: Orthogonal Polynomials&quot;</span>)</span>
+<span id="cb291-2"><a href="polynomial-regression.html#cb291-2" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO10, newprice), <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb291-3"><a href="polynomial-regression.html#cb291-3" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO9, newprice), <span class="at">col=</span><span class="st">&quot;orange&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb291-4"><a href="polynomial-regression.html#cb291-4" tabindex="-1"></a><span class="fu">lines</span>(newprice<span class="sc">$</span>price, <span class="fu">predict</span>(lm.pumpkinsO8, newprice), <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>);</span>
+<span id="cb291-5"><a href="polynomial-regression.html#cb291-5" tabindex="-1"></a><span class="fu">legend</span>(<span class="dv">225</span>, <span class="fl">1.2</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;d=10&quot;</span>, <span class="st">&quot;d=9&quot;</span>, <span class="st">&quot;d=8&quot;</span>),  <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;magenta&quot;</span>), <span class="at">lty=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>), <span class="at">cex=</span><span class="fl">0.8</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-132-2.png" width="672" /></p>
 </div>
 <p><br><br></p>
 </div>
@@ -859,13 +913,13 @@ gitbook.start({
     "link": null,
     "text": null
   },
-  "download": ["_main.epub"],
+  "download": ["my-598PSL.epub"],
   "search": {
     "engine": "fuse",
     "options": null
   },
   "toc": {
-    "collapse": "section",
+    "collapse": "subsection",
     "toc_depth": 4,
     "toc_float": true,
     "scroll_highlight": true

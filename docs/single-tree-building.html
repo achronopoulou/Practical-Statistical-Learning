@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>5.1 Single-Tree Building | Logistic Regression</title>
+  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="5.1 Single-Tree Building | Logistic Regression" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="5.1 Single-Tree Building | Logistic Regression" />
+  
+  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  
+
+<meta name="author" content="A. Chronopoulou" />
+
+
+<meta name="date" content="2025-09-10" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="regression-trees.html"/>
+<link rel="next" href="regression-forests.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
+<li class="chapter" data-level="1.5.4" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures"><i class="fa fa-check"></i><b>1.5.4</b> Code for the Examples in the Lectures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>2.1</b> Multiple Linear Regression (MLR) Model</a></li>
+<li class="chapter" data-level="2.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>2.2</b> MLR Model Fitting</a></li>
+<li class="chapter" data-level="2.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>2.3</b> Least-Squares &amp; Normal Equations</a></li>
+<li class="chapter" data-level="2.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>2.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
+<li class="chapter" data-level="2.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>2.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
+<li class="chapter" data-level="2.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>2.6</b> Rank deficiency</a></li>
+<li class="chapter" data-level="2.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>2.7</b> Hypothesis Testing in MLR</a></li>
+<li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
+<li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
+<li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
+<li class="chapter" data-level="2.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Data Set Example</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="training-vs.-testing-errors.html"><a href="training-vs.-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training vs. Testing Errors</a></li>
+<li class="chapter" data-level="3.2" data-path="subset-selection.html"><a href="subset-selection.html"><i class="fa fa-check"></i><b>3.2</b> Subset Selection</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria-based-procedures"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria-based procedures</a></li>
+<li class="chapter" data-level="3.2.2" data-path="subset-selection.html"><a href="subset-selection.html#search-algorithms"><i class="fa fa-check"></i><b>3.2.2</b> Search Algorithms</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html"><i class="fa fa-check"></i><b>3.3</b> Shrinkage Methods</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#ridge-regression-1"><i class="fa fa-check"></i><b>3.4.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.4.2" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#lasso-regression-1"><i class="fa fa-check"></i><b>3.4.2</b> LASSO Regression</a></li>
+<li class="chapter" data-level="3.4.3" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#refit-to-reduce-bias"><i class="fa fa-check"></i><b>3.4.3</b> Refit to Reduce Bias</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
+<ul>
+<li class="chapter" data-level="4.0.1" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html#a-note-on-nonlinearity"><i class="fa fa-check"></i><b>4.0.1</b> A Note on Nonlinearity</a></li>
+<li class="chapter" data-level="4.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html"><i class="fa fa-check"></i><b>4.1</b> Polynomial Regression</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-basis-functions"><i class="fa fa-check"></i><b>4.1.1</b> Polynomial Basis Functions</a></li>
+<li class="chapter" data-level="4.1.2" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-regression-1"><i class="fa fa-check"></i><b>4.1.2</b> Polynomial Regression</a></li>
+<li class="chapter" data-level="4.1.3" data-path="polynomial-regression.html"><a href="polynomial-regression.html#orthogonal-polynomials"><i class="fa fa-check"></i><b>4.1.3</b> Orthogonal Polynomials</a></li>
+<li class="chapter" data-level="4.1.4" data-path="polynomial-regression.html"><a href="polynomial-regression.html#piece-wise-polynomials"><i class="fa fa-check"></i><b>4.1.4</b> Piece-wise Polynomials</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="splines-regression.html"><a href="splines-regression.html"><i class="fa fa-check"></i><b>4.2</b> Splines Regression</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="splines-regression.html"><a href="splines-regression.html#examples-of-cubic-splines-basis"><i class="fa fa-check"></i><b>4.2.1</b> Examples of Cubic Splines Basis</a></li>
+<li class="chapter" data-level="4.2.2" data-path="splines-regression.html"><a href="splines-regression.html#b-splines-basis-functions-in-r"><i class="fa fa-check"></i><b>4.2.2</b> B-Splines Basis Functions in <code>R</code></a></li>
+<li class="chapter" data-level="4.2.3" data-path="splines-regression.html"><a href="splines-regression.html#natural-cubic-splines-ncs"><i class="fa fa-check"></i><b>4.2.3</b> Natural Cubic Splines (NCS)</a></li>
+<li class="chapter" data-level="4.2.4" data-path="splines-regression.html"><a href="splines-regression.html#regression-splines"><i class="fa fa-check"></i><b>4.2.4</b> Regression Splines</a></li>
+<li class="chapter" data-level="4.2.5" data-path="splines-regression.html"><a href="splines-regression.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>4.2.5</b> K-Fold Cross-Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="smoothing-splines.html"><a href="smoothing-splines.html"><i class="fa fa-check"></i><b>4.3</b> Smoothing Splines</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="smoothing-splines.html"><a href="smoothing-splines.html#the-roughness-penalty-approach"><i class="fa fa-check"></i><b>4.3.1</b> The Roughness Penalty Approach</a></li>
+<li class="chapter" data-level="4.3.2" data-path="smoothing-splines.html"><a href="smoothing-splines.html#proof"><i class="fa fa-check"></i><b>4.3.2</b> Proof</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
+<li class="chapter" data-level="4.5" data-path="the-birthrates-example-in-r.html"><a href="the-birthrates-example-in-r.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example in R</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="regression-trees.html"><a href="regression-trees.html"><i class="fa fa-check"></i><b>5</b> Regression Trees</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="single-tree-building.html"><a href="single-tree-building.html"><i class="fa fa-check"></i><b>5.1</b> Single-Tree Building</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="single-tree-building.html"><a href="single-tree-building.html#prediction-at-leaf-nodes"><i class="fa fa-check"></i><b>5.1.1</b> Prediction at Leaf Nodes</a></li>
+<li class="chapter" data-level="5.1.2" data-path="single-tree-building.html"><a href="single-tree-building.html#split-criterion"><i class="fa fa-check"></i><b>5.1.2</b> Split Criterion</a></li>
+<li class="chapter" data-level="5.1.3" data-path="single-tree-building.html"><a href="single-tree-building.html#single-tree-pruning"><i class="fa fa-check"></i><b>5.1.3</b> Single-Tree Pruning</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="regression-forests.html"><a href="regression-forests.html"><i class="fa fa-check"></i><b>5.2</b> Regression Forests</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="regression-forests.html"><a href="regression-forests.html#weak-and-strong-learners"><i class="fa fa-check"></i><b>5.2.1</b> Weak and Strong Learners</a></li>
+<li class="chapter" data-level="5.2.2" data-path="regression-forests.html"><a href="regression-forests.html#bootstrap-aggregation-bagging"><i class="fa fa-check"></i><b>5.2.2</b> Bootstrap Aggregation (Bagging)</a></li>
+<li class="chapter" data-level="5.2.3" data-path="regression-forests.html"><a href="regression-forests.html#random-forests"><i class="fa fa-check"></i><b>5.2.3</b> Random Forests</a></li>
+<li class="chapter" data-level="5.2.4" data-path="regression-forests.html"><a href="regression-forests.html#out-of-bag-oob-samples"><i class="fa fa-check"></i><b>5.2.4</b> Out-of-Bag (OOB) Samples</a></li>
+<li class="chapter" data-level="5.2.5" data-path="regression-forests.html"><a href="regression-forests.html#boosting-trees"><i class="fa fa-check"></i><b>5.2.5</b> Boosting Trees</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html"><i class="fa fa-check"></i><b>5.3</b> Tree-Based Regression Models in R</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="introduction-to-classification.html"><a href="introduction-to-classification.html"><i class="fa fa-check"></i><b>6</b> Introduction to Classification</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html"><i class="fa fa-check"></i><b>6.1</b> Discriminant Analysis</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#quadratic-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.1</b> Quadratic Discriminant Analysis</a></li>
+<li class="chapter" data-level="6.1.2" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#linear-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.2</b> Linear Discriminant Analysis</a></li>
+<li class="chapter" data-level="6.1.3" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#reduced-rank-lda"><i class="fa fa-check"></i><b>6.1.3</b> Reduced Rank LDA</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="fisher-discriminant-analysis-fda.html"><a href="fisher-discriminant-analysis-fda.html"><i class="fa fa-check"></i><b>6.2</b> Fisher Discriminant Analysis (FDA)</a></li>
+<li class="chapter" data-level="6.3" data-path="naive-bayes-classifiers.html"><a href="naive-bayes-classifiers.html"><i class="fa fa-check"></i><b>6.3</b> Naive Bayes Classifiers</a></li>
+<li class="chapter" data-level="6.4" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html"><i class="fa fa-check"></i><b>6.4</b> The <code>Digits</code> Recognition Example</a>
+<ul>
+<li class="chapter" data-level="" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html#naive-bayes-prediction"><i class="fa fa-check"></i>Naive Bayes Prediction</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>7</b> Logistic Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html"><i class="fa fa-check"></i><b>7.1</b> Fitting a Logistic Regression model</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html#maximum-likelihood-approach"><i class="fa fa-check"></i><b>7.1.1</b> Maximum Likelihood Approach</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="logistic-regression-with-separable-data.html"><a href="logistic-regression-with-separable-data.html"><i class="fa fa-check"></i><b>7.2</b> Logistic Regression with Separable Data</a></li>
+<li class="chapter" data-level="7.3" data-path="retrospective-sampling.html"><a href="retrospective-sampling.html"><i class="fa fa-check"></i><b>7.3</b> Retrospective Sampling</a></li>
+<li class="chapter" data-level="7.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html"><i class="fa fa-check"></i><b>7.4</b> Logistic Regression for the <code>Heart</code> dataset in R</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#goodness-of-fit"><i class="fa fa-check"></i><b>7.4.1</b> Goodness-of-Fit</a></li>
+<li class="chapter" data-level="7.4.2" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#variable-selection"><i class="fa fa-check"></i><b>7.4.2</b> Variable Selection</a></li>
+<li class="chapter" data-level="7.4.3" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#penalized-logistic-regression"><i class="fa fa-check"></i><b>7.4.3</b> Penalized Logistic Regression</a></li>
+<li class="chapter" data-level="7.4.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#illustration-of-divergence-of-ml-estimators"><i class="fa fa-check"></i><b>7.4.4</b> Illustration of divergence of ML estimators</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Logistic Regression</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="single-tree-building" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Single-Tree Building<a href="single-tree-building.html#single-tree-building" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>As we discussed to build a single tree, one needs to recursively partition the predictor space. So, we start by <strong>initializing the root</strong> node and starting with all training data. Then, we choose a <strong>splitting rule</strong> consisting of a predictor <span class="math inline">\(X^{(j)}\)</span> and a constant <span class="math inline">\(c\)</span> that we use to split the data in the node:
+<span class="math display">\[\mathbf{1}_{\{X^{(j)} \leq c\}}\]</span></p>
+<center>
+<img src="images/week6/treeB.png" width="300" height="225">
+<img src="images/week6/treeC3.png" width="300" height="225">
+</center>
+Then, we recursively apply the procedure on each child node:
+<center>
+<img  src="images/week6/treeC2.png" width="300" height="225">
+<img  src="images/week6/treeC1.png" width="300" height="225">
+</center>
+<p>We denote a node by <span class="math inline">\((t)\)</span>, the children nodes by <span class="math inline">\((t_L, t_R)\)</span>. The split will consist of the pair (var <span class="math inline">\(j\)</span>, value <span class="math inline">\(s\)</span>), and in the end we have the leaves or terminal nodes.
+<img style="float: right;" src="images/week6/treeC.png" width="320" height="225">
+When we stop, we <strong>predict</strong> each terminal node using within-node data. Every leaf node (i.e. a rectangle region <span class="math inline">\(R_m \in \mathcal{X}\)</span>) is assigned a constant for regression tree
+<span class="math display">\[\hat{f}(X) = \sum_m c_m \mathbf{1}_{\{X \in R_m\}}\]</span></p>
+<p>So, the natural questions that arise are the following:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Where</strong> to split the tree?<br></li>
+<li><strong>When</strong> to stop? <br></li>
+<li><strong>How</strong> to predict the response at each leaf node?</li>
+</ol>
+<div id="prediction-at-leaf-nodes" class="section level3 hasAnchor" number="5.1.1">
+<h3><span class="header-section-number">5.1.1</span> Prediction at Leaf Nodes<a href="single-tree-building.html#prediction-at-leaf-nodes" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>As we saw before, each leaf node corresponds to region <fonr color=blue><span class="math inline">\(R_m\)</span></font> that contains some samples. The <strong>prediction</strong> for a leaf node is <em>defined</em> to be the <font color=blue> <em>average of the response variable <span class="math inline">\(Y\)</span></em></font> for the samples in <span class="math inline">\(R_m\)</span>, <span class="math inline">\(m=1, \ldots, M\)</span>:
+<span class="math display">\[\hat{f}(X) = \sum_{m=1}^{M} c_m \mathbf{1}_{\{ X \in R_m\}}\]</span>
+In the expression above, we need to determine the constants <span class="math inline">\(c_m\)</span>. So, we minimize the expression with respect to <span class="math inline">\(c_m\)</span>:
+<span class="math display">\[\min_{c_m} \sum_{i=1, x_i \in R_m}^{n} (y_i - c_m)^2\]</span>
+Thus, we obtain <strong><span class="math inline">\(c_m\)</span> to be the average of <span class="math inline">\(y_i\)</span>s that corresponds to <span class="math inline">\(x_i \in R_m\)</span></strong>.
+<br></p>
+</div>
+<div id="split-criterion" class="section level3 hasAnchor" number="5.1.2">
+<h3><span class="header-section-number">5.1.2</span> Split Criterion<a href="single-tree-building.html#split-criterion" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Finding the <strong>best partition</strong> in terms of minimum sum of squares is computationally infeasible which means that we need to use a greedy algorithm find the minimum. So, we start with all the data at the root, and the using a split variable <span class="math inline">\(j\)</span> and a split point <span class="math inline">\(s\)</span>, we obtain the following two half planes:
+<span class="math display">\[R_1 (j,s) = \bigl\{X| X_j \leq s \bigr\} \quad \text{ and } \quad R_2 (j,s) = \bigl\{X| X_j &gt; s \bigr\} \]</span>
+Then, we need to find the splitting variable <span class="math inline">\(j\)</span> and split point <span class="math inline">\(s\)</span> that solve
+<span class="math display">\[\min_{j,s} \Bigl[ \min_{c_1} \sum_{x_i \in R_1(j,s)} (y_i - c_1)^2 + \min_{c_2} \sum_{x_i \in R_2(j,s)} (y_i - c_2)^2 \Bigr]\]</span>
+For any choice of <span class="math inline">\(j\)</span> and <span class="math inline">\(s\)</span>, the inner minimization is solved by:
+<span class="math display">\[ \hat{c}_1 = \text{ave} \Bigl(y_i | x_i \in R_1(j,s) \Bigr) \, \text{ and }  \hat{c}_2 = \text{ave} \Bigl(y_i | x_i \in R_2(j,s) \Bigr)\]</span>
+<br></p>
+<p>For each splitting variable, the determination of the split point <span class="math inline">\(s\)</span> can be done quickly. So, the determination of the best pair is feasible.</p>
+<p><br>
+The process we discuss above can be summarized in the following way: for each split, we define a <em>split criterion</em> <font color=blue><span class="math inline">\(\Phi(j,s)\)</span></font> e.g., we may consider the <strong>deduction of RSS</strong> for regression. By construction, regression trees are built in a <em>top-down greedy fashion</em>:</p>
+<ul>
+<li><p>Start with the <em>root</em> and consider</p>
+<p><strong>a.</strong> all possible variables <span class="math inline">\(j=1, \ldots, p\)</span> and</p>
+<p><strong>b.</strong> all possible split values,</p>
+<p><strong>c.</strong> and pick the best split, that is the one having the best <span class="math inline">\(\Phi\)</span> value.</p></li>
+<li><p>Now, the <em>data are divided into the left node and right node</em>.</p></li>
+<li><p>Repeat this procedure in each node.</p></li>
+</ul>
+<p><br></p>
+<div class="motivationbox">
+<p><strong>Split Criterion <span class="math inline">\(\Phi(j, s)\)</span></strong></p>
+<p>Deduction in RSS, if we split samples at node <span class="math inline">\(t\)</span> into <span class="math inline">\(t_R\)</span> and <span class="math inline">\(t_L\)</span>:
+<span class="math display">\[ \Phi(j, s) = RSS(t) - \Bigl[RSS(t_R) + RSS(t_L) \Bigr] \]</span>
+where
+<span class="math display">\[RSS(t) = \sum_{x_i \in t} (y_i - c_t)^2, \quad \text{ where } \quad c_t = \text{AVE}\{y_i : x_i \in t\}\]</span></p>
+<p>Note that <span class="math inline">\(\Phi(j, s)\)</span> is always positive if we split the data into two groups (even randomly), unless the mean of the left node and the one of right node are the same.</p>
+</div>
+<p><br></p>
+<div id="categorical-predictors" class="section level4 unnumbered hasAnchor">
+<h4>Categorical Predictors<a href="single-tree-building.html#categorical-predictors" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>If we have a categorical predictor with <span class="math inline">\(m\)</span> levels, then this can be naturally handled by the tree model. Having <span class="math inline">\(m\)</span> levels implies that there will be <span class="math inline">\(2^{m-1}-1\)</span> possible partitions of the <span class="math inline">\(m\)</span> labels into <em>two</em> groups leading to a simplified computation for regression with a <em>squared error loss</em>:</p>
+<ul>
+<li><p>Order the <span class="math inline">\(m\)</span> levels by their mean values of <span class="math inline">\(Y\)</span>,</p></li>
+<li><p>Split the categorical variable as if it were an ordered predictor, so there will only be <span class="math inline">\((m-1)\)</span> potential splits.</p></li>
+</ul>
+<p><br></p>
+</div>
+<div id="missing-predictor-values" class="section level4 unnumbered hasAnchor">
+<h4>Missing Predictor Values<a href="single-tree-building.html#missing-predictor-values" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>As we discussed in the beginning, tree-based model algorithms cal also handle missing values automatically. In general, if we discard observations with missing values, this will lead to a serious depletion of the training set. However, we can start by ignoring missing value observations, and determine the split criteria using only non-missing observations. Once a split <span class="math inline">\((j,s)\)</span> is found, we can “fill-in” the missing values. This can be done, for example, using imputation techniques.</p>
+<p>Alternatively, we can find <em>surrogate</em> variables that can predict the binary outcome “<span class="math inline">\(X_j &lt; s\)</span>” and “<span class="math inline">\(X_j \geq s\)</span>” using a <em>one-split tree</em>. We rank those surrogate variables along with the blind rule “go with majority”. Any observation that is missing <span class="math inline">\(X_j\)</span> is then classified with the first surrogate variable, or if missing that, the second surrogate variable (or the blind rule) is used, and etc.</p>
+</div>
+</div>
+<div id="single-tree-pruning" class="section level3 hasAnchor" number="5.1.3">
+<h3><span class="header-section-number">5.1.3</span> Single-Tree Pruning<a href="single-tree-building.html#single-tree-pruning" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>So far we discussed how to predict the response in the leaves of the tree and we developed a split criterion. Thus, it remains to decide <em>how and when we stop</em> which also determines the size of the tree. <br></p>
+<p>To clarify, when we refer to the <em>“size of a tree”</em> we refer to the <em>number of splits</em> a tree has. A large tree (with many splits) can easily over-fit the data, but on the other hand it may capture important structures that a smaller tree might miss. So, intuitively balancing the tree size and accuracy resembles the “loss + penalty” framework.</p>
+<p>One possible approach is to split tree nodes only if the decrease in the loss (e.g. RSS) exceeds certain threshold, however this can be short-sighted, since what might seem as a useless split at this step might lead to a very good split below. So, we need to develop a <em>different strategy</em>: We construct a large tree which we then <strong>prune</strong>.</p>
+<p><font color=blue>We start by growing a very large tree <span class="math inline">\(T_{\max}\)</span></font>:</p>
+<ul>
+<li><p>until all terminal nodes are nearly pure, that is the variability of the points in that node is small.</p></li>
+<li><p>or when the number of data in each terminal node is less than certain threshold;</p></li>
+<li><p>or when the tree reaches a certain size.</p></li>
+</ul>
+<p>The size of the initial tree is not critical as long as the tree is <em>sufficiently large</em>.</p>
+<div class="motivationbox">
+<p><strong>Notation</strong></p>
+<p>Subtree <span class="math inline">\(T&#39;\prec T\)</span>: any tree that can be obtained by pruning <span class="math inline">\(T\)</span>, i.e. by collapsing all its internal nodes.
+<br>
+Branch at node <span class="math inline">\((t)\)</span>: <span class="math inline">\(T_t\)</span></p>
+</div>
+<p>For any subtree <span class="math inline">\(T \prec T_{\max}\)</span> define the <font color=blue><strong>complexity cost</strong></font>
+<span class="math display">\[R_{\alpha}(T) = R(T) + \alpha|T|,\]</span>
+where <span class="math inline">\(R(T)\)</span> is the RSS for the regression tree <span class="math inline">\(T\)</span>, <span class="math inline">\(|T|\)</span> is the tree size, i.e. the number of leaf nodes, and <span class="math inline">\(\alpha &gt;0\)</span> is the (<strong>penalty</strong>) cost of adding a split. Then, our goal is to find the value of <span class="math inline">\(\alpha\)</span> that minimizes the complexity cost. Or, in other words, we want to pick the best subtree that minimizes the cost
+<span class="math display">\[\begin{align*}
+T(\alpha) &amp;= \arg\min_{T\preceq T_{\max}} R_{\alpha}(T) \\
+&amp;= \arg\min_{T\preceq T_{\max}} \Bigl[ R(T) + \alpha|T|\Bigr]
+\end{align*}\]</span></p>
+<p>The <strong>Optimal subtree <span class="math inline">\(T^{*}(\alpha)\)</span></strong> is defined to be the smallest one among all <span class="math inline">\(T(\alpha)\)</span>’s, that is
+<span class="math display">\[R_{\alpha}(T^{*}(\alpha)) = \min_{T\preceq T_{\max}} R_{\alpha}(T)\]</span>
+<span class="math display">\[T^{*}(\alpha) \preceq \text{ any  } T(\alpha).\]</span>
+where <span class="math inline">\(T^{*}(\alpha)\)</span> is unique.
+<br><br></p>
+<p>Note that for a pair of leaf nodes <span class="math inline">\((t_L, t_R)\)</span>, there exists <span class="math inline">\(\alpha^{*}\)</span>, such that</p>
+<ul>
+<li><p>For any <span class="math inline">\(\alpha \geq \alpha^*\)</span>, we would like to collapse them to just node <span class="math inline">\(t\)</span>;</p></li>
+<li><p>For any <span class="math inline">\(\alpha \leq \alpha^*\)</span>, we prefer to keep the two leaf nodes.</p></li>
+</ul>
+<p>That is, <span class="math inline">\(\alpha^{*}\)</span> is <em>the maximal price we would like to pay to keep that split</em>. In a similar way, we can extend this calculation to compute <em>the maximal price we would like to pay to keep a <strong>branch</strong></em> <span class="math inline">\(T_t\)</span>. For any non-leaf node <span class="math inline">\(t\)</span>, we need to compute the maximal price we would like to pay for keeping the whole branch <span class="math inline">\(T_t\)</span>, focusing only on samples at node <span class="math inline">\(t\)</span>. So,</p>
+<ul>
+<li><p>The cost for keeping a branch <span class="math inline">\(T_t\)</span>:
+<span class="math display">\[R_{\alpha}(T_t) = R(T_t) + \alpha |T_t|\]</span></p></li>
+<li><p>The cost for cutting a branch <span class="math inline">\(T_t\)</span>:
+<span class="math display">\[R_{\alpha}(\{t\}) = R(\{t\}) + \alpha \]</span></p></li>
+</ul>
+<p>So, we calculate the difference between the two costs:
+<span class="math display">\[\alpha^{*} = \frac{R(\{t\})  - R(T_t)}{|T_t|-1}\]</span>
+This implies that if the given <span class="math inline">\(\alpha &gt; \alpha^*\)</span>, then it is too expensive to keep this
+branch and we would like to cut the whole branch and make <span class="math inline">\(t\)</span> a leaf node.</p>
+<p>The main disadvantage of this approach is that if we need to search all possible sub-trees of <span class="math inline">\(T_{\max}\)</span>, then this is computationally intense. However, this is not necessary. Below we introduce the <em>Weakest Link Pruning</em> algorithm that finds and removes the least important branches of a large tree step-by-step to produce a sequence of smaller simpler trees. Specifically:</p>
+<div class="motivationbox">
+<p><strong>Weakest Link Pruning Algorithm</strong></p>
+<ol style="list-style-type: decimal">
+<li><p><em>Start</em> with <span class="math inline">\(T_0=T_{\max}\)</span> and <span class="math inline">\(\alpha_0=0\)</span>.</p></li>
+<li><p>For any non-leaf node <span class="math inline">\(t\)</span>,
+<span class="math display">\[\alpha(t) = \text{   the maximal price you would pay to keep } T_t \]</span></p></li>
+<li><p><span class="math inline">\(\alpha_1 = \min_t \alpha(t)\)</span><br>
+The corresponding non-terminal node <span class="math inline">\(t_1\)</span> is called the <font color=blue><strong>weakest link</strong></font>.</p></li>
+<li><p><em>Cut</em> the branch at <span class="math inline">\(t_1\)</span>.</p></li>
+<li><p><em>Update</em> the maximal price for each non-leaf node (we only need to recompute the maximal price for nodes that are the parents/grandparents of <span class="math inline">\(t_1\)</span>).</p></li>
+<li><p><em>Find</em> <span class="math inline">\(\alpha_2\)</span> and cut the branch at the 2nd weakest link.</p></li>
+<li><p><em>Keep</em> doing this until we get to the root.</p></li>
+</ol>
+</div>
+<p>This algorithm generates a <strong>Solution Path</strong> in the following sense:</p>
+<p><span class="math display">\[ T_{\max} = T_0 \succ T^{*}(\alpha_1) \succ T^{*}(\alpha_2) \succ \ldots \succ \{\text{root node}\}\]</span>
+<span class="math display">\[0=\alpha_0 &lt;\alpha_1 &lt;\alpha_2 &lt; \ldots\]</span>
+All possible values of <span class="math inline">\(\alpha\)</span> are grouped into <span class="math inline">\((m+1)\)</span> intervals
+<span class="math display">\[\begin{align*}
+I_0 &amp;= [0, \alpha_1)\\
+I_1 &amp;= [\alpha_1, \alpha_2)\\
+\vdots &amp;\\
+I_m &amp;= [\alpha_m, \infty)
+\end{align*}\]</span>
+where all <span class="math inline">\(\alpha \in I_i\)</span> share the same optimal subtree <span class="math inline">\(T^{*}(\alpha_i)\)</span>.</p>
+<p><br><br></p>
+<div id="tuning-of-the-hyper-parameter-alpha" class="section level4 unnumbered hasAnchor">
+<h4>Tuning of the hyper-parameter <span class="math inline">\(\alpha\)</span><a href="single-tree-building.html#tuning-of-the-hyper-parameter-alpha" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We can use <span class="math inline">\(K\)</span>-Fold Cross validation to tune <span class="math inline">\(\alpha\)</span> – the hyper-parameter in the pruning algorithm above. Therefore, we can start by fitting a very large tree <span class="math inline">\(T_{\max}\)</span> and compute <span class="math inline">\(I_0, I_1, \ldots, I_m\)</span> as above. Then, we can set
+<span class="math display">\[\begin{align*}
+\beta_0 &amp;= 0\\
+\beta_1 &amp;= \sqrt{\alpha_1 \alpha_2}\\
+\vdots &amp;\\
+\beta_{m-1} &amp;= \sqrt{\alpha_{m-1} \alpha_m}\\
+\beta_m &amp;= \infty
+\end{align*}\]</span>
+where each <span class="math inline">\(\beta_j\)</span> is a typical value for its interval <span class="math inline">\(I_j\)</span>.</p>
+<p>To perform the <span class="math inline">\(K\)</span> for cross-validation, we divide data into <span class="math inline">\(K\)</span> groups and repeat <span class="math inline">\(k=1, \ldots, K\)</span>.
+On each data set, except for the <span class="math inline">\(k\)</span>-th group, we fit a full model and determine the optimal subtrees:
+<span class="math display">\[T_0 \succ T^{*}(\beta_1) \succ \ldots  \succ T^{*}(\beta_m) \succ \{\text{root node} \}\]</span>
+We then compute the prediction error on the <span class="math inline">\(k\)</span>th group for each of the tree models. We finish by producing the CV plot over different <span class="math inline">\(\alpha\)</span> values and pick the optimal <span class="math inline">\(\alpha\)</span> via <span class="math inline">\(\alpha_{\min}\)</span> or <span class="math inline">\(\alpha_{1se}\)</span>.</p>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="regression-trees.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="regression-forests.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans serif",
+    "size": 1
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/05-regressiontrees.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["my-598PSL.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection",
+    "toc_depth": 4,
+    "toc_float": true,
+    "scroll_highlight": true
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

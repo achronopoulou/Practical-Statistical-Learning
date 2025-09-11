@@ -1,3 +1,11 @@
+---
+title: "Logistic Regression"
+author: "A. Chronopoulou"
+date: "`r Sys.Date()`"
+output: bookdown::gitbook
+---
+
+
 # Logistic Regression
 
 ```{r setup, include=FALSE}
@@ -226,9 +234,7 @@ where $\alpha^* = \alpha + \log\frac{r_1}{r_0}$.  Although the data have been sa
 In this example we are going to work with the South Africa heart data that can be found <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data">here</a>.
 
 ```{r}
-library(readr)
-SAheart <- read_csv("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data", col_names = TRUE)
-SAheart = as.data.frame(SAheart)
+SAheart = read.csv("data/week8/SAheart.csv", header=TRUE)
 ```
 
 The SAheart data set is the outcome of a study of heart disease risk factors among South African men of mixed ancestry. It contains 462 observations with variables that describe lifestyle, medical history, and physiological measures—such as age, alcohol intake, tobacco use, blood pressure, cholesterol levels, and family history of heart disease. 
