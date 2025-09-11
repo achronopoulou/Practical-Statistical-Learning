@@ -4,23 +4,23 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>5.3 Tree-Based Regression Models in R | Logistic Regression</title>
+  <title>5.3 Tree-Based Regression Models in R | CS 598 Practical Statistical Learning</title>
   <meta name="description" content="Lecture notes for “CS 598 PSL”." />
   <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="5.3 Tree-Based Regression Models in R | Logistic Regression" />
+  <meta property="og:title" content="5.3 Tree-Based Regression Models in R | CS 598 Practical Statistical Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="5.3 Tree-Based Regression Models in R | Logistic Regression" />
+  <meta name="twitter:title" content="5.3 Tree-Based Regression Models in R | CS 598 Practical Statistical Learning" />
   
   <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
   
 
-<meta name="author" content="A. Chronopoulou" />
+<meta name="author" content="Alexandra Chronopoulou" />
 
 
 <meta name="date" content="2025-09-10" />
@@ -276,7 +276,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Logistic Regression</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
           </h1>
         </div>
 
@@ -288,32 +288,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">5.3</span> Tree-Based Regression Models in R<a href="tree-based-regression-models-in-r.html#tree-based-regression-models-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><br>
 <br></p>
-<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="tree-based-regression-models-in-r.html#cb343-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb343-2"><a href="tree-based-regression-models-in-r.html#cb343-2" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
-<span id="cb343-3"><a href="tree-based-regression-models-in-r.html#cb343-3" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
-<span id="cb343-4"><a href="tree-based-regression-models-in-r.html#cb343-4" tabindex="-1"></a><span class="fu">library</span>(tree)</span></code></pre></div>
+<div class="sourceCode" id="cb338"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb338-1"><a href="tree-based-regression-models-in-r.html#cb338-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb338-2"><a href="tree-based-regression-models-in-r.html#cb338-2" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb338-3"><a href="tree-based-regression-models-in-r.html#cb338-3" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb338-4"><a href="tree-based-regression-models-in-r.html#cb338-4" tabindex="-1"></a><span class="fu">library</span>(tree)</span></code></pre></div>
 <p><br><br></p>
 <p>The <code>whitewines.csv</code> data set contains information related to white variants of the Portuguese `<code>Vinho Verde" wine.  &lt;br&gt;&lt;br&gt; Specifically, we have recorded the following information:  (a)</code>fixed acidity<code>,  (b)</code>volatile acidity<code>,  (c)</code>citric acid<code>,  (d)</code>residual sugar<code>,  (e)</code>chlorides<code>,  (f)</code>free sulfur dioxide<code>,  (g)</code>total sulfur dioxide<code>,  (h)</code>density<code>,  (i)</code>pH<code>,  (j)</code>sulphates<code>,  (k)</code>alcohol<code>,  (l)</code>quality` (score between 0 and 10)
 <br><br>
 The data set can be downloaded here: <a href="data/week6/whitewines.csv" download> whitewines.csv </a>
 <br><br></p>
-<div class="sourceCode" id="cb344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb344-1"><a href="tree-based-regression-models-in-r.html#cb344-1" tabindex="-1"></a>whitewines <span class="ot">=</span> <span class="fu">read.table</span>(<span class="st">&quot;data/week6/whitewines.csv&quot;</span>, <span class="at">sep=</span><span class="st">&quot;;&quot;</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
-<span id="cb344-2"><a href="tree-based-regression-models-in-r.html#cb344-2" tabindex="-1"></a><span class="fu">head</span>(whitewines)</span></code></pre></div>
-<pre><code>##   fixed.acidity volatile.acidity citric.acid residual.sugar chlorides free.sulfur.dioxide
-## 1           7.0             0.27        0.36           20.7     0.045                  45
-## 2           6.3             0.30        0.34            1.6     0.049                  14
-## 3           8.1             0.28        0.40            6.9     0.050                  30
-## 4           7.2             0.23        0.32            8.5     0.058                  47
-## 5           7.2             0.23        0.32            8.5     0.058                  47
-## 6           8.1             0.28        0.40            6.9     0.050                  30
-##   total.sulfur.dioxide density   pH sulphates alcohol quality
-## 1                  170  1.0010 3.00      0.45     8.8       6
-## 2                  132  0.9940 3.30      0.49     9.5       6
-## 3                   97  0.9951 3.26      0.44    10.1       6
-## 4                  186  0.9956 3.19      0.40     9.9       6
-## 5                  186  0.9956 3.19      0.40     9.9       6
-## 6                   97  0.9951 3.26      0.44    10.1       6</code></pre>
-<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="tree-based-regression-models-in-r.html#cb346-1" tabindex="-1"></a><span class="fu">dim</span>(whitewines)</span></code></pre></div>
+<div class="sourceCode" id="cb339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb339-1"><a href="tree-based-regression-models-in-r.html#cb339-1" tabindex="-1"></a>whitewines <span class="ot">=</span> <span class="fu">read.table</span>(<span class="st">&quot;data/week6/whitewines.csv&quot;</span>, <span class="at">sep=</span><span class="st">&quot;;&quot;</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb339-2"><a href="tree-based-regression-models-in-r.html#cb339-2" tabindex="-1"></a><span class="fu">head</span>(whitewines)</span></code></pre></div>
+<pre><code>##   fixed.acidity volatile.acidity citric.acid residual.sugar chlorides
+## 1           7.0             0.27        0.36           20.7     0.045
+## 2           6.3             0.30        0.34            1.6     0.049
+## 3           8.1             0.28        0.40            6.9     0.050
+## 4           7.2             0.23        0.32            8.5     0.058
+## 5           7.2             0.23        0.32            8.5     0.058
+## 6           8.1             0.28        0.40            6.9     0.050
+##   free.sulfur.dioxide total.sulfur.dioxide density   pH sulphates
+## 1                  45                  170  1.0010 3.00      0.45
+## 2                  14                  132  0.9940 3.30      0.49
+## 3                  30                   97  0.9951 3.26      0.44
+## 4                  47                  186  0.9956 3.19      0.40
+## 5                  47                  186  0.9956 3.19      0.40
+## 6                  30                   97  0.9951 3.26      0.44
+##   alcohol quality
+## 1     8.8       6
+## 2     9.5       6
+## 3    10.1       6
+## 4     9.9       6
+## 5     9.9       6
+## 6    10.1       6</code></pre>
+<div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="tree-based-regression-models-in-r.html#cb341-1" tabindex="-1"></a><span class="fu">dim</span>(whitewines)</span></code></pre></div>
 <pre><code>## [1] 4898   12</code></pre>
 <p><br><br></p>
 <p>In <code>R</code> there are two packages that fit <strong>tree</strong> models: <code>tree</code> and <code>rpart</code>. The first package we only used it to generate the first figures in the slides via its function <code>partition.tree</code>. Below is the code that generates the plots in the lectures.</p>
@@ -323,8 +330,8 @@ The data set can be downloaded here: <a href="data/week6/whitewines.csv" downloa
 <p><br></p>
 <p>The syntax for fitting a regression tree with tree is similar to that used for linear regression models. For illustration purposes, let’s focus on just two predictors: <code>alcohol</code> and <code>volatile.acidity</code> to predict <code>quality</code>.</p>
 <p>We start by fitting the tree:</p>
-<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="tree-based-regression-models-in-r.html#cb348-1" tabindex="-1"></a>quality.tree <span class="ot">=</span> <span class="fu">tree</span>(quality <span class="sc">~</span> alcohol <span class="sc">+</span> volatile.acidity, <span class="at">data=</span>whitewines)</span>
-<span id="cb348-2"><a href="tree-based-regression-models-in-r.html#cb348-2" tabindex="-1"></a>quality.tree</span></code></pre></div>
+<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="tree-based-regression-models-in-r.html#cb343-1" tabindex="-1"></a>quality.tree <span class="ot">=</span> <span class="fu">tree</span>(quality <span class="sc">~</span> alcohol <span class="sc">+</span> volatile.acidity, <span class="at">data=</span>whitewines)</span>
+<span id="cb343-2"><a href="tree-based-regression-models-in-r.html#cb343-2" tabindex="-1"></a>quality.tree</span></code></pre></div>
 <pre><code>## node), split, n, deviance, yval
 ##       * denotes terminal node
 ## 
@@ -338,20 +345,20 @@ The data set can be downloaded here: <a href="data/week6/whitewines.csv" downloa
 ##       13) volatile.acidity &gt; 0.465 16   13.94 4.562 *
 ##      7) alcohol &gt; 11.7417 932  624.70 6.549 *</code></pre>
 <p>To illustrate the tree structure, we plot the fitted tree model:</p>
-<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="tree-based-regression-models-in-r.html#cb350-1" tabindex="-1"></a><span class="fu">plot</span>(quality.tree)</span>
-<span id="cb350-2"><a href="tree-based-regression-models-in-r.html#cb350-2" tabindex="-1"></a><span class="fu">text</span>(quality.tree, <span class="at">cex =</span> .<span class="dv">75</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb345"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb345-1"><a href="tree-based-regression-models-in-r.html#cb345-1" tabindex="-1"></a><span class="fu">plot</span>(quality.tree)</span>
+<span id="cb345-2"><a href="tree-based-regression-models-in-r.html#cb345-2" tabindex="-1"></a><span class="fu">text</span>(quality.tree, <span class="at">cex =</span> .<span class="dv">75</span>)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-165-1.png" width="672" /></p>
 <p>and create the rectangular regions (as in the lecture), we have:</p>
-<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb351-1"><a href="tree-based-regression-models-in-r.html#cb351-1" tabindex="-1"></a>quality.quantiles <span class="ot">=</span> <span class="fu">cut</span>(whitewines<span class="sc">$</span>quality, <span class="fu">unique</span>(<span class="fu">quantile</span>(whitewines<span class="sc">$</span>quality, <span class="dv">0</span><span class="sc">:</span> <span class="dv">5</span> <span class="sc">/</span> <span class="dv">5</span>)),</span>
-<span id="cb351-2"><a href="tree-based-regression-models-in-r.html#cb351-2" tabindex="-1"></a>  <span class="at">include.lowest =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb351-3"><a href="tree-based-regression-models-in-r.html#cb351-3" tabindex="-1"></a></span>
-<span id="cb351-4"><a href="tree-based-regression-models-in-r.html#cb351-4" tabindex="-1"></a><span class="fu">plot</span>(whitewines<span class="sc">$</span>alcohol, whitewines<span class="sc">$</span>volatile.acidity, <span class="at">col =</span> <span class="fu">grey</span>(<span class="dv">5</span><span class="sc">:</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">6</span>)[quality.quantiles],</span>
-<span id="cb351-5"><a href="tree-based-regression-models-in-r.html#cb351-5" tabindex="-1"></a>  <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">ylab =</span> <span class="st">&quot;volatile.acidity&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;alcohol&quot;</span>)</span>
-<span id="cb351-6"><a href="tree-based-regression-models-in-r.html#cb351-6" tabindex="-1"></a><span class="fu">partition.tree</span>(quality.tree, <span class="at">ordvars =</span> <span class="fu">c</span>(<span class="st">&quot;alcohol&quot;</span>, <span class="st">&quot;volatile.acidity&quot;</span>), <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="tree-based-regression-models-in-r.html#cb346-1" tabindex="-1"></a>quality.quantiles <span class="ot">=</span> <span class="fu">cut</span>(whitewines<span class="sc">$</span>quality, <span class="fu">unique</span>(<span class="fu">quantile</span>(whitewines<span class="sc">$</span>quality, <span class="dv">0</span><span class="sc">:</span> <span class="dv">5</span> <span class="sc">/</span> <span class="dv">5</span>)),</span>
+<span id="cb346-2"><a href="tree-based-regression-models-in-r.html#cb346-2" tabindex="-1"></a>  <span class="at">include.lowest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb346-3"><a href="tree-based-regression-models-in-r.html#cb346-3" tabindex="-1"></a></span>
+<span id="cb346-4"><a href="tree-based-regression-models-in-r.html#cb346-4" tabindex="-1"></a><span class="fu">plot</span>(whitewines<span class="sc">$</span>alcohol, whitewines<span class="sc">$</span>volatile.acidity, <span class="at">col =</span> <span class="fu">grey</span>(<span class="dv">5</span><span class="sc">:</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">6</span>)[quality.quantiles],</span>
+<span id="cb346-5"><a href="tree-based-regression-models-in-r.html#cb346-5" tabindex="-1"></a>  <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">ylab =</span> <span class="st">&quot;volatile.acidity&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;alcohol&quot;</span>)</span>
+<span id="cb346-6"><a href="tree-based-regression-models-in-r.html#cb346-6" tabindex="-1"></a><span class="fu">partition.tree</span>(quality.tree, <span class="at">ordvars =</span> <span class="fu">c</span>(<span class="st">&quot;alcohol&quot;</span>, <span class="st">&quot;volatile.acidity&quot;</span>), <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-166-1.png" width="672" /></p>
 <p>If we want, we can also prune the tree using the <code>prune.tree</code> function:</p>
-<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="tree-based-regression-models-in-r.html#cb352-1" tabindex="-1"></a>smaller.tree <span class="ot">=</span> <span class="fu">prune.tree</span>(quality.tree, <span class="at">best=</span><span class="dv">4</span>)</span>
-<span id="cb352-2"><a href="tree-based-regression-models-in-r.html#cb352-2" tabindex="-1"></a>smaller.tree</span></code></pre></div>
+<div class="sourceCode" id="cb347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb347-1"><a href="tree-based-regression-models-in-r.html#cb347-1" tabindex="-1"></a>smaller.tree <span class="ot">=</span> <span class="fu">prune.tree</span>(quality.tree, <span class="at">best=</span><span class="dv">4</span>)</span>
+<span id="cb347-2"><a href="tree-based-regression-models-in-r.html#cb347-2" tabindex="-1"></a>smaller.tree</span></code></pre></div>
 <pre><code>## node), split, n, deviance, yval
 ##       * denotes terminal node
 ## 
@@ -362,11 +369,11 @@ The data set can be downloaded here: <a href="data/week6/whitewines.csv" downloa
 ##   3) alcohol &gt; 10.85 1813 1378.0 6.341  
 ##     6) alcohol &lt; 11.7417 881  670.0 6.121 *
 ##     7) alcohol &gt; 11.7417 932  624.7 6.549 *</code></pre>
-<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="tree-based-regression-models-in-r.html#cb354-1" tabindex="-1"></a><span class="fu">plot</span>(smaller.tree)</span>
-<span id="cb354-2"><a href="tree-based-regression-models-in-r.html#cb354-2" tabindex="-1"></a><span class="fu">text</span>(smaller.tree, <span class="at">cex =</span> .<span class="dv">75</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb349-1"><a href="tree-based-regression-models-in-r.html#cb349-1" tabindex="-1"></a><span class="fu">plot</span>(smaller.tree)</span>
+<span id="cb349-2"><a href="tree-based-regression-models-in-r.html#cb349-2" tabindex="-1"></a><span class="fu">text</span>(smaller.tree, <span class="at">cex =</span> .<span class="dv">75</span>)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-167-1.png" width="672" /></p>
 <p>We now detach the <code>tree</code> package and switch to the <code>rpart</code> package.</p>
-<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="tree-based-regression-models-in-r.html#cb355-1" tabindex="-1"></a><span class="fu">detach</span>(<span class="st">&quot;package:tree&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="tree-based-regression-models-in-r.html#cb350-1" tabindex="-1"></a><span class="fu">detach</span>(<span class="st">&quot;package:tree&quot;</span>)</span></code></pre></div>
 <p><br><br></p>
 </div>
 <div id="the-rpart-package" class="section level3 unlisted unnumbered hasAnchor">
@@ -375,11 +382,11 @@ The data set can be downloaded here: <a href="data/week6/whitewines.csv" downloa
 <div id="fitting-a-regression-tree" class="section level4 unnumbered hasAnchor">
 <h4>Fitting a Regression Tree<a href="tree-based-regression-models-in-r.html#fitting-a-regression-tree" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>The syntax for fitting a regression tree with <code>rpart</code> to the one we use for linear regression models. The default tree plot may not be visually appealing, so for better visualization, we can use the <code>rpart.plot</code> package.</p>
-<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="tree-based-regression-models-in-r.html#cb356-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">598</span>)</span>
-<span id="cb356-2"><a href="tree-based-regression-models-in-r.html#cb356-2" tabindex="-1"></a>wine.tree1 <span class="ot">=</span> <span class="fu">rpart</span>(quality<span class="sc">~</span>., <span class="at">data =</span> whitewines)</span>
-<span id="cb356-3"><a href="tree-based-regression-models-in-r.html#cb356-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb356-4"><a href="tree-based-regression-models-in-r.html#cb356-4" tabindex="-1"></a><span class="fu">plot</span>(wine.tree1)</span>
-<span id="cb356-5"><a href="tree-based-regression-models-in-r.html#cb356-5" tabindex="-1"></a><span class="fu">rpart.plot</span>(wine.tree1)</span></code></pre></div>
+<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb351-1"><a href="tree-based-regression-models-in-r.html#cb351-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">598</span>)</span>
+<span id="cb351-2"><a href="tree-based-regression-models-in-r.html#cb351-2" tabindex="-1"></a>wine.tree1 <span class="ot">=</span> <span class="fu">rpart</span>(quality<span class="sc">~</span>., <span class="at">data =</span> whitewines)</span>
+<span id="cb351-3"><a href="tree-based-regression-models-in-r.html#cb351-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb351-4"><a href="tree-based-regression-models-in-r.html#cb351-4" tabindex="-1"></a><span class="fu">plot</span>(wine.tree1)</span>
+<span id="cb351-5"><a href="tree-based-regression-models-in-r.html#cb351-5" tabindex="-1"></a><span class="fu">rpart.plot</span>(wine.tree1)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-169-1.png" width="672" />
 <em>Note</em> that in this example (unlike the previous one), we use all predictors not just two.
 <br>
@@ -393,13 +400,14 @@ The data set can be downloaded here: <a href="data/week6/whitewines.csv" downloa
 <p><strong>Cross-validation</strong> is automatically performed when using the <code>rpart</code> command. To inspect the cross-validation for pruning, use the <code>printcp</code> command, which provides a table.</p>
 <p><em>CP</em> stands for <strong>Complexity Parameter</strong> which is a scaled version of <span class="math inline">\(\alpha\)</span> – the <em>price</em> or <em>penalty</em> we pay for keeping a split.</p>
 <p><br></p>
-<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="tree-based-regression-models-in-r.html#cb357-1" tabindex="-1"></a><span class="fu">printcp</span>(wine.tree1)</span></code></pre></div>
+<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="tree-based-regression-models-in-r.html#cb352-1" tabindex="-1"></a><span class="fu">printcp</span>(wine.tree1)</span></code></pre></div>
 <pre><code>## 
 ## Regression tree:
 ## rpart(formula = quality ~ ., data = whitewines)
 ## 
 ## Variables actually used in tree construction:
-## [1] alcohol             density             free.sulfur.dioxide volatile.acidity   
+## [1] alcohol             density             free.sulfur.dioxide
+## [4] volatile.acidity   
 ## 
 ## Root node error: 3841/4898 = 0.7842
 ## 
@@ -420,21 +428,21 @@ The data set can be downloaded here: <a href="data/week6/whitewines.csv" downloa
 <br></p>
 <p><font color=blue><strong>Pruning</strong></font></p>
 <p>We can employ the <code>prune</code> command to obtain the optimal subtree by providing specific Complexity Parameter (CP) values. As an example:</p>
-<div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="tree-based-regression-models-in-r.html#cb359-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="tree-based-regression-models-in-r.html#cb354-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.3</span>)</span></code></pre></div>
 <pre><code>## n= 4898 
 ## 
 ## node), split, n, deviance, yval
 ##       * denotes terminal node
 ## 
 ## 1) root 4898 3840.99 5.877909 *</code></pre>
-<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="tree-based-regression-models-in-r.html#cb361-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="tree-based-regression-models-in-r.html#cb356-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.2</span>)</span></code></pre></div>
 <pre><code>## n= 4898 
 ## 
 ## node), split, n, deviance, yval
 ##       * denotes terminal node
 ## 
 ## 1) root 4898 3840.99 5.877909 *</code></pre>
-<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="tree-based-regression-models-in-r.html#cb363-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.156</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb358"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb358-1"><a href="tree-based-regression-models-in-r.html#cb358-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.156</span>)</span></code></pre></div>
 <pre><code>## n= 4898 
 ## 
 ## node), split, n, deviance, yval
@@ -444,38 +452,38 @@ The data set can be downloaded here: <a href="data/week6/whitewines.csv" downloa
 ##   2) alcohol&lt; 10.85 3085 1844.906 5.605511 *
 ##   3) alcohol&gt;=10.85 1813 1377.659 6.341423 *</code></pre>
 <p>A CV path plot</p>
-<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="tree-based-regression-models-in-r.html#cb365-1" tabindex="-1"></a><span class="fu">plotcp</span>(wine.tree1)</span></code></pre></div>
+<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="tree-based-regression-models-in-r.html#cb360-1" tabindex="-1"></a><span class="fu">plotcp</span>(wine.tree1)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-172-1.png" width="672" /></p>
 <p>If you are uncertain whether the cross-validation error has reached its minimum, you can start with a larger tree:</p>
-<div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="tree-based-regression-models-in-r.html#cb366-1" tabindex="-1"></a>wine.tree2 <span class="ot">=</span> <span class="fu">rpart</span>(quality<span class="sc">~</span>., <span class="at">data =</span> whitewines, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">cp =</span> <span class="dv">0</span>, <span class="at">xval =</span> <span class="dv">10</span>))</span>
-<span id="cb366-2"><a href="tree-based-regression-models-in-r.html#cb366-2" tabindex="-1"></a><span class="co">#printcp(wine.tree2)</span></span>
-<span id="cb366-3"><a href="tree-based-regression-models-in-r.html#cb366-3" tabindex="-1"></a><span class="fu">plot</span>(wine.tree2)</span></code></pre></div>
+<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="tree-based-regression-models-in-r.html#cb361-1" tabindex="-1"></a>wine.tree2 <span class="ot">=</span> <span class="fu">rpart</span>(quality<span class="sc">~</span>., <span class="at">data =</span> whitewines, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">cp =</span> <span class="dv">0</span>, <span class="at">xval =</span> <span class="dv">10</span>))</span>
+<span id="cb361-2"><a href="tree-based-regression-models-in-r.html#cb361-2" tabindex="-1"></a><span class="co">#printcp(wine.tree2)</span></span>
+<span id="cb361-3"><a href="tree-based-regression-models-in-r.html#cb361-3" tabindex="-1"></a><span class="fu">plot</span>(wine.tree2)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-173-1.png" width="672" /></p>
-<div class="sourceCode" id="cb367"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb367-1"><a href="tree-based-regression-models-in-r.html#cb367-1" tabindex="-1"></a><span class="fu">plotcp</span>(wine.tree2)</span></code></pre></div>
+<div class="sourceCode" id="cb362"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb362-1"><a href="tree-based-regression-models-in-r.html#cb362-1" tabindex="-1"></a><span class="fu">plotcp</span>(wine.tree2)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-174-1.png" width="672" /></p>
 <p><br></p>
 <p><font color=blue><strong>Optimal CP Value</strong></font></p>
 <p>We can use either the <em>Minimum Cross-Validation error</em> or the <em>One Standard Error (1-SE)</em> rule to choose the <strong>optimal CP</strong> value for pruning.</p>
-<div class="sourceCode" id="cb368"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb368-1"><a href="tree-based-regression-models-in-r.html#cb368-1" tabindex="-1"></a><span class="co"># Index of CP with lowest xerror</span></span>
-<span id="cb368-2"><a href="tree-based-regression-models-in-r.html#cb368-2" tabindex="-1"></a>optimal.cp <span class="ot">=</span> <span class="fu">which.min</span>(wine.tree2<span class="sc">$</span>cptable[, <span class="st">&quot;xerror&quot;</span>]) </span>
-<span id="cb368-3"><a href="tree-based-regression-models-in-r.html#cb368-3" tabindex="-1"></a></span>
-<span id="cb368-4"><a href="tree-based-regression-models-in-r.html#cb368-4" tabindex="-1"></a><span class="co"># The optimal CP value</span></span>
-<span id="cb368-5"><a href="tree-based-regression-models-in-r.html#cb368-5" tabindex="-1"></a>wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">4</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="tree-based-regression-models-in-r.html#cb363-1" tabindex="-1"></a><span class="co"># Index of CP with lowest xerror</span></span>
+<span id="cb363-2"><a href="tree-based-regression-models-in-r.html#cb363-2" tabindex="-1"></a>optimal.cp <span class="ot">=</span> <span class="fu">which.min</span>(wine.tree2<span class="sc">$</span>cptable[, <span class="st">&quot;xerror&quot;</span>]) </span>
+<span id="cb363-3"><a href="tree-based-regression-models-in-r.html#cb363-3" tabindex="-1"></a></span>
+<span id="cb363-4"><a href="tree-based-regression-models-in-r.html#cb363-4" tabindex="-1"></a><span class="co"># The optimal CP value</span></span>
+<span id="cb363-5"><a href="tree-based-regression-models-in-r.html#cb363-5" tabindex="-1"></a>wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">4</span>]</span></code></pre></div>
 <pre><code>## [1] 0.6961474</code></pre>
-<div class="sourceCode" id="cb370"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb370-1"><a href="tree-based-regression-models-in-r.html#cb370-1" tabindex="-1"></a><span class="co"># upper bound for equivalent optimal xerror</span></span>
-<span id="cb370-2"><a href="tree-based-regression-models-in-r.html#cb370-2" tabindex="-1"></a>wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">4</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="tree-based-regression-models-in-r.html#cb365-1" tabindex="-1"></a><span class="co"># upper bound for equivalent optimal xerror</span></span>
+<span id="cb365-2"><a href="tree-based-regression-models-in-r.html#cb365-2" tabindex="-1"></a>wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">4</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">5</span>]</span></code></pre></div>
 <pre><code>## [1] 0.713746</code></pre>
-<div class="sourceCode" id="cb372"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb372-1"><a href="tree-based-regression-models-in-r.html#cb372-1" tabindex="-1"></a><span class="co"># Row IDs for CPs whose xerror are equivalent to min(xerror)</span></span>
-<span id="cb372-2"><a href="tree-based-regression-models-in-r.html#cb372-2" tabindex="-1"></a>tmp.id <span class="ot">=</span> <span class="fu">which</span>(wine.tree2<span class="sc">$</span>cptable[, <span class="dv">4</span>] <span class="sc">&lt;=</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">4</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">5</span>])</span>
-<span id="cb372-3"><a href="tree-based-regression-models-in-r.html#cb372-3" tabindex="-1"></a>tmp.id <span class="ot">=</span> <span class="fu">min</span>(tmp.id)</span>
-<span id="cb372-4"><a href="tree-based-regression-models-in-r.html#cb372-4" tabindex="-1"></a></span>
-<span id="cb372-5"><a href="tree-based-regression-models-in-r.html#cb372-5" tabindex="-1"></a><span class="co"># CP.1se = any value between row(tmp.id) and(tmp.id - 1)</span></span>
-<span id="cb372-6"><a href="tree-based-regression-models-in-r.html#cb372-6" tabindex="-1"></a>CP<span class="fl">.1</span>se <span class="ot">=</span> (wine.tree2<span class="sc">$</span>cptable[tmp.id <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[tmp.id, <span class="dv">1</span>]) <span class="sc">/</span> <span class="dv">2</span></span>
-<span id="cb372-7"><a href="tree-based-regression-models-in-r.html#cb372-7" tabindex="-1"></a></span>
-<span id="cb372-8"><a href="tree-based-regression-models-in-r.html#cb372-8" tabindex="-1"></a><span class="co"># Prune tree with CP.1se</span></span>
-<span id="cb372-9"><a href="tree-based-regression-models-in-r.html#cb372-9" tabindex="-1"></a>wine.tree3 <span class="ot">=</span> <span class="fu">prune</span>(wine.tree2, <span class="at">cp =</span> CP<span class="fl">.1</span>se)</span></code></pre></div>
+<div class="sourceCode" id="cb367"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb367-1"><a href="tree-based-regression-models-in-r.html#cb367-1" tabindex="-1"></a><span class="co"># Row IDs for CPs whose xerror are equivalent to min(xerror)</span></span>
+<span id="cb367-2"><a href="tree-based-regression-models-in-r.html#cb367-2" tabindex="-1"></a>tmp.id <span class="ot">=</span> <span class="fu">which</span>(wine.tree2<span class="sc">$</span>cptable[, <span class="dv">4</span>] <span class="sc">&lt;=</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">4</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">5</span>])</span>
+<span id="cb367-3"><a href="tree-based-regression-models-in-r.html#cb367-3" tabindex="-1"></a>tmp.id <span class="ot">=</span> <span class="fu">min</span>(tmp.id)</span>
+<span id="cb367-4"><a href="tree-based-regression-models-in-r.html#cb367-4" tabindex="-1"></a></span>
+<span id="cb367-5"><a href="tree-based-regression-models-in-r.html#cb367-5" tabindex="-1"></a><span class="co"># CP.1se = any value between row(tmp.id) and(tmp.id - 1)</span></span>
+<span id="cb367-6"><a href="tree-based-regression-models-in-r.html#cb367-6" tabindex="-1"></a>CP<span class="fl">.1</span>se <span class="ot">=</span> (wine.tree2<span class="sc">$</span>cptable[tmp.id <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[tmp.id, <span class="dv">1</span>]) <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb367-7"><a href="tree-based-regression-models-in-r.html#cb367-7" tabindex="-1"></a></span>
+<span id="cb367-8"><a href="tree-based-regression-models-in-r.html#cb367-8" tabindex="-1"></a><span class="co"># Prune tree with CP.1se</span></span>
+<span id="cb367-9"><a href="tree-based-regression-models-in-r.html#cb367-9" tabindex="-1"></a>wine.tree3 <span class="ot">=</span> <span class="fu">prune</span>(wine.tree2, <span class="at">cp =</span> CP<span class="fl">.1</span>se)</span></code></pre></div>
 <p>Let us now try to understand the relationship between the <em>1st column</em> and the <em>3rd column</em> of the CP table. The difference between adjacent rel error in the table is equivalent to the corresponding CP values. This difference signifies the <strong>improvement gained in RSS by adding an additional split</strong>, effectively setting the <em>cost</em> of that split.</p>
-<div class="sourceCode" id="cb373"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb373-1"><a href="tree-based-regression-models-in-r.html#cb373-1" tabindex="-1"></a><span class="co">#cbind(wine.tree2$cptable[, 1], c(-diff(wine.tree2$cptable[, 3]), 0))</span></span></code></pre></div>
+<div class="sourceCode" id="cb368"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb368-1"><a href="tree-based-regression-models-in-r.html#cb368-1" tabindex="-1"></a><span class="co">#cbind(wine.tree2$cptable[, 1], c(-diff(wine.tree2$cptable[, 3]), 0))</span></span></code></pre></div>
 <p><br></p>
 <p>After the tree is fit, the predict function <code>predict.rpart</code> from the <code>rpart</code> package can be used for making predictions on new or existing data.</p>
 <p><br><br></p>

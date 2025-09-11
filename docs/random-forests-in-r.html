@@ -4,23 +4,23 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Random Forests in R | Logistic Regression</title>
+  <title>Random Forests in R | CS 598 Practical Statistical Learning</title>
   <meta name="description" content="Lecture notes for “CS 598 PSL”." />
   <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Random Forests in R | Logistic Regression" />
+  <meta property="og:title" content="Random Forests in R | CS 598 Practical Statistical Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Random Forests in R | Logistic Regression" />
+  <meta name="twitter:title" content="Random Forests in R | CS 598 Practical Statistical Learning" />
   
   <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
   
 
-<meta name="author" content="A. Chronopoulou" />
+<meta name="author" content="Alexandra Chronopoulou" />
 
 
 <meta name="date" content="2025-09-10" />
@@ -276,7 +276,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Logistic Regression</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
           </h1>
         </div>
 
@@ -288,51 +288,51 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2>Random Forests in R<a href="random-forests-in-r.html#random-forests-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>We start by loading the random forest package in <code>R</code>. We also split the data in training and testing data sets.
 <br></p>
-<div class="sourceCode" id="cb374"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb374-1"><a href="random-forests-in-r.html#cb374-1" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
-<span id="cb374-2"><a href="random-forests-in-r.html#cb374-2" tabindex="-1"></a></span>
-<span id="cb374-3"><a href="random-forests-in-r.html#cb374-3" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">nrow</span>(whitewines)</span>
-<span id="cb374-4"><a href="random-forests-in-r.html#cb374-4" tabindex="-1"></a>ntest <span class="ot">=</span> <span class="fu">round</span>(n<span class="sc">*</span><span class="fl">0.3</span>)</span>
-<span id="cb374-5"><a href="random-forests-in-r.html#cb374-5" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">598</span>)</span>
-<span id="cb374-6"><a href="random-forests-in-r.html#cb374-6" tabindex="-1"></a>test.id <span class="ot">=</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, ntest)</span></code></pre></div>
+<div class="sourceCode" id="cb369"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb369-1"><a href="random-forests-in-r.html#cb369-1" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
+<span id="cb369-2"><a href="random-forests-in-r.html#cb369-2" tabindex="-1"></a></span>
+<span id="cb369-3"><a href="random-forests-in-r.html#cb369-3" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">nrow</span>(whitewines)</span>
+<span id="cb369-4"><a href="random-forests-in-r.html#cb369-4" tabindex="-1"></a>ntest <span class="ot">=</span> <span class="fu">round</span>(n<span class="sc">*</span><span class="fl">0.3</span>)</span>
+<span id="cb369-5"><a href="random-forests-in-r.html#cb369-5" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">598</span>)</span>
+<span id="cb369-6"><a href="random-forests-in-r.html#cb369-6" tabindex="-1"></a>test.id <span class="ot">=</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, ntest)</span></code></pre></div>
 <div id="model-fitting" class="section level4 unnumbered hasAnchor">
 <h4>Model Fitting<a href="random-forests-in-r.html#model-fitting" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>To fit the model, we use the <code>randomForest</code> function. Our goal is to predict the <code>quality</code> using all the other columns in the data matrix as potential predictors.</p>
-<div class="sourceCode" id="cb375"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb375-1"><a href="random-forests-in-r.html#cb375-1" tabindex="-1"></a>rf.wines <span class="ot">=</span> <span class="fu">randomForest</span>(quality <span class="sc">~</span> ., <span class="at">data =</span> whitewines[<span class="sc">-</span>test.id, ], <span class="at">importance =</span> T, <span class="at">ntree=</span><span class="dv">400</span>); </span></code></pre></div>
+<div class="sourceCode" id="cb370"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb370-1"><a href="random-forests-in-r.html#cb370-1" tabindex="-1"></a>rf.wines <span class="ot">=</span> <span class="fu">randomForest</span>(quality <span class="sc">~</span> ., <span class="at">data =</span> whitewines[<span class="sc">-</span>test.id, ], <span class="at">importance =</span> T, <span class="at">ntree=</span><span class="dv">400</span>); </span></code></pre></div>
 <p>The <code>randomForest</code> function outputs several quantities. Let us focus on <code>mtry</code> which is the number of variables selected for each split.</p>
-<div class="sourceCode" id="cb376"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb376-1"><a href="random-forests-in-r.html#cb376-1" tabindex="-1"></a>rf.wines<span class="sc">$</span>mtry</span></code></pre></div>
+<div class="sourceCode" id="cb371"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb371-1"><a href="random-forests-in-r.html#cb371-1" tabindex="-1"></a>rf.wines<span class="sc">$</span>mtry</span></code></pre></div>
 <pre><code>## [1] 3</code></pre>
 <p>In our example, <code>mtry</code> is set 3, aligning with the recommended value for regression-based Random Forest models: <span class="math inline">\(p/3\)</span>, where <span class="math inline">\(p\)</span> is the number of predictors.</p>
 <p>We can use the fitted model to make predictions, and we can calculate the average test error:</p>
-<div class="sourceCode" id="cb378"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb378-1"><a href="random-forests-in-r.html#cb378-1" tabindex="-1"></a>yhat.test <span class="ot">=</span> <span class="fu">predict</span>(rf.wines, whitewines[test.id, ]) </span>
-<span id="cb378-2"><a href="random-forests-in-r.html#cb378-2" tabindex="-1"></a></span>
-<span id="cb378-3"><a href="random-forests-in-r.html#cb378-3" tabindex="-1"></a><span class="fu">sum</span>((whitewines<span class="sc">$</span>quality[test.id] <span class="sc">-</span> yhat.test)<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="fu">length</span>(test.id)</span></code></pre></div>
+<div class="sourceCode" id="cb373"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb373-1"><a href="random-forests-in-r.html#cb373-1" tabindex="-1"></a>yhat.test <span class="ot">=</span> <span class="fu">predict</span>(rf.wines, whitewines[test.id, ]) </span>
+<span id="cb373-2"><a href="random-forests-in-r.html#cb373-2" tabindex="-1"></a></span>
+<span id="cb373-3"><a href="random-forests-in-r.html#cb373-3" tabindex="-1"></a><span class="fu">sum</span>((whitewines<span class="sc">$</span>quality[test.id] <span class="sc">-</span> yhat.test)<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="fu">length</span>(test.id)</span></code></pre></div>
 <pre><code>## [1] 0.411837</code></pre>
 <p>If we think about the <em>training</em> error, then the random forest approach leads us to two types of training errors: one based on the prediction function (using the training data) and the other one based on the out-of-bag samples.</p>
-<div class="sourceCode" id="cb380"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb380-1"><a href="random-forests-in-r.html#cb380-1" tabindex="-1"></a>yhat.train <span class="ot">=</span> <span class="fu">predict</span>(rf.wines, whitewines[<span class="sc">-</span>test.id, ])</span>
-<span id="cb380-2"><a href="random-forests-in-r.html#cb380-2" tabindex="-1"></a><span class="fu">sum</span>((whitewines<span class="sc">$</span>quality[<span class="sc">-</span>test.id] <span class="sc">-</span> yhat.train) <span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(n <span class="sc">-</span> ntest)</span></code></pre></div>
+<div class="sourceCode" id="cb375"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb375-1"><a href="random-forests-in-r.html#cb375-1" tabindex="-1"></a>yhat.train <span class="ot">=</span> <span class="fu">predict</span>(rf.wines, whitewines[<span class="sc">-</span>test.id, ])</span>
+<span id="cb375-2"><a href="random-forests-in-r.html#cb375-2" tabindex="-1"></a><span class="fu">sum</span>((whitewines<span class="sc">$</span>quality[<span class="sc">-</span>test.id] <span class="sc">-</span> yhat.train) <span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(n <span class="sc">-</span> ntest)</span></code></pre></div>
 <pre><code>## [1] 0.07441902</code></pre>
 <p>We can see that the training error is significantly smaller compared to the prediction error.</p>
-<div class="sourceCode" id="cb382"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb382-1"><a href="random-forests-in-r.html#cb382-1" tabindex="-1"></a><span class="fu">sum</span>((whitewines<span class="sc">$</span>quality[<span class="sc">-</span>test.id] <span class="sc">-</span> rf.wines<span class="sc">$</span>predicted) <span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(n <span class="sc">-</span> ntest)</span></code></pre></div>
+<div class="sourceCode" id="cb377"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb377-1"><a href="random-forests-in-r.html#cb377-1" tabindex="-1"></a><span class="fu">sum</span>((whitewines<span class="sc">$</span>quality[<span class="sc">-</span>test.id] <span class="sc">-</span> rf.wines<span class="sc">$</span>predicted) <span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(n <span class="sc">-</span> ntest)</span></code></pre></div>
 <pre><code>## [1] 0.3726565</code></pre>
 <p>The error based on the out-of-bag sample is closer to the testing error and a more reliable estimator to the model’s generalization performance.
 <br>
 We can also see how many times an observation was in an out-of-bag sample (below we only output the first 10 observatios for illustration purposes):</p>
-<div class="sourceCode" id="cb384"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb384-1"><a href="random-forests-in-r.html#cb384-1" tabindex="-1"></a>rf.wines<span class="sc">$</span>oob.times[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb379"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb379-1"><a href="random-forests-in-r.html#cb379-1" tabindex="-1"></a>rf.wines<span class="sc">$</span>oob.times[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
 <pre><code>##  [1] 132 141 166 131 151 150 142 157 143 137</code></pre>
 <p><br><br></p>
 </div>
 <div id="performance-plots" class="section level4 unnumbered hasAnchor">
 <h4>Performance Plots<a href="random-forests-in-r.html#performance-plots" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>We can visualize the performance of the random forest fitted model</p>
-<div class="sourceCode" id="cb386"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb386-1"><a href="random-forests-in-r.html#cb386-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb386-2"><a href="random-forests-in-r.html#cb386-2" tabindex="-1"></a><span class="fu">plot</span>(rf.wines)</span></code></pre></div>
+<div class="sourceCode" id="cb381"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb381-1"><a href="random-forests-in-r.html#cb381-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb381-2"><a href="random-forests-in-r.html#cb381-2" tabindex="-1"></a><span class="fu">plot</span>(rf.wines)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-184-1.png" width="672" /></p>
 <p>The function is plotting the MSE values derived from out-of-bag predictions. The plot shows that the model’s performance improves rapidly with the initial addition of trees but starts to plateau beyond a certain point. This suggests that adding more trees does not lead to overfitting, although one could potentially achieve similar performance with fewer trees.</p>
 </div>
 <div id="variable-importance-1" class="section level4 unnumbered hasAnchor">
 <h4>Variable Importance<a href="random-forests-in-r.html#variable-importance-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>In the <code>randomForest</code> function we specified <code>importance</code> as `TRUE~ which means that we can extract an importance table for the variables.</p>
-<div class="sourceCode" id="cb387"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb387-1"><a href="random-forests-in-r.html#cb387-1" tabindex="-1"></a>rf.wines<span class="sc">$</span>importance</span></code></pre></div>
+<div class="sourceCode" id="cb382"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb382-1"><a href="random-forests-in-r.html#cb382-1" tabindex="-1"></a>rf.wines<span class="sc">$</span>importance</span></code></pre></div>
 <pre><code>##                         %IncMSE IncNodePurity
 ## fixed.acidity        0.06555382      160.5398
 ## volatile.acidity     0.16982629      269.3357
@@ -347,7 +347,7 @@ We can also see how many times an observation was in an out-of-bag sample (below
 ## alcohol              0.36331159      413.3186</code></pre>
 <p>The first column <code>%IncMSE</code> shows importance based on accuracy gain before/after permutation. The second column <code>IncNodePurity</code> shows importance based on RSS gain.
 Both scaled and unscaled versions of these measures are available, along with their standard errors.</p>
-<div class="sourceCode" id="cb389"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb389-1"><a href="random-forests-in-r.html#cb389-1" tabindex="-1"></a><span class="fu">importance</span>(rf.wines, <span class="at">scale =</span> F)</span></code></pre></div>
+<div class="sourceCode" id="cb384"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb384-1"><a href="random-forests-in-r.html#cb384-1" tabindex="-1"></a><span class="fu">importance</span>(rf.wines, <span class="at">scale =</span> F)</span></code></pre></div>
 <pre><code>##                       %IncMSE IncNodePurity
 ## fixed.acidity        36.68890      160.5398
 ## volatile.acidity     64.44043      269.3357
@@ -361,9 +361,9 @@ Both scaled and unscaled versions of these measures are available, along with th
 ## sulphates            33.84465      155.4755
 ## alcohol              53.95691      413.3186</code></pre>
 <p>We can also visualize the variable importance using the <code>varImpPlot</code>:</p>
-<div class="sourceCode" id="cb391"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb391-1"><a href="random-forests-in-r.html#cb391-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb391-2"><a href="random-forests-in-r.html#cb391-2" tabindex="-1"></a><span class="fu">varImpPlot</span>(rf.wines, <span class="at">type=</span><span class="dv">1</span>)</span>
-<span id="cb391-3"><a href="random-forests-in-r.html#cb391-3" tabindex="-1"></a><span class="fu">varImpPlot</span>(rf.wines, <span class="at">type=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb386"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb386-1"><a href="random-forests-in-r.html#cb386-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb386-2"><a href="random-forests-in-r.html#cb386-2" tabindex="-1"></a><span class="fu">varImpPlot</span>(rf.wines, <span class="at">type=</span><span class="dv">1</span>)</span>
+<span id="cb386-3"><a href="random-forests-in-r.html#cb386-3" tabindex="-1"></a><span class="fu">varImpPlot</span>(rf.wines, <span class="at">type=</span><span class="dv">2</span>)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-187-1.png" width="672" /></p>
 <br><br>
 <hr>
