@@ -919,14 +919,18 @@ fixed location in the car in mm
 <div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="the-birthweight-data-set-example.html#cb96-1" tabindex="-1"></a><span class="fu">library</span>(faraway)</span>
 <span id="cb96-2"><a href="the-birthweight-data-set-example.html#cb96-2" tabindex="-1"></a><span class="fu">data</span>(seatpos)</span>
 <span id="cb96-3"><a href="the-birthweight-data-set-example.html#cb96-3" tabindex="-1"></a><span class="fu">attach</span>(seatpos)</span></code></pre></div>
-<pre><code>## The following objects are masked from seatpos (pos = 16):
+<pre><code>## The following objects are masked from seatpos (pos = 3):
+## 
+##     Age, Arm, hipcenter, Ht, HtShoes, Leg, Seated, Thigh,
+##     Weight</code></pre>
+<pre><code>## The following objects are masked from seatpos (pos = 17):
 ## 
 ##     Age, Arm, hipcenter, Ht, HtShoes, Leg, Seated, Thigh,
 ##     Weight</code></pre>
 <p>Let’s start by fitting the <strong>full</strong> model with <code>hipcenter</code> as a response and everything else as a predictor:</p>
-<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="the-birthweight-data-set-example.html#cb98-1" tabindex="-1"></a><span class="co"># Fit the FULL model</span></span>
-<span id="cb98-2"><a href="the-birthweight-data-set-example.html#cb98-2" tabindex="-1"></a>position.full<span class="ot">=</span><span class="fu">lm</span>(hipcenter <span class="sc">~</span> ., seatpos)</span>
-<span id="cb98-3"><a href="the-birthweight-data-set-example.html#cb98-3" tabindex="-1"></a><span class="fu">summary</span>(position.full)</span></code></pre></div>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="the-birthweight-data-set-example.html#cb99-1" tabindex="-1"></a><span class="co"># Fit the FULL model</span></span>
+<span id="cb99-2"><a href="the-birthweight-data-set-example.html#cb99-2" tabindex="-1"></a>position.full<span class="ot">=</span><span class="fu">lm</span>(hipcenter <span class="sc">~</span> ., seatpos)</span>
+<span id="cb99-3"><a href="the-birthweight-data-set-example.html#cb99-3" tabindex="-1"></a><span class="fu">summary</span>(position.full)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = hipcenter ~ ., data = seatpos)
@@ -954,9 +958,9 @@ fixed location in the car in mm
 ## F-statistic:  7.94 on 8 and 29 DF,  p-value: 1.306e-05</code></pre>
 <p>Note that the <span class="math inline">\(p\)</span>-value of the overall <span class="math inline">\(F\)</span> test is very small (1.306e-05), which means that <em>at least one of the predictors is statistically significant</em>, but at the same time none of the predictors is statistically significant according to the individual <span class="math inline">\(t\)</span> tests. This is strange and definitely a <em>red flag</em> that we may have collinearity issues.</p>
 <p>To investigate the presence of high correlated predictors as well as the linear correlation of the response with each of the predictors, we start by checking the <strong>correlation matrix</strong>:</p>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="the-birthweight-data-set-example.html#cb100-1" tabindex="-1"></a><span class="do">## We use the round function with 2 digits, to round the numbers in the output</span></span>
-<span id="cb100-2"><a href="the-birthweight-data-set-example.html#cb100-2" tabindex="-1"></a><span class="do">## This only affects the printed numbers, not the ones R has stored.</span></span>
-<span id="cb100-3"><a href="the-birthweight-data-set-example.html#cb100-3" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cor</span>(seatpos), <span class="at">dig=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="the-birthweight-data-set-example.html#cb101-1" tabindex="-1"></a><span class="do">## We use the round function with 2 digits, to round the numbers in the output</span></span>
+<span id="cb101-2"><a href="the-birthweight-data-set-example.html#cb101-2" tabindex="-1"></a><span class="do">## This only affects the printed numbers, not the ones R has stored.</span></span>
+<span id="cb101-3"><a href="the-birthweight-data-set-example.html#cb101-3" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cor</span>(seatpos), <span class="at">dig=</span><span class="dv">2</span>)</span></code></pre></div>
 <pre><code>##             Age Weight HtShoes    Ht Seated   Arm Thigh   Leg
 ## Age        1.00   0.08   -0.08 -0.09  -0.17  0.36  0.09 -0.04
 ## Weight     0.08   1.00    0.83  0.83   0.78  0.70  0.57  0.78
@@ -979,49 +983,49 @@ fixed location in the car in mm
 ## hipcenter      1.00</code></pre>
 <p>We observe that the response is <em>highly correlated with most of the variables</em> which justifies the low <span class="math inline">\(p\)</span>-value in the overall <span class="math inline">\(F\)</span> test. However, we have <strong>highly correlated predictors</strong> (e.g. Corr(<code>Leg</code>, <code>HtShoes</code>)=0.91) which means that we will have <em>collinearity.</em></p>
 <p>Let’s look at the <strong>condition number</strong> of the <span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span> matrix. Recall that the condition number is <em>not scale invariant</em>. This implies that calculating it before standardizing the matrix might lead to incorrect conclusions. So, let’s standardize it first:</p>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="the-birthweight-data-set-example.html#cb102-1" tabindex="-1"></a><span class="do">## Extract the design matrix and remove the column of 1s that corresponds to the intercept.</span></span>
-<span id="cb102-2"><a href="the-birthweight-data-set-example.html#cb102-2" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">model.matrix</span>(position.full)[,<span class="sc">-</span><span class="dv">1</span>]</span>
-<span id="cb102-3"><a href="the-birthweight-data-set-example.html#cb102-3" tabindex="-1"></a></span>
-<span id="cb102-4"><a href="the-birthweight-data-set-example.html#cb102-4" tabindex="-1"></a><span class="do">## Standardize the matrix</span></span>
-<span id="cb102-5"><a href="the-birthweight-data-set-example.html#cb102-5" tabindex="-1"></a>x <span class="ot">=</span> x <span class="sc">-</span> <span class="fu">matrix</span>(<span class="fu">apply</span>(x,<span class="dv">2</span>, mean), <span class="dv">38</span>,<span class="dv">8</span>, <span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
-<span id="cb102-6"><a href="the-birthweight-data-set-example.html#cb102-6" tabindex="-1"></a>x <span class="ot">=</span> x <span class="sc">/</span> <span class="fu">matrix</span>(<span class="fu">apply</span>(x, <span class="dv">2</span>, sd), <span class="dv">38</span>,<span class="dv">8</span>, <span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
-<span id="cb102-7"><a href="the-birthweight-data-set-example.html#cb102-7" tabindex="-1"></a><span class="fu">apply</span>(x,<span class="dv">2</span>,mean)</span></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="the-birthweight-data-set-example.html#cb103-1" tabindex="-1"></a><span class="do">## Extract the design matrix and remove the column of 1s that corresponds to the intercept.</span></span>
+<span id="cb103-2"><a href="the-birthweight-data-set-example.html#cb103-2" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">model.matrix</span>(position.full)[,<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb103-3"><a href="the-birthweight-data-set-example.html#cb103-3" tabindex="-1"></a></span>
+<span id="cb103-4"><a href="the-birthweight-data-set-example.html#cb103-4" tabindex="-1"></a><span class="do">## Standardize the matrix</span></span>
+<span id="cb103-5"><a href="the-birthweight-data-set-example.html#cb103-5" tabindex="-1"></a>x <span class="ot">=</span> x <span class="sc">-</span> <span class="fu">matrix</span>(<span class="fu">apply</span>(x,<span class="dv">2</span>, mean), <span class="dv">38</span>,<span class="dv">8</span>, <span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb103-6"><a href="the-birthweight-data-set-example.html#cb103-6" tabindex="-1"></a>x <span class="ot">=</span> x <span class="sc">/</span> <span class="fu">matrix</span>(<span class="fu">apply</span>(x, <span class="dv">2</span>, sd), <span class="dv">38</span>,<span class="dv">8</span>, <span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb103-7"><a href="the-birthweight-data-set-example.html#cb103-7" tabindex="-1"></a><span class="fu">apply</span>(x,<span class="dv">2</span>,mean)</span></code></pre></div>
 <pre><code>##           Age        Weight       HtShoes            Ht        Seated 
 ## -5.843279e-18  2.534522e-16  9.524545e-16  1.577685e-16 -1.079546e-15 
 ##           Arm         Thigh           Leg 
 ## -1.285521e-16  9.860533e-17 -1.029878e-16</code></pre>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="the-birthweight-data-set-example.html#cb104-1" tabindex="-1"></a><span class="fu">apply</span>(x,<span class="dv">2</span>,var)</span></code></pre></div>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="the-birthweight-data-set-example.html#cb105-1" tabindex="-1"></a><span class="fu">apply</span>(x,<span class="dv">2</span>,var)</span></code></pre></div>
 <pre><code>##     Age  Weight HtShoes      Ht  Seated     Arm   Thigh     Leg 
 ##       1       1       1       1       1       1       1       1</code></pre>
 <p>Compute the condition number using the standardized matrix:</p>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="the-birthweight-data-set-example.html#cb106-1" tabindex="-1"></a><span class="do">## Compute the eigenvalues of the matrix</span></span>
-<span id="cb106-2"><a href="the-birthweight-data-set-example.html#cb106-2" tabindex="-1"></a>eigenvalues.x <span class="ot">=</span> <span class="fu">eigen</span>(<span class="fu">t</span>(x) <span class="sc">%*%</span> x) </span>
-<span id="cb106-3"><a href="the-birthweight-data-set-example.html#cb106-3" tabindex="-1"></a>eigenvalues.x<span class="sc">$</span>val</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="the-birthweight-data-set-example.html#cb107-1" tabindex="-1"></a><span class="do">## Compute the eigenvalues of the matrix</span></span>
+<span id="cb107-2"><a href="the-birthweight-data-set-example.html#cb107-2" tabindex="-1"></a>eigenvalues.x <span class="ot">=</span> <span class="fu">eigen</span>(<span class="fu">t</span>(x) <span class="sc">%*%</span> x) </span>
+<span id="cb107-3"><a href="the-birthweight-data-set-example.html#cb107-3" tabindex="-1"></a>eigenvalues.x<span class="sc">$</span>val</span></code></pre></div>
 <pre><code>## [1] 209.90786979  45.76108236  17.15850736   8.91545889   7.18612386
 ## [6]   5.14944541   1.86274750   0.05876483</code></pre>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="the-birthweight-data-set-example.html#cb108-1" tabindex="-1"></a><span class="do">## Compute the condition number:</span></span>
-<span id="cb108-2"><a href="the-birthweight-data-set-example.html#cb108-2" tabindex="-1"></a><span class="fu">sqrt</span>(eigenvalues.x<span class="sc">$</span>val[<span class="dv">1</span>]<span class="sc">/</span>eigenvalues.x<span class="sc">$</span>val[<span class="dv">8</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="the-birthweight-data-set-example.html#cb109-1" tabindex="-1"></a><span class="do">## Compute the condition number:</span></span>
+<span id="cb109-2"><a href="the-birthweight-data-set-example.html#cb109-2" tabindex="-1"></a><span class="fu">sqrt</span>(eigenvalues.x<span class="sc">$</span>val[<span class="dv">1</span>]<span class="sc">/</span>eigenvalues.x<span class="sc">$</span>val[<span class="dv">8</span>])</span></code></pre></div>
 <pre><code>## [1] 59.7662</code></pre>
 <p>The condition number is <strong>59.77</strong>, larger than 30, so we conclude that <em>collinearity is present</em>.</p>
 <p>Let’s also check the <strong>Variance Inflation Factor (VIF)</strong>:</p>
-<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="the-birthweight-data-set-example.html#cb110-1" tabindex="-1"></a><span class="do">## Variance Inflation Factor (VIF)</span></span>
-<span id="cb110-2"><a href="the-birthweight-data-set-example.html#cb110-2" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">vif</span>(x), <span class="at">dig=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="the-birthweight-data-set-example.html#cb111-1" tabindex="-1"></a><span class="do">## Variance Inflation Factor (VIF)</span></span>
+<span id="cb111-2"><a href="the-birthweight-data-set-example.html#cb111-2" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">vif</span>(x), <span class="at">dig=</span><span class="dv">2</span>)</span></code></pre></div>
 <pre><code>##     Age  Weight HtShoes      Ht  Seated     Arm   Thigh     Leg 
 ##    2.00    3.65  307.43  333.14    8.95    4.50    2.76    6.69</code></pre>
-<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="the-birthweight-data-set-example.html#cb112-1" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fl">307.43</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="the-birthweight-data-set-example.html#cb113-1" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fl">307.43</span>)</span></code></pre></div>
 <pre><code>## [1] 17.53368</code></pre>
 <p>Note that the <em>standard error</em> for the coefficient associated with <code>HtShoes</code> is <strong>17.5 times larger</strong> than it would have been without collinearity.
 <br></p>
 <p>The next step is to <strong>investigate which variable to remove</strong>. To do so, we study the <em>pairwise correlations</em> and perform <em>partial <span class="math inline">\(F\)</span>-tests</em> as follows:
 <br></p>
-<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="the-birthweight-data-set-example.html#cb114-1" tabindex="-1"></a><span class="fu">cor</span>(Seated<span class="sc">+</span>Thigh, Ht)</span></code></pre></div>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="the-birthweight-data-set-example.html#cb115-1" tabindex="-1"></a><span class="fu">cor</span>(Seated<span class="sc">+</span>Thigh, Ht)</span></code></pre></div>
 <pre><code>## [1] 0.9389819</code></pre>
-<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="the-birthweight-data-set-example.html#cb116-1" tabindex="-1"></a><span class="fu">cor</span>(Seated<span class="sc">+</span>Leg, Ht)</span></code></pre></div>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="the-birthweight-data-set-example.html#cb117-1" tabindex="-1"></a><span class="fu">cor</span>(Seated<span class="sc">+</span>Leg, Ht)</span></code></pre></div>
 <pre><code>## [1] 0.965607</code></pre>
-<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="the-birthweight-data-set-example.html#cb118-1" tabindex="-1"></a><span class="fu">cor</span>(Seated<span class="sc">+</span>Arm, Ht)</span></code></pre></div>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="the-birthweight-data-set-example.html#cb119-1" tabindex="-1"></a><span class="fu">cor</span>(Seated<span class="sc">+</span>Arm, Ht)</span></code></pre></div>
 <pre><code>## [1] 0.9465523</code></pre>
-<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="the-birthweight-data-set-example.html#cb120-1" tabindex="-1"></a>position.red1 <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> Age <span class="sc">+</span> Weight <span class="sc">+</span> Ht <span class="sc">+</span> Seated, <span class="at">data=</span>seatpos)</span>
-<span id="cb120-2"><a href="the-birthweight-data-set-example.html#cb120-2" tabindex="-1"></a><span class="fu">summary</span>(position.red1)</span></code></pre></div>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="the-birthweight-data-set-example.html#cb121-1" tabindex="-1"></a>position.red1 <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> Age <span class="sc">+</span> Weight <span class="sc">+</span> Ht <span class="sc">+</span> Seated, <span class="at">data=</span>seatpos)</span>
+<span id="cb121-2"><a href="the-birthweight-data-set-example.html#cb121-2" tabindex="-1"></a><span class="fu">summary</span>(position.red1)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = hipcenter ~ Age + Weight + Ht + Seated, data = seatpos)
@@ -1043,8 +1047,8 @@ fixed location in the car in mm
 ## Residual standard error: 36.83 on 33 degrees of freedom
 ## Multiple R-squared:  0.6599, Adjusted R-squared:  0.6186 
 ## F-statistic: 16.01 on 4 and 33 DF,  p-value: 2.224e-07</code></pre>
-<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="the-birthweight-data-set-example.html#cb122-1" tabindex="-1"></a>position.red2 <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> Ht, <span class="at">data=</span>seatpos)</span>
-<span id="cb122-2"><a href="the-birthweight-data-set-example.html#cb122-2" tabindex="-1"></a><span class="fu">summary</span>(position.red2)</span></code></pre></div>
+<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="the-birthweight-data-set-example.html#cb123-1" tabindex="-1"></a>position.red2 <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> Ht, <span class="at">data=</span>seatpos)</span>
+<span id="cb123-2"><a href="the-birthweight-data-set-example.html#cb123-2" tabindex="-1"></a><span class="fu">summary</span>(position.red2)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = hipcenter ~ Ht, data = seatpos)
@@ -1063,7 +1067,7 @@ fixed location in the car in mm
 ## Residual standard error: 36.37 on 36 degrees of freedom
 ## Multiple R-squared:  0.6383, Adjusted R-squared:  0.6282 
 ## F-statistic: 63.53 on 1 and 36 DF,  p-value: 1.831e-09</code></pre>
-<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="the-birthweight-data-set-example.html#cb124-1" tabindex="-1"></a><span class="fu">anova</span>(position.red2, position.red1)</span></code></pre></div>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="the-birthweight-data-set-example.html#cb125-1" tabindex="-1"></a><span class="fu">anova</span>(position.red2, position.red1)</span></code></pre></div>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Model 1: hipcenter ~ Ht
@@ -1134,7 +1138,8 @@ gitbook.start({
     "toc_depth": 4,
     "toc_float": true,
     "scroll_highlight": true
-  }
+  },
+  "title": "CS 598 Practical Statistical Learning"
 });
 });
 </script>
