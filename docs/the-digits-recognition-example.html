@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>6.4 The Digits Recognition Example | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="6.4 The Digits Recognition Example | CS 598 Practical Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="6.4 The Digits Recognition Example | CS 598 Practical Statistical Learning" />
+  
+  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  
+
+<meta name="author" content="Alexandra Chronopoulou" />
+
+
+<meta name="date" content="2025-09-10" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="naive-bayes-classifiers.html"/>
+<link rel="next" href="logistic-regression.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
+<li class="chapter" data-level="1.5.4" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures"><i class="fa fa-check"></i><b>1.5.4</b> Code for the Examples in the Lectures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>2.1</b> Multiple Linear Regression (MLR) Model</a></li>
+<li class="chapter" data-level="2.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>2.2</b> MLR Model Fitting</a></li>
+<li class="chapter" data-level="2.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>2.3</b> Least-Squares &amp; Normal Equations</a></li>
+<li class="chapter" data-level="2.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>2.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
+<li class="chapter" data-level="2.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>2.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
+<li class="chapter" data-level="2.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>2.6</b> Rank deficiency</a></li>
+<li class="chapter" data-level="2.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>2.7</b> Hypothesis Testing in MLR</a></li>
+<li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
+<li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
+<li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
+<li class="chapter" data-level="2.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Data Set Example</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="training-vs.-testing-errors.html"><a href="training-vs.-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training vs. Testing Errors</a></li>
+<li class="chapter" data-level="3.2" data-path="subset-selection.html"><a href="subset-selection.html"><i class="fa fa-check"></i><b>3.2</b> Subset Selection</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria-based-procedures"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria-based procedures</a></li>
+<li class="chapter" data-level="3.2.2" data-path="subset-selection.html"><a href="subset-selection.html#search-algorithms"><i class="fa fa-check"></i><b>3.2.2</b> Search Algorithms</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html"><i class="fa fa-check"></i><b>3.3</b> Shrinkage Methods</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#ridge-regression-1"><i class="fa fa-check"></i><b>3.4.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.4.2" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#lasso-regression-1"><i class="fa fa-check"></i><b>3.4.2</b> LASSO Regression</a></li>
+<li class="chapter" data-level="3.4.3" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#refit-to-reduce-bias"><i class="fa fa-check"></i><b>3.4.3</b> Refit to Reduce Bias</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
+<ul>
+<li class="chapter" data-level="4.0.1" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html#a-note-on-nonlinearity"><i class="fa fa-check"></i><b>4.0.1</b> A Note on Nonlinearity</a></li>
+<li class="chapter" data-level="4.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html"><i class="fa fa-check"></i><b>4.1</b> Polynomial Regression</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-basis-functions"><i class="fa fa-check"></i><b>4.1.1</b> Polynomial Basis Functions</a></li>
+<li class="chapter" data-level="4.1.2" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-regression-1"><i class="fa fa-check"></i><b>4.1.2</b> Polynomial Regression</a></li>
+<li class="chapter" data-level="4.1.3" data-path="polynomial-regression.html"><a href="polynomial-regression.html#orthogonal-polynomials"><i class="fa fa-check"></i><b>4.1.3</b> Orthogonal Polynomials</a></li>
+<li class="chapter" data-level="4.1.4" data-path="polynomial-regression.html"><a href="polynomial-regression.html#piece-wise-polynomials"><i class="fa fa-check"></i><b>4.1.4</b> Piece-wise Polynomials</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="splines-regression.html"><a href="splines-regression.html"><i class="fa fa-check"></i><b>4.2</b> Splines Regression</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="splines-regression.html"><a href="splines-regression.html#examples-of-cubic-splines-basis"><i class="fa fa-check"></i><b>4.2.1</b> Examples of Cubic Splines Basis</a></li>
+<li class="chapter" data-level="4.2.2" data-path="splines-regression.html"><a href="splines-regression.html#b-splines-basis-functions-in-r"><i class="fa fa-check"></i><b>4.2.2</b> B-Splines Basis Functions in <code>R</code></a></li>
+<li class="chapter" data-level="4.2.3" data-path="splines-regression.html"><a href="splines-regression.html#natural-cubic-splines-ncs"><i class="fa fa-check"></i><b>4.2.3</b> Natural Cubic Splines (NCS)</a></li>
+<li class="chapter" data-level="4.2.4" data-path="splines-regression.html"><a href="splines-regression.html#regression-splines"><i class="fa fa-check"></i><b>4.2.4</b> Regression Splines</a></li>
+<li class="chapter" data-level="4.2.5" data-path="splines-regression.html"><a href="splines-regression.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>4.2.5</b> K-Fold Cross-Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="smoothing-splines.html"><a href="smoothing-splines.html"><i class="fa fa-check"></i><b>4.3</b> Smoothing Splines</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="smoothing-splines.html"><a href="smoothing-splines.html#the-roughness-penalty-approach"><i class="fa fa-check"></i><b>4.3.1</b> The Roughness Penalty Approach</a></li>
+<li class="chapter" data-level="4.3.2" data-path="smoothing-splines.html"><a href="smoothing-splines.html#proof"><i class="fa fa-check"></i><b>4.3.2</b> Proof</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
+<li class="chapter" data-level="4.5" data-path="the-birthrates-example-in-r.html"><a href="the-birthrates-example-in-r.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example in R</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="regression-trees.html"><a href="regression-trees.html"><i class="fa fa-check"></i><b>5</b> Regression Trees</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="single-tree-building.html"><a href="single-tree-building.html"><i class="fa fa-check"></i><b>5.1</b> Single-Tree Building</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="single-tree-building.html"><a href="single-tree-building.html#prediction-at-leaf-nodes"><i class="fa fa-check"></i><b>5.1.1</b> Prediction at Leaf Nodes</a></li>
+<li class="chapter" data-level="5.1.2" data-path="single-tree-building.html"><a href="single-tree-building.html#split-criterion"><i class="fa fa-check"></i><b>5.1.2</b> Split Criterion</a></li>
+<li class="chapter" data-level="5.1.3" data-path="single-tree-building.html"><a href="single-tree-building.html#single-tree-pruning"><i class="fa fa-check"></i><b>5.1.3</b> Single-Tree Pruning</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="regression-forests.html"><a href="regression-forests.html"><i class="fa fa-check"></i><b>5.2</b> Regression Forests</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="regression-forests.html"><a href="regression-forests.html#weak-and-strong-learners"><i class="fa fa-check"></i><b>5.2.1</b> Weak and Strong Learners</a></li>
+<li class="chapter" data-level="5.2.2" data-path="regression-forests.html"><a href="regression-forests.html#bootstrap-aggregation-bagging"><i class="fa fa-check"></i><b>5.2.2</b> Bootstrap Aggregation (Bagging)</a></li>
+<li class="chapter" data-level="5.2.3" data-path="regression-forests.html"><a href="regression-forests.html#random-forests"><i class="fa fa-check"></i><b>5.2.3</b> Random Forests</a></li>
+<li class="chapter" data-level="5.2.4" data-path="regression-forests.html"><a href="regression-forests.html#out-of-bag-oob-samples"><i class="fa fa-check"></i><b>5.2.4</b> Out-of-Bag (OOB) Samples</a></li>
+<li class="chapter" data-level="5.2.5" data-path="regression-forests.html"><a href="regression-forests.html#boosting-trees"><i class="fa fa-check"></i><b>5.2.5</b> Boosting Trees</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html"><i class="fa fa-check"></i><b>5.3</b> Tree-Based Regression Models in R</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="introduction-to-classification.html"><a href="introduction-to-classification.html"><i class="fa fa-check"></i><b>6</b> Introduction to Classification</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html"><i class="fa fa-check"></i><b>6.1</b> Discriminant Analysis</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#quadratic-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.1</b> Quadratic Discriminant Analysis</a></li>
+<li class="chapter" data-level="6.1.2" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#linear-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.2</b> Linear Discriminant Analysis</a></li>
+<li class="chapter" data-level="6.1.3" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#reduced-rank-lda"><i class="fa fa-check"></i><b>6.1.3</b> Reduced Rank LDA</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="fisher-discriminant-analysis-fda.html"><a href="fisher-discriminant-analysis-fda.html"><i class="fa fa-check"></i><b>6.2</b> Fisher Discriminant Analysis (FDA)</a></li>
+<li class="chapter" data-level="6.3" data-path="naive-bayes-classifiers.html"><a href="naive-bayes-classifiers.html"><i class="fa fa-check"></i><b>6.3</b> Naive Bayes Classifiers</a></li>
+<li class="chapter" data-level="6.4" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html"><i class="fa fa-check"></i><b>6.4</b> The <code>Digits</code> Recognition Example</a>
+<ul>
+<li class="chapter" data-level="" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html#naive-bayes-prediction"><i class="fa fa-check"></i>Naive Bayes Prediction</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>7</b> Logistic Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html"><i class="fa fa-check"></i><b>7.1</b> Fitting a Logistic Regression model</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html#maximum-likelihood-approach"><i class="fa fa-check"></i><b>7.1.1</b> Maximum Likelihood Approach</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="logistic-regression-with-separable-data.html"><a href="logistic-regression-with-separable-data.html"><i class="fa fa-check"></i><b>7.2</b> Logistic Regression with Separable Data</a></li>
+<li class="chapter" data-level="7.3" data-path="retrospective-sampling.html"><a href="retrospective-sampling.html"><i class="fa fa-check"></i><b>7.3</b> Retrospective Sampling</a></li>
+<li class="chapter" data-level="7.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html"><i class="fa fa-check"></i><b>7.4</b> Logistic Regression for the <code>Heart</code> dataset in R</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#goodness-of-fit"><i class="fa fa-check"></i><b>7.4.1</b> Goodness-of-Fit</a></li>
+<li class="chapter" data-level="7.4.2" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#variable-selection"><i class="fa fa-check"></i><b>7.4.2</b> Variable Selection</a></li>
+<li class="chapter" data-level="7.4.3" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#penalized-logistic-regression"><i class="fa fa-check"></i><b>7.4.3</b> Penalized Logistic Regression</a></li>
+<li class="chapter" data-level="7.4.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#illustration-of-divergence-of-ml-estimators"><i class="fa fa-check"></i><b>7.4.4</b> Illustration of divergence of ML estimators</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="the-digits-recognition-example" class="section level2 hasAnchor" number="6.4">
+<h2><span class="header-section-number">6.4</span> The <code>Digits</code> Recognition Example<a href="the-digits-recognition-example.html#the-digits-recognition-example" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="discriminant-analysis-in-r" class="section level3 unnumbered unlisted hasAnchor">
+<h3>Discriminant Analysis in R<a href="the-digits-recognition-example.html#discriminant-analysis-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>To illustrate the concepts presented in this section, we are going to work with the handwritten digits data set from the ESL book. The data can be found in the <code>ElemStatLearn</code> library (which is not compatible with newer versions of <code>R</code>) or in the <code>tensorBSS</code> library. The <strong>goal</strong> in this example is to classify the digits correctly. To that end, we are foinf to use QDA, LDA, FDA and Naive Bayes techniques.</p>
+<div class="sourceCode" id="cb409"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb409-1"><a href="the-digits-recognition-example.html#cb409-1" tabindex="-1"></a><span class="fu">library</span>(tensorBSS) <span class="do">## Needed for the ESL data sets (if you have a newer R)</span></span></code></pre></div>
+<pre><code>## Loading required package: JADE</code></pre>
+<pre><code>## Loading required package: fICA</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;quantmod&#39;:
+##   method            from
+##   as.zoo.data.frame zoo</code></pre>
+<div class="sourceCode" id="cb413"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb413-1"><a href="the-digits-recognition-example.html#cb413-1" tabindex="-1"></a><span class="fu">library</span>(MASS) <span class="do">## Needed for the DA functions</span></span>
+<span id="cb413-2"><a href="the-digits-recognition-example.html#cb413-2" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
+<span id="cb413-3"><a href="the-digits-recognition-example.html#cb413-3" tabindex="-1"></a><span class="fu">data</span>(zip.train)</span></code></pre></div>
+<p>In this data set, the response is in the <strong>first</strong> column. If we want (for illustration purposes), we can extract the first six images and plot them:</p>
+<div class="sourceCode" id="cb414"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb414-1"><a href="the-digits-recognition-example.html#cb414-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>), <span class="at">mai=</span><span class="fu">c</span>(<span class="fl">0.25</span>,<span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</span>
+<span id="cb414-2"><a href="the-digits-recognition-example.html#cb414-2" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>){ </span>
+<span id="cb414-3"><a href="the-digits-recognition-example.html#cb414-3" tabindex="-1"></a>digit.img <span class="ot">=</span> <span class="fu">matrix</span>(zip.train[i, <span class="sc">-</span><span class="dv">1</span>], <span class="at">nrow =</span> <span class="dv">16</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb414-4"><a href="the-digits-recognition-example.html#cb414-4" tabindex="-1"></a>digit.img <span class="ot">=</span> <span class="fu">t</span>(digit.img)[,<span class="dv">16</span><span class="sc">:</span><span class="dv">1</span>]</span>
+<span id="cb414-5"><a href="the-digits-recognition-example.html#cb414-5" tabindex="-1"></a><span class="fu">image</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">16</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">16</span>,digit.img, <span class="at">axes =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb414-6"><a href="the-digits-recognition-example.html#cb414-6" tabindex="-1"></a>}</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-195-1.png" width="672" /></p>
+<p>There is no pre-loaded testing data set in this library, hence we split the give data in testing and training:</p>
+<div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb415-1"><a href="the-digits-recognition-example.html#cb415-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">598</span>) </span>
+<span id="cb415-2"><a href="the-digits-recognition-example.html#cb415-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(zip.train)</span>
+<span id="cb415-3"><a href="the-digits-recognition-example.html#cb415-3" tabindex="-1"></a></span>
+<span id="cb415-4"><a href="the-digits-recognition-example.html#cb415-4" tabindex="-1"></a>train.index <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">800</span>) </span>
+<span id="cb415-5"><a href="the-digits-recognition-example.html#cb415-5" tabindex="-1"></a>remaining.index <span class="ot">=</span> <span class="fu">setdiff</span>(<span class="dv">1</span><span class="sc">:</span>n, train.index)</span>
+<span id="cb415-6"><a href="the-digits-recognition-example.html#cb415-6" tabindex="-1"></a>test.index <span class="ot">=</span> <span class="fu">sample</span>(remaining.index, <span class="dv">200</span>)</span>
+<span id="cb415-7"><a href="the-digits-recognition-example.html#cb415-7" tabindex="-1"></a>  </span>
+<span id="cb415-8"><a href="the-digits-recognition-example.html#cb415-8" tabindex="-1"></a>train.zip <span class="ot">&lt;-</span> zip.train[train.index, ]</span>
+<span id="cb415-9"><a href="the-digits-recognition-example.html#cb415-9" tabindex="-1"></a>test.zip  <span class="ot">&lt;-</span> zip.train[test.index, ]</span>
+<span id="cb415-10"><a href="the-digits-recognition-example.html#cb415-10" tabindex="-1"></a></span>
+<span id="cb415-11"><a href="the-digits-recognition-example.html#cb415-11" tabindex="-1"></a></span>
+<span id="cb415-12"><a href="the-digits-recognition-example.html#cb415-12" tabindex="-1"></a>X.train <span class="ot">&lt;-</span> train.zip[, <span class="dv">2</span><span class="sc">:</span><span class="dv">257</span>]</span>
+<span id="cb415-13"><a href="the-digits-recognition-example.html#cb415-13" tabindex="-1"></a>Y.train <span class="ot">&lt;-</span> train.zip[, <span class="dv">1</span>]</span>
+<span id="cb415-14"><a href="the-digits-recognition-example.html#cb415-14" tabindex="-1"></a></span>
+<span id="cb415-15"><a href="the-digits-recognition-example.html#cb415-15" tabindex="-1"></a>X.test <span class="ot">&lt;-</span> test.zip[, <span class="dv">2</span><span class="sc">:</span><span class="dv">257</span>]</span>
+<span id="cb415-16"><a href="the-digits-recognition-example.html#cb415-16" tabindex="-1"></a>Y.test <span class="ot">&lt;-</span> test.zip[, <span class="dv">1</span>]</span></code></pre></div>
+</div>
+<div id="linear-discriminant-analysis-lda" class="section level3 unlisted unnumbered hasAnchor">
+<h3>Linear Discriminant Analysis (LDA)<a href="the-digits-recognition-example.html#linear-discriminant-analysis-lda" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We start by running the Linear Discriminant Analysis (LDA):</p>
+<div class="sourceCode" id="cb416"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb416-1"><a href="the-digits-recognition-example.html#cb416-1" tabindex="-1"></a>digits.lda <span class="ot">=</span> <span class="fu">lda</span>(X.train,Y.train)</span></code></pre></div>
+<p>Then, we predict and compute a prediction table. We also compute the accuracy of the method.</p>
+<div class="sourceCode" id="cb417"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb417-1"><a href="the-digits-recognition-example.html#cb417-1" tabindex="-1"></a>Y.predicted <span class="ot">=</span> <span class="fu">predict</span>(digits.lda, X.test)<span class="sc">$</span>class</span>
+<span id="cb417-2"><a href="the-digits-recognition-example.html#cb417-2" tabindex="-1"></a><span class="co"># table(Y.test, Y.predicted) ## Remove comment to see output</span></span>
+<span id="cb417-3"><a href="the-digits-recognition-example.html#cb417-3" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">sum</span>(Y.test <span class="sc">!=</span> Y.predicted) <span class="sc">/</span> <span class="fu">length</span>(Y.test)</span></code></pre></div>
+<pre><code>## [1] 0.845</code></pre>
+<p>The accuracy here is approximately 84.5%!</p>
+<p><br></p>
+</div>
+<div id="quadratic-discriminant-analysis-qda" class="section level3 unlisted unnumbered hasAnchor">
+<h3>Quadratic Discriminant Analysis (QDA)<a href="the-digits-recognition-example.html#quadratic-discriminant-analysis-qda" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>If we try to run a Quadratic Discriminant Analysis (QDA), then we obtain an error message due to the rank deficiency of the sigma matrix for each group. Unfortunately, the MASS package is not able to handle this issue.</p>
+<div class="sourceCode" id="cb419"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb419-1"><a href="the-digits-recognition-example.html#cb419-1" tabindex="-1"></a><span class="do">## digits.qda = qda(X.train,Y.train)</span></span></code></pre></div>
+</div>
+<div id="fisher-discriminant-analysis-fda-1" class="section level3 unlisted unnumbered hasAnchor">
+<h3>Fisher Discriminant Analysis (FDA)<a href="the-digits-recognition-example.html#fisher-discriminant-analysis-fda-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Let us try to see if FDA works. Project the data onto FDA directions (returned by the <code>lda</code> function).</p>
+<div class="sourceCode" id="cb420"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb420-1"><a href="the-digits-recognition-example.html#cb420-1" tabindex="-1"></a>FDA.digits.directions <span class="ot">=</span> digits.lda<span class="sc">$</span>scaling</span>
+<span id="cb420-2"><a href="the-digits-recognition-example.html#cb420-2" tabindex="-1"></a><span class="fu">dim</span>(FDA.digits.directions)</span></code></pre></div>
+<pre><code>## [1] 256   9</code></pre>
+<p>These directions turned out to be 9 in our case!</p>
+<div class="sourceCode" id="cb422"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb422-1"><a href="the-digits-recognition-example.html#cb422-1" tabindex="-1"></a>F <span class="ot">=</span> X.train<span class="sc">%*%</span>FDA.digits.directions</span>
+<span id="cb422-2"><a href="the-digits-recognition-example.html#cb422-2" tabindex="-1"></a></span>
+<span id="cb422-3"><a href="the-digits-recognition-example.html#cb422-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb422-4"><a href="the-digits-recognition-example.html#cb422-4" tabindex="-1"></a><span class="fu">plot</span>(F[,<span class="dv">1</span>],F[,<span class="dv">2</span>], <span class="at">type=</span><span class="st">&quot;n&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb422-5"><a href="the-digits-recognition-example.html#cb422-5" tabindex="-1"></a><span class="fu">text</span>(F[,<span class="dv">1</span>], F[,<span class="dv">2</span>], Y.train, <span class="at">col=</span>Y.train<span class="sc">+</span><span class="dv">7</span>)</span>
+<span id="cb422-6"><a href="the-digits-recognition-example.html#cb422-6" tabindex="-1"></a></span>
+<span id="cb422-7"><a href="the-digits-recognition-example.html#cb422-7" tabindex="-1"></a>F.test <span class="ot">=</span> X.test<span class="sc">%*%</span>digits.lda<span class="sc">$</span>scaling;</span>
+<span id="cb422-8"><a href="the-digits-recognition-example.html#cb422-8" tabindex="-1"></a><span class="fu">plot</span>(F.test[,<span class="dv">1</span>], F.test[,<span class="dv">2</span>], <span class="at">type=</span><span class="st">&quot;n&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb422-9"><a href="the-digits-recognition-example.html#cb422-9" tabindex="-1"></a><span class="fu">text</span>(F.test[,<span class="dv">1</span>], F.test[,<span class="dv">2</span>], Y.test, <span class="at">col=</span>Y.test<span class="sc">+</span><span class="dv">7</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-201-1.png" width="672" /></p>
+<p>For illustration purposes, we display the projection of the data onto the first two dimensions. Projecting in other dimensions will give a different result, so feel free to change the dimensions and see the difference.</p>
+<p>On the left, you can observe that the training data is well-separated into ten classes when using these two directions. However, replicating the same result with the test data on the right is not possible. This discrepancy arises because of overfitting to the training data.</p>
+<div id="computational-remarks" class="section level4 unnumbered hasAnchor">
+<h4>Computational Remarks<a href="the-digits-recognition-example.html#computational-remarks" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Let’s discuss how to compute the FDA directions. We start by computing the within group covariance matrix <span class="math inline">\(W\)</span>:</p>
+<div class="sourceCode" id="cb423"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb423-1"><a href="the-digits-recognition-example.html#cb423-1" tabindex="-1"></a>tmp.lm <span class="ot">=</span> <span class="fu">lm</span>(X.train <span class="sc">~</span> <span class="fu">as.factor</span>(Y.train) <span class="sc">-</span> <span class="dv">1</span>); <span class="co"># each x_i - its group mean</span></span>
+<span id="cb423-2"><a href="the-digits-recognition-example.html#cb423-2" tabindex="-1"></a>W <span class="ot">=</span> <span class="fu">cov</span>(tmp.lm<span class="sc">$</span>res)</span>
+<span id="cb423-3"><a href="the-digits-recognition-example.html#cb423-3" tabindex="-1"></a>eigenW <span class="ot">=</span> <span class="fu">eigen</span>(W)</span>
+<span id="cb423-4"><a href="the-digits-recognition-example.html#cb423-4" tabindex="-1"></a><span class="fu">summary</span>(eigenW)</span></code></pre></div>
+<pre><code>##         Length Class  Mode   
+## values    256  -none- numeric
+## vectors 65536  -none- numeric</code></pre>
+<div class="sourceCode" id="cb425"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb425-1"><a href="the-digits-recognition-example.html#cb425-1" tabindex="-1"></a>A <span class="ot">=</span> eigenW<span class="sc">$</span>ve <span class="sc">%*%</span> <span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">sqrt</span>(eigenW<span class="sc">$</span>va)) <span class="sc">%*%</span> <span class="fu">t</span>(eigenW<span class="sc">$</span>ve)</span></code></pre></div>
+<p>Then, we compute <span class="math inline">\(B\)</span> the between-group covariance matrix:</p>
+<div class="sourceCode" id="cb426"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb426-1"><a href="the-digits-recognition-example.html#cb426-1" tabindex="-1"></a>B <span class="ot">=</span> <span class="fu">cov</span>(tmp.lm<span class="sc">$</span>fitted)</span></code></pre></div>
+<p>So, now we can extract the FDA directions:</p>
+<div class="sourceCode" id="cb427"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb427-1"><a href="the-digits-recognition-example.html#cb427-1" tabindex="-1"></a>FDA.eigen <span class="ot">=</span> <span class="fu">eigen</span>(A <span class="sc">%*%</span> B <span class="sc">%*%</span> <span class="fu">t</span>(A)) </span>
+<span id="cb427-2"><a href="the-digits-recognition-example.html#cb427-2" tabindex="-1"></a>FDA.eigen.dir <span class="ot">=</span> A <span class="sc">%*%</span> FDA.eigen<span class="sc">$</span>ve[, <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>]</span>
+<span id="cb427-3"><a href="the-digits-recognition-example.html#cb427-3" tabindex="-1"></a></span>
+<span id="cb427-4"><a href="the-digits-recognition-example.html#cb427-4" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>)</span>
+<span id="cb427-5"><a href="the-digits-recognition-example.html#cb427-5" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">cor</span>(FDA.eigen.dir[, j], FDA.digits.directions[, j]))</span></code></pre></div>
+<pre><code>## [1] 1
+## [1] 1
+## [1] 1
+## [1] 1
+## [1] -1
+## [1] 1
+## [1] 1
+## [1] 1
+## [1] 1</code></pre>
+<p><br></p>
+</div>
+<div id="fda-vs-pca" class="section level4 unnumbered hasAnchor">
+<h4>FDA vs PCA<a href="the-digits-recognition-example.html#fda-vs-pca" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Obtain the top 100 PCs:</p>
+<div class="sourceCode" id="cb429"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb429-1"><a href="the-digits-recognition-example.html#cb429-1" tabindex="-1"></a>Sigma <span class="ot">=</span> <span class="fu">cov</span>(X.train)</span>
+<span id="cb429-2"><a href="the-digits-recognition-example.html#cb429-2" tabindex="-1"></a>dig.eigen<span class="ot">=</span><span class="fu">eigen</span>(Sigma);</span>
+<span id="cb429-3"><a href="the-digits-recognition-example.html#cb429-3" tabindex="-1"></a>PCA.dir <span class="ot">=</span> dig.eigen<span class="sc">$</span>ve[, <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>]  <span class="co"># pick top 100 PCA directions</span></span>
+<span id="cb429-4"><a href="the-digits-recognition-example.html#cb429-4" tabindex="-1"></a><span class="fu">dim</span>(PCA.dir)</span></code></pre></div>
+<pre><code>## [1] 256 100</code></pre>
+<p>Note that directions from PCA are orthogonal:</p>
+<div class="sourceCode" id="cb431"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb431-1"><a href="the-digits-recognition-example.html#cb431-1" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">t</span>(PCA.dir[, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]) <span class="sc">%*%</span> PCA.dir[, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>], <span class="at">dig=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+##  [1,]    1    0    0    0    0    0    0    0    0     0
+##  [2,]    0    1    0    0    0    0    0    0    0     0
+##  [3,]    0    0    1    0    0    0    0    0    0     0
+##  [4,]    0    0    0    1    0    0    0    0    0     0
+##  [5,]    0    0    0    0    1    0    0    0    0     0
+##  [6,]    0    0    0    0    0    1    0    0    0     0
+##  [7,]    0    0    0    0    0    0    1    0    0     0
+##  [8,]    0    0    0    0    0    0    0    1    0     0
+##  [9,]    0    0    0    0    0    0    0    0    1     0
+## [10,]    0    0    0    0    0    0    0    0    0     1</code></pre>
+<p>but directions from FDA are not:</p>
+<div class="sourceCode" id="cb433"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb433-1"><a href="the-digits-recognition-example.html#cb433-1" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">t</span>(FDA.eigen.dir) <span class="sc">%*%</span> FDA.eigen.dir, <span class="at">dig=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##         [,1]   [,2]   [,3]   [,4]   [,5]   [,6]   [,7]   [,8]   [,9]
+##  [1,] 112.81 -36.31  -1.72 -74.75  21.61 -23.03  28.10  84.45  25.98
+##  [2,] -36.31  76.33  10.78  36.52 -16.64   0.05 -63.48 -22.84  -3.74
+##  [3,]  -1.72  10.78  75.85   5.00   4.98   2.03 -18.44  -8.86   1.40
+##  [4,] -74.75  36.52   5.00 221.53 -15.22  20.63  -0.99 -78.55 -47.91
+##  [5,]  21.61 -16.64   4.98 -15.22 113.25 -24.92  -8.64  -0.74 -12.94
+##  [6,] -23.03   0.05   2.03  20.63 -24.92  85.31  36.17 -22.76  -2.01
+##  [7,]  28.10 -63.48 -18.44  -0.99  -8.64  36.17 217.71   6.06  -2.48
+##  [8,]  84.45 -22.84  -8.86 -78.55  -0.74 -22.76   6.06 165.63   6.32
+##  [9,]  25.98  -3.74   1.40 -47.91 -12.94  -2.01  -2.48   6.32 101.53</code></pre>
+<p>But, FDA directions are orthogonal with respect to the within-class covariance matrix <span class="math inline">\(W\)</span>:</p>
+<div class="sourceCode" id="cb435"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb435-1"><a href="the-digits-recognition-example.html#cb435-1" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">t</span>(FDA.eigen.dir) <span class="sc">%*%</span> W <span class="sc">%*%</span> FDA.eigen.dir, <span class="at">dig=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9]
+##  [1,]    1    0    0    0    0    0    0    0    0
+##  [2,]    0    1    0    0    0    0    0    0    0
+##  [3,]    0    0    1    0    0    0    0    0    0
+##  [4,]    0    0    0    1    0    0    0    0    0
+##  [5,]    0    0    0    0    1    0    0    0    0
+##  [6,]    0    0    0    0    0    1    0    0    0
+##  [7,]    0    0    0    0    0    0    1    0    0
+##  [8,]    0    0    0    0    0    0    0    1    0
+##  [9,]    0    0    0    0    0    0    0    0    1</code></pre>
+<p>Another approach would be to apply PCA first to reduce the dimensionality of the problem, and then apply FDA. As an example:</p>
+<div class="sourceCode" id="cb437"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb437-1"><a href="the-digits-recognition-example.html#cb437-1" tabindex="-1"></a>newX.train <span class="ot">=</span> X.train <span class="sc">%*%</span> PCA.dir[, <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>];</span>
+<span id="cb437-2"><a href="the-digits-recognition-example.html#cb437-2" tabindex="-1"></a>new.digits.lda <span class="ot">=</span> <span class="fu">lda</span>(newX.train, Y.train);</span>
+<span id="cb437-3"><a href="the-digits-recognition-example.html#cb437-3" tabindex="-1"></a>new.X.test <span class="ot">=</span> X.test <span class="sc">%*%</span> PCA.dir[, <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>]</span>
+<span id="cb437-4"><a href="the-digits-recognition-example.html#cb437-4" tabindex="-1"></a>Y.test.pred <span class="ot">=</span> <span class="fu">predict</span>(new.digits.lda, new.X.test)<span class="sc">$</span>class</span>
+<span id="cb437-5"><a href="the-digits-recognition-example.html#cb437-5" tabindex="-1"></a><span class="fu">table</span>(Y.test, Y.test.pred)</span></code></pre></div>
+<pre><code>##       Y.test.pred
+## Y.test  0  1  2  3  4  5  6  7  8  9
+##      0 25  0  0  0  0  0  0  0  0  0
+##      1  0 25  0  0  0  0  0  0  0  0
+##      2  0  0 23  0  0  0  0  0  1  0
+##      3  0  0  0 16  0  0  0  1  1  0
+##      4  0  2  0  0 18  0  0  0  0  1
+##      5  0  0  0  4  0  9  0  0  0  1
+##      6  0  0  0  0  0  0 17  0  0  0
+##      7  0  0  0  0  0  0  0 20  0  3
+##      8  0  1  1  0  2  0  0  0 12  0
+##      9  0  0  0  0  0  0  0  2  0 15</code></pre>
+<div class="sourceCode" id="cb439"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb439-1"><a href="the-digits-recognition-example.html#cb439-1" tabindex="-1"></a><span class="fu">sum</span>(Y.test <span class="sc">!=</span> Y.test.pred)</span></code></pre></div>
+<pre><code>## [1] 20</code></pre>
+<div class="sourceCode" id="cb441"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb441-1"><a href="the-digits-recognition-example.html#cb441-1" tabindex="-1"></a>newF<span class="ot">=</span>newX.train<span class="sc">%*%</span>new.digits.lda<span class="sc">$</span>scaling;</span>
+<span id="cb441-2"><a href="the-digits-recognition-example.html#cb441-2" tabindex="-1"></a>newFtest<span class="ot">=</span>X.test<span class="sc">%*%</span>dig.eigen<span class="sc">$</span>ve[,<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>]<span class="sc">%*%</span>new.digits.lda<span class="sc">$</span>scaling</span>
+<span id="cb441-3"><a href="the-digits-recognition-example.html#cb441-3" tabindex="-1"></a></span>
+<span id="cb441-4"><a href="the-digits-recognition-example.html#cb441-4" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb441-5"><a href="the-digits-recognition-example.html#cb441-5" tabindex="-1"></a><span class="fu">plot</span>(newF[,<span class="dv">1</span>],newF[,<span class="dv">2</span>], <span class="at">type=</span><span class="st">&quot;n&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb441-6"><a href="the-digits-recognition-example.html#cb441-6" tabindex="-1"></a><span class="fu">text</span>(newF[,<span class="dv">1</span>], newF[,<span class="dv">2</span>], Y.train, <span class="at">col=</span> Y.train<span class="sc">+</span><span class="dv">5</span>)</span>
+<span id="cb441-7"><a href="the-digits-recognition-example.html#cb441-7" tabindex="-1"></a><span class="fu">plot</span>(newFtest[,<span class="dv">1</span>], newFtest[,<span class="dv">2</span>], <span class="at">type=</span><span class="st">&quot;n&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb441-8"><a href="the-digits-recognition-example.html#cb441-8" tabindex="-1"></a><span class="fu">text</span>(newFtest[,<span class="dv">1</span>], newFtest[,<span class="dv">2</span>], Y.test, <span class="at">col=</span>Y.test<span class="sc">+</span><span class="dv">5</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-210-1.png" width="672" /></p>
+<p>In this case, we observe that there is not as clear a separation observed in training data as before. This reduction in separation is expected due to the substantial dimension reduction from 256 to 100. While the training data’s separation may not be as good as before, this approach produces more consistent results between the training and test datasets, which can help mitigate overfitting issues.</p>
+<p><br><br></p>
+</div>
+</div>
+<div id="naive-bayes-prediction" class="section level3 unnumbered hasAnchor">
+<h3>Naive Bayes Prediction<a href="the-digits-recognition-example.html#naive-bayes-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Implementation of the Naive Bayes predictor. We use the the <code>naiveBayes</code> function in the <code>e1071</code> library.
+<br></p>
+<div class="sourceCode" id="cb442"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb442-1"><a href="the-digits-recognition-example.html#cb442-1" tabindex="-1"></a>zip17 <span class="ot">=</span> train.zip[train.zip[,<span class="dv">1</span>] <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">7</span>),]</span>
+<span id="cb442-2"><a href="the-digits-recognition-example.html#cb442-2" tabindex="-1"></a>zip17.test <span class="ot">=</span> test.zip[test.zip[,<span class="dv">1</span>] <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">7</span>),]</span>
+<span id="cb442-3"><a href="the-digits-recognition-example.html#cb442-3" tabindex="-1"></a>Y<span class="fl">.17</span> <span class="ot">=</span> <span class="fu">as.factor</span>(zip17[,<span class="dv">1</span>])</span>
+<span id="cb442-4"><a href="the-digits-recognition-example.html#cb442-4" tabindex="-1"></a>X<span class="fl">.17</span> <span class="ot">=</span> zip17[,<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb442-5"><a href="the-digits-recognition-example.html#cb442-5" tabindex="-1"></a></span>
+<span id="cb442-6"><a href="the-digits-recognition-example.html#cb442-6" tabindex="-1"></a>NBfit <span class="ot">=</span> <span class="fu">naiveBayes</span>(X<span class="fl">.17</span>, Y<span class="fl">.17</span>)</span>
+<span id="cb442-7"><a href="the-digits-recognition-example.html#cb442-7" tabindex="-1"></a></span>
+<span id="cb442-8"><a href="the-digits-recognition-example.html#cb442-8" tabindex="-1"></a>y_pred <span class="ot">=</span> <span class="fu">predict</span>(NBfit, zip17.test)</span>
+<span id="cb442-9"><a href="the-digits-recognition-example.html#cb442-9" tabindex="-1"></a>accuracy <span class="ot">=</span> <span class="fu">mean</span>(y_pred <span class="sc">==</span> zip17.test[,<span class="dv">1</span>])</span>
+<span id="cb442-10"><a href="the-digits-recognition-example.html#cb442-10" tabindex="-1"></a></span>
+<span id="cb442-11"><a href="the-digits-recognition-example.html#cb442-11" tabindex="-1"></a><span class="fu">table</span>(<span class="at">Predicted =</span> y_pred, <span class="at">Actual =</span> zip17.test[,<span class="dv">1</span>])</span></code></pre></div>
+<pre><code>##          Actual
+## Predicted  1  7
+##         1 22  0
+##         7  3 23</code></pre>
+
+</div>
+</div>
+<!-- </div> -->
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="naive-bayes-classifiers.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="logistic-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans serif",
+    "size": 1
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/06-classification.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["my-598PSL.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection",
+    "toc_depth": 4,
+    "toc_float": true,
+    "scroll_highlight": true
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
