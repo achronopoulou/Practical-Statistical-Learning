@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandra Chronopoulou" />
 
 
-<meta name="date" content="2025-09-10" />
+<meta name="date" content="2025-09-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -507,17 +507,17 @@ Generate <span class="math inline">\(N\)</span> <em>test</em> samples in a simil
 <span id="cb6-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb6-17" tabindex="-1"></a></span>
 <span id="cb6-18"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb6-18" tabindex="-1"></a><span class="fu">cbind</span>(train.err.knn, test.err.knn)    <span class="do">## matrix containing the train and test errors</span></span></code></pre></div>
 <pre><code>##       train.err.knn test.err.knn
-##  [1,]         0.220      0.24200
-##  [2,]         0.215      0.24695
-##  [3,]         0.215      0.25050
-##  [4,]         0.235      0.25640
-##  [5,]         0.230      0.25110
-##  [6,]         0.210      0.25485
-##  [7,]         0.195      0.26420
-##  [8,]         0.200      0.26940
-##  [9,]         0.185      0.27080
-## [10,]         0.150      0.28785
-## [11,]         0.000      0.32880</code></pre>
+##  [1,]         0.250      0.23925
+##  [2,]         0.255      0.23855
+##  [3,]         0.265      0.24110
+##  [4,]         0.260      0.24440
+##  [5,]         0.270      0.24465
+##  [6,]         0.280      0.24780
+##  [7,]         0.250      0.25545
+##  [8,]         0.240      0.25835
+##  [9,]         0.235      0.26670
+## [10,]         0.190      0.28470
+## [11,]         0.000      0.32095</code></pre>
 <p><br></p>
 </div>
 <div id="fold-cross-validation-for-choosing-optimal-k" class="section level4 hasAnchor" number="1.5.4.7">
@@ -580,15 +580,15 @@ We run a regression of <code>Ytrain</code> vs. the <code>traindata</code>, and 
 <pre><code>##       Ytrain_pred_LS
 ## Ytrain  0  1
 ##      0 75 25
-##      1 16 84</code></pre>
+##      1 26 74</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-1" tabindex="-1"></a>train.err.LS <span class="ot">=</span> <span class="fu">sum</span>(Ytrain <span class="sc">!=</span>  Ytrain_pred_LS) <span class="sc">/</span> (<span class="dv">2</span><span class="sc">*</span>n);  </span>
 <span id="cb11-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-2" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-3" tabindex="-1"></a><span class="do">## Cross-tab for test data and test error</span></span>
 <span id="cb11-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-4" tabindex="-1"></a><span class="fu">table</span>(Ytest, Ytest_pred_LS);     </span></code></pre></div>
 <pre><code>##      Ytest_pred_LS
 ## Ytest    0    1
-##     0 7790 2210
-##     1 2798 7202</code></pre>
+##     0 7502 2498
+##     1 2274 7726</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb13-1" tabindex="-1"></a>test.err.LS <span class="ot">=</span> <span class="fu">sum</span>(Ytest <span class="sc">!=</span>  Ytest_pred_LS) <span class="sc">/</span> (<span class="dv">2</span><span class="sc">*</span>N);</span></code></pre></div>
 <br>
 <hr>

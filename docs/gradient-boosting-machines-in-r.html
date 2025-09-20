@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandra Chronopoulou" />
 
 
-<meta name="date" content="2025-09-10" />
+<meta name="date" content="2025-09-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -298,12 +298,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p><code>cv.folds</code>: number of folds for cross-validation (default = 0 - i.e. no cv error returned)</p></li>
 <li><p><code>interaction.depth</code>: depth of individual trees (default = 1)</p></li>
 </ul>
-<div class="sourceCode" id="cb388"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb388-1"><a href="gradient-boosting-machines-in-r.html#cb388-1" tabindex="-1"></a><span class="fu">library</span>(gbm)</span></code></pre></div>
+<div class="sourceCode" id="cb396"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb396-1"><a href="gradient-boosting-machines-in-r.html#cb396-1" tabindex="-1"></a><span class="fu">library</span>(gbm)</span></code></pre></div>
+<pre><code>## Loaded gbm 2.2.2</code></pre>
+<pre><code>## This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3</code></pre>
 <p>Fitting a GBM:<br></p>
-<div class="sourceCode" id="cb389"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb389-1"><a href="gradient-boosting-machines-in-r.html#cb389-1" tabindex="-1"></a>gbm.wines <span class="ot">=</span> <span class="fu">gbm</span>(quality <span class="sc">~</span> ., <span class="at">data=</span>whitewines[<span class="sc">-</span>test.id, ], <span class="at">distribution =</span> <span class="st">&quot;gaussian&quot;</span>,</span>
-<span id="cb389-2"><a href="gradient-boosting-machines-in-r.html#cb389-2" tabindex="-1"></a>                <span class="at">n.trees =</span> <span class="dv">100</span>, <span class="at">shrinkage =</span> <span class="dv">1</span>, <span class="at">interaction.depth =</span> <span class="dv">3</span>, <span class="at">bag.fraction =</span> <span class="dv">1</span>,</span>
-<span id="cb389-3"><a href="gradient-boosting-machines-in-r.html#cb389-3" tabindex="-1"></a>                <span class="at">cv.folds =</span> <span class="dv">5</span>)</span>
-<span id="cb389-4"><a href="gradient-boosting-machines-in-r.html#cb389-4" tabindex="-1"></a>gbm.wines</span></code></pre></div>
+<div class="sourceCode" id="cb399"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb399-1"><a href="gradient-boosting-machines-in-r.html#cb399-1" tabindex="-1"></a>gbm.wines <span class="ot">=</span> <span class="fu">gbm</span>(quality <span class="sc">~</span> ., <span class="at">data=</span>whitewines[<span class="sc">-</span>test.id, ], <span class="at">distribution =</span> <span class="st">&quot;gaussian&quot;</span>,</span>
+<span id="cb399-2"><a href="gradient-boosting-machines-in-r.html#cb399-2" tabindex="-1"></a>                <span class="at">n.trees =</span> <span class="dv">100</span>, <span class="at">shrinkage =</span> <span class="dv">1</span>, <span class="at">interaction.depth =</span> <span class="dv">3</span>, <span class="at">bag.fraction =</span> <span class="dv">1</span>,</span>
+<span id="cb399-3"><a href="gradient-boosting-machines-in-r.html#cb399-3" tabindex="-1"></a>                <span class="at">cv.folds =</span> <span class="dv">5</span>)</span>
+<span id="cb399-4"><a href="gradient-boosting-machines-in-r.html#cb399-4" tabindex="-1"></a>gbm.wines</span></code></pre></div>
 <pre><code>## gbm(formula = quality ~ ., distribution = &quot;gaussian&quot;, data = whitewines[-test.id, 
 ##     ], n.trees = 100, interaction.depth = 3, shrinkage = 1, bag.fraction = 1, 
 ##     cv.folds = 5)
@@ -313,38 +315,38 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## There were 11 predictors of which 11 had non-zero influence.</code></pre>
 <p><br>
 We plot the CV error to find the optimal number of trees to prevent overfitting:</p>
-<div class="sourceCode" id="cb391"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb391-1"><a href="gradient-boosting-machines-in-r.html#cb391-1" tabindex="-1"></a>opt.size <span class="ot">=</span> <span class="fu">gbm.perf</span>(gbm.wines)</span></code></pre></div>
+<div class="sourceCode" id="cb401"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb401-1"><a href="gradient-boosting-machines-in-r.html#cb401-1" tabindex="-1"></a>opt.size <span class="ot">=</span> <span class="fu">gbm.perf</span>(gbm.wines)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-190-1.png" width="672" /></p>
 <p>We can also evaluate the model’s performance on the test data against the number of trees.</p>
-<div class="sourceCode" id="cb392"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb392-1"><a href="gradient-boosting-machines-in-r.html#cb392-1" tabindex="-1"></a>size <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span>gbm.wines<span class="sc">$</span>n.trees</span>
-<span id="cb392-2"><a href="gradient-boosting-machines-in-r.html#cb392-2" tabindex="-1"></a>test.err <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(size))</span>
-<span id="cb392-3"><a href="gradient-boosting-machines-in-r.html#cb392-3" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(size)){</span>
-<span id="cb392-4"><a href="gradient-boosting-machines-in-r.html#cb392-4" tabindex="-1"></a>    y.pred <span class="ot">=</span> <span class="fu">predict</span>(gbm.wines, whitewines[test.id, ], <span class="at">n.trees =</span> size[i])</span>
-<span id="cb392-5"><a href="gradient-boosting-machines-in-r.html#cb392-5" tabindex="-1"></a>    test.err[i] <span class="ot">=</span> <span class="fu">sum</span>((whitewines<span class="sc">$</span>quality[test.id] <span class="sc">-</span> y.pred)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb392-6"><a href="gradient-boosting-machines-in-r.html#cb392-6" tabindex="-1"></a>}    </span>
-<span id="cb392-7"><a href="gradient-boosting-machines-in-r.html#cb392-7" tabindex="-1"></a><span class="fu">plot</span>(test.err, <span class="at">type =</span> <span class="st">&quot;n&quot;</span>)</span>
-<span id="cb392-8"><a href="gradient-boosting-machines-in-r.html#cb392-8" tabindex="-1"></a><span class="fu">lines</span>(size, test.err, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb392-9"><a href="gradient-boosting-machines-in-r.html#cb392-9" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> opt.size, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb402"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb402-1"><a href="gradient-boosting-machines-in-r.html#cb402-1" tabindex="-1"></a>size <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span>gbm.wines<span class="sc">$</span>n.trees</span>
+<span id="cb402-2"><a href="gradient-boosting-machines-in-r.html#cb402-2" tabindex="-1"></a>test.err <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(size))</span>
+<span id="cb402-3"><a href="gradient-boosting-machines-in-r.html#cb402-3" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(size)){</span>
+<span id="cb402-4"><a href="gradient-boosting-machines-in-r.html#cb402-4" tabindex="-1"></a>    y.pred <span class="ot">=</span> <span class="fu">predict</span>(gbm.wines, whitewines[test.id, ], <span class="at">n.trees =</span> size[i])</span>
+<span id="cb402-5"><a href="gradient-boosting-machines-in-r.html#cb402-5" tabindex="-1"></a>    test.err[i] <span class="ot">=</span> <span class="fu">sum</span>((whitewines<span class="sc">$</span>quality[test.id] <span class="sc">-</span> y.pred)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb402-6"><a href="gradient-boosting-machines-in-r.html#cb402-6" tabindex="-1"></a>}    </span>
+<span id="cb402-7"><a href="gradient-boosting-machines-in-r.html#cb402-7" tabindex="-1"></a><span class="fu">plot</span>(test.err, <span class="at">type =</span> <span class="st">&quot;n&quot;</span>)</span>
+<span id="cb402-8"><a href="gradient-boosting-machines-in-r.html#cb402-8" tabindex="-1"></a><span class="fu">lines</span>(size, test.err, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb402-9"><a href="gradient-boosting-machines-in-r.html#cb402-9" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> opt.size, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-191-1.png" width="672" /></p>
 <p>We can change the tuning parameters and fit a new GBM:</p>
-<div class="sourceCode" id="cb393"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb393-1"><a href="gradient-boosting-machines-in-r.html#cb393-1" tabindex="-1"></a>gbm.wines<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">gbm</span>(quality <span class="sc">~</span> ., <span class="at">data=</span>whitewines[<span class="sc">-</span>test.id, ], <span class="at">distribution =</span> <span class="st">&quot;gaussian&quot;</span>,</span>
-<span id="cb393-2"><a href="gradient-boosting-machines-in-r.html#cb393-2" tabindex="-1"></a>                <span class="at">n.trees =</span> <span class="dv">1000</span>, <span class="at">shrinkage =</span> <span class="fl">0.1</span> , <span class="at">interaction.depth =</span> <span class="dv">3</span>, <span class="at">bag.fraction =</span> <span class="fl">0.5</span>, <span class="at">cv.folds =</span> <span class="dv">5</span>)</span>
-<span id="cb393-3"><a href="gradient-boosting-machines-in-r.html#cb393-3" tabindex="-1"></a></span>
-<span id="cb393-4"><a href="gradient-boosting-machines-in-r.html#cb393-4" tabindex="-1"></a>opt.size<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">gbm.perf</span>(gbm.wines<span class="fl">.2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb403"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb403-1"><a href="gradient-boosting-machines-in-r.html#cb403-1" tabindex="-1"></a>gbm.wines<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">gbm</span>(quality <span class="sc">~</span> ., <span class="at">data=</span>whitewines[<span class="sc">-</span>test.id, ], <span class="at">distribution =</span> <span class="st">&quot;gaussian&quot;</span>,</span>
+<span id="cb403-2"><a href="gradient-boosting-machines-in-r.html#cb403-2" tabindex="-1"></a>                <span class="at">n.trees =</span> <span class="dv">1000</span>, <span class="at">shrinkage =</span> <span class="fl">0.1</span> , <span class="at">interaction.depth =</span> <span class="dv">3</span>, <span class="at">bag.fraction =</span> <span class="fl">0.5</span>, <span class="at">cv.folds =</span> <span class="dv">5</span>)</span>
+<span id="cb403-3"><a href="gradient-boosting-machines-in-r.html#cb403-3" tabindex="-1"></a></span>
+<span id="cb403-4"><a href="gradient-boosting-machines-in-r.html#cb403-4" tabindex="-1"></a>opt.size<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">gbm.perf</span>(gbm.wines<span class="fl">.2</span>)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-192-1.png" width="672" /></p>
-<div class="sourceCode" id="cb394"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb394-1"><a href="gradient-boosting-machines-in-r.html#cb394-1" tabindex="-1"></a>size<span class="fl">.2</span> <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span>gbm.wines<span class="fl">.2</span><span class="sc">$</span>n.trees</span>
-<span id="cb394-2"><a href="gradient-boosting-machines-in-r.html#cb394-2" tabindex="-1"></a>test.err<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(size<span class="fl">.2</span>))</span>
-<span id="cb394-3"><a href="gradient-boosting-machines-in-r.html#cb394-3" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(size<span class="fl">.2</span>)){</span>
-<span id="cb394-4"><a href="gradient-boosting-machines-in-r.html#cb394-4" tabindex="-1"></a>    y.pred<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">predict</span>(gbm.wines<span class="fl">.2</span>, whitewines[test.id, ], <span class="at">n.trees =</span> size<span class="fl">.2</span>[i])</span>
-<span id="cb394-5"><a href="gradient-boosting-machines-in-r.html#cb394-5" tabindex="-1"></a>    test.err<span class="fl">.2</span>[i] <span class="ot">=</span> <span class="fu">sum</span>((whitewines<span class="sc">$</span>quality[test.id] <span class="sc">-</span> y.pred<span class="fl">.2</span>)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb394-6"><a href="gradient-boosting-machines-in-r.html#cb394-6" tabindex="-1"></a>}    </span>
-<span id="cb394-7"><a href="gradient-boosting-machines-in-r.html#cb394-7" tabindex="-1"></a><span class="fu">plot</span>(test.err<span class="fl">.2</span>, <span class="at">type =</span> <span class="st">&quot;n&quot;</span>)</span>
-<span id="cb394-8"><a href="gradient-boosting-machines-in-r.html#cb394-8" tabindex="-1"></a><span class="fu">lines</span>(size<span class="fl">.2</span>, test.err<span class="fl">.2</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb394-9"><a href="gradient-boosting-machines-in-r.html#cb394-9" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> opt.size<span class="fl">.2</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb404"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb404-1"><a href="gradient-boosting-machines-in-r.html#cb404-1" tabindex="-1"></a>size<span class="fl">.2</span> <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span>gbm.wines<span class="fl">.2</span><span class="sc">$</span>n.trees</span>
+<span id="cb404-2"><a href="gradient-boosting-machines-in-r.html#cb404-2" tabindex="-1"></a>test.err<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(size<span class="fl">.2</span>))</span>
+<span id="cb404-3"><a href="gradient-boosting-machines-in-r.html#cb404-3" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(size<span class="fl">.2</span>)){</span>
+<span id="cb404-4"><a href="gradient-boosting-machines-in-r.html#cb404-4" tabindex="-1"></a>    y.pred<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">predict</span>(gbm.wines<span class="fl">.2</span>, whitewines[test.id, ], <span class="at">n.trees =</span> size<span class="fl">.2</span>[i])</span>
+<span id="cb404-5"><a href="gradient-boosting-machines-in-r.html#cb404-5" tabindex="-1"></a>    test.err<span class="fl">.2</span>[i] <span class="ot">=</span> <span class="fu">sum</span>((whitewines<span class="sc">$</span>quality[test.id] <span class="sc">-</span> y.pred<span class="fl">.2</span>)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb404-6"><a href="gradient-boosting-machines-in-r.html#cb404-6" tabindex="-1"></a>}    </span>
+<span id="cb404-7"><a href="gradient-boosting-machines-in-r.html#cb404-7" tabindex="-1"></a><span class="fu">plot</span>(test.err<span class="fl">.2</span>, <span class="at">type =</span> <span class="st">&quot;n&quot;</span>)</span>
+<span id="cb404-8"><a href="gradient-boosting-machines-in-r.html#cb404-8" tabindex="-1"></a><span class="fu">lines</span>(size<span class="fl">.2</span>, test.err<span class="fl">.2</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb404-9"><a href="gradient-boosting-machines-in-r.html#cb404-9" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> opt.size<span class="fl">.2</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-192-2.png" width="672" /></p>
 <p>We can still quantify the variable importance:</p>
-<div class="sourceCode" id="cb395"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb395-1"><a href="gradient-boosting-machines-in-r.html#cb395-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb395-2"><a href="gradient-boosting-machines-in-r.html#cb395-2" tabindex="-1"></a><span class="fu">summary</span>(gbm.wines, <span class="at">cBars =</span> <span class="dv">10</span>, <span class="at">method =</span> relative.influence, <span class="at">las =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb405"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb405-1"><a href="gradient-boosting-machines-in-r.html#cb405-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb405-2"><a href="gradient-boosting-machines-in-r.html#cb405-2" tabindex="-1"></a><span class="fu">summary</span>(gbm.wines, <span class="at">cBars =</span> <span class="dv">10</span>, <span class="at">method =</span> relative.influence, <span class="at">las =</span> <span class="dv">2</span>)</span></code></pre></div>
 <pre><code>##                                       var   rel.inf
 ## alcohol                           alcohol 35.531879
 ## volatile.acidity         volatile.acidity 13.540395
@@ -357,7 +359,7 @@ We plot the CV error to find the optimal number of trees to prevent overfitting:
 ## fixed.acidity               fixed.acidity  3.918535
 ## sulphates                       sulphates  3.871500
 ## citric.acid                   citric.acid  3.522228</code></pre>
-<div class="sourceCode" id="cb397"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb397-1"><a href="gradient-boosting-machines-in-r.html#cb397-1" tabindex="-1"></a><span class="fu">summary</span>(gbm.wines, <span class="at">cBars =</span> <span class="dv">10</span>, <span class="at">method =</span> permutation.test.gbm,  <span class="at">las =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb407"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb407-1"><a href="gradient-boosting-machines-in-r.html#cb407-1" tabindex="-1"></a><span class="fu">summary</span>(gbm.wines, <span class="at">cBars =</span> <span class="dv">10</span>, <span class="at">method =</span> permutation.test.gbm,  <span class="at">las =</span> <span class="dv">2</span>)</span></code></pre></div>
 <p><img src="my-598PSL_files/figure-html/unnamed-chunk-193-1.png" width="672" /></p>
 <pre><code>##                     var   rel.inf
 ## 1        residual.sugar 21.288079
