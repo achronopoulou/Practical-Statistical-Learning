@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>9.1 Splitting Rules in Classification Trees | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="9.1 Splitting Rules in Classification Trees | CS 598 Practical Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="9.1 Splitting Rules in Classification Trees | CS 598 Practical Statistical Learning" />
+  
+  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  
+
+<meta name="author" content="Alexandra Chronopoulou" />
+
+
+<meta name="date" content="2025-10-22" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="classification-trees.html"/>
+<link rel="next" href="random-forests-1.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
+<li class="chapter" data-level="1.5.4" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures"><i class="fa fa-check"></i><b>1.5.4</b> Code for the Examples in the Lectures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>2.1</b> Multiple Linear Regression (MLR) Model</a></li>
+<li class="chapter" data-level="2.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>2.2</b> MLR Model Fitting</a></li>
+<li class="chapter" data-level="2.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>2.3</b> Least-Squares &amp; Normal Equations</a></li>
+<li class="chapter" data-level="2.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>2.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
+<li class="chapter" data-level="2.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>2.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
+<li class="chapter" data-level="2.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>2.6</b> Rank deficiency</a></li>
+<li class="chapter" data-level="2.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>2.7</b> Hypothesis Testing in MLR</a></li>
+<li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
+<li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
+<li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
+<li class="chapter" data-level="2.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Data Set Example</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="training-vs.-testing-errors.html"><a href="training-vs.-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training vs. Testing Errors</a></li>
+<li class="chapter" data-level="3.2" data-path="subset-selection.html"><a href="subset-selection.html"><i class="fa fa-check"></i><b>3.2</b> Subset Selection</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria-based-procedures"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria-based procedures</a></li>
+<li class="chapter" data-level="3.2.2" data-path="subset-selection.html"><a href="subset-selection.html#search-algorithms"><i class="fa fa-check"></i><b>3.2.2</b> Search Algorithms</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html"><i class="fa fa-check"></i><b>3.3</b> Shrinkage Methods</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#ridge-regression-1"><i class="fa fa-check"></i><b>3.4.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.4.2" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#lasso-regression-1"><i class="fa fa-check"></i><b>3.4.2</b> LASSO Regression</a></li>
+<li class="chapter" data-level="3.4.3" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#refit-to-reduce-bias"><i class="fa fa-check"></i><b>3.4.3</b> Refit to Reduce Bias</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
+<ul>
+<li class="chapter" data-level="4.0.1" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html#a-note-on-nonlinearity"><i class="fa fa-check"></i><b>4.0.1</b> A Note on Nonlinearity</a></li>
+<li class="chapter" data-level="4.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html"><i class="fa fa-check"></i><b>4.1</b> Polynomial Regression</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-basis-functions"><i class="fa fa-check"></i><b>4.1.1</b> Polynomial Basis Functions</a></li>
+<li class="chapter" data-level="4.1.2" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-regression-1"><i class="fa fa-check"></i><b>4.1.2</b> Polynomial Regression</a></li>
+<li class="chapter" data-level="4.1.3" data-path="polynomial-regression.html"><a href="polynomial-regression.html#orthogonal-polynomials"><i class="fa fa-check"></i><b>4.1.3</b> Orthogonal Polynomials</a></li>
+<li class="chapter" data-level="4.1.4" data-path="polynomial-regression.html"><a href="polynomial-regression.html#piece-wise-polynomials"><i class="fa fa-check"></i><b>4.1.4</b> Piece-wise Polynomials</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="splines-regression.html"><a href="splines-regression.html"><i class="fa fa-check"></i><b>4.2</b> Splines Regression</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="splines-regression.html"><a href="splines-regression.html#examples-of-cubic-splines-basis"><i class="fa fa-check"></i><b>4.2.1</b> Examples of Cubic Splines Basis</a></li>
+<li class="chapter" data-level="4.2.2" data-path="splines-regression.html"><a href="splines-regression.html#b-splines-basis-functions-in-r"><i class="fa fa-check"></i><b>4.2.2</b> B-Splines Basis Functions in <code>R</code></a></li>
+<li class="chapter" data-level="4.2.3" data-path="splines-regression.html"><a href="splines-regression.html#natural-cubic-splines-ncs"><i class="fa fa-check"></i><b>4.2.3</b> Natural Cubic Splines (NCS)</a></li>
+<li class="chapter" data-level="4.2.4" data-path="splines-regression.html"><a href="splines-regression.html#regression-splines"><i class="fa fa-check"></i><b>4.2.4</b> Regression Splines</a></li>
+<li class="chapter" data-level="4.2.5" data-path="splines-regression.html"><a href="splines-regression.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>4.2.5</b> K-Fold Cross-Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="smoothing-splines.html"><a href="smoothing-splines.html"><i class="fa fa-check"></i><b>4.3</b> Smoothing Splines</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="smoothing-splines.html"><a href="smoothing-splines.html#the-roughness-penalty-approach"><i class="fa fa-check"></i><b>4.3.1</b> The Roughness Penalty Approach</a></li>
+<li class="chapter" data-level="4.3.2" data-path="smoothing-splines.html"><a href="smoothing-splines.html#proof"><i class="fa fa-check"></i><b>4.3.2</b> Proof</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
+<li class="chapter" data-level="4.5" data-path="the-birthrates-example-in-r.html"><a href="the-birthrates-example-in-r.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example in R</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="regression-trees.html"><a href="regression-trees.html"><i class="fa fa-check"></i><b>5</b> Regression Trees</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="single-tree-building.html"><a href="single-tree-building.html"><i class="fa fa-check"></i><b>5.1</b> Single-Tree Building</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="single-tree-building.html"><a href="single-tree-building.html#prediction-at-leaf-nodes"><i class="fa fa-check"></i><b>5.1.1</b> Prediction at Leaf Nodes</a></li>
+<li class="chapter" data-level="5.1.2" data-path="single-tree-building.html"><a href="single-tree-building.html#split-criterion"><i class="fa fa-check"></i><b>5.1.2</b> Split Criterion</a></li>
+<li class="chapter" data-level="5.1.3" data-path="single-tree-building.html"><a href="single-tree-building.html#single-tree-pruning"><i class="fa fa-check"></i><b>5.1.3</b> Single-Tree Pruning</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="regression-forests.html"><a href="regression-forests.html"><i class="fa fa-check"></i><b>5.2</b> Regression Forests</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="regression-forests.html"><a href="regression-forests.html#weak-and-strong-learners"><i class="fa fa-check"></i><b>5.2.1</b> Weak and Strong Learners</a></li>
+<li class="chapter" data-level="5.2.2" data-path="regression-forests.html"><a href="regression-forests.html#bootstrap-aggregation-bagging"><i class="fa fa-check"></i><b>5.2.2</b> Bootstrap Aggregation (Bagging)</a></li>
+<li class="chapter" data-level="5.2.3" data-path="regression-forests.html"><a href="regression-forests.html#random-forests"><i class="fa fa-check"></i><b>5.2.3</b> Random Forests</a></li>
+<li class="chapter" data-level="5.2.4" data-path="regression-forests.html"><a href="regression-forests.html#out-of-bag-oob-samples"><i class="fa fa-check"></i><b>5.2.4</b> Out-of-Bag (OOB) Samples</a></li>
+<li class="chapter" data-level="5.2.5" data-path="regression-forests.html"><a href="regression-forests.html#boosting-trees"><i class="fa fa-check"></i><b>5.2.5</b> Boosting Trees</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html"><i class="fa fa-check"></i><b>5.3</b> Tree-Based Regression Models in R</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="introduction-to-classification.html"><a href="introduction-to-classification.html"><i class="fa fa-check"></i><b>6</b> Introduction to Classification</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html"><i class="fa fa-check"></i><b>6.1</b> Discriminant Analysis</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#quadratic-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.1</b> Quadratic Discriminant Analysis</a></li>
+<li class="chapter" data-level="6.1.2" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#linear-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.2</b> Linear Discriminant Analysis</a></li>
+<li class="chapter" data-level="6.1.3" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#reduced-rank-lda"><i class="fa fa-check"></i><b>6.1.3</b> Reduced Rank LDA</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="fisher-discriminant-analysis-fda.html"><a href="fisher-discriminant-analysis-fda.html"><i class="fa fa-check"></i><b>6.2</b> Fisher Discriminant Analysis (FDA)</a></li>
+<li class="chapter" data-level="6.3" data-path="naive-bayes-classifiers.html"><a href="naive-bayes-classifiers.html"><i class="fa fa-check"></i><b>6.3</b> Naive Bayes Classifiers</a></li>
+<li class="chapter" data-level="6.4" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html"><i class="fa fa-check"></i><b>6.4</b> The <code>Digits</code> Recognition Example</a>
+<ul>
+<li class="chapter" data-level="" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html#naive-bayes-prediction"><i class="fa fa-check"></i>Naive Bayes Prediction</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>7</b> Logistic Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html"><i class="fa fa-check"></i><b>7.1</b> Fitting a Logistic Regression model</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html#maximum-likelihood-approach"><i class="fa fa-check"></i><b>7.1.1</b> Maximum Likelihood Approach</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="logistic-regression-with-separable-data.html"><a href="logistic-regression-with-separable-data.html"><i class="fa fa-check"></i><b>7.2</b> Logistic Regression with Separable Data</a></li>
+<li class="chapter" data-level="7.3" data-path="retrospective-sampling.html"><a href="retrospective-sampling.html"><i class="fa fa-check"></i><b>7.3</b> Retrospective Sampling</a></li>
+<li class="chapter" data-level="7.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html"><i class="fa fa-check"></i><b>7.4</b> Logistic Regression for the <code>Heart</code> dataset in R</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#goodness-of-fit"><i class="fa fa-check"></i><b>7.4.1</b> Goodness-of-Fit</a></li>
+<li class="chapter" data-level="7.4.2" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#variable-selection"><i class="fa fa-check"></i><b>7.4.2</b> Variable Selection</a></li>
+<li class="chapter" data-level="7.4.3" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#penalized-logistic-regression"><i class="fa fa-check"></i><b>7.4.3</b> Penalized Logistic Regression</a></li>
+<li class="chapter" data-level="7.4.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#illustration-of-divergence-of-ml-estimators"><i class="fa fa-check"></i><b>7.4.4</b> Illustration of divergence of ML estimators</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="support-vector-machines.html"><a href="support-vector-machines.html"><i class="fa fa-check"></i><b>8</b> Support Vector Machines</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html"><i class="fa fa-check"></i><b>8.1</b> Linear SVM in Separable Case: <em>Separation Margin</em></a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>8.1.1</b> Maximum-Margin Classifier</a></li>
+<li class="chapter" data-level="8.1.2" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#the-kkt-conditions-from-the-primal-to-the-dual"><i class="fa fa-check"></i><b>8.1.2</b> The KKT Conditions: From the Primal to the Dual</a></li>
+<li class="chapter" data-level="8.1.3" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#solving-the-dual-problem"><i class="fa fa-check"></i><b>8.1.3</b> Solving the Dual Problem</a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="linear-svm-in-non-separable-case-slack-variables.html"><a href="linear-svm-in-non-separable-case-slack-variables.html"><i class="fa fa-check"></i><b>8.2</b> Linear SVM in non-Separable Case: <em>Slack Variables</em></a></li>
+<li class="chapter" data-level="8.3" data-path="non-linear-svm-the-kernel-trick.html"><a href="non-linear-svm-the-kernel-trick.html"><i class="fa fa-check"></i><b>8.3</b> Non-linear SVM: <em>The Kernel Trick</em></a></li>
+<li class="chapter" data-level="8.4" data-path="svm-as-a-penalization-method.html"><a href="svm-as-a-penalization-method.html"><i class="fa fa-check"></i><b>8.4</b> SVM as a Penalization Method</a></li>
+<li class="chapter" data-level="8.5" data-path="svm-examples-in-r.html"><a href="svm-examples-in-r.html"><i class="fa fa-check"></i><b>8.5</b> SVM Examples in R</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="classification-trees.html"><a href="classification-trees.html"><i class="fa fa-check"></i><b>9</b> Classification Trees</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html"><i class="fa fa-check"></i><b>9.1</b> Splitting Rules in Classification Trees</a>
+<ul>
+<li class="chapter" data-level="9.1.1" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html#impurity-measures"><i class="fa fa-check"></i><b>9.1.1</b> Impurity Measures</a></li>
+<li class="chapter" data-level="" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html#splitting-rules-categorical-predictors"><i class="fa fa-check"></i>Splitting Rules: Categorical Predictors</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="random-forests-1.html"><a href="random-forests-1.html"><i class="fa fa-check"></i><b>9.2</b> Random Forests</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="random-forests-1.html"><a href="random-forests-1.html#bagging-predictors-for-classification"><i class="fa fa-check"></i><b>9.2.1</b> Bagging Predictors for Classification</a></li>
+<li class="chapter" data-level="9.2.2" data-path="random-forests-1.html"><a href="random-forests-1.html#random-forests-2"><i class="fa fa-check"></i><b>9.2.2</b> Random Forests</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="boosting.html"><a href="boosting.html"><i class="fa fa-check"></i><b>9.3</b> Boosting</a>
+<ul>
+<li class="chapter" data-level="9.3.1" data-path="boosting.html"><a href="boosting.html#adaboost"><i class="fa fa-check"></i><b>9.3.1</b> AdaBoost</a></li>
+<li class="chapter" data-level="9.3.2" data-path="boosting.html"><a href="boosting.html#training-error-bound"><i class="fa fa-check"></i><b>9.3.2</b> Training Error Bound</a></li>
+<li class="chapter" data-level="9.3.3" data-path="boosting.html"><a href="boosting.html#gradient-boosting-forward-stage-wise-additive-model"><i class="fa fa-check"></i><b>9.3.3</b> Gradient Boosting: Forward Stage-wise Additive Model</a></li>
+<li class="chapter" data-level="9.3.4" data-path="boosting.html"><a href="boosting.html#boosting-in-r"><i class="fa fa-check"></i><b>9.3.4</b> Boosting in R</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="recommender-systems.html"><a href="recommender-systems.html"><i class="fa fa-check"></i><b>10</b> Recommender Systems</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="content-based-methods.html"><a href="content-based-methods.html"><i class="fa fa-check"></i><b>10.1</b> Content-Based Methods</a></li>
+<li class="chapter" data-level="10.2" data-path="collaborative-filtering.html"><a href="collaborative-filtering.html"><i class="fa fa-check"></i><b>10.2</b> Collaborative Filtering</a></li>
+<li class="chapter" data-level="10.3" data-path="latent-factor-model.html"><a href="latent-factor-model.html"><i class="fa fa-check"></i><b>10.3</b> Latent Factor Model</a></li>
+<li class="chapter" data-level="10.4" data-path="challenges-strategies.html"><a href="challenges-strategies.html"><i class="fa fa-check"></i><b>10.4</b> Challenges &amp; Strategies</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="splitting-rules-in-classification-trees" class="section level2 hasAnchor" number="9.1">
+<h2><span class="header-section-number">9.1</span> Splitting Rules in Classification Trees<a href="splitting-rules-in-classification-trees.html#splitting-rules-in-classification-trees" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>To discuss the splitting rule approach in classification trees, let us start with a toy example. Consider <span class="math inline">\(X_1, X_2 \sim Uniform[-1,1]\)</span> and simulate 90% of the observations from Class 1 (blue) points to be within the circle <span class="math inline">\(x^2_1 + x^2_2 &lt;0.75\)</span> while 90% of the observations from Class 2 (orange) to be outside the circle.</p>
+<div class="sourceCode" id="cb480"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb480-1"><a href="splitting-rules-in-classification-trees.html#cb480-1" tabindex="-1"></a><span class="do">## Simulation</span></span>
+<span id="cb480-2"><a href="splitting-rules-in-classification-trees.html#cb480-2" tabindex="-1"></a></span>
+<span id="cb480-3"><a href="splitting-rules-in-classification-trees.html#cb480-3" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb480-4"><a href="splitting-rules-in-classification-trees.html#cb480-4" tabindex="-1"></a></span>
+<span id="cb480-5"><a href="splitting-rules-in-classification-trees.html#cb480-5" tabindex="-1"></a>x1 <span class="ot">=</span> <span class="fu">runif</span>(<span class="dv">500</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb480-6"><a href="splitting-rules-in-classification-trees.html#cb480-6" tabindex="-1"></a>x2 <span class="ot">=</span> <span class="fu">runif</span>(<span class="dv">500</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb480-7"><a href="splitting-rules-in-classification-trees.html#cb480-7" tabindex="-1"></a></span>
+<span id="cb480-8"><a href="splitting-rules-in-classification-trees.html#cb480-8" tabindex="-1"></a>y <span class="ot">=</span> <span class="fu">rbinom</span>(<span class="dv">500</span>, <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fu">ifelse</span>(x1<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> x2<span class="sc">^</span><span class="dv">2</span> <span class="sc">&lt;</span> <span class="fl">0.6</span>, <span class="fl">0.9</span>,</span>
+<span id="cb480-9"><a href="splitting-rules-in-classification-trees.html#cb480-9" tabindex="-1"></a>    <span class="fl">0.1</span>))</span>
+<span id="cb480-10"><a href="splitting-rules-in-classification-trees.html#cb480-10" tabindex="-1"></a></span>
+<span id="cb480-11"><a href="splitting-rules-in-classification-trees.html#cb480-11" tabindex="-1"></a><span class="fu">plot</span>(x1, x2, <span class="at">col =</span> <span class="fu">ifelse</span>(y <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;darkblue&quot;</span>, <span class="st">&quot;darkorange&quot;</span>),</span>
+<span id="cb480-12"><a href="splitting-rules-in-classification-trees.html#cb480-12" tabindex="-1"></a>    <span class="at">pch =</span> <span class="dv">16</span>)</span>
+<span id="cb480-13"><a href="splitting-rules-in-classification-trees.html#cb480-13" tabindex="-1"></a><span class="fu">symbols</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="at">circles =</span> <span class="fu">sqrt</span>(<span class="fl">0.6</span>), <span class="at">add =</span> <span class="cn">TRUE</span>, <span class="at">inches =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb480-14"><a href="splitting-rules-in-classification-trees.html#cb480-14" tabindex="-1"></a>    <span class="at">cex =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-246-1.png" width="672" /></p>
+<p>A classification tree model is recursively splitting the feature space such that eventually each region is dominated by one class.</p>
+<div class="sourceCode" id="cb481"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb481-1"><a href="splitting-rules-in-classification-trees.html#cb481-1" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb481-2"><a href="splitting-rules-in-classification-trees.html#cb481-2" tabindex="-1"></a></span>
+<span id="cb481-3"><a href="splitting-rules-in-classification-trees.html#cb481-3" tabindex="-1"></a>rpart.fit <span class="ot">=</span> <span class="fu">rpart</span>(<span class="fu">as.factor</span>(y) <span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> <span class="fu">data.frame</span>(x1,</span>
+<span id="cb481-4"><a href="splitting-rules-in-classification-trees.html#cb481-4" tabindex="-1"></a>    x2, y))</span>
+<span id="cb481-5"><a href="splitting-rules-in-classification-trees.html#cb481-5" tabindex="-1"></a></span>
+<span id="cb481-6"><a href="splitting-rules-in-classification-trees.html#cb481-6" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="fl">0.5</span>, <span class="dv">4</span>))</span>
+<span id="cb481-7"><a href="splitting-rules-in-classification-trees.html#cb481-7" tabindex="-1"></a><span class="fu">plot</span>(rpart.fit)</span>
+<span id="cb481-8"><a href="splitting-rules-in-classification-trees.html#cb481-8" tabindex="-1"></a><span class="fu">text</span>(rpart.fit)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-247-1.png" width="672" /></p>
+<p>We can also extract the details for the splits:</p>
+<div class="sourceCode" id="cb482"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb482-1"><a href="splitting-rules-in-classification-trees.html#cb482-1" tabindex="-1"></a>rpart.fit<span class="sc">$</span>cptable</span></code></pre></div>
+<pre><code>##           CP nsplit rel error    xerror       xstd
+## 1 0.17040359      0 1.0000000 1.0000000 0.04984280
+## 2 0.14798206      3 0.4843049 0.6816143 0.04612343
+## 3 0.01121076      4 0.3363229 0.4125561 0.03885386
+## 4 0.01000000      7 0.3004484 0.3721973 0.03730931</code></pre>
+<p>We can also prun the tree (as before) and plot it using <code>rpart.plot</code>:</p>
+<div class="sourceCode" id="cb484"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb484-1"><a href="splitting-rules-in-classification-trees.html#cb484-1" tabindex="-1"></a>pruned.tree <span class="ot">=</span> <span class="fu">prune</span>(rpart.fit, <span class="at">cp =</span> <span class="fl">0.041</span>)</span>
+<span id="cb484-2"><a href="splitting-rules-in-classification-trees.html#cb484-2" tabindex="-1"></a><span class="fu">rpart.plot</span>(pruned.tree, <span class="at">type =</span> <span class="dv">2</span>, <span class="at">extra =</span> <span class="dv">104</span>, <span class="at">fallen.leaves =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-249-1.png" width="672" /></p>
+<p>In a tree model, as we discussed before, the splitting mechanism compares all possible splits on all variables. At the current node, go through each variable to find the <strong>best cut-off point</strong> that splits the node. We then compare all the best cut-off points across all variable and choose the best one to split the current node and then iterate.</p>
+<p>Specifically in classification trees, splitting of continuous predictors are in the form of <span class="math inline">\(\mathbf{1}_{\left \{X^{(j)} \leq c \right \}}\)</span>. So, in a binary splitting rule for a node <span class="math inline">\(\mathcal{T}\)</span> will be split into two children nodes. Then, we evaluate the overall <font color=darkblue><strong>impurity</strong></font> of <span class="math inline">\(\mathcal{T}\)</span>, assuming that there are <span class="math inline">\(K\)</span> different classes of the outcome.We check the gain of the impurity measure and pick the one that leads to a <font color=blue>large (the largest) reduction in the measure</font>.</p>
+<p>So, the question that arises is what error criterion should we use to compare different cut-off points? There are at least three of them:</p>
+<div class="motivationbox">
+<ul>
+<li><p>Gini impurity (CART)</p></li>
+<li><p>Shannon entropy (C4.5)</p></li>
+<li><p>Mis-classification error</p></li>
+</ul>
+</div>
+<p><br><br></p>
+<div id="impurity-measures" class="section level3 hasAnchor" number="9.1.1">
+<h3><span class="header-section-number">9.1.1</span> Impurity Measures<a href="splitting-rules-in-classification-trees.html#impurity-measures" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>To decide which variable to choose, we need to quantify the <strong><font color=blue>gain</font></strong> of an impurity measure. Therefore, the process that we described before (of how we choose the variable and splitting rule) can be formulated as the <strong>gain of an impurity measure</strong> in the following way
+<font color=darkblue><span class="math display">\[\Phi(j,s) = i(t) - \Bigl( p_R \cdot i(t_R) +  p_L \cdot i(t_L)  \Bigr)\]</span></font>
+where
+<span class="math display">\[i(t) = I \Bigl( \hat{p_t}(1), \ldots, \hat{p}_{t}(K) \Bigr),\]</span>
+with <span class="math inline">\(I(\ldots)\)</span> an impurity measure and <span class="math inline">\(\hat{p_t}(j)\)</span> the frequency of class <span class="math inline">\(j\)</span> at node <span class="math inline">\(t\)</span>. So, we pick the split <span class="math inline">\((j, s)\)</span> that leads to the <em><font color=blue>largest reduction in the impurity measure</font></em>.</p>
+<p>Assume we propose a split <span class="math inline">\(\mathbf{1}_{\left \{X^{(j)}\leq c \right \}}\)</span>, then this separates all subjects in the node into two <em>disjoint parts</em>: <span class="math inline">\(\mathcal{T}_{L}\)</span> and <span class="math inline">\(\mathcal{T}_{R}\)</span>.For each child node, we then evaluate the impurities: <span class="math inline">\(I(\mathcal{T}_{L})\)</span>} and <span class="math inline">\(I(\mathcal{T}_{L})\)</span>}. So, the reduction of impurity using an <strong>Impurity Index</strong> is measured by</p>
+<p><span class="math display">\[\Phi(j,s) = I(\mathcal{T}) - \Biggl(\underbrace{\frac{N_{\mathcal{T}_L}}{N_{\mathcal{T}}}}_{\hat{p}_L} \, I(\mathcal{T}_L) - \underbrace{\frac{N_{\mathcal{T}_R}}{N_{\mathcal{T}}}}_{\hat{p}_R}\,  I(\mathcal{T}_R) \Biggr)\]</span>
+where <span class="math inline">\(N_{\mathcal{T}_L}\)</span>, <span class="math inline">\(N_{\mathcal{T}_R}\)</span>, <span class="math inline">\(N_{\mathcal{T}}\)</span> are the sample sizes for the corresponding nodes. The method goes through all variables <span class="math inline">\(j\)</span> and all cutting points <span class="math inline">\(c\)</span> to find the split with the best score.<br><br></p>
+<p>Let us know define <em>mathematically</em> an impurity measure:
+<br></p>
+<div class="motivationbox">
+<p><strong>Definition: Impurity Measure</strong></p>
+<p>An impurity measure is a function <span class="math inline">\(I(p_1, \ldots, p_K)\)</span> where <span class="math inline">\(p_j \geq 0\)</span> and <span class="math inline">\(\sum_j p_j =1\)</span>, with properties:</p>
+<ol style="list-style-type: lower-alpha">
+<li>maximum occurs at <span class="math inline">\((1/K, \ldots, 1/K)\)</span></li>
+<li>minimum occurs at <span class="math inline">\(p_j=1\)</span> (the purest node)</li>
+<li><span class="math inline">\(I(\ldots)\)</span> is a symmetric function of <span class="math inline">\(p_1, \ldots, p_K\)</span>, i.e. permutation of <span class="math inline">\(p_j\)</span> does not affect <span class="math inline">\(I\)</span>.</li>
+</ol>
+</div>
+<p><br></p>
+<p>The most popular impurity measures in classification are the following:</p>
+<ul>
+<li><p><font color=darkblue><strong>Gini Index (CART)</strong></font>
+<span class="math display">\[\text{Gini}(\mathcal{T}) = \sum_{k=1}^{K} \hat{p_k} (1- \hat{p_k}) = 1 - \sum_{k=1}^{K} \hat{p_k}^2\]</span>
+where <span class="math inline">\(\hat{p_k} = \frac{\sum_i \mathbf{1}_{\{y_i=k\}} \cdot \mathbf{1}_{\{x_i \in \mathcal{T}\}}}{\mathbf{1}_{\{x_i \in \mathcal{T}\}}}\)</span> is within node frequency of class <span class="math inline">\(k\)</span>, and assuming that there are <span class="math inline">\(K\)</span> different classes of the outcome <span class="math inline">\(1, \ldots, K\)</span>.
+<br></p></li>
+<li><p><font color=darkblue><strong>Shannon Entropy (ID3/C4.5)</strong></font>
+<span class="math display">\[\text{Entropy}(\mathcal{T}) = - \sum_{k=1}^{K} \hat{p_k} \log\left( \hat{p_k} \right)\]</span>
+<br></p></li>
+<li><p><font color=darkblue><strong>Misclassification Rate</strong></font>
+<span class="math display">\[\text{Error}(\mathcal{T}) = 1- \max_{k=1,\ldots, K} \hat{p_k}\]</span></p></li>
+</ul>
+<p><br></p>
+<p>If we take the special case where we only have two classes in the response, i.e. <span class="math inline">\(K=2\)</span>, the impurity measures compute as:</p>
+<ul>
+<li>Gini Index: <span class="math inline">\(2p(1-p)\)</span></li>
+<li>Shannon Entropy: <span class="math inline">\(p\log\frac{1}{p} + (1-p) \log \frac{1}{1-p}\)</span></li>
+<li>Misclassification Error/Rate: <span class="math inline">\(\min(p, 1-p)\)</span></li>
+</ul>
+<p>If we plot the three impurity measures, we have:</p>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-251-1.png" width="672" /></p>
+<p>Smaller value of the impurity measure means that the node is more “pure”, hence there is a higher certainty when we predict a new value. The idea of splitting a node is that, we want the two resulting children nodes to contain less variation, in other words that they are <font color=blue>as pure as possible</font>. So, we calculate the error criterion both <em>before</em> and <em>after</em> the split and see which cut-off point gives us the best reduction of error.</p>
+<p>Take the Gini impurity index as an example. For an internal node <span class="math inline">\(\mathcal{T}\)</span>,
+<span class="math display">\[\Phi_{Gini}(j,c) = \text{Gini}(\mathcal{T}) - \Biggl(\frac{N_{\mathcal{T}_L}}{N_{\mathcal{T}}}\, \text{Gini}(\mathcal{T}_L) - \frac{N_{\mathcal{T}_R}}{N_{\mathcal{T}}}\,  \text{Gini}(\mathcal{T}_R) \Biggr)\]</span></p>
+<p>The left child node (<span class="math inline">\(\mathcal{T}_{L}\)</span>) and the right child node (<span class="math inline">\(\mathcal{T}_{R}\)</span>) denote the two children nodes resulted from a potential split on the <span class="math inline">\(j\)</span>th variable at a cut-off point <span class="math inline">\(c\)</span>, such that
+<span class="math display">\[\begin{align*}
+\mathcal{T}_{R} &amp;= \left\{x: x\in \mathcal{T},\, x_j &gt; c \right\}\\
+\mathcal{T}_{L} &amp;= \left\{x: x\in \mathcal{T},\, x_j \leq c \right\}
+\end{align*}\]</span></p>
+<p><span class="math inline">\(\text{Gini}(\mathcal{T})\)</span> calculates the uncertainty of the entire node <span class="math inline">\(\mathcal{T}\)</span>, while the second quantity is a summary of the uncertainty of the two potential children nodes. A larger score indicates a better split, and we may choose the best index <span class="math inline">\(j\)</span> and cut-off point <span class="math inline">\(c\)</span> to proceed
+<font color=darkblue>
+<span class="math display">\[\arg \max_{j,c} \Phi_{Gini}(j,c)\]</span>
+</font></p>
+<p><br><br></p>
+<div id="a-binary-classification-problem-toy-example" class="section level4 unnumbered hasAnchor">
+<h4>A Binary Classification Problem: Toy Example<a href="splitting-rules-in-classification-trees.html#a-binary-classification-problem-toy-example" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Consider the following scenario:</p>
+<p><img src="images/week10/binaryexampletable.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Then, the impurity of the different metrics computes as
+<span class="math display">\[\begin{align*}
+\Phi_{Gini} &amp;= 0.420 - (\frac{3}{10} \cdot 0 + \frac{7}{10} \cdot 0.490) = 0.077\\
+\Phi_{Entropy} &amp;= 0.611 - (\frac{3}{10} \cdot 0 + \frac{7}{10} \cdot 0.683) = 0.133\\
+\Phi_{Error} &amp;=  \frac{3}{10} - (\frac{3}{10} \cdot 0 + \frac{7}{10} \cdot \frac{3}{7}) = 0
+\end{align*}\]</span></p>
+<p>Gini Index and Shannon Entropy are more sensitive to changes in the node probability. They prefer to create more “pure” nodes. Misclassification error can be used for evaluating a tree, but may not be sensitive enough for building the tree. Shannon’s Entropy and Gini Index are strictly concave measures, which implies that the corresponding goodness-of-split measure <span class="math inline">\(\Phi\)</span> is always positive (unless the frequencies in both nodes are the same) which makes them very popular in growing trees.</p>
+<p><br><br></p>
+</div>
+</div>
+<div id="splitting-rules-categorical-predictors" class="section level3 unnumbered hasAnchor">
+<h3>Splitting Rules: Categorical Predictors<a href="splitting-rules-in-classification-trees.html#splitting-rules-categorical-predictors" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>For a categorical predictor <span class="math inline">\(X^{(j)}\)</span> taking values in <span class="math inline">\(\{1, \ldots, M\}\)</span>, we search for a subset <span class="math inline">\(\mathcal{A}\)</span> of <span class="math inline">\(\{1, \ldots, M\}\)</span>, and evaluate the child nodes created by the splitting rule
+<span class="math display">\[1_{\bigl \{X^{(j)} \in A \bigr \}}\]</span></p>
+<p>It is easy to see that there is a maximum of <span class="math inline">\(2^{M-1} -1\)</span>} possible splits which means that when <span class="math inline">\(M\)</span> is too large, this can be computationally intense. Some heuristic methods are used, such as randomly sample a subset of categories to one child node, and compare several random splits.</p>
+<p><br><br></p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="classification-trees.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="random-forests-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans serif",
+    "size": 1
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/09-classificationtrees.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["my-598PSL.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection",
+    "toc_depth": 4,
+    "toc_float": true,
+    "scroll_highlight": true
+  },
+  "title": "CS 598 Practical Statistical Learning"
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

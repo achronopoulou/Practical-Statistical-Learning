@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>9.5 Gradient Boosting | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="9.5 Gradient Boosting | CS 598 Practical Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="9.5 Gradient Boosting | CS 598 Practical Statistical Learning" />
+  
+  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  
+
+<meta name="author" content="Alexandra Chronopoulou" />
+
+
+<meta name="date" content="2025-10-22" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="training-error-bound.html"/>
+<link rel="next" href="recommendation-systems.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
+<li class="chapter" data-level="1.5.4" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures"><i class="fa fa-check"></i><b>1.5.4</b> Code for the Examples in the Lectures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>2.1</b> Multiple Linear Regression (MLR) Model</a></li>
+<li class="chapter" data-level="2.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>2.2</b> MLR Model Fitting</a></li>
+<li class="chapter" data-level="2.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>2.3</b> Least-Squares &amp; Normal Equations</a></li>
+<li class="chapter" data-level="2.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>2.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
+<li class="chapter" data-level="2.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>2.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
+<li class="chapter" data-level="2.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>2.6</b> Rank deficiency</a></li>
+<li class="chapter" data-level="2.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>2.7</b> Hypothesis Testing in MLR</a></li>
+<li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
+<li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
+<li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
+<li class="chapter" data-level="2.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Data Set Example</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="training-vs.-testing-errors.html"><a href="training-vs.-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training vs. Testing Errors</a></li>
+<li class="chapter" data-level="3.2" data-path="subset-selection.html"><a href="subset-selection.html"><i class="fa fa-check"></i><b>3.2</b> Subset Selection</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria-based-procedures"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria-based procedures</a></li>
+<li class="chapter" data-level="3.2.2" data-path="subset-selection.html"><a href="subset-selection.html#search-algorithms"><i class="fa fa-check"></i><b>3.2.2</b> Search Algorithms</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html"><i class="fa fa-check"></i><b>3.3</b> Shrinkage Methods</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#ridge-regression-1"><i class="fa fa-check"></i><b>3.4.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="3.4.2" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#lasso-regression-1"><i class="fa fa-check"></i><b>3.4.2</b> LASSO Regression</a></li>
+<li class="chapter" data-level="3.4.3" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#refit-to-reduce-bias"><i class="fa fa-check"></i><b>3.4.3</b> Refit to Reduce Bias</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
+<ul>
+<li class="chapter" data-level="4.0.1" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html#a-note-on-nonlinearity"><i class="fa fa-check"></i><b>4.0.1</b> A Note on Nonlinearity</a></li>
+<li class="chapter" data-level="4.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html"><i class="fa fa-check"></i><b>4.1</b> Polynomial Regression</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-basis-functions"><i class="fa fa-check"></i><b>4.1.1</b> Polynomial Basis Functions</a></li>
+<li class="chapter" data-level="4.1.2" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-regression-1"><i class="fa fa-check"></i><b>4.1.2</b> Polynomial Regression</a></li>
+<li class="chapter" data-level="4.1.3" data-path="polynomial-regression.html"><a href="polynomial-regression.html#orthogonal-polynomials"><i class="fa fa-check"></i><b>4.1.3</b> Orthogonal Polynomials</a></li>
+<li class="chapter" data-level="4.1.4" data-path="polynomial-regression.html"><a href="polynomial-regression.html#piece-wise-polynomials"><i class="fa fa-check"></i><b>4.1.4</b> Piece-wise Polynomials</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="splines-regression.html"><a href="splines-regression.html"><i class="fa fa-check"></i><b>4.2</b> Splines Regression</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="splines-regression.html"><a href="splines-regression.html#examples-of-cubic-splines-basis"><i class="fa fa-check"></i><b>4.2.1</b> Examples of Cubic Splines Basis</a></li>
+<li class="chapter" data-level="4.2.2" data-path="splines-regression.html"><a href="splines-regression.html#b-splines-basis-functions-in-r"><i class="fa fa-check"></i><b>4.2.2</b> B-Splines Basis Functions in <code>R</code></a></li>
+<li class="chapter" data-level="4.2.3" data-path="splines-regression.html"><a href="splines-regression.html#natural-cubic-splines-ncs"><i class="fa fa-check"></i><b>4.2.3</b> Natural Cubic Splines (NCS)</a></li>
+<li class="chapter" data-level="4.2.4" data-path="splines-regression.html"><a href="splines-regression.html#regression-splines"><i class="fa fa-check"></i><b>4.2.4</b> Regression Splines</a></li>
+<li class="chapter" data-level="4.2.5" data-path="splines-regression.html"><a href="splines-regression.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>4.2.5</b> K-Fold Cross-Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="smoothing-splines.html"><a href="smoothing-splines.html"><i class="fa fa-check"></i><b>4.3</b> Smoothing Splines</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="smoothing-splines.html"><a href="smoothing-splines.html#the-roughness-penalty-approach"><i class="fa fa-check"></i><b>4.3.1</b> The Roughness Penalty Approach</a></li>
+<li class="chapter" data-level="4.3.2" data-path="smoothing-splines.html"><a href="smoothing-splines.html#proof"><i class="fa fa-check"></i><b>4.3.2</b> Proof</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
+<li class="chapter" data-level="4.5" data-path="the-birthrates-example-in-r.html"><a href="the-birthrates-example-in-r.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example in R</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="regression-trees.html"><a href="regression-trees.html"><i class="fa fa-check"></i><b>5</b> Regression Trees</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="single-tree-building.html"><a href="single-tree-building.html"><i class="fa fa-check"></i><b>5.1</b> Single-Tree Building</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="single-tree-building.html"><a href="single-tree-building.html#prediction-at-leaf-nodes"><i class="fa fa-check"></i><b>5.1.1</b> Prediction at Leaf Nodes</a></li>
+<li class="chapter" data-level="5.1.2" data-path="single-tree-building.html"><a href="single-tree-building.html#split-criterion"><i class="fa fa-check"></i><b>5.1.2</b> Split Criterion</a></li>
+<li class="chapter" data-level="5.1.3" data-path="single-tree-building.html"><a href="single-tree-building.html#single-tree-pruning"><i class="fa fa-check"></i><b>5.1.3</b> Single-Tree Pruning</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="regression-forests.html"><a href="regression-forests.html"><i class="fa fa-check"></i><b>5.2</b> Regression Forests</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="regression-forests.html"><a href="regression-forests.html#weak-and-strong-learners"><i class="fa fa-check"></i><b>5.2.1</b> Weak and Strong Learners</a></li>
+<li class="chapter" data-level="5.2.2" data-path="regression-forests.html"><a href="regression-forests.html#bootstrap-aggregation-bagging"><i class="fa fa-check"></i><b>5.2.2</b> Bootstrap Aggregation (Bagging)</a></li>
+<li class="chapter" data-level="5.2.3" data-path="regression-forests.html"><a href="regression-forests.html#random-forests"><i class="fa fa-check"></i><b>5.2.3</b> Random Forests</a></li>
+<li class="chapter" data-level="5.2.4" data-path="regression-forests.html"><a href="regression-forests.html#out-of-bag-oob-samples"><i class="fa fa-check"></i><b>5.2.4</b> Out-of-Bag (OOB) Samples</a></li>
+<li class="chapter" data-level="5.2.5" data-path="regression-forests.html"><a href="regression-forests.html#boosting-trees"><i class="fa fa-check"></i><b>5.2.5</b> Boosting Trees</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html"><i class="fa fa-check"></i><b>5.3</b> Tree-Based Regression Models in R</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="introduction-to-classification.html"><a href="introduction-to-classification.html"><i class="fa fa-check"></i><b>6</b> Introduction to Classification</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html"><i class="fa fa-check"></i><b>6.1</b> Discriminant Analysis</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#quadratic-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.1</b> Quadratic Discriminant Analysis</a></li>
+<li class="chapter" data-level="6.1.2" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#linear-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.2</b> Linear Discriminant Analysis</a></li>
+<li class="chapter" data-level="6.1.3" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#reduced-rank-lda"><i class="fa fa-check"></i><b>6.1.3</b> Reduced Rank LDA</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="fisher-discriminant-analysis-fda.html"><a href="fisher-discriminant-analysis-fda.html"><i class="fa fa-check"></i><b>6.2</b> Fisher Discriminant Analysis (FDA)</a></li>
+<li class="chapter" data-level="6.3" data-path="naive-bayes-classifiers.html"><a href="naive-bayes-classifiers.html"><i class="fa fa-check"></i><b>6.3</b> Naive Bayes Classifiers</a></li>
+<li class="chapter" data-level="6.4" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html"><i class="fa fa-check"></i><b>6.4</b> The <code>Digits</code> Recognition Example</a>
+<ul>
+<li class="chapter" data-level="" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html#naive-bayes-prediction"><i class="fa fa-check"></i>Naive Bayes Prediction</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>7</b> Logistic Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html"><i class="fa fa-check"></i><b>7.1</b> Fitting a Logistic Regression model</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html#maximum-likelihood-approach"><i class="fa fa-check"></i><b>7.1.1</b> Maximum Likelihood Approach</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="logistic-regression-with-separable-data.html"><a href="logistic-regression-with-separable-data.html"><i class="fa fa-check"></i><b>7.2</b> Logistic Regression with Separable Data</a></li>
+<li class="chapter" data-level="7.3" data-path="retrospective-sampling.html"><a href="retrospective-sampling.html"><i class="fa fa-check"></i><b>7.3</b> Retrospective Sampling</a></li>
+<li class="chapter" data-level="7.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html"><i class="fa fa-check"></i><b>7.4</b> Logistic Regression for the <code>Heart</code> dataset in R</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#goodness-of-fit"><i class="fa fa-check"></i><b>7.4.1</b> Goodness-of-Fit</a></li>
+<li class="chapter" data-level="7.4.2" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#variable-selection"><i class="fa fa-check"></i><b>7.4.2</b> Variable Selection</a></li>
+<li class="chapter" data-level="7.4.3" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#penalized-logistic-regression"><i class="fa fa-check"></i><b>7.4.3</b> Penalized Logistic Regression</a></li>
+<li class="chapter" data-level="7.4.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#illustration-of-divergence-of-ml-estimators"><i class="fa fa-check"></i><b>7.4.4</b> Illustration of divergence of ML estimators</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="support-vector-machines.html"><a href="support-vector-machines.html"><i class="fa fa-check"></i><b>8</b> Support Vector Machines</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html"><i class="fa fa-check"></i><b>8.1</b> Linear SVM in Separable Case: <em>Separation Margin</em></a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>8.1.1</b> Maximum-Margin Classifier</a></li>
+<li class="chapter" data-level="8.1.2" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#the-kkt-conditions-from-the-primal-to-the-dual"><i class="fa fa-check"></i><b>8.1.2</b> The KKT Conditions: From the Primal to the Dual</a></li>
+<li class="chapter" data-level="8.1.3" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#solving-the-dual-problem"><i class="fa fa-check"></i><b>8.1.3</b> Solving the Dual Problem</a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="linear-svm-in-non-separable-case-slack-variables.html"><a href="linear-svm-in-non-separable-case-slack-variables.html"><i class="fa fa-check"></i><b>8.2</b> Linear SVM in non-Separable Case: <em>Slack Variables</em></a></li>
+<li class="chapter" data-level="8.3" data-path="non-linear-svm-the-kernel-trick.html"><a href="non-linear-svm-the-kernel-trick.html"><i class="fa fa-check"></i><b>8.3</b> Non-linear SVM: <em>The Kernel Trick</em></a></li>
+<li class="chapter" data-level="8.4" data-path="svm-as-a-penalization-method.html"><a href="svm-as-a-penalization-method.html"><i class="fa fa-check"></i><b>8.4</b> SVM as a Penalization Method</a></li>
+<li class="chapter" data-level="8.5" data-path="svm-examples-in-r.html"><a href="svm-examples-in-r.html"><i class="fa fa-check"></i><b>8.5</b> SVM Examples in R</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="classification-trees.html"><a href="classification-trees.html"><i class="fa fa-check"></i><b>9</b> Classification Trees</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html"><i class="fa fa-check"></i><b>9.1</b> Splitting Rules in Classification Trees</a>
+<ul>
+<li class="chapter" data-level="9.1.1" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html#impurity-measures"><i class="fa fa-check"></i><b>9.1.1</b> Impurity Measures</a></li>
+<li class="chapter" data-level="" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html#splitting-rules-categorical-predictors"><i class="fa fa-check"></i>Splitting Rules: Categorical Predictors</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="random-forests-1.html"><a href="random-forests-1.html"><i class="fa fa-check"></i><b>9.2</b> Random Forests</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="random-forests-1.html"><a href="random-forests-1.html#bagging-predictors-for-classification"><i class="fa fa-check"></i><b>9.2.1</b> Bagging Predictors for Classification</a></li>
+<li class="chapter" data-level="9.2.2" data-path="random-forests-1.html"><a href="random-forests-1.html#random-forests-2"><i class="fa fa-check"></i><b>9.2.2</b> Random Forests</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="boosting.html"><a href="boosting.html"><i class="fa fa-check"></i><b>9.3</b> Boosting</a>
+<ul>
+<li class="chapter" data-level="9.3.1" data-path="boosting.html"><a href="boosting.html#adaboost"><i class="fa fa-check"></i><b>9.3.1</b> AdaBoost</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="training-error-bound.html"><a href="training-error-bound.html"><i class="fa fa-check"></i><b>9.4</b> Training Error Bound</a>
+<ul>
+<li class="chapter" data-level="9.4.1" data-path="training-error-bound.html"><a href="training-error-bound.html#the-training-error"><i class="fa fa-check"></i><b>9.4.1</b> The Training Error</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="gradient-boosting.html"><a href="gradient-boosting.html"><i class="fa fa-check"></i><b>9.5</b> Gradient Boosting</a>
+<ul>
+<li class="chapter" data-level="9.5.1" data-path="gradient-boosting.html"><a href="gradient-boosting.html#gradient-boosting-in-r"><i class="fa fa-check"></i><b>9.5.1</b> Gradient Boosting in R</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="recommendation-systems.html"><a href="recommendation-systems.html"><i class="fa fa-check"></i><b>10</b> Recommendation Systems</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="content-based-methods.html"><a href="content-based-methods.html"><i class="fa fa-check"></i><b>10.1</b> Content-Based Methods</a></li>
+<li class="chapter" data-level="10.2" data-path="collaborative-filtering.html"><a href="collaborative-filtering.html"><i class="fa fa-check"></i><b>10.2</b> Collaborative Filtering</a>
+<ul>
+<li class="chapter" data-level="10.2.1" data-path="collaborative-filtering.html"><a href="collaborative-filtering.html#item-based-collaborative-filtering"><i class="fa fa-check"></i><b>10.2.1</b> Item-Based Collaborative Filtering</a></li>
+</ul></li>
+<li class="chapter" data-level="10.3" data-path="latent-factor-model.html"><a href="latent-factor-model.html"><i class="fa fa-check"></i><b>10.3</b> Latent Factor Model</a>
+<ul>
+<li class="chapter" data-level="10.3.1" data-path="latent-factor-model.html"><a href="latent-factor-model.html#challenges-strategies"><i class="fa fa-check"></i><b>10.3.1</b> Challenges &amp; Strategies</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="gradient-boosting" class="section level2 hasAnchor" number="9.5">
+<h2><span class="header-section-number">9.5</span> Gradient Boosting<a href="gradient-boosting.html#gradient-boosting" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Forward Stage-wise Additive Model</p>
+<p>In a more general framework, consider an additive structure:
+<span class="math display">\[F_T(x) = \sum_{t=1}^{T} \alpha_t f(x; \theta_t)\]</span>
+and fit a model, by minimizing the loss function
+<span class="math display">\[\min_{\{\alpha_t, \theta_t\}_{t=1}^{T}} \sum_{i=1}^{n} L \bigl( y_i, F_T(x_i)\bigr) \]</span></p>
+<p>We may choose a suitable loss function} for the problem; a base learner <span class="math inline">\(f(x;\theta)\)</span> with parameter <span class="math inline">\(\theta\)</span>, such as linear, tree. It is difficult to minimize over all <span class="math inline">\(\{\alpha_t, \theta_t\}_{t=1}^{T}\)</span>, so we do this in a stage-wise fashion.</p>
+<div class="learningbox">
+<p><strong>Algorithm</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>Set <span class="math inline">\(F_0(x)=0\)</span>.</p></li>
+<li><p>For <span class="math inline">\(t=1, \ldots, T\)</span></p></li>
+</ol>
+<ol style="list-style-type: lower-alpha">
+<li>Choose <span class="math inline">\(\{\alpha_t, \theta_t\}\)</span> to minimize the loss
+<span class="math display">\[\min_{\alpha, \theta} \sum_{i=1}^{n} L\Bigl(y_i, F_{t-1}(x_i) + \alpha f(x_i; \theta ) \Bigr)\]</span></li>
+<li>Update <span class="math inline">\(F_t(x) = F_{t-1}(x) + \alpha_t f(x; \theta_t)\)</span>.</li>
+</ol>
+</div>
+<p>AdaBoost is essentially a forward stage-wise approach using exponential loss. It does not pick an optimal <span class="math inline">\(f(x; \theta)\)</span> at each step: the tree model is not optimized, we just need some model that is better than random. Only the step size <span class="math inline">\(\alpha_t\)</span> is optimized at each <span class="math inline">\(t\)</span> given the fitted <span class="math inline">\(f(x; \theta_t)\)</span></p>
+<p>Another example of a forward stage-wise additive model is the <strong>forward stage-wise linear regression</strong>:</p>
+<p>For each step we use a single variable linear model:
+<span class="math display">\[f(x,j) = sign \bigl(Cor(X_j, r) \bigr) X_j\]</span>
+where <span class="math inline">\(r\)</span> is the residual, as <span class="math inline">\(r_i = y_i - F_{t-1}(x_i)\)</span> and <span class="math inline">\(j\)</span> is the index that has the largest absolute correlation with <span class="math inline">\(r\)</span>. Then, we give a very small step size <span class="math inline">\(\alpha_t\)</span>, say, <span class="math inline">\(\alpha_t = 10^{-5}\)</span> and with sign equal to the correlation between <span class="math inline">\(X_j\)</span>. <span class="math inline">\(F_t(x)\)</span> here is almost equivalent to the Lasso solution path (as <span class="math inline">\(t\)</span> changes)</p>
+<p>Alternatively, we can think of <span class="math inline">\(r_i\)</span> as the gradient to the squared-error loss:
+<span class="math display">\[r_{it} = -\Biggl[ \frac{\partial(y_i - F(x_i))^2 }{\partial F(x_i) } \Biggr]_{F(x_i) = F_{t-1}(x_i)}\]</span>
+So, we fit the weak leaner <span class="math inline">\(f_t(x)\)</span> to the residuals, and update the fitted model <span class="math inline">\(F_t\)</span>. This, of course, can be generalized into any loss function <span class="math inline">\(L\)</span>:</p>
+<ul>
+<li><p>At each iteration <span class="math inline">\(t\)</span>, calculate “pseudo-residuals”, i.e., the negative gradient for each observation
+<span class="math display">\[g_{it} = -\Biggl[ \frac{\partial L(y_i, F(x_i)) }{\partial F(x_i) } \Biggr]_{F(x_i) = F_{t-1}(x_i)}\]</span></p></li>
+<li><p>Fit <span class="math inline">\(f_t(x, \theta_t)\)</span> to pseudo-residual <span class="math inline">\(g_{it}\)</span>.</p></li>
+<li><p>Search for a step length
+<span class="math display">\[\alpha_t = \arg \min_{\alpha} \sum_{i=1}^{n} L\Bigl( y_i, \, F_{t-1}(x_i) + \alpha f(x_i;\theta_t) \Bigr )\]</span></p></li>
+<li><p>Update <span class="math inline">\(F_t(x) = F_{t-1}(x) + \alpha_t f(x; \theta_t)\)</span>.</p></li>
+</ul>
+<p>Hence, the only change when modeling different outcomes is to choose the loss function, and derive the pseudo-residuals. For gradient boosting using CART as base classifier, we can make it more sophisticated by optimizing <span class="math inline">\(\alpha_t\)</span> at each terminal node.</p>
+<div id="gradient-boosting-in-r" class="section level3 hasAnchor" number="9.5.1">
+<h3><span class="header-section-number">9.5.1</span> Gradient Boosting in R<a href="gradient-boosting.html#gradient-boosting-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The stage-wise view from forward regression suggests a broader principle: model fitting can be framed as functional gradient descent. Rather than updating a single pre-specified coefficient, we iteratively update the fitted function in the direction of the negative gradient of the loss.</p>
+<p>The following example shows the result of using a tree learner :</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="gradient-boosting.html#cb31-1" tabindex="-1"></a>  <span class="fu">library</span>(gbm)</span>
+<span id="cb31-2"><a href="gradient-boosting.html#cb31-2" tabindex="-1"></a>  </span>
+<span id="cb31-3"><a href="gradient-boosting.html#cb31-3" tabindex="-1"></a>  <span class="co"># a simple regression problem</span></span>
+<span id="cb31-4"><a href="gradient-boosting.html#cb31-4" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.001</span>)</span>
+<span id="cb31-5"><a href="gradient-boosting.html#cb31-5" tabindex="-1"></a>  fx <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="dv">2</span><span class="sc">*</span><span class="fu">sin</span>(<span class="dv">3</span><span class="sc">*</span>pi<span class="sc">*</span>x)</span>
+<span id="cb31-6"><a href="gradient-boosting.html#cb31-6" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">fx</span>(x) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(x))</span>
+<span id="cb31-7"><a href="gradient-boosting.html#cb31-7" tabindex="-1"></a>  </span>
+<span id="cb31-8"><a href="gradient-boosting.html#cb31-8" tabindex="-1"></a>  <span class="fu">plot</span>(x, y, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">ylab =</span> <span class="st">&quot;y&quot;</span>, <span class="at">col =</span> <span class="st">&quot;gray&quot;</span>, <span class="at">cex =</span> <span class="fl">0.5</span>)</span>
+<span id="cb31-9"><a href="gradient-boosting.html#cb31-9" tabindex="-1"></a>  <span class="co"># plot the true regression line</span></span>
+<span id="cb31-10"><a href="gradient-boosting.html#cb31-10" tabindex="-1"></a>  <span class="fu">lines</span>(x, <span class="fu">fx</span>(x), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;deepskyblue&quot;</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>We can see that the fitted model progressively approximates the true function.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="gradient-boosting.html#cb32-1" tabindex="-1"></a>  <span class="co"># fit regression boosting</span></span>
+<span id="cb32-2"><a href="gradient-boosting.html#cb32-2" tabindex="-1"></a>  <span class="co"># (Using a large shrinkage here to visualize stagewise fits; in practice use 0.1 or smaller.)</span></span>
+<span id="cb32-3"><a href="gradient-boosting.html#cb32-3" tabindex="-1"></a>  gbm.fit <span class="ot">&lt;-</span> <span class="fu">gbm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> <span class="fu">data.frame</span>(x, y), <span class="at">distribution =</span> <span class="st">&quot;gaussian&quot;</span>,</span>
+<span id="cb32-4"><a href="gradient-boosting.html#cb32-4" tabindex="-1"></a>                 <span class="at">n.trees =</span> <span class="dv">300</span>, <span class="at">shrinkage =</span> <span class="fl">0.5</span>, <span class="at">bag.fraction =</span> <span class="fl">0.8</span>)</span>
+<span id="cb32-5"><a href="gradient-boosting.html#cb32-5" tabindex="-1"></a>  </span>
+<span id="cb32-6"><a href="gradient-boosting.html#cb32-6" tabindex="-1"></a>  <span class="co"># plot the fitted regression function at several iterations</span></span>
+<span id="cb32-7"><a href="gradient-boosting.html#cb32-7" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>))</span>
+<span id="cb32-8"><a href="gradient-boosting.html#cb32-8" tabindex="-1"></a>  size <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">300</span>)</span>
+<span id="cb32-9"><a href="gradient-boosting.html#cb32-9" tabindex="-1"></a>  </span>
+<span id="cb32-10"><a href="gradient-boosting.html#cb32-10" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>) {</span>
+<span id="cb32-11"><a href="gradient-boosting.html#cb32-11" tabindex="-1"></a>    <span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">1</span>))</span>
+<span id="cb32-12"><a href="gradient-boosting.html#cb32-12" tabindex="-1"></a>    <span class="fu">plot</span>(x, y, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">ylab =</span> <span class="st">&quot;y&quot;</span>, <span class="at">col =</span> <span class="st">&quot;gray&quot;</span>, <span class="at">cex =</span> <span class="fl">0.5</span>)</span>
+<span id="cb32-13"><a href="gradient-boosting.html#cb32-13" tabindex="-1"></a>    <span class="fu">lines</span>(x, <span class="fu">fx</span>(x), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;deepskyblue&quot;</span>)</span>
+<span id="cb32-14"><a href="gradient-boosting.html#cb32-14" tabindex="-1"></a>    <span class="co"># additive score F(x)</span></span>
+<span id="cb32-15"><a href="gradient-boosting.html#cb32-15" tabindex="-1"></a>    Fx <span class="ot">&lt;-</span> <span class="fu">predict</span>(gbm.fit, <span class="at">n.trees =</span> size[i])</span>
+<span id="cb32-16"><a href="gradient-boosting.html#cb32-16" tabindex="-1"></a>    <span class="fu">lines</span>(x, Fx, <span class="at">lwd =</span> <span class="dv">3</span>, <span class="at">col =</span> <span class="st">&quot;darkorange&quot;</span>)</span>
+<span id="cb32-17"><a href="gradient-boosting.html#cb32-17" tabindex="-1"></a>    <span class="fu">title</span>(<span class="fu">paste</span>(<span class="st">&quot;# of Iterations = &quot;</span>, size[i]))</span>
+<span id="cb32-18"><a href="gradient-boosting.html#cb32-18" tabindex="-1"></a>}</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><br><br></p>
+<div id="xgboost" class="section level4 unnumbered hasAnchor">
+<h4>xgboost<a href="gradient-boosting.html#xgboost" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>xgboost (Chen and Guestrin 2016) is a popular and efficient implementation of gradient boosting that supports various loss functions and regularization techniques. It is widely used in machine learning competitions and real-world applications due to its speed and performance.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="gradient-boosting.html#cb33-1" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">2025</span>)</span>
+<span id="cb33-2"><a href="gradient-boosting.html#cb33-2" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
+<span id="cb33-3"><a href="gradient-boosting.html#cb33-3" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="dv">15</span></span>
+<span id="cb33-4"><a href="gradient-boosting.html#cb33-4" tabindex="-1"></a>  X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n<span class="sc">*</span>p), n, p)</span>
+<span id="cb33-5"><a href="gradient-boosting.html#cb33-5" tabindex="-1"></a>  f_true <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="dv">2</span><span class="sc">*</span><span class="fu">sin</span>(x[,<span class="dv">1</span>]) <span class="sc">+</span> <span class="fl">0.5</span><span class="sc">*</span>x[,<span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> <span class="fl">1.5</span><span class="sc">*</span>(x[,<span class="dv">3</span>]<span class="sc">&gt;</span><span class="dv">0</span>)</span>
+<span id="cb33-6"><a href="gradient-boosting.html#cb33-6" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">f_true</span>(X) <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb33-7"><a href="gradient-boosting.html#cb33-7" tabindex="-1"></a>  </span>
+<span id="cb33-8"><a href="gradient-boosting.html#cb33-8" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">sample.int</span>(n, <span class="fu">floor</span>(<span class="fl">0.7</span><span class="sc">*</span>n))</span>
+<span id="cb33-9"><a href="gradient-boosting.html#cb33-9" tabindex="-1"></a>  dtrain <span class="ot">&lt;-</span> xgboost<span class="sc">::</span><span class="fu">xgb.DMatrix</span>(X[idx,], <span class="at">label =</span> y[idx])</span>
+<span id="cb33-10"><a href="gradient-boosting.html#cb33-10" tabindex="-1"></a>  dvalid <span class="ot">&lt;-</span> xgboost<span class="sc">::</span><span class="fu">xgb.DMatrix</span>(X[<span class="sc">-</span>idx,], <span class="at">label =</span> y[<span class="sc">-</span>idx])</span>
+<span id="cb33-11"><a href="gradient-boosting.html#cb33-11" tabindex="-1"></a>  </span>
+<span id="cb33-12"><a href="gradient-boosting.html#cb33-12" tabindex="-1"></a>  params <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb33-13"><a href="gradient-boosting.html#cb33-13" tabindex="-1"></a>    <span class="at">objective =</span> <span class="st">&quot;reg:squarederror&quot;</span>,</span>
+<span id="cb33-14"><a href="gradient-boosting.html#cb33-14" tabindex="-1"></a>    <span class="at">eval_metric =</span> <span class="st">&quot;rmse&quot;</span>,</span>
+<span id="cb33-15"><a href="gradient-boosting.html#cb33-15" tabindex="-1"></a>    <span class="at">eta =</span> <span class="fl">0.05</span>,             <span class="co"># shrinkage</span></span>
+<span id="cb33-16"><a href="gradient-boosting.html#cb33-16" tabindex="-1"></a>    <span class="at">max_depth =</span> <span class="dv">4</span>,          <span class="co"># tree depth</span></span>
+<span id="cb33-17"><a href="gradient-boosting.html#cb33-17" tabindex="-1"></a>    <span class="at">subsample =</span> <span class="fl">0.8</span>,        <span class="co"># row subsampling</span></span>
+<span id="cb33-18"><a href="gradient-boosting.html#cb33-18" tabindex="-1"></a>    <span class="at">colsample_bytree =</span> <span class="fl">0.8</span>, <span class="co"># column subsampling</span></span>
+<span id="cb33-19"><a href="gradient-boosting.html#cb33-19" tabindex="-1"></a>    <span class="at">min_child_weight =</span> <span class="dv">5</span>,   <span class="co"># node min hessian-weighted size</span></span>
+<span id="cb33-20"><a href="gradient-boosting.html#cb33-20" tabindex="-1"></a>    <span class="at">lambda =</span> <span class="fl">1.0</span>,           <span class="co"># L2 on leaf weights</span></span>
+<span id="cb33-21"><a href="gradient-boosting.html#cb33-21" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="dv">0</span>               <span class="co"># L1 on leaf weights (optional)</span></span>
+<span id="cb33-22"><a href="gradient-boosting.html#cb33-22" tabindex="-1"></a>  )</span>
+<span id="cb33-23"><a href="gradient-boosting.html#cb33-23" tabindex="-1"></a>  </span>
+<span id="cb33-24"><a href="gradient-boosting.html#cb33-24" tabindex="-1"></a>  watch <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">train =</span> dtrain, <span class="at">valid =</span> dvalid)</span>
+<span id="cb33-25"><a href="gradient-boosting.html#cb33-25" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> xgboost<span class="sc">::</span><span class="fu">xgb.train</span>(</span>
+<span id="cb33-26"><a href="gradient-boosting.html#cb33-26" tabindex="-1"></a>    <span class="at">params =</span> params,</span>
+<span id="cb33-27"><a href="gradient-boosting.html#cb33-27" tabindex="-1"></a>    <span class="at">data =</span> dtrain,</span>
+<span id="cb33-28"><a href="gradient-boosting.html#cb33-28" tabindex="-1"></a>    <span class="at">nrounds =</span> <span class="dv">3000</span>,</span>
+<span id="cb33-29"><a href="gradient-boosting.html#cb33-29" tabindex="-1"></a>    <span class="at">watchlist =</span> watch,</span>
+<span id="cb33-30"><a href="gradient-boosting.html#cb33-30" tabindex="-1"></a>    <span class="at">early_stopping_rounds =</span> <span class="dv">50</span>,</span>
+<span id="cb33-31"><a href="gradient-boosting.html#cb33-31" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="dv">0</span></span>
+<span id="cb33-32"><a href="gradient-boosting.html#cb33-32" tabindex="-1"></a>  )</span>
+<span id="cb33-33"><a href="gradient-boosting.html#cb33-33" tabindex="-1"></a>  </span>
+<span id="cb33-34"><a href="gradient-boosting.html#cb33-34" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Best iteration:&quot;</span>, fit<span class="sc">$</span>best_iteration, </span>
+<span id="cb33-35"><a href="gradient-boosting.html#cb33-35" tabindex="-1"></a>      <span class="st">&quot;  Valid RMSE:&quot;</span>, fit<span class="sc">$</span>best_score, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Best iteration: 114   Valid RMSE: 1.089309</code></pre>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="gradient-boosting.html#cb35-1" tabindex="-1"></a>  <span class="co"># Feature importance (gain-based)</span></span>
+<span id="cb35-2"><a href="gradient-boosting.html#cb35-2" tabindex="-1"></a>  imp <span class="ot">&lt;-</span> xgboost<span class="sc">::</span><span class="fu">xgb.importance</span>(<span class="at">model =</span> fit, <span class="at">feature_names =</span> <span class="fu">paste0</span>(<span class="st">&quot;x&quot;</span>,<span class="dv">1</span><span class="sc">:</span>p))</span>
+<span id="cb35-3"><a href="gradient-boosting.html#cb35-3" tabindex="-1"></a>  <span class="fu">head</span>(imp, <span class="dv">8</span>)</span></code></pre></div>
+<pre><code>##    Feature       Gain      Cover  Frequency
+##     &lt;char&gt;      &lt;num&gt;      &lt;num&gt;      &lt;num&gt;
+## 1:      x1 0.52496002 0.22033565 0.14871256
+## 2:      x2 0.18529614 0.25100189 0.21229637
+## 3:      x3 0.16868985 0.10401314 0.08145034
+## 4:     x11 0.01362980 0.04472336 0.05675250
+## 5:     x14 0.01337181 0.03781700 0.06043090
+## 6:      x9 0.01250684 0.04609835 0.05570152
+## 7:      x4 0.01166632 0.04436425 0.05359958
+## 8:     x15 0.01069085 0.02917928 0.04046243</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="gradient-boosting.html#cb37-1" tabindex="-1"></a>  <span class="co"># Predictions and validation RMSE</span></span>
+<span id="cb37-2"><a href="gradient-boosting.html#cb37-2" tabindex="-1"></a>  pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit, dvalid)</span>
+<span id="cb37-3"><a href="gradient-boosting.html#cb37-3" tabindex="-1"></a>  rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((pred <span class="sc">-</span> y[<span class="sc">-</span>idx])<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb37-4"><a href="gradient-boosting.html#cb37-4" tabindex="-1"></a>  rmse</span></code></pre></div>
+<pre><code>## [1] 1.089309</code></pre>
+
+</div>
+</div>
+</div>
+<!-- </div> -->
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="training-error-bound.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="recommendation-systems.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans serif",
+    "size": 1
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/09-classificationtrees.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["my-598PSL.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection",
+    "toc_depth": 4,
+    "toc_float": true,
+    "scroll_highlight": true
+  },
+  "title": "CS 598 Practical Statistical Learning"
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
