@@ -1,11 +1,3 @@
----
-title: "Introduction to Classification"
-author: "A. Chronopoulou"
-date: "`r Sys.Date()`"
-output: bookdown::gitbook
----
-
-
 # Introduction to Classification
 
 

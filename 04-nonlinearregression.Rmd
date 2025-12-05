@@ -1,11 +1,3 @@
----
-title: "NonLinear Regression"
-author: "A. Chronopoulou"
-date: "`r Sys.Date()`"
-output: bookdown::gitbook
----
-
-
 # NonLinear Regression
 
 As we discussed in the previous sections, a  Multiple Linear Regression model has a set of assumptions on the error terms (normality, homoscedasticity, independence) as well as limitations, such as the linearity assumption.
@@ -848,7 +840,12 @@ i.e.
   
 ## The `Birthrates` Example in R
 
+<br>
 
+The python version of the example below was written by our TA Georgios Avdis and can be found here: <a href="data/week4/W4_RegressionSplines_Python.html"> <b>Python Version of Regression Splines</b> </a>  and 
+<a href="data/week4/W4_SmoothingSplinesPython.html"> <b>Python Version of Smoothing Splines</b> </a>.<br>
+
+<br><br>
 
 The Birthrate data set contains U.S. birth rate data from 1917 to 2003.
 

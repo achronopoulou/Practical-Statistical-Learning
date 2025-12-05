@@ -1,11 +1,3 @@
----
-title: "Logistic Regression"
-author: "A. Chronopoulou"
-date: "`r Sys.Date()`"
-output: bookdown::gitbook
----
-
-
 # Logistic Regression
 
 ```{r setup, include=FALSE}
@@ -18,6 +10,10 @@ In the previous section, we discussed how discriminant analysis models the joint
 <font color=blue>**Logistic Regression**</font> has the advantage of making fewer assumptions about the distribution of the predictors, provides coefficients that can be interpreted in terms of odds ratios, and can be extended to handle multiple classes through multinomial  formulations. Because of its simplicity, interpretability, and solid probabilistic foundation, logistic regression is one of the most widely used methods for classification.
 
 <br>
+
+The python version of the example below was written by our TA Tommy Tang and can be found here: <a href="data/week8/W8_Logistic_python.html"> <b>Python Code for Logistic</b> </a>.<br>
+
+
 
 ## Fitting a Logistic Regression model
  

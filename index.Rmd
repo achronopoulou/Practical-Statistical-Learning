@@ -13,6 +13,8 @@ github-repo: rstudio/bookdown-demo
 
 
 
+
+
 # <font color="darkblue"> Course Information </font>  {-} 
 
 #### <font color="blue"> Course Description </font>  {-} 
@@ -47,3 +49,7 @@ Recommended resources for a statistical approach to machine learning are the fol
 
 <br>
 <p> The detailed syllabus for the course can be found on Coursera.
+
+
+
+

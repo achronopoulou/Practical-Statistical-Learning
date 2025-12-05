@@ -2,6 +2,7 @@ bookdown::gitbook:
   split_by: "section"
   css: style.css
   config:
+    title: "CS 598 Practical Statistical Learning"
     fontsettings:
       theme: white
       family: sans serif

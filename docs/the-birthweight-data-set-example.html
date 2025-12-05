@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandra Chronopoulou" />
 
 
-<meta name="date" content="2025-10-22" />
+<meta name="date" content="2025-12-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -306,6 +306,37 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="10.3" data-path="latent-factor-model.html"><a href="latent-factor-model.html"><i class="fa fa-check"></i><b>10.3</b> Latent Factor Model</a></li>
 <li class="chapter" data-level="10.4" data-path="challenges-strategies.html"><a href="challenges-strategies.html"><i class="fa fa-check"></i><b>10.4</b> Challenges &amp; Strategies</a></li>
 </ul></li>
+<li class="chapter" data-level="11" data-path="clustering-analysis.html"><a href="clustering-analysis.html"><i class="fa fa-check"></i><b>11</b> Clustering Analysis</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="introduction-to-clustering.html"><a href="introduction-to-clustering.html"><i class="fa fa-check"></i><b>11.1</b> Introduction to Clustering</a></li>
+<li class="chapter" data-level="11.2" data-path="k-means-clustering.html"><a href="k-means-clustering.html"><i class="fa fa-check"></i><b>11.2</b> <span class="math inline">\(K\)</span>-means Clustering</a>
+<ul>
+<li class="chapter" data-level="11.2.1" data-path="k-means-clustering.html"><a href="k-means-clustering.html#categorical-variables-in-clustering"><i class="fa fa-check"></i><b>11.2.1</b> Categorical Variables in Clustering</a></li>
+<li class="chapter" data-level="11.2.2" data-path="k-means-clustering.html"><a href="k-means-clustering.html#tuning-k-means-how-to-choose-k"><i class="fa fa-check"></i><b>11.2.2</b> Tuning <span class="math inline">\(K\)</span>-Means: How to Choose <span class="math inline">\(K\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="hierarchical-clustering.html"><a href="hierarchical-clustering.html"><i class="fa fa-check"></i><b>11.3</b> Hierarchical Clustering</a></li>
+<li class="chapter" data-level="11.4" data-path="self-organizing-maps.html"><a href="self-organizing-maps.html"><i class="fa fa-check"></i><b>11.4</b> Self-Organizing Maps</a></li>
+<li class="chapter" data-level="11.5" data-path="spectral-clustering.html"><a href="spectral-clustering.html"><i class="fa fa-check"></i><b>11.5</b> Spectral Clustering</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="latent-structure-models.html"><a href="latent-structure-models.html"><i class="fa fa-check"></i><b>12</b> Latent Structure Models</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="gaussian-mixtures.html"><a href="gaussian-mixtures.html"><i class="fa fa-check"></i><b>12.1</b> Gaussian Mixtures</a></li>
+<li class="chapter" data-level="12.2" data-path="em-algorithm.html"><a href="em-algorithm.html"><i class="fa fa-check"></i><b>12.2</b> EM Algorithm</a>
+<ul>
+<li class="chapter" data-level="" data-path="em-algorithm.html"><a href="em-algorithm.html#connection-with-k-means"><i class="fa fa-check"></i>Connection with <span class="math inline">\(k\)</span>-Means</a></li>
+</ul></li>
+<li class="chapter" data-level="12.3" data-path="em-algorithm-general-framework.html"><a href="em-algorithm-general-framework.html"><i class="fa fa-check"></i><b>12.3</b> EM Algorithm: General Framework</a></li>
+<li class="chapter" data-level="12.4" data-path="the-mm-algorithm.html"><a href="the-mm-algorithm.html"><i class="fa fa-check"></i><b>12.4</b> The MM Algorithm</a>
+<ul>
+<li class="chapter" data-level="12.4.1" data-path="the-mm-algorithm.html"><a href="the-mm-algorithm.html#ascend-property"><i class="fa fa-check"></i><b>12.4.1</b> Ascend Property</a></li>
+</ul></li>
+<li class="chapter" data-level="12.5" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html"><i class="fa fa-check"></i><b>12.5</b> Hidden Markov Models</a>
+<ul>
+<li class="chapter" data-level="12.5.1" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html#em-algorithm-for-hmm-discrete-case"><i class="fa fa-check"></i><b>12.5.1</b> EM Algorithm for HMM (discrete case)</a></li>
+<li class="chapter" data-level="12.5.2" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html#forward-backward-algorithm-for-hmm"><i class="fa fa-check"></i><b>12.5.2</b> Forward-Backward Algorithm for HMM</a></li>
+</ul></li>
+<li class="chapter" data-level="12.6" data-path="inference-on-the-hidden-states-z.html"><a href="inference-on-the-hidden-states-z.html"><i class="fa fa-check"></i><b>12.6</b> Inference on the Hidden States <span class="math inline">\(Z\)</span></a></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -354,20 +385,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb18-2"><a href="the-birthweight-data-set-example.html#cb18-2" tabindex="-1"></a><span class="fu">dim</span>(birthweight)</span></code></pre></div>
 <pre><code>## [1] 42 14</code></pre>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="the-birthweight-data-set-example.html#cb20-1" tabindex="-1"></a><span class="fu">head</span>(birthweight)</span></code></pre></div>
-<pre><code>##     ID Length Birthweight Headcirc Gestation smoker mage mnocig mheight mppwt fage fedyrs
-## 1 1360     56        4.55       34        44      0   20      0     162    57   23     10
-## 2 1016     53        4.32       36        40      0   19      0     171    62   19     12
-## 3  462     58        4.10       39        41      0   35      0     172    58   31     16
-## 4 1187     53        4.07       38        44      0   20      0     174    68   26     14
-## 5  553     54        3.94       37        42      0   24      0     175    66   30     12
-## 6 1636     51        3.93       38        38      0   29      0     165    61   31     16
-##   fnocig fheight
-## 1     35     179
-## 2      0     183
-## 3     25     185
-## 4     25     189
-## 5      0     184
-## 6      0     180</code></pre>
+<pre><code>##     ID Length Birthweight Headcirc Gestation smoker mage mnocig mheight mppwt fage fedyrs fnocig
+## 1 1360     56        4.55       34        44      0   20      0     162    57   23     10     35
+## 2 1016     53        4.32       36        40      0   19      0     171    62   19     12      0
+## 3  462     58        4.10       39        41      0   35      0     172    58   31     16     25
+## 4 1187     53        4.07       38        44      0   20      0     174    68   26     14     25
+## 5  553     54        3.94       37        42      0   24      0     175    66   30     12      0
+## 6 1636     51        3.93       38        38      0   29      0     165    61   31     16      0
+##   fheight
+## 1     179
+## 2     183
+## 3     185
+## 4     189
+## 5     184
+## 6     180</code></pre>
 <p>Since the <code>ID</code> variable is not of interest in our analysis, we won’t use it in our analysis. For convenience can remove it from the data frame we are working with:</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="the-birthweight-data-set-example.html#cb22-1" tabindex="-1"></a>birthweight <span class="ot">=</span> birthweight[, <span class="sc">-</span><span class="dv">1</span>]</span></code></pre></div>
 <p><br><br></p>
@@ -410,13 +441,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><br>
 If we want to check the objects returned by <code>lm</code> and <code>summary(lm...)</code>:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="the-birthweight-data-set-example.html#cb25-1" tabindex="-1"></a><span class="fu">names</span>(birthweight.mlr.full)</span></code></pre></div>
-<pre><code>##  [1] &quot;coefficients&quot;  &quot;residuals&quot;     &quot;effects&quot;       &quot;rank&quot;          &quot;fitted.values&quot;
-##  [6] &quot;assign&quot;        &quot;qr&quot;            &quot;df.residual&quot;   &quot;xlevels&quot;       &quot;call&quot;         
-## [11] &quot;terms&quot;         &quot;model&quot;</code></pre>
+<pre><code>##  [1] &quot;coefficients&quot;  &quot;residuals&quot;     &quot;effects&quot;       &quot;rank&quot;          &quot;fitted.values&quot; &quot;assign&quot;       
+##  [7] &quot;qr&quot;            &quot;df.residual&quot;   &quot;xlevels&quot;       &quot;call&quot;          &quot;terms&quot;         &quot;model&quot;</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="the-birthweight-data-set-example.html#cb27-1" tabindex="-1"></a><span class="fu">names</span>(<span class="fu">summary</span>(birthweight.mlr.full))</span></code></pre></div>
-<pre><code>##  [1] &quot;call&quot;          &quot;terms&quot;         &quot;residuals&quot;     &quot;coefficients&quot;  &quot;aliased&quot;      
-##  [6] &quot;sigma&quot;         &quot;df&quot;            &quot;r.squared&quot;     &quot;adj.r.squared&quot; &quot;fstatistic&quot;   
-## [11] &quot;cov.unscaled&quot;</code></pre>
+<pre><code>##  [1] &quot;call&quot;          &quot;terms&quot;         &quot;residuals&quot;     &quot;coefficients&quot;  &quot;aliased&quot;       &quot;sigma&quot;        
+##  [7] &quot;df&quot;            &quot;r.squared&quot;     &quot;adj.r.squared&quot; &quot;fstatistic&quot;    &quot;cov.unscaled&quot;</code></pre>
 <p><br>
 The design matrix in this example can be extracted using:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="the-birthweight-data-set-example.html#cb29-1" tabindex="-1"></a>design.birthweight <span class="ot">=</span> <span class="fu">model.matrix</span>(birthweight.mlr.full)</span></code></pre></div>
@@ -714,92 +743,92 @@ Let’s fit the model with the age group variable and look at the design matrix:
 <div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="the-birthweight-data-set-example.html#cb73-1" tabindex="-1"></a>birthweight.mlr.categorical <span class="ot">=</span> <span class="fu">lm</span>(Birthweight <span class="sc">~</span> ., <span class="at">data =</span> birthweight.new[,</span>
 <span id="cb73-2"><a href="the-birthweight-data-set-example.html#cb73-2" tabindex="-1"></a>    <span class="sc">-</span><span class="dv">6</span>])</span>
 <span id="cb73-3"><a href="the-birthweight-data-set-example.html#cb73-3" tabindex="-1"></a><span class="fu">model.matrix</span>(birthweight.mlr.categorical)</span></code></pre></div>
-<pre><code>##    (Intercept) Length Headcirc Gestation smoker mnocig mheight mppwt fage fedyrs fnocig
-## 1            1     56       34        44      0      0     162    57   23     10     35
-## 2            1     53       36        40      0      0     171    62   19     12      0
-## 3            1     58       39        41      0      0     172    58   31     16     25
-## 4            1     53       38        44      0      0     174    68   26     14     25
-## 5            1     54       37        42      0      0     175    66   30     12      0
-## 6            1     51       38        38      0      0     165    61   31     16      0
-## 7            1     52       34        40      0      0     157    50   31     16      0
-## 8            1     53       33        42      0      0     165    61   21     10     25
-## 9            1     54       38        38      0      0     172    50   20     12      7
-## 10           1     50       35        38      0      0     157    48   22     14      0
-## 11           1     53       33        41      0      0     164    62   37     14      0
-## 12           1     51       36        40      0      0     168    53   29     16      0
-## 13           1     52       36        38      0      0     164    57   35     16      0
-## 14           1     53       33        41      0      0     155    55   25     14     25
-## 15           1     53       34        40      0      0     167    60   30     16     25
-## 16           1     48       33        37      0      0     158    54   39     10      0
-## 17           1     48       35        39      0      0     162    62   27     14      0
-## 18           1     48       33        34      0      0     167    64   25     12     25
-## 19           1     53       34        39      0      0     165    57   23     14      2
-## 20           1     43       32        33      0      0     149    45   26     16      0
-## 21           1     53       38        40      1      2     170    59   24     12     12
-## 22           1     51       33        41      1      7     160    53   24     16     12
-## 23           1     50       30        37      1      7     165    60   20     14      0
-## 24           1     50       35        39      1      7     159    52   23     14     25
-## 25           1     48       30        37      1      7     163    47   20     10     35
-## 26           1     46       32        35      1      7     166    57   37     14     25
-## 27           1     48       30        33      1      7     161    50   20     10     35
-## 28           1     58       39        41      1     12     173    70   38     14     25
-## 29           1     53       34        40      1     12     163    49   41     12     50
-## 30           1     49       36        40      1     12     152    48   37     12     25
-## 31           1     52       35        38      1     12     165    64   38     14     50
-## 32           1     51       38        39      1     17     157    48   32     12     25
-## 33           1     50       33        39      1     17     156    53   24     12      7
-## 34           1     50       33        45      1     25     163    54   30     16      0
-## 35           1     52       36        39      1     25     170    78   40     16     50
-## 36           1     53       37        41      1     25     161    66   46     16      0
-## 37           1     52       37        40      1     25     170    62   30     10     25
-## 38           1     52       33        39      1     25     181    69   23     16      2
-## 39           1     49       34        38      1     25     162    57   32     16     50
-## 40           1     53       34        41      1     35     163    51   31     16     25
-## 41           1     47       33        35      1     35     170    57   23     12     50
-## 42           1     53       32        40      1     50     168    61   31     16      0
-##    fheight mage.groupb mage.groupc
-## 1      179           1           0
-## 2      183           0           0
-## 3      185           0           1
-## 4      189           1           0
-## 5      184           1           0
-## 6      180           1           0
-## 7      173           1           0
-## 8      185           1           0
-## 9      172           0           0
-## 10     179           1           0
-## 11     170           1           0
-## 12     181           1           0
-## 13     183           0           1
-## 14     183           1           0
-## 15     182           1           0
-## 16     171           1           0
-## 17     178           1           0
-## 18     175           1           0
-## 19     193           0           0
-## 20     169           1           0
-## 21     185           1           0
-## 22     176           1           0
-## 23     183           0           0
-## 24     200           1           0
-## 25     185           1           0
-## 26     173           0           1
-## 27     180           1           0
-## 28     180           0           1
-## 29     191           0           1
-## 30     170           1           0
-## 31     180           1           0
-## 32     169           1           0
-## 33     179           1           0
-## 34     183           1           0
-## 35     178           1           0
-## 36     175           0           1
-## 37     181           1           0
-## 38     181           1           0
-## 39     194           0           1
-## 40     185           1           0
-## 41     186           1           0
-## 42     173           0           1
+<pre><code>##    (Intercept) Length Headcirc Gestation smoker mnocig mheight mppwt fage fedyrs fnocig fheight
+## 1            1     56       34        44      0      0     162    57   23     10     35     179
+## 2            1     53       36        40      0      0     171    62   19     12      0     183
+## 3            1     58       39        41      0      0     172    58   31     16     25     185
+## 4            1     53       38        44      0      0     174    68   26     14     25     189
+## 5            1     54       37        42      0      0     175    66   30     12      0     184
+## 6            1     51       38        38      0      0     165    61   31     16      0     180
+## 7            1     52       34        40      0      0     157    50   31     16      0     173
+## 8            1     53       33        42      0      0     165    61   21     10     25     185
+## 9            1     54       38        38      0      0     172    50   20     12      7     172
+## 10           1     50       35        38      0      0     157    48   22     14      0     179
+## 11           1     53       33        41      0      0     164    62   37     14      0     170
+## 12           1     51       36        40      0      0     168    53   29     16      0     181
+## 13           1     52       36        38      0      0     164    57   35     16      0     183
+## 14           1     53       33        41      0      0     155    55   25     14     25     183
+## 15           1     53       34        40      0      0     167    60   30     16     25     182
+## 16           1     48       33        37      0      0     158    54   39     10      0     171
+## 17           1     48       35        39      0      0     162    62   27     14      0     178
+## 18           1     48       33        34      0      0     167    64   25     12     25     175
+## 19           1     53       34        39      0      0     165    57   23     14      2     193
+## 20           1     43       32        33      0      0     149    45   26     16      0     169
+## 21           1     53       38        40      1      2     170    59   24     12     12     185
+## 22           1     51       33        41      1      7     160    53   24     16     12     176
+## 23           1     50       30        37      1      7     165    60   20     14      0     183
+## 24           1     50       35        39      1      7     159    52   23     14     25     200
+## 25           1     48       30        37      1      7     163    47   20     10     35     185
+## 26           1     46       32        35      1      7     166    57   37     14     25     173
+## 27           1     48       30        33      1      7     161    50   20     10     35     180
+## 28           1     58       39        41      1     12     173    70   38     14     25     180
+## 29           1     53       34        40      1     12     163    49   41     12     50     191
+## 30           1     49       36        40      1     12     152    48   37     12     25     170
+## 31           1     52       35        38      1     12     165    64   38     14     50     180
+## 32           1     51       38        39      1     17     157    48   32     12     25     169
+## 33           1     50       33        39      1     17     156    53   24     12      7     179
+## 34           1     50       33        45      1     25     163    54   30     16      0     183
+## 35           1     52       36        39      1     25     170    78   40     16     50     178
+## 36           1     53       37        41      1     25     161    66   46     16      0     175
+## 37           1     52       37        40      1     25     170    62   30     10     25     181
+## 38           1     52       33        39      1     25     181    69   23     16      2     181
+## 39           1     49       34        38      1     25     162    57   32     16     50     194
+## 40           1     53       34        41      1     35     163    51   31     16     25     185
+## 41           1     47       33        35      1     35     170    57   23     12     50     186
+## 42           1     53       32        40      1     50     168    61   31     16      0     173
+##    mage.groupb mage.groupc
+## 1            1           0
+## 2            0           0
+## 3            0           1
+## 4            1           0
+## 5            1           0
+## 6            1           0
+## 7            1           0
+## 8            1           0
+## 9            0           0
+## 10           1           0
+## 11           1           0
+## 12           1           0
+## 13           0           1
+## 14           1           0
+## 15           1           0
+## 16           1           0
+## 17           1           0
+## 18           1           0
+## 19           0           0
+## 20           1           0
+## 21           1           0
+## 22           1           0
+## 23           0           0
+## 24           1           0
+## 25           1           0
+## 26           0           1
+## 27           1           0
+## 28           0           1
+## 29           0           1
+## 30           1           0
+## 31           1           0
+## 32           1           0
+## 33           1           0
+## 34           1           0
+## 35           1           0
+## 36           0           1
+## 37           1           0
+## 38           1           0
+## 39           0           1
+## 40           1           0
+## 41           1           0
+## 42           0           1
 ## attr(,&quot;assign&quot;)
 ##  [1]  0  1  2  3  4  5  6  7  8  9 10 11 12 12
 ## attr(,&quot;contrasts&quot;)
@@ -852,8 +881,8 @@ Using the predict function we have:
 <span id="cb81-3"><a href="the-birthweight-data-set-example.html#cb81-3" tabindex="-1"></a></span>
 <span id="cb81-4"><a href="the-birthweight-data-set-example.html#cb81-4" tabindex="-1"></a>train.Y <span class="ot">=</span> birthweight[train.id, <span class="dv">2</span>]</span>
 <span id="cb81-5"><a href="the-birthweight-data-set-example.html#cb81-5" tabindex="-1"></a>train.Y</span></code></pre></div>
-<pre><code>##  [1] 3.14 3.64 2.74 4.32 2.78 3.00 2.66 3.59 4.55 3.41 2.90 2.75 3.55 2.92 3.23 3.32 3.27
-## [18] 3.42 3.03 3.94 3.87 3.19 3.86 3.11 3.18</code></pre>
+<pre><code>##  [1] 3.14 3.64 2.74 4.32 2.78 3.00 2.66 3.59 4.55 3.41 2.90 2.75 3.55 2.92 3.23 3.32 3.27 3.42 3.03
+## [20] 3.94 3.87 3.19 3.86 3.11 3.18</code></pre>
 <div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="the-birthweight-data-set-example.html#cb83-1" tabindex="-1"></a>test.Y <span class="ot">=</span> birthweight[<span class="sc">-</span>train.id, <span class="dv">2</span>]</span>
 <span id="cb83-2"><a href="the-birthweight-data-set-example.html#cb83-2" tabindex="-1"></a>test.Y</span></code></pre></div>
 <pre><code>##  [1] 4.10 4.07 3.93 3.77 3.65 3.63 3.35 3.20 3.15 2.65 2.51 2.37 2.05 1.92 4.57 3.32 3.53</code></pre>
@@ -970,25 +999,19 @@ fixed location in the car in mm
 <div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="the-birthweight-data-set-example.html#cb96-1" tabindex="-1"></a><span class="fu">library</span>(faraway)</span>
 <span id="cb96-2"><a href="the-birthweight-data-set-example.html#cb96-2" tabindex="-1"></a><span class="fu">data</span>(seatpos)</span>
 <span id="cb96-3"><a href="the-birthweight-data-set-example.html#cb96-3" tabindex="-1"></a><span class="fu">attach</span>(seatpos)</span></code></pre></div>
-<pre><code>## The following objects are masked from seatpos (pos = 7):
+<pre><code>## The following objects are masked from seatpos (pos = 3):
 ## 
 ##     Age, Arm, hipcenter, Ht, HtShoes, Leg, Seated, Thigh, Weight</code></pre>
-<pre><code>## The following objects are masked from seatpos (pos = 8):
+<pre><code>## The following objects are masked from seatpos (pos = 4):
 ## 
 ##     Age, Arm, hipcenter, Ht, HtShoes, Leg, Seated, Thigh, Weight</code></pre>
-<pre><code>## The following objects are masked from seatpos (pos = 9):
-## 
-##     Age, Arm, hipcenter, Ht, HtShoes, Leg, Seated, Thigh, Weight</code></pre>
-<pre><code>## The following objects are masked from seatpos (pos = 31):
-## 
-##     Age, Arm, hipcenter, Ht, HtShoes, Leg, Seated, Thigh, Weight</code></pre>
-<pre><code>## The following objects are masked from seatpos (pos = 35):
+<pre><code>## The following objects are masked from seatpos (pos = 22):
 ## 
 ##     Age, Arm, hipcenter, Ht, HtShoes, Leg, Seated, Thigh, Weight</code></pre>
 <p>Let’s start by fitting the <strong>full</strong> model with <code>hipcenter</code> as a response and everything else as a predictor:</p>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="the-birthweight-data-set-example.html#cb102-1" tabindex="-1"></a><span class="co"># Fit the FULL model</span></span>
-<span id="cb102-2"><a href="the-birthweight-data-set-example.html#cb102-2" tabindex="-1"></a>position.full <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> ., seatpos)</span>
-<span id="cb102-3"><a href="the-birthweight-data-set-example.html#cb102-3" tabindex="-1"></a><span class="fu">summary</span>(position.full)</span></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="the-birthweight-data-set-example.html#cb100-1" tabindex="-1"></a><span class="co"># Fit the FULL model</span></span>
+<span id="cb100-2"><a href="the-birthweight-data-set-example.html#cb100-2" tabindex="-1"></a>position.full <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> ., seatpos)</span>
+<span id="cb100-3"><a href="the-birthweight-data-set-example.html#cb100-3" tabindex="-1"></a><span class="fu">summary</span>(position.full)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = hipcenter ~ ., data = seatpos)
@@ -1016,10 +1039,10 @@ fixed location in the car in mm
 ## F-statistic:  7.94 on 8 and 29 DF,  p-value: 1.306e-05</code></pre>
 <p>Note that the <span class="math inline">\(p\)</span>-value of the overall <span class="math inline">\(F\)</span> test is very small (1.306e-05), which means that <em>at least one of the predictors is statistically significant</em>, but at the same time none of the predictors is statistically significant according to the individual <span class="math inline">\(t\)</span> tests. This is strange and definitely a <em>red flag</em> that we may have collinearity issues.</p>
 <p>To investigate the presence of high correlated predictors as well as the linear correlation of the response with each of the predictors, we start by checking the <strong>correlation matrix</strong>:</p>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="the-birthweight-data-set-example.html#cb104-1" tabindex="-1"></a><span class="do">## We use the round function with 2 digits, to round the</span></span>
-<span id="cb104-2"><a href="the-birthweight-data-set-example.html#cb104-2" tabindex="-1"></a><span class="do">## numbers in the output This only affects the printed</span></span>
-<span id="cb104-3"><a href="the-birthweight-data-set-example.html#cb104-3" tabindex="-1"></a><span class="do">## numbers, not the ones R has stored.</span></span>
-<span id="cb104-4"><a href="the-birthweight-data-set-example.html#cb104-4" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cor</span>(seatpos), <span class="at">dig =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="the-birthweight-data-set-example.html#cb102-1" tabindex="-1"></a><span class="do">## We use the round function with 2 digits, to round the</span></span>
+<span id="cb102-2"><a href="the-birthweight-data-set-example.html#cb102-2" tabindex="-1"></a><span class="do">## numbers in the output This only affects the printed</span></span>
+<span id="cb102-3"><a href="the-birthweight-data-set-example.html#cb102-3" tabindex="-1"></a><span class="do">## numbers, not the ones R has stored.</span></span>
+<span id="cb102-4"><a href="the-birthweight-data-set-example.html#cb102-4" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cor</span>(seatpos), <span class="at">dig =</span> <span class="dv">2</span>)</span></code></pre></div>
 <pre><code>##             Age Weight HtShoes    Ht Seated   Arm Thigh   Leg hipcenter
 ## Age        1.00   0.08   -0.08 -0.09  -0.17  0.36  0.09 -0.04      0.21
 ## Weight     0.08   1.00    0.83  0.83   0.78  0.70  0.57  0.78     -0.64
@@ -1032,50 +1055,50 @@ fixed location in the car in mm
 ## hipcenter  0.21  -0.64   -0.80 -0.80  -0.73 -0.59 -0.59 -0.79      1.00</code></pre>
 <p>We observe that the response is <em>highly correlated with most of the variables</em> which justifies the low <span class="math inline">\(p\)</span>-value in the overall <span class="math inline">\(F\)</span> test. However, we have <strong>highly correlated predictors</strong> (e.g. Corr(<code>Leg</code>, <code>HtShoes</code>)=0.91) which means that we will have <em>collinearity.</em></p>
 <p>Let’s look at the <strong>condition number</strong> of the <span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span> matrix. Recall that the condition number is <em>not scale invariant</em>. This implies that calculating it before standardizing the matrix might lead to incorrect conclusions. So, let’s standardize it first:</p>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="the-birthweight-data-set-example.html#cb106-1" tabindex="-1"></a><span class="do">## Extract the design matrix and remove the column of 1s</span></span>
-<span id="cb106-2"><a href="the-birthweight-data-set-example.html#cb106-2" tabindex="-1"></a><span class="do">## that corresponds to the intercept.</span></span>
-<span id="cb106-3"><a href="the-birthweight-data-set-example.html#cb106-3" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">model.matrix</span>(position.full)[, <span class="sc">-</span><span class="dv">1</span>]</span>
-<span id="cb106-4"><a href="the-birthweight-data-set-example.html#cb106-4" tabindex="-1"></a></span>
-<span id="cb106-5"><a href="the-birthweight-data-set-example.html#cb106-5" tabindex="-1"></a><span class="do">## Standardize the matrix</span></span>
-<span id="cb106-6"><a href="the-birthweight-data-set-example.html#cb106-6" tabindex="-1"></a>x <span class="ot">=</span> x <span class="sc">-</span> <span class="fu">matrix</span>(<span class="fu">apply</span>(x, <span class="dv">2</span>, mean), <span class="dv">38</span>, <span class="dv">8</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb106-7"><a href="the-birthweight-data-set-example.html#cb106-7" tabindex="-1"></a>x <span class="ot">=</span> x<span class="sc">/</span><span class="fu">matrix</span>(<span class="fu">apply</span>(x, <span class="dv">2</span>, sd), <span class="dv">38</span>, <span class="dv">8</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb106-8"><a href="the-birthweight-data-set-example.html#cb106-8" tabindex="-1"></a><span class="fu">apply</span>(x, <span class="dv">2</span>, mean)</span></code></pre></div>
-<pre><code>##           Age        Weight       HtShoes            Ht        Seated           Arm 
-## -5.843279e-18  2.534522e-16  9.524545e-16  1.577685e-16 -1.079546e-15 -1.285521e-16 
-##         Thigh           Leg 
-##  9.860533e-17 -1.029878e-16</code></pre>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="the-birthweight-data-set-example.html#cb108-1" tabindex="-1"></a><span class="fu">apply</span>(x, <span class="dv">2</span>, var)</span></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="the-birthweight-data-set-example.html#cb104-1" tabindex="-1"></a><span class="do">## Extract the design matrix and remove the column of 1s</span></span>
+<span id="cb104-2"><a href="the-birthweight-data-set-example.html#cb104-2" tabindex="-1"></a><span class="do">## that corresponds to the intercept.</span></span>
+<span id="cb104-3"><a href="the-birthweight-data-set-example.html#cb104-3" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">model.matrix</span>(position.full)[, <span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb104-4"><a href="the-birthweight-data-set-example.html#cb104-4" tabindex="-1"></a></span>
+<span id="cb104-5"><a href="the-birthweight-data-set-example.html#cb104-5" tabindex="-1"></a><span class="do">## Standardize the matrix</span></span>
+<span id="cb104-6"><a href="the-birthweight-data-set-example.html#cb104-6" tabindex="-1"></a>x <span class="ot">=</span> x <span class="sc">-</span> <span class="fu">matrix</span>(<span class="fu">apply</span>(x, <span class="dv">2</span>, mean), <span class="dv">38</span>, <span class="dv">8</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb104-7"><a href="the-birthweight-data-set-example.html#cb104-7" tabindex="-1"></a>x <span class="ot">=</span> x<span class="sc">/</span><span class="fu">matrix</span>(<span class="fu">apply</span>(x, <span class="dv">2</span>, sd), <span class="dv">38</span>, <span class="dv">8</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb104-8"><a href="the-birthweight-data-set-example.html#cb104-8" tabindex="-1"></a><span class="fu">apply</span>(x, <span class="dv">2</span>, mean)</span></code></pre></div>
+<pre><code>##           Age        Weight       HtShoes            Ht        Seated           Arm         Thigh 
+## -5.843279e-18  2.534522e-16  9.524545e-16  1.577685e-16 -1.079546e-15 -1.285521e-16  9.860533e-17 
+##           Leg 
+## -1.029878e-16</code></pre>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="the-birthweight-data-set-example.html#cb106-1" tabindex="-1"></a><span class="fu">apply</span>(x, <span class="dv">2</span>, var)</span></code></pre></div>
 <pre><code>##     Age  Weight HtShoes      Ht  Seated     Arm   Thigh     Leg 
 ##       1       1       1       1       1       1       1       1</code></pre>
 <p>Compute the condition number using the standardized matrix:</p>
-<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="the-birthweight-data-set-example.html#cb110-1" tabindex="-1"></a><span class="do">## Compute the eigenvalues of the matrix</span></span>
-<span id="cb110-2"><a href="the-birthweight-data-set-example.html#cb110-2" tabindex="-1"></a>eigenvalues.x <span class="ot">=</span> <span class="fu">eigen</span>(<span class="fu">t</span>(x) <span class="sc">%*%</span> x)</span>
-<span id="cb110-3"><a href="the-birthweight-data-set-example.html#cb110-3" tabindex="-1"></a>eigenvalues.x<span class="sc">$</span>val</span></code></pre></div>
-<pre><code>## [1] 209.90786979  45.76108236  17.15850736   8.91545889   7.18612386   5.14944541
-## [7]   1.86274750   0.05876483</code></pre>
-<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="the-birthweight-data-set-example.html#cb112-1" tabindex="-1"></a><span class="do">## Compute the condition number:</span></span>
-<span id="cb112-2"><a href="the-birthweight-data-set-example.html#cb112-2" tabindex="-1"></a><span class="fu">sqrt</span>(eigenvalues.x<span class="sc">$</span>val[<span class="dv">1</span>]<span class="sc">/</span>eigenvalues.x<span class="sc">$</span>val[<span class="dv">8</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="the-birthweight-data-set-example.html#cb108-1" tabindex="-1"></a><span class="do">## Compute the eigenvalues of the matrix</span></span>
+<span id="cb108-2"><a href="the-birthweight-data-set-example.html#cb108-2" tabindex="-1"></a>eigenvalues.x <span class="ot">=</span> <span class="fu">eigen</span>(<span class="fu">t</span>(x) <span class="sc">%*%</span> x)</span>
+<span id="cb108-3"><a href="the-birthweight-data-set-example.html#cb108-3" tabindex="-1"></a>eigenvalues.x<span class="sc">$</span>val</span></code></pre></div>
+<pre><code>## [1] 209.90786979  45.76108236  17.15850736   8.91545889   7.18612386   5.14944541   1.86274750
+## [8]   0.05876483</code></pre>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="the-birthweight-data-set-example.html#cb110-1" tabindex="-1"></a><span class="do">## Compute the condition number:</span></span>
+<span id="cb110-2"><a href="the-birthweight-data-set-example.html#cb110-2" tabindex="-1"></a><span class="fu">sqrt</span>(eigenvalues.x<span class="sc">$</span>val[<span class="dv">1</span>]<span class="sc">/</span>eigenvalues.x<span class="sc">$</span>val[<span class="dv">8</span>])</span></code></pre></div>
 <pre><code>## [1] 59.7662</code></pre>
 <p>The condition number is <strong>59.77</strong>, larger than 30, so we conclude that <em>collinearity is present</em>.</p>
 <p>Let’s also check the <strong>Variance Inflation Factor (VIF)</strong>:</p>
-<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="the-birthweight-data-set-example.html#cb114-1" tabindex="-1"></a><span class="do">## Variance Inflation Factor (VIF)</span></span>
-<span id="cb114-2"><a href="the-birthweight-data-set-example.html#cb114-2" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">vif</span>(x), <span class="at">dig =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="the-birthweight-data-set-example.html#cb112-1" tabindex="-1"></a><span class="do">## Variance Inflation Factor (VIF)</span></span>
+<span id="cb112-2"><a href="the-birthweight-data-set-example.html#cb112-2" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">vif</span>(x), <span class="at">dig =</span> <span class="dv">2</span>)</span></code></pre></div>
 <pre><code>##     Age  Weight HtShoes      Ht  Seated     Arm   Thigh     Leg 
 ##    2.00    3.65  307.43  333.14    8.95    4.50    2.76    6.69</code></pre>
-<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="the-birthweight-data-set-example.html#cb116-1" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fl">307.43</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="the-birthweight-data-set-example.html#cb114-1" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fl">307.43</span>)</span></code></pre></div>
 <pre><code>## [1] 17.53368</code></pre>
 <p>Note that the <em>standard error</em> for the coefficient associated with <code>HtShoes</code> is <strong>17.5 times larger</strong> than it would have been without collinearity.
 <br></p>
 <p>The next step is to <strong>investigate which variable to remove</strong>. To do so, we study the <em>pairwise correlations</em> and perform <em>partial <span class="math inline">\(F\)</span>-tests</em> as follows:
 <br></p>
-<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="the-birthweight-data-set-example.html#cb118-1" tabindex="-1"></a><span class="fu">cor</span>(Seated <span class="sc">+</span> Thigh, Ht)</span></code></pre></div>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="the-birthweight-data-set-example.html#cb116-1" tabindex="-1"></a><span class="fu">cor</span>(Seated <span class="sc">+</span> Thigh, Ht)</span></code></pre></div>
 <pre><code>## [1] 0.9389819</code></pre>
-<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="the-birthweight-data-set-example.html#cb120-1" tabindex="-1"></a><span class="fu">cor</span>(Seated <span class="sc">+</span> Leg, Ht)</span></code></pre></div>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="the-birthweight-data-set-example.html#cb118-1" tabindex="-1"></a><span class="fu">cor</span>(Seated <span class="sc">+</span> Leg, Ht)</span></code></pre></div>
 <pre><code>## [1] 0.965607</code></pre>
-<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="the-birthweight-data-set-example.html#cb122-1" tabindex="-1"></a><span class="fu">cor</span>(Seated <span class="sc">+</span> Arm, Ht)</span></code></pre></div>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="the-birthweight-data-set-example.html#cb120-1" tabindex="-1"></a><span class="fu">cor</span>(Seated <span class="sc">+</span> Arm, Ht)</span></code></pre></div>
 <pre><code>## [1] 0.9465523</code></pre>
-<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="the-birthweight-data-set-example.html#cb124-1" tabindex="-1"></a>position.red1 <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> Age <span class="sc">+</span> Weight <span class="sc">+</span> Ht <span class="sc">+</span> Seated, <span class="at">data =</span> seatpos)</span>
-<span id="cb124-2"><a href="the-birthweight-data-set-example.html#cb124-2" tabindex="-1"></a><span class="fu">summary</span>(position.red1)</span></code></pre></div>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="the-birthweight-data-set-example.html#cb122-1" tabindex="-1"></a>position.red1 <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> Age <span class="sc">+</span> Weight <span class="sc">+</span> Ht <span class="sc">+</span> Seated, <span class="at">data =</span> seatpos)</span>
+<span id="cb122-2"><a href="the-birthweight-data-set-example.html#cb122-2" tabindex="-1"></a><span class="fu">summary</span>(position.red1)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = hipcenter ~ Age + Weight + Ht + Seated, data = seatpos)
@@ -1097,8 +1120,8 @@ fixed location in the car in mm
 ## Residual standard error: 36.83 on 33 degrees of freedom
 ## Multiple R-squared:  0.6599, Adjusted R-squared:  0.6186 
 ## F-statistic: 16.01 on 4 and 33 DF,  p-value: 2.224e-07</code></pre>
-<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="the-birthweight-data-set-example.html#cb126-1" tabindex="-1"></a>position.red2 <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> Ht, <span class="at">data =</span> seatpos)</span>
-<span id="cb126-2"><a href="the-birthweight-data-set-example.html#cb126-2" tabindex="-1"></a><span class="fu">summary</span>(position.red2)</span></code></pre></div>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="the-birthweight-data-set-example.html#cb124-1" tabindex="-1"></a>position.red2 <span class="ot">=</span> <span class="fu">lm</span>(hipcenter <span class="sc">~</span> Ht, <span class="at">data =</span> seatpos)</span>
+<span id="cb124-2"><a href="the-birthweight-data-set-example.html#cb124-2" tabindex="-1"></a><span class="fu">summary</span>(position.red2)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = hipcenter ~ Ht, data = seatpos)
@@ -1117,7 +1140,7 @@ fixed location in the car in mm
 ## Residual standard error: 36.37 on 36 degrees of freedom
 ## Multiple R-squared:  0.6383, Adjusted R-squared:  0.6282 
 ## F-statistic: 63.53 on 1 and 36 DF,  p-value: 1.831e-09</code></pre>
-<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="the-birthweight-data-set-example.html#cb128-1" tabindex="-1"></a><span class="fu">anova</span>(position.red2, position.red1)</span></code></pre></div>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="the-birthweight-data-set-example.html#cb126-1" tabindex="-1"></a><span class="fu">anova</span>(position.red2, position.red1)</span></code></pre></div>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Model 1: hipcenter ~ Ht
