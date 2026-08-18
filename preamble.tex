@@ -1,1 +1,75 @@
-\usepackage{booktabs}
+% ============================================================
+% preamble.tex – for CS 598 Practical Statistical Learning
+% This file is only used when rendering the PDF version
+% ============================================================
+
+\usepackage{microtype}
+\microtypesetup{activate=false}   % optional – silences some warnings
+\usepackage{silence}
+\WarningFilter{mathtools}{For best results}
+\WarningFilter{microtype}{Unable to apply patch}
+
+
+% ----- Better tables -----
+\usepackage{booktabs}          % Professional-looking tables (\toprule, \midrule, \bottomrule)
+
+% ----- Math packages -----
+\RequirePackage{mathtools}          % force early loading
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{bm}
+\usepackage{dsfont}
+
+
+
+% Nice indicator function and blackboard bold
+\usepackage{dsfont}            % \mathds{1} for indicator function
+% \usepackage{bbm}             % alternative: \mathbbm{1}
+
+% ----- Algorithms -----
+\usepackage{algorithm}         % Floating algorithm environment
+\usepackage{algpseudocode}     % Nice pseudocode commands (\Procedure, \State, \If, etc.)
+
+% ----- Figures & graphics -----
+\usepackage{graphicx}          % Including images
+\usepackage{float}             % Allows [H] placement specifier for figures/tables
+\usepackage{subcaption}        % Subfigures and subtables
+
+% ----- Hyperlinks & cross-references -----
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = blue,           % internal links (figures, sections, equations)
+  citecolor  = blue,           % citations
+  urlcolor   = blue,           % external URLs
+  bookmarks  = true
+}
+
+% ----- Lists & spacing -----
+\usepackage{enumitem}          % Better control over itemize/enumerate
+\usepackage{setspace}          % Optional: control line spacing if needed
+
+% ----- Colors (useful for custom boxes or highlighting) -----
+\usepackage{xcolor}
+
+% ----- Page layout (optional – uncomment if you want to change margins) -----
+% \usepackage{geometry}
+% \geometry{margin=1in}
+
+% ============================================================
+% Optional custom commands (examples – add more as you need)
+% ============================================================
+
+
+% Example: shortcut for independent and identically distributed
+\newcommand{\iid}{\overset{\text{iid}}{\sim}}
+
+% Example: argmin / argmax
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% Example: indicator function shortcut
+
+
+\newcommand{\ind}{\mathds{1}}

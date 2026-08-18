@@ -5,51 +5,51 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
 bibliography: [book.bib, packages.bib]
-description: |
-    Lecture notes for  "CS 598 PSL".
+description: "Lecture Notes for CS 598 Practical Statistical Learning."
 link-citations: yes
-github-repo: rstudio/bookdown-demo
+#github-repo: rstudio/bookdown-demo # update this later when put on GitHub with my own info and repo name
 ---
 
 
+# Course Information {-}
 
+<p class="section-title">Course Description</p>
 
+This course provides an introduction to modern techniques for statistical analysis of complex and massive data. Examples of these include model selection for regression, classification, nonparametric models such as splines and kernel models, regularization, dimension reduction, and clustering analysis. Applications are discussed as well as computation and theoretical foundations.
 
-# <font color="darkblue"> Course Information </font>  {-} 
+&nbsp;
 
-#### <font color="blue"> Course Description </font>  {-} 
+<p class="section-title">Course Prerequisites</p>
 
-This course provides an introduction to modern techniques for statistical analysis of complex and massive data. Examples of these include model selection for regression, classification, nonparametric models such as splines and kernel models, regularization, dimension reduction, and clustering analysis. Applications are discussed as well as computation and theoretical foundations. 
+Knowledge of basic multivariate calculus, statistical inference, and linear algebra. You should be comfortable with the following concepts: probability distribution functions, expectations, conditional distributions, likelihood functions, random samples, estimators, and linear regression models.
 
-#### <font color="blue">Course Prerequisites </font>  {-} 
+&nbsp;
 
-Knowledge of basic multivariate calculus, statistical inference, and linear algebra. You should be comfortable with the following concepts: probability distribution functions, expectations, conditional distributions, likelihood functions, random samples, estimators, and linear regression models. 
-
-
-#### <font color="blue"> Course Learning Outcomes </font>  {-} 
+<p class="section-title">Course Learning Outcomes</p>
 
 By the end of the course, you will be able to:
 
-* Use a broad range of methods and techniques in machine learning.
-* Have a deeper understanding of major algorithms and techniques in machine learning.
-* Build analytics pipelines for regression problems.
-* Build analytics pipelines for classification problems.
-* Build analytics pipelines for recommendation problems. 
+- Use a broad range of methods and techniques in machine learning.
+- Have a deeper understanding of major algorithms and techniques in machine learning.
+- Build analytics pipelines for regression problems.
+- Build analytics pipelines for classification problems.
+- Build analytics pipelines for recommendation problems.
 
-#### <font color="blue"> Textbook and Readings </font>  {-} 
+&nbsp;
 
-There is no required textbook for this course. 
+<p class="section-title">Textbook and Readings</p>
 
-Recommended resources for a statistical approach to machine learning are the following textbooks:
+There is no required textbook for this course.
 
-* An Introduction to Statistical Learning with Applications in R (basic)
-* An Introduction to Statistical Learning with Applications in Python (basic)
-* The Elements of Statistical Learning: Data Mining, Inference, and Prediction (more advanced)
-* You may also want to view the  Data School YouTube videos associated with the first book, as an additional resource.  
+Recommended resources for a statistical approach to machine learning are:
 
-<br>
-<p> The detailed syllabus for the course can be found on Coursera.
+- *An Introduction to Statistical Learning with Applications in R* (basic)
+- *An Introduction to Statistical Learning with Applications in Python* (basic)
+- *The Elements of Statistical Learning: Data Mining, Inference, and Prediction* (more advanced)
 
-
+You may also want to view the [Data School YouTube videos](https://www.youtube.com/playlist?list=PL5-da3qGB5IDMEgF2WXqfCG5nfztd8r_n) associated with the first book as an additional resource.
 
 
+&nbsp;
+
+The detailed syllabus for the course can be found on Coursera.

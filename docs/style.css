@@ -1,72 +1,101 @@
-@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lato&family=Mulish:wght@200&display=swap');
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
+/* Main book font */
 .book.font-family-1 {
   font-family: 'Mulish', sans-serif;
-  font-size: 8pt;
- }
-
-
-p.caption {
-  color: #777;
-  margin-top: 8pt;
 }
-p code {
-  white-space: inherit;
+
+/* Body text */
+body {
+  font-family: 'Mulish', sans-serif;
+  font-size: 15px;          /* Much more readable than 6pt */
+  text-align: justify;
+  line-height: 1.6;
 }
+
+/* Code blocks */
+pre, code {
+  font-family: 'Mulish', monospace;   /* or use 'Source Code Pro' / 'Fira Code' if you prefer */
+  font-size: 13px;
+}
+
 pre {
   word-break: normal;
   word-wrap: normal;
-  font-family: 'Mulish';
+  white-space: pre-wrap;
 }
-pre code {
+
+p code {
   white-space: inherit;
 }
 
-
-body {
-  text-align: justify;
-  font-family: Mulish;
-  font-size: 6pt;
+/* Figure captions */
+p.caption {
+  color: #777;
+  margin-top: 10px;
+  font-size: 0.9em;
+  font-style: italic;
 }
 
+/* Custom boxes */
 .learningbox {
   background-color: #FFF2DA;
   color: #5D6D7E;
-  padding: 10px;
-  margin: 20px;
+  padding: 12px 16px;
+  margin: 18px 0;
+  border-left: 5px solid #F5B041;
+  border-radius: 4px;
   text-align: justify;
-  width: 100%;
-  font-family: Mulish;
 }
 
 .motivationbox {
   background-color: #ECF4FF;
   color: #1B4F72;
-  padding: 10px;
-  margin: 20px;
+  padding: 12px 16px;
+  margin: 18px 0;
+  border-left: 5px solid #5DADE2;
+  border-radius: 4px;
   text-align: justify;
-  width: 100%;
-  font-family: Mulish;
 }
 
 .examplebox {
   background-color: #F6FFEA;
   color: #566573;
-  padding: 10px;
-  margin: 20px;
+  padding: 12px 16px;
+  margin: 18px 0;
+  border-left: 5px solid #82E0AA;
+  border-radius: 4px;
   text-align: justify;
-  width: 100%;
-  font-family: Mulish;
 }
-
 
 .solutionbox {
   background-color: #F3F8FE;
   color: #1F3C5F;
-  padding: 10px;
-  margin: 20px;
+  padding: 12px 16px;
+  margin: 18px 0;
+  border-left: 5px solid #5D6D7E;
+  border-radius: 4px;
   text-align: justify;
-  width: 100%;
-  font-family: Mulish;
 }
+
+
+/* Colored headings that do NOT appear in the TOC */
+.course-title {
+  color: darkblue;
+  font-size: 1.6em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.6em;
+}
+
+.section-title {
+  color: #0066cc;          /* nice medium blue */
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1.4em;
+  margin-bottom: 0.5em;
+}
+
+
