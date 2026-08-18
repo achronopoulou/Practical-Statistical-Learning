@@ -1,4 +1,29 @@
-.Rproj.user
+# R / bookdown temporary files
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+
+# Knit leftovers in root
+404.html
+course-information.html
+libs/
+_main*
+my-598PSL.aux
+my-598PSL.tex
+my-598PSL.pdf
+my-598PSL.epub
+
+# macOS system files
+.DS_Store
+
+# RStudio
+.Rproj.user/
 .Rhistory
 .RData
 .Ruserdata
