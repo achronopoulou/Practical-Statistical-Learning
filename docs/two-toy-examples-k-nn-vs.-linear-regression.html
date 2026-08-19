@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>1.5 Two Toy Examples: \(k\)-NN vs. Linear Regression | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="1.5 Two Toy Examples: \(k\)-NN vs. Linear Regression | CS 598 Practical Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="1.5 Two Toy Examples: \(k\)-NN vs. Linear Regression | CS 598 Practical Statistical Learning" />
+  
+  <meta name="twitter:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
+  
+
+<meta name="author" content="Alexandra Chronopoulou" />
+
+
+<meta name="date" content="2026-08-19" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="bias-variance-trade-off.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CS 598 PSL – A. Chronopoulou</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Course Information</a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="why-statistical-learning-is-challenging.html"><a href="why-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>-NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#a-simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> A Simulated (Binary) Classification Example</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="_blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CS 598 Practical Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="two-toy-examples-k-nn-vs.-linear-regression" class="section level2 hasAnchor" number="1.5">
+<h2><span class="header-section-number">1.5</span> Two Toy Examples: <span class="math inline">\(k\)</span>-NN vs. Linear Regression<a href="two-toy-examples-k-nn-vs.-linear-regression.html#two-toy-examples-k-nn-vs.-linear-regression" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Before we conclude this introductory chapter, we examine two simple supervised learning methods:</p>
+<ol style="list-style-type: lower-roman">
+<li><span class="math inline">\(k\)</span>-Nearest Neighbors (<span class="math inline">\(k\)</span>-NN)<br />
+</li>
+<li>Linear regression</li>
+</ol>
+<p>We will compare their behavior on simple examples and use them to illustrate the bias-variance trade-off.</p>
+<p> </p>
+<div id="k-nearest-neighbors" class="section level3 hasAnchor" number="1.5.1">
+<h3><span class="header-section-number">1.5.1</span> <span class="math inline">\(k\)</span>-Nearest Neighbors<a href="two-toy-examples-k-nn-vs.-linear-regression.html#k-nearest-neighbors" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In the <strong><span class="math inline">\(k\)</span>-nearest neighbors</strong> (<span class="math inline">\(k\)</span>-NN) method we predict the response at a point <span class="math inline">\(\mathbf{x}\)</span> by using the <span class="math inline">\(k\)</span> training observations that are closest to <span class="math inline">\(\mathbf{x}\)</span>. The <span class="math inline">\(k\)</span>-NN fit is</p>
+<p><font color="darkblue">
+<span class="math display">\[\hat{\mathbf{y}}(\mathbf{x}) = \frac{1}{k} \sum_{x_i \in N_k(\mathbf{x})} y_i\]</span>
+</font>
+where <span class="math inline">\(N_k(\mathbf{x})\)</span> denotes the neighborhood of <span class="math inline">\(\mathbf{x}\)</span> consisting of the <span class="math inline">\(k\)</span> nearest training points.</p>
+<ul>
+<li>In <strong>regression</strong>, <span class="math inline">\(\hat{y}(\mathbf{x})\)</span> is a local average of the neighboring responses.<br />
+</li>
+<li>In <strong>classification</strong>, <span class="math inline">\(\hat{y}(\mathbf{x})\)</span> is the majority class (or the class probability) within the neighborhood.</li>
+</ul>
+<p>Two practical challenges that arise are choosing the neighborhood size <span class="math inline">\(k\)</span> and choosing the distance metric that defines the neighborhood.</p>
+<p>The value of <span class="math inline">\(k\)</span> directly controls model complexity, which is roughly proportional to <span class="math inline">\(n/k\)</span>.</p>
+<ul>
+<li>When <span class="math inline">\(k=1\)</span> the prediction at each training point <span class="math inline">\(x_i\)</span> is exactly <span class="math inline">\(y_i\)</span>, yielding zero training error.<br />
+</li>
+<li>When <span class="math inline">\(k=n\)</span> every neighborhood contains the entire training sample, so the prediction is constant for all <span class="math inline">\(\mathbf{x}\)</span>.</li>
+</ul>
+<p>The “default” metric is Euclidean distance</p>
+<p><font color="darkblue">
+<span class="math display">\[d\bigl( \mathbf{x}, \tilde{\mathbf{x}} \bigr) = \sum_{j=1}^{p} w_j \bigl( x_j - \tilde{x}_j \bigr)^2,\]</span>
+</font>
+where the weights <span class="math inline">\(w_j\)</span> may be learned from the data.</p>
+<p> </p>
+</div>
+<div id="linear-regression" class="section level3 hasAnchor" number="1.5.2">
+<h3><span class="header-section-number">1.5.2</span> Linear Regression<a href="two-toy-examples-k-nn-vs.-linear-regression.html#linear-regression" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Given an input vector <span class="math inline">\(\mathbf{x}^\top = (x_1,\dots,x_p)\)</span>, we approximate the response by a linear function</p>
+<p><font color="darkblue">
+<span class="math display">\[f(\mathbf{x}) \approx \beta_0 + \sum_{j=1}^{p} x_j \beta_j\]</span>
+</font></p>
+<p>The coefficients <span class="math inline">\(\beta_j\)</span> are estimated by ordinary least squares (OLS), i.e., by minimizing the residual sum of squares (<em>objective function</em>)</p>
+<p><font color="darkblue">
+<span class="math display">\[\min_{\beta_0, \ldots, \beta_p} \sum_{i=1}^{n} \Bigl( y_i - \beta_0 - x_{i1}\beta_1 - \ldots - x_{ip} \beta_p \Bigr)^2\]</span>
+</font></p>
+<p>Under standard conditions the solution has a closed form, and the fitted value at the <span class="math inline">\(i\)</span>-th observation is</p>
+<p><font color="darkblue">
+<span class="math display">\[\hat{y}_i = \hat{y}(x_i) = x_i^T \hat{\beta}\]</span>
+</font></p>
+<p>We postpone the algebraic details until Week 2.</p>
+<div id="linear-regression-in-a-classification-setting" class="section level4 unnumbered hasAnchor">
+<h4>Linear Regression in a Classification Setting<a href="two-toy-examples-k-nn-vs.-linear-regression.html#linear-regression-in-a-classification-setting" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Linear regression can also be applied to binary classification problems in which <span class="math inline">\(Y\in\{0,1\}\)</span>. One simply predicts <code>class 1</code> when the fitted value <span class="math inline">\(\hat{f}(\mathbf{x})\)</span> exceeds 0.5 and <code>class 0</code> otherwise.</p>
+<p>This approach has well-known drawbacks: the squared-error loss is not a natural measure for binary outcomes, and a linear function can produce fitted values outside the interval <span class="math inline">\([0,1]\)</span>. For these reasons logistic regression is the preferred linear method for classification. It models the log-odds</p>
+<p><span class="math display">\[\log \frac{p(\mathbf{x})}{1-p(\mathbf{x}) } \approx \beta_0 + \sum_{j=1}^{p} x_j \beta_j\]</span></p>
+<p>We will return to logistic regression in Week 8.</p>
+<p> </p>
+</div>
+</div>
+<div id="a-simulated-binary-classification-example" class="section level3 hasAnchor" number="1.5.3">
+<h3><span class="header-section-number">1.5.3</span> A Simulated (Binary) Classification Example<a href="two-toy-examples-k-nn-vs.-linear-regression.html#a-simulated-binary-classification-example" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Consider a response variable <span class="math inline">\(G\)</span> that takes two values (0 = BLUE or 1 = ORANGE). We generate 200 observations (100 in each class) and compare linear regression and <span class="math inline">\(k\)</span>-nearest neighbors <strong>as classifiers</strong>.</p>
+<p>The code used to produce the simulation and all figures is available in <a href="./code/ch1_RCode.html" target="_blank">R</a> and <a href="./code/ch1_PythonCode.html" target="_blank">Python</a>.</p>
+<div id="linear-regression-classifier" class="section level4 unnumbered hasAnchor">
+<h4>Linear Regression Classifier<a href="two-toy-examples-k-nn-vs.-linear-regression.html#linear-regression-classifier" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We first fit a linear regression model, treating the binary response as if it were continuous. The continuous fitted values <span class="math inline">\(\hat{Y}\)</span> are then converted to class predictions <span class="math inline">\(\hat{G}\)</span> by the simple rule
+<span class="math display">\[\hat{G} = \begin{cases}
+&amp; Blue, \text{ if } \hat{Y} &gt; 0.5\\
+&amp; Orange, \text{ otherwise } \\
+\end{cases} \]</span></p>
+<p>Because the problem is two-dimensional, the decision boundary is a <em>straight line</em>.</p>
+<p><img src="images/week1/regclass.png" alt="" width="70%" style="display: block; margin: auto;" /></p>
+<p>The fitted boundary (black line in the figure below) is the set of points satisfying <span class="math inline">\(\mathbf{x}^\top\hat{\beta} = 0.5\)</span>. In the simulation the true blue region lies above this line and the orange region below it. Many points on both sides of the boundary are nevertheless misclassified. The linear decision boundary is smooth but rigid; it cannot adapt to local structure in the data.</p>
+</div>
+<div id="k-nearest-neighbor-classifier" class="section level4 unnumbered hasAnchor">
+<h4><span class="math inline">\(k\)</span>-Nearest-Neighbor Classifier<a href="two-toy-examples-k-nn-vs.-linear-regression.html#k-nearest-neighbor-classifier" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We now apply <span class="math inline">\(k\)</span>-nearest neighbors to the same data. Using <span class="math inline">\(k=15\)</span>, <span class="math inline">\(\hat{Y}(\mathbf{x})\)</span> is the proportion of blue observations among the 15 nearest neighbors of <span class="math inline">\(\mathbf{x}\)</span>. Class labels are again assigned by the 0.5 threshold:</p>
+<p><span class="math display">\[\hat{G} = \begin{cases}
+&amp; Blue, \text{ if } \hat{Y} &gt; 0.5\\
+&amp; Orange,\text{ otherwise } \\
+\end{cases} \]</span>
+(The prediction is therefore a majority vote among the 15 neighbors.)</p>
+<p><img src="images/week1/kNN15.png" alt="" width="70%" style="display: block; margin: auto;" /></p>
+<p>The resulting decision boundary is far more irregular and follows local clusters of blue and orange points. Consequently the number of misclassifications on the training data is smaller than with linear regression.
+If we take the extreme case <span class="math inline">\(k=1\)</span>, each point is classified by its single nearest neighbor:</p>
+<p><img src="images/week1/kNN1.png" alt="" width="70%" style="display: block; margin: auto;" /></p>
+<p>The boundary becomes extremely rough and the training misclassification rate drops nearly to zero. Whether this is desirable, however, can be judged only by examining the <em>generalization error</em>.</p>
+</div>
+<div id="training-versus-test-error" class="section level4 unnumbered hasAnchor">
+<h4>Training versus Test Error<a href="two-toy-examples-k-nn-vs.-linear-regression.html#training-versus-test-error" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Up to this point we have evaluated both methods on the same data that were used to fit them. A method such as 1-NN therefore appears to have zero error. Fair comparison requires an independent test set. The figure below shows misclassification error on a test set of 10,000 observations as a function of model degrees of freedom. Several <span class="math inline">\(k\)</span>-NN fits (varying <span class="math inline">\(k\)</span>) are compared with the linear regression fit.</p>
+<p><img src="images/week1/traintesterror.png" alt="" width="70%" style="display: block; margin: auto;" /></p>
+<p>The magenta curve is the test error and the blue curve is the training error of <span class="math inline">\(k\)</span>-NN. A 5-fold cross-validation procedure selected the optimal <span class="math inline">\(k\)</span> (marked by a diamond). Linear regression results appear as the magenta and blue triangles at 3 degrees of freedom (the dimension of the fitted linear model).
+Linear regression has only a few parameters and therefore relatively low variance, but the linearity assumption is restrictive for this problem and produces high bias.</p>
+<p>In contrast, <span class="math inline">\(k\)</span>-NN makes almost no assumption about the shape of the decision boundary (apart from a mild local-smoothness condition). This flexibility yields low bias but high variance; the extreme case <span class="math inline">\(k=1\)</span> corresponds to roughly <span class="math inline">\(n\)</span> parameters and severely overfits. It can be shown that <span class="math inline">\(k\)</span>-NN is consistent when <span class="math inline">\(k,n\to\infty\)</span> with <span class="math inline">\(k/n\to 0\)</span>. The price of that consistency is the high variance that appears when the effective number of parameters becomes large.</p>
+
+</div>
+</div>
+</div>
+<!-- </div> -->
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="bias-variance-trade-off.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans-serif",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["my-598PSL.pdf", "my-598PSL.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection",
+    "scroll_highlight": true
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

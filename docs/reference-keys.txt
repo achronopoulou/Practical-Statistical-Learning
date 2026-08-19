@@ -1,0 +1,9 @@
+introduction-to-statistical-learning
+examples-of-statistical-learning-problems
+supervised-learning-framework
+why-statistical-learning-is-challenging
+bias-variance-trade-off
+two-toy-examples-k-nn-vs.-linear-regression
+k-nearest-neighbors
+linear-regression
+a-simulated-binary-classification-example

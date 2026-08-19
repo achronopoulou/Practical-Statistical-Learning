@@ -6,7 +6,7 @@ book_filename: "my-598PSL"
 
 rmd_files:
   - "index.Rmd"
-  # - "01-intro.Rmd"
+  - "01-intro.Rmd"
   # - "02-regression.Rmd"
   # - "03-variableselection.Rmd"
   # - "04-nonlinearregression.Rmd"
@@ -18,4 +18,8 @@ rmd_files:
   # - "10-recommendationsystems.Rmd"
   # - "11-clusteringanalysis.Rmd"
   # - "12-gaussianmixtures.Rmd"
+  
+resources:
+  - code/
+  
 output_dir: "docs"

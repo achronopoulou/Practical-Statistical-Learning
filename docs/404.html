@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandra Chronopoulou" />
 
 
-<meta name="date" content="2026-08-18" />
+<meta name="date" content="2026-08-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -76,12 +76,19 @@
 <li><a href="./">CS 598 PSL – A. Chronopoulou</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Course Information</a>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Course Information</a></li>
+<li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
 <ul>
-<li class="chapter" data-level="0.1" data-path="course-description.html"><a href="course-description.html"><i class="fa fa-check"></i><b>0.1</b> Course Description</a></li>
-<li class="chapter" data-level="0.2" data-path="course-prerequisites.html"><a href="course-prerequisites.html"><i class="fa fa-check"></i><b>0.2</b> Course Prerequisites</a></li>
-<li class="chapter" data-level="0.3" data-path="course-learning-outcomes.html"><a href="course-learning-outcomes.html"><i class="fa fa-check"></i><b>0.3</b> Course Learning Outcomes</a></li>
-<li class="chapter" data-level="0.4" data-path="textbook-and-readings.html"><a href="textbook-and-readings.html"><i class="fa fa-check"></i><b>0.4</b> Textbook and Readings</a></li>
+<li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
+<li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
+<li class="chapter" data-level="1.3" data-path="why-statistical-learning-is-challenging.html"><a href="why-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>-NN vs. Linear Regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#a-simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> A Simulated (Binary) Classification Example</a></li>
+</ul></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="_blank">Published with bookdown</a></li>
@@ -170,6 +177,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

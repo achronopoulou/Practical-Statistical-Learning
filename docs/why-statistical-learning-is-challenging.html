@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>CS 598 Practical Statistical Learning</title>
+  <title>1.3 Why Statistical Learning is Challenging | CS 598 Practical Statistical Learning</title>
   <meta name="description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="CS 598 Practical Statistical Learning" />
+  <meta property="og:title" content="1.3 Why Statistical Learning is Challenging | CS 598 Practical Statistical Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="CS 598 Practical Statistical Learning" />
+  <meta name="twitter:title" content="1.3 Why Statistical Learning is Challenging | CS 598 Practical Statistical Learning" />
   
   <meta name="twitter:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="introduction-to-statistical-learning.html"/>
+<link rel="prev" href="supervised-learning-framework.html"/>
+<link rel="next" href="bias-variance-trade-off.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -110,57 +110,44 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">CS 598 Practical Statistical Learning</h1>
-<p class="author"><em>Alexandra Chronopoulou</em></p>
-<p class="date"><em>2026-08-19</em></p>
-</div>
-<div id="course-information" class="section level1 unnumbered hasAnchor">
-<h1>Course Information<a href="index.html#course-information" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p class="section-title">
-Course Description
-</p>
-<p>This course provides an introduction to modern techniques for statistical analysis of complex and massive data. Examples of these include model selection for regression, classification, nonparametric models such as splines and kernel models, regularization, dimension reduction, and clustering analysis. Applications are discussed as well as computation and theoretical foundations.</p>
-<p> </p>
-<p class="section-title">
-Course Prerequisites
-</p>
-<p>Knowledge of basic multivariate calculus, statistical inference, and linear algebra. You should be comfortable with the following concepts: probability distribution functions, expectations, conditional distributions, likelihood functions, random samples, estimators, and linear regression models.</p>
-<p> </p>
-<p class="section-title">
-Course Learning Outcomes
-</p>
-<p>By the end of the course, you will be able to:</p>
+<div id="why-statistical-learning-is-challenging" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Why Statistical Learning is Challenging<a href="why-statistical-learning-is-challenging.html#why-statistical-learning-is-challenging" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In the framework of the previous section we reduced the learning problem to the estimation of a parameter vector <span class="math inline">\(w\)</span>, under the assumption that the true function <span class="math inline">\(f\)</span> is known up to this parameter. In practice, however, we rarely know the exact form of <span class="math inline">\(f\)</span>. We must therefore <em>approximate</em> it by some function <span class="math inline">\(\hat{f}\)</span>. This approximation introduces an <em>additional source of error</em>.</p>
+<p>Moreover, the objective function we minimize is computed on a <em>training</em> sample. While this quantifies how well the model fits the observed data, the real goal of statistical learning is good performance on <strong>new</strong>, <strong>unseen</strong> data. In other words, we aim to minimize the <strong>test error</strong> (also called generalization error), not the training error.</p>
+<p><em>Statistical learning is therefore challenging for several reasons</em>:</p>
 <ul>
-<li>Use a broad range of methods and techniques in machine learning.</li>
-<li>Have a deeper understanding of major algorithms and techniques in machine learning.</li>
-<li>Build analytics pipelines for regression problems.</li>
-<li>Build analytics pipelines for classification problems.</li>
-<li>Build analytics pipelines for recommendation problems.</li>
+<li><p>The training error typically underestimates the test/generalization error.</p></li>
+<li><p>A model may perform well on the training data yet poorly on future data because of overfitting.
+The number of parameters required to approximate <span class="math inline">\(f\)</span> can be large—sometimes larger than the number of available observations.</p></li>
+<li><p>As the number of model parameters grows, the test error often increases substantially.</p></li>
 </ul>
 <p> </p>
-<p class="section-title">
-Textbook and Readings
-</p>
-<p>There is no required textbook for this course.</p>
-<p>Recommended resources for a statistical approach to machine learning are:</p>
+<p>Two simple illustrations make these points concrete:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Classification: 1-Nearest Neighbour</strong><br />
+The one-nearest-neighbour classifier achieves zero training error (it predicts every training point perfectly) but typically performs poorly on test data. An instructive demonstration of how increasing dimensionality affects the performance of linear classifiers can be found <a href="https://www.visiondummy.com/2014/04/curse-dimensionality-affect-classification/">here</a>.</p></li>
+<li><p><strong>Regression: the <span class="math inline">\(p\)</span> versus <span class="math inline">\(n\)</span> problem</strong><br />
+Consider the linear model
+<span class="math display">\[
+\mathbf{y}_{n\times 1} = \mathbf{X}_{n\times p}\mathbf{w}_{p\times 1} + \varepsilon,
+\]</span>
+where <span class="math inline">\(\mathbf{y}\)</span> is the response vector, <span class="math inline">\(\mathbf{X}\)</span> is the design matrix with <span class="math inline">\(p\)</span> predictors, and <span class="math inline">\(\mathbf{w}\)</span> contains the coefficients to be estimated.</p>
 <ul>
-<li><em>An Introduction to Statistical Learning with Applications in R</em> (basic)</li>
-<li><em>An Introduction to Statistical Learning with Applications in Python</em> (basic)</li>
-<li><em>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</em> (more advanced)</li>
-</ul>
-<p>You may also want to view the <a href="https://www.youtube.com/playlist?list=PL5-da3qGB5IDMEgF2WXqfCG5nfztd8r_n">Data School YouTube videos</a> associated with the first book as an additional resource.</p>
+<li>When <span class="math inline">\(p &lt; n\)</span> we have more equations than parameters; classical regression methods usually work well.</li>
+<li>When <span class="math inline">\(p = n\)</span> we have exactly as many equations as parameters and can achieve a perfect fit on the training data.</li>
+<li>When <span class="math inline">\(p &gt; n\)</span> we have fewer equations than parameters. In this high-dimensional regime classical methods break down and specialized techniques are required.</li>
+</ul></li>
+</ol>
 <p> </p>
-<p>The detailed syllabus for the course can be found on Coursera.</p>
-
+<p>In summary, statistical learning is challenging because we must approximate an unknown function <span class="math inline">\(f\)</span>, control the gap between training and test error, and often operate in regimes where the number of parameters is large relative to the sample size. Successfully addressing these issues is essential for building models that generalize well to new data.</p>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="introduction-to-statistical-learning.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="supervised-learning-framework.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="bias-variance-trade-off.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

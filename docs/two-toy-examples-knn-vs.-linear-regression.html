@@ -5,25 +5,25 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>1.5 Two Toy Examples: \(k\)NN vs. Linear Regression | CS 598 Practical Statistical Learning</title>
-  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
-  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+  <meta name="description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
 
   <meta property="og:title" content="1.5 Two Toy Examples: \(k\)NN vs. Linear Regression | CS 598 Practical Statistical Learning" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
-  <meta name="github-repo" content="rstudio/bookdown-demo" />
+  <meta property="og:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
+  
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="1.5 Two Toy Examples: \(k\)NN vs. Linear Regression | CS 598 Practical Statistical Learning" />
   
-  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="twitter:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   
 
 <meta name="author" content="Alexandra Chronopoulou" />
 
 
-<meta name="date" content="2025-12-05" />
+<meta name="date" content="2026-08-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="bias-variance-trade-off.html"/>
-<link rel="next" href="linear-regression-models.html"/>
+
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -52,13 +52,12 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
-<script src="libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
 
 <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -68,7 +67,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -139,15 +138,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+<li><a href="./">CS 598 PSL – A. Chronopoulou</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Course Information</a></li>
 <li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
 <ul>
 <li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
 <li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
-<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.3" data-path="why-statistical-learning-is-challenging.html"><a href="why-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why Statistical Learning is Challenging</a></li>
 <li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
 <li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
 <ul>
@@ -157,188 +156,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.5.4" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures"><i class="fa fa-check"></i><b>1.5.4</b> Code for the Examples in the Lectures</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
-<ul>
-<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>2.1</b> Multiple Linear Regression (MLR) Model</a></li>
-<li class="chapter" data-level="2.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>2.2</b> MLR Model Fitting</a></li>
-<li class="chapter" data-level="2.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>2.3</b> Least-Squares &amp; Normal Equations</a></li>
-<li class="chapter" data-level="2.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>2.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
-<li class="chapter" data-level="2.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>2.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
-<li class="chapter" data-level="2.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>2.6</b> Rank deficiency</a></li>
-<li class="chapter" data-level="2.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>2.7</b> Hypothesis Testing in MLR</a></li>
-<li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
-<li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
-<li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
-<li class="chapter" data-level="2.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Data Set Example</a></li>
-</ul></li>
-<li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
-<ul>
-<li class="chapter" data-level="3.1" data-path="training-vs.-testing-errors.html"><a href="training-vs.-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training vs. Testing Errors</a></li>
-<li class="chapter" data-level="3.2" data-path="subset-selection.html"><a href="subset-selection.html"><i class="fa fa-check"></i><b>3.2</b> Subset Selection</a>
-<ul>
-<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria-based-procedures"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria-based procedures</a></li>
-<li class="chapter" data-level="3.2.2" data-path="subset-selection.html"><a href="subset-selection.html#search-algorithms"><i class="fa fa-check"></i><b>3.2.2</b> Search Algorithms</a></li>
-</ul></li>
-<li class="chapter" data-level="3.3" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html"><i class="fa fa-check"></i><b>3.3</b> Shrinkage Methods</a>
-<ul>
-<li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
-<li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
-</ul></li>
-<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a>
-<ul>
-<li class="chapter" data-level="3.4.1" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#ridge-regression-1"><i class="fa fa-check"></i><b>3.4.1</b> Ridge Regression</a></li>
-<li class="chapter" data-level="3.4.2" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#lasso-regression-1"><i class="fa fa-check"></i><b>3.4.2</b> LASSO Regression</a></li>
-<li class="chapter" data-level="3.4.3" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#refit-to-reduce-bias"><i class="fa fa-check"></i><b>3.4.3</b> Refit to Reduce Bias</a></li>
-</ul></li>
-</ul></li>
-<li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
-<ul>
-<li class="chapter" data-level="4.0.1" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html#a-note-on-nonlinearity"><i class="fa fa-check"></i><b>4.0.1</b> A Note on Nonlinearity</a></li>
-<li class="chapter" data-level="4.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html"><i class="fa fa-check"></i><b>4.1</b> Polynomial Regression</a>
-<ul>
-<li class="chapter" data-level="4.1.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-basis-functions"><i class="fa fa-check"></i><b>4.1.1</b> Polynomial Basis Functions</a></li>
-<li class="chapter" data-level="4.1.2" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-regression-1"><i class="fa fa-check"></i><b>4.1.2</b> Polynomial Regression</a></li>
-<li class="chapter" data-level="4.1.3" data-path="polynomial-regression.html"><a href="polynomial-regression.html#orthogonal-polynomials"><i class="fa fa-check"></i><b>4.1.3</b> Orthogonal Polynomials</a></li>
-<li class="chapter" data-level="4.1.4" data-path="polynomial-regression.html"><a href="polynomial-regression.html#piece-wise-polynomials"><i class="fa fa-check"></i><b>4.1.4</b> Piece-wise Polynomials</a></li>
-</ul></li>
-<li class="chapter" data-level="4.2" data-path="splines-regression.html"><a href="splines-regression.html"><i class="fa fa-check"></i><b>4.2</b> Splines Regression</a>
-<ul>
-<li class="chapter" data-level="4.2.1" data-path="splines-regression.html"><a href="splines-regression.html#examples-of-cubic-splines-basis"><i class="fa fa-check"></i><b>4.2.1</b> Examples of Cubic Splines Basis</a></li>
-<li class="chapter" data-level="4.2.2" data-path="splines-regression.html"><a href="splines-regression.html#b-splines-basis-functions-in-r"><i class="fa fa-check"></i><b>4.2.2</b> B-Splines Basis Functions in <code>R</code></a></li>
-<li class="chapter" data-level="4.2.3" data-path="splines-regression.html"><a href="splines-regression.html#natural-cubic-splines-ncs"><i class="fa fa-check"></i><b>4.2.3</b> Natural Cubic Splines (NCS)</a></li>
-<li class="chapter" data-level="4.2.4" data-path="splines-regression.html"><a href="splines-regression.html#regression-splines"><i class="fa fa-check"></i><b>4.2.4</b> Regression Splines</a></li>
-<li class="chapter" data-level="4.2.5" data-path="splines-regression.html"><a href="splines-regression.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>4.2.5</b> K-Fold Cross-Validation</a></li>
-</ul></li>
-<li class="chapter" data-level="4.3" data-path="smoothing-splines.html"><a href="smoothing-splines.html"><i class="fa fa-check"></i><b>4.3</b> Smoothing Splines</a>
-<ul>
-<li class="chapter" data-level="4.3.1" data-path="smoothing-splines.html"><a href="smoothing-splines.html#the-roughness-penalty-approach"><i class="fa fa-check"></i><b>4.3.1</b> The Roughness Penalty Approach</a></li>
-<li class="chapter" data-level="4.3.2" data-path="smoothing-splines.html"><a href="smoothing-splines.html#proof"><i class="fa fa-check"></i><b>4.3.2</b> Proof</a></li>
-</ul></li>
-<li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
-<li class="chapter" data-level="4.5" data-path="the-birthrates-example-in-r.html"><a href="the-birthrates-example-in-r.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example in R</a></li>
-</ul></li>
-<li class="chapter" data-level="5" data-path="regression-trees.html"><a href="regression-trees.html"><i class="fa fa-check"></i><b>5</b> Regression Trees</a>
-<ul>
-<li class="chapter" data-level="5.1" data-path="single-tree-building.html"><a href="single-tree-building.html"><i class="fa fa-check"></i><b>5.1</b> Single-Tree Building</a>
-<ul>
-<li class="chapter" data-level="5.1.1" data-path="single-tree-building.html"><a href="single-tree-building.html#prediction-at-leaf-nodes"><i class="fa fa-check"></i><b>5.1.1</b> Prediction at Leaf Nodes</a></li>
-<li class="chapter" data-level="5.1.2" data-path="single-tree-building.html"><a href="single-tree-building.html#split-criterion"><i class="fa fa-check"></i><b>5.1.2</b> Split Criterion</a></li>
-<li class="chapter" data-level="5.1.3" data-path="single-tree-building.html"><a href="single-tree-building.html#single-tree-pruning"><i class="fa fa-check"></i><b>5.1.3</b> Single-Tree Pruning</a></li>
-</ul></li>
-<li class="chapter" data-level="5.2" data-path="regression-forests.html"><a href="regression-forests.html"><i class="fa fa-check"></i><b>5.2</b> Regression Forests</a>
-<ul>
-<li class="chapter" data-level="5.2.1" data-path="regression-forests.html"><a href="regression-forests.html#weak-and-strong-learners"><i class="fa fa-check"></i><b>5.2.1</b> Weak and Strong Learners</a></li>
-<li class="chapter" data-level="5.2.2" data-path="regression-forests.html"><a href="regression-forests.html#bootstrap-aggregation-bagging"><i class="fa fa-check"></i><b>5.2.2</b> Bootstrap Aggregation (Bagging)</a></li>
-<li class="chapter" data-level="5.2.3" data-path="regression-forests.html"><a href="regression-forests.html#random-forests"><i class="fa fa-check"></i><b>5.2.3</b> Random Forests</a></li>
-<li class="chapter" data-level="5.2.4" data-path="regression-forests.html"><a href="regression-forests.html#out-of-bag-oob-samples"><i class="fa fa-check"></i><b>5.2.4</b> Out-of-Bag (OOB) Samples</a></li>
-<li class="chapter" data-level="5.2.5" data-path="regression-forests.html"><a href="regression-forests.html#boosting-trees"><i class="fa fa-check"></i><b>5.2.5</b> Boosting Trees</a></li>
-</ul></li>
-<li class="chapter" data-level="5.3" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html"><i class="fa fa-check"></i><b>5.3</b> Tree-Based Regression Models in R</a></li>
-</ul></li>
-<li class="chapter" data-level="6" data-path="introduction-to-classification.html"><a href="introduction-to-classification.html"><i class="fa fa-check"></i><b>6</b> Introduction to Classification</a>
-<ul>
-<li class="chapter" data-level="6.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html"><i class="fa fa-check"></i><b>6.1</b> Discriminant Analysis</a>
-<ul>
-<li class="chapter" data-level="6.1.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#quadratic-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.1</b> Quadratic Discriminant Analysis</a></li>
-<li class="chapter" data-level="6.1.2" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#linear-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.2</b> Linear Discriminant Analysis</a></li>
-<li class="chapter" data-level="6.1.3" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#reduced-rank-lda"><i class="fa fa-check"></i><b>6.1.3</b> Reduced Rank LDA</a></li>
-</ul></li>
-<li class="chapter" data-level="6.2" data-path="fisher-discriminant-analysis-fda.html"><a href="fisher-discriminant-analysis-fda.html"><i class="fa fa-check"></i><b>6.2</b> Fisher Discriminant Analysis (FDA)</a></li>
-<li class="chapter" data-level="6.3" data-path="naive-bayes-classifiers.html"><a href="naive-bayes-classifiers.html"><i class="fa fa-check"></i><b>6.3</b> Naive Bayes Classifiers</a></li>
-<li class="chapter" data-level="6.4" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html"><i class="fa fa-check"></i><b>6.4</b> The <code>Digits</code> Recognition Example</a>
-<ul>
-<li class="chapter" data-level="" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html#naive-bayes-prediction"><i class="fa fa-check"></i>Naive Bayes Prediction</a></li>
-</ul></li>
-</ul></li>
-<li class="chapter" data-level="7" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>7</b> Logistic Regression</a>
-<ul>
-<li class="chapter" data-level="7.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html"><i class="fa fa-check"></i><b>7.1</b> Fitting a Logistic Regression model</a>
-<ul>
-<li class="chapter" data-level="7.1.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html#maximum-likelihood-approach"><i class="fa fa-check"></i><b>7.1.1</b> Maximum Likelihood Approach</a></li>
-</ul></li>
-<li class="chapter" data-level="7.2" data-path="logistic-regression-with-separable-data.html"><a href="logistic-regression-with-separable-data.html"><i class="fa fa-check"></i><b>7.2</b> Logistic Regression with Separable Data</a></li>
-<li class="chapter" data-level="7.3" data-path="retrospective-sampling.html"><a href="retrospective-sampling.html"><i class="fa fa-check"></i><b>7.3</b> Retrospective Sampling</a></li>
-<li class="chapter" data-level="7.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html"><i class="fa fa-check"></i><b>7.4</b> Logistic Regression for the <code>Heart</code> dataset in R</a>
-<ul>
-<li class="chapter" data-level="7.4.1" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#goodness-of-fit"><i class="fa fa-check"></i><b>7.4.1</b> Goodness-of-Fit</a></li>
-<li class="chapter" data-level="7.4.2" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#variable-selection"><i class="fa fa-check"></i><b>7.4.2</b> Variable Selection</a></li>
-<li class="chapter" data-level="7.4.3" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#penalized-logistic-regression"><i class="fa fa-check"></i><b>7.4.3</b> Penalized Logistic Regression</a></li>
-<li class="chapter" data-level="7.4.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#illustration-of-divergence-of-ml-estimators"><i class="fa fa-check"></i><b>7.4.4</b> Illustration of divergence of ML estimators</a></li>
-</ul></li>
-</ul></li>
-<li class="chapter" data-level="8" data-path="support-vector-machines.html"><a href="support-vector-machines.html"><i class="fa fa-check"></i><b>8</b> Support Vector Machines</a>
-<ul>
-<li class="chapter" data-level="8.1" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html"><i class="fa fa-check"></i><b>8.1</b> Linear SVM in Separable Case: <em>Separation Margin</em></a>
-<ul>
-<li class="chapter" data-level="8.1.1" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>8.1.1</b> Maximum-Margin Classifier</a></li>
-<li class="chapter" data-level="8.1.2" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#the-kkt-conditions-from-the-primal-to-the-dual"><i class="fa fa-check"></i><b>8.1.2</b> The KKT Conditions: From the Primal to the Dual</a></li>
-<li class="chapter" data-level="8.1.3" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#solving-the-dual-problem"><i class="fa fa-check"></i><b>8.1.3</b> Solving the Dual Problem</a></li>
-</ul></li>
-<li class="chapter" data-level="8.2" data-path="linear-svm-in-non-separable-case-slack-variables.html"><a href="linear-svm-in-non-separable-case-slack-variables.html"><i class="fa fa-check"></i><b>8.2</b> Linear SVM in non-Separable Case: <em>Slack Variables</em></a></li>
-<li class="chapter" data-level="8.3" data-path="non-linear-svm-the-kernel-trick.html"><a href="non-linear-svm-the-kernel-trick.html"><i class="fa fa-check"></i><b>8.3</b> Non-linear SVM: <em>The Kernel Trick</em></a></li>
-<li class="chapter" data-level="8.4" data-path="svm-as-a-penalization-method.html"><a href="svm-as-a-penalization-method.html"><i class="fa fa-check"></i><b>8.4</b> SVM as a Penalization Method</a></li>
-<li class="chapter" data-level="8.5" data-path="svm-examples-in-r.html"><a href="svm-examples-in-r.html"><i class="fa fa-check"></i><b>8.5</b> SVM Examples in R</a></li>
-</ul></li>
-<li class="chapter" data-level="9" data-path="classification-trees.html"><a href="classification-trees.html"><i class="fa fa-check"></i><b>9</b> Classification Trees</a>
-<ul>
-<li class="chapter" data-level="9.1" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html"><i class="fa fa-check"></i><b>9.1</b> Splitting Rules in Classification Trees</a>
-<ul>
-<li class="chapter" data-level="9.1.1" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html#impurity-measures"><i class="fa fa-check"></i><b>9.1.1</b> Impurity Measures</a></li>
-<li class="chapter" data-level="" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html#splitting-rules-categorical-predictors"><i class="fa fa-check"></i>Splitting Rules: Categorical Predictors</a></li>
-</ul></li>
-<li class="chapter" data-level="9.2" data-path="random-forests-1.html"><a href="random-forests-1.html"><i class="fa fa-check"></i><b>9.2</b> Random Forests</a>
-<ul>
-<li class="chapter" data-level="9.2.1" data-path="random-forests-1.html"><a href="random-forests-1.html#bagging-predictors-for-classification"><i class="fa fa-check"></i><b>9.2.1</b> Bagging Predictors for Classification</a></li>
-<li class="chapter" data-level="9.2.2" data-path="random-forests-1.html"><a href="random-forests-1.html#random-forests-2"><i class="fa fa-check"></i><b>9.2.2</b> Random Forests</a></li>
-</ul></li>
-<li class="chapter" data-level="9.3" data-path="boosting.html"><a href="boosting.html"><i class="fa fa-check"></i><b>9.3</b> Boosting</a>
-<ul>
-<li class="chapter" data-level="9.3.1" data-path="boosting.html"><a href="boosting.html#adaboost"><i class="fa fa-check"></i><b>9.3.1</b> AdaBoost</a></li>
-<li class="chapter" data-level="9.3.2" data-path="boosting.html"><a href="boosting.html#training-error-bound"><i class="fa fa-check"></i><b>9.3.2</b> Training Error Bound</a></li>
-<li class="chapter" data-level="9.3.3" data-path="boosting.html"><a href="boosting.html#gradient-boosting-forward-stage-wise-additive-model"><i class="fa fa-check"></i><b>9.3.3</b> Gradient Boosting: Forward Stage-wise Additive Model</a></li>
-<li class="chapter" data-level="9.3.4" data-path="boosting.html"><a href="boosting.html#boosting-in-r"><i class="fa fa-check"></i><b>9.3.4</b> Boosting in R</a></li>
-</ul></li>
-</ul></li>
-<li class="chapter" data-level="10" data-path="recommender-systems.html"><a href="recommender-systems.html"><i class="fa fa-check"></i><b>10</b> Recommender Systems</a>
-<ul>
-<li class="chapter" data-level="10.1" data-path="content-based-methods.html"><a href="content-based-methods.html"><i class="fa fa-check"></i><b>10.1</b> Content-Based Methods</a></li>
-<li class="chapter" data-level="10.2" data-path="collaborative-filtering.html"><a href="collaborative-filtering.html"><i class="fa fa-check"></i><b>10.2</b> Collaborative Filtering</a></li>
-<li class="chapter" data-level="10.3" data-path="latent-factor-model.html"><a href="latent-factor-model.html"><i class="fa fa-check"></i><b>10.3</b> Latent Factor Model</a></li>
-<li class="chapter" data-level="10.4" data-path="challenges-strategies.html"><a href="challenges-strategies.html"><i class="fa fa-check"></i><b>10.4</b> Challenges &amp; Strategies</a></li>
-</ul></li>
-<li class="chapter" data-level="11" data-path="clustering-analysis.html"><a href="clustering-analysis.html"><i class="fa fa-check"></i><b>11</b> Clustering Analysis</a>
-<ul>
-<li class="chapter" data-level="11.1" data-path="introduction-to-clustering.html"><a href="introduction-to-clustering.html"><i class="fa fa-check"></i><b>11.1</b> Introduction to Clustering</a></li>
-<li class="chapter" data-level="11.2" data-path="k-means-clustering.html"><a href="k-means-clustering.html"><i class="fa fa-check"></i><b>11.2</b> <span class="math inline">\(K\)</span>-means Clustering</a>
-<ul>
-<li class="chapter" data-level="11.2.1" data-path="k-means-clustering.html"><a href="k-means-clustering.html#categorical-variables-in-clustering"><i class="fa fa-check"></i><b>11.2.1</b> Categorical Variables in Clustering</a></li>
-<li class="chapter" data-level="11.2.2" data-path="k-means-clustering.html"><a href="k-means-clustering.html#tuning-k-means-how-to-choose-k"><i class="fa fa-check"></i><b>11.2.2</b> Tuning <span class="math inline">\(K\)</span>-Means: How to Choose <span class="math inline">\(K\)</span></a></li>
-</ul></li>
-<li class="chapter" data-level="11.3" data-path="hierarchical-clustering.html"><a href="hierarchical-clustering.html"><i class="fa fa-check"></i><b>11.3</b> Hierarchical Clustering</a></li>
-<li class="chapter" data-level="11.4" data-path="self-organizing-maps.html"><a href="self-organizing-maps.html"><i class="fa fa-check"></i><b>11.4</b> Self-Organizing Maps</a></li>
-<li class="chapter" data-level="11.5" data-path="spectral-clustering.html"><a href="spectral-clustering.html"><i class="fa fa-check"></i><b>11.5</b> Spectral Clustering</a></li>
-</ul></li>
-<li class="chapter" data-level="12" data-path="latent-structure-models.html"><a href="latent-structure-models.html"><i class="fa fa-check"></i><b>12</b> Latent Structure Models</a>
-<ul>
-<li class="chapter" data-level="12.1" data-path="gaussian-mixtures.html"><a href="gaussian-mixtures.html"><i class="fa fa-check"></i><b>12.1</b> Gaussian Mixtures</a></li>
-<li class="chapter" data-level="12.2" data-path="em-algorithm.html"><a href="em-algorithm.html"><i class="fa fa-check"></i><b>12.2</b> EM Algorithm</a>
-<ul>
-<li class="chapter" data-level="" data-path="em-algorithm.html"><a href="em-algorithm.html#connection-with-k-means"><i class="fa fa-check"></i>Connection with <span class="math inline">\(k\)</span>-Means</a></li>
-</ul></li>
-<li class="chapter" data-level="12.3" data-path="em-algorithm-general-framework.html"><a href="em-algorithm-general-framework.html"><i class="fa fa-check"></i><b>12.3</b> EM Algorithm: General Framework</a></li>
-<li class="chapter" data-level="12.4" data-path="the-mm-algorithm.html"><a href="the-mm-algorithm.html"><i class="fa fa-check"></i><b>12.4</b> The MM Algorithm</a>
-<ul>
-<li class="chapter" data-level="12.4.1" data-path="the-mm-algorithm.html"><a href="the-mm-algorithm.html#ascend-property"><i class="fa fa-check"></i><b>12.4.1</b> Ascend Property</a></li>
-</ul></li>
-<li class="chapter" data-level="12.5" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html"><i class="fa fa-check"></i><b>12.5</b> Hidden Markov Models</a>
-<ul>
-<li class="chapter" data-level="12.5.1" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html#em-algorithm-for-hmm-discrete-case"><i class="fa fa-check"></i><b>12.5.1</b> EM Algorithm for HMM (discrete case)</a></li>
-<li class="chapter" data-level="12.5.2" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html#forward-backward-algorithm-for-hmm"><i class="fa fa-check"></i><b>12.5.2</b> Forward-Backward Algorithm for HMM</a></li>
-</ul></li>
-<li class="chapter" data-level="12.6" data-path="inference-on-the-hidden-states-z.html"><a href="inference-on-the-hidden-states-z.html"><i class="fa fa-check"></i><b>12.6</b> Inference on the Hidden States <span class="math inline">\(Z\)</span></a></li>
-</ul></li>
 <li class="divider"></li>
-<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+<li><a href="https://github.com/rstudio/bookdown" target="_blank">Published with bookdown</a></li>
 
 </ul>
 
@@ -363,7 +182,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 (i) <span class="math inline">\(k\)</span>-Nearest Neighbors (<span class="math inline">\(k\)</span>NN) <br>
 (ii) Linear Regression<br />
 and will examine their performance and understand the bias-variance trade-off.</p>
-<p><br></p>
+<p> </p>
 <div id="k-nearest-neighbors" class="section level3 hasAnchor" number="1.5.1">
 <h3><span class="header-section-number">1.5.1</span> <span class="math inline">\(k\)</span>-Nearest Neighbors<a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>In the <strong><span class="math inline">\(k\)</span>-Nearest Neighbors</strong> (<span class="math inline">\(k\)</span>NN) method, we use observations in the training set that are closest to <span class="math inline">\(\mathbf{x}\)</span> to form <span class="math inline">\(\mathbf{y}\)</span>. Specifically, the <span class="math inline">\(k\)</span>-Nearest Neighbor fit for <span class="math inline">\(\hat{y}\)</span> is
@@ -383,7 +202,7 @@ where <span class="math inline">\(N_k(\mathbf{x})\)</span> is the neighborhood o
 </font>
 where we would like to learn the <span class="math inline">\(w_j\)</span>’s from the data.</p></li>
 </ul>
-<p><br></p>
+<p> </p>
 </div>
 <div id="linear-regression" class="section level3 hasAnchor" number="1.5.2">
 <h3><span class="header-section-number">1.5.2</span> Linear Regression<a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -400,13 +219,13 @@ The solution is easy to obtain (both in R/Python and analytically under certain 
 <span class="math display">\[\hat{y}_i = \hat{y}(x_i) = x_i^T \hat{\beta}\]</span>
 </font>
 We leave the details to be discussed in Week 2.</p>
-<p><br></p>
+<p> </p>
 <div id="linear-regression-in-a-classification-context" class="section level4 unnumbered hasAnchor">
 <h4>Linear Regression in a Classification Context<a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression-in-a-classification-context" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>We can apply linear regression on classification problems with <span class="math inline">\(Y=0 \text{ or } 1\)</span>. In this case, we predict <span class="math inline">\(Y\)</span> to be 1 if the LS prediction <span class="math inline">\(f(x)\)</span> is bigger than 0.5, and 0 otherwise. This approach has drawbacks. First of all, the squared difference <span class="math inline">\(p(\mathbf{x}) = \Bigl(y_i - f(\mathbf{x}_i) \Bigr)^2\)</span> is not a good evaluation metric, since considering a linear function <span class="math inline">\(f(\mathbf{x})\)</span> may result in values outside <span class="math inline">\([0,1]\)</span>. Therefore, when we are in this context a Logistic regression is the gold standard according to which
 <span class="math display">\[\log \frac{p(\mathbf{x})}{1-p(\mathbf{x}) } \approx \beta_0 + \sum_{j=1}^{p} x_j \beta_j\]</span></p>
-<p>More on this in Week 8.
-<br></p>
+<p>More on this in Week 8.</p>
+<p> </p>
 </div>
 </div>
 <div id="simulated-binary-classification-example" class="section level3 hasAnchor" number="1.5.3">
@@ -418,7 +237,7 @@ We leave the details to be discussed in Week 2.</p>
 &amp; Orange, \text{ otherwise } \\
 \end{cases} \]</span></p>
 <p>Our classification example is in two dimensions which means that the decision boundary (the boundary that separates the orange from the blue region) is a straight line.</p>
-<p><img src="images/week1/regclass.png" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="images/week1/regclass.png" alt="" width="70%" style="display: block; margin: auto;" /></p>
 <p>Specifically, the fitted decision boundary is a straight line (the black line in the plot) defined by <span class="math inline">\(\mathbf{x}^T \hat{\beta} = 0.5\)</span>. Based on our simulation, we know that the blue region should be above the black fitted regression line, while the orange region should be below the black fitted regression line. We observe that there are many misclassifications on both sides of the decision boundary.</p>
 <p>The regression line seems to be very smooth and too rigid when it comes to classifying the data. On the other end of the spectrum, we have the <span class="math inline">\(k\)</span> Nearest-Neighbor approach. So, for the same simulated data, the nearest neighbor method will use the observations in the training set closest in input space to <span class="math inline">\(X\)</span> to form <span class="math inline">\(\hat{Y}\)</span>.</p>
 <p>Using a 15-nearest-neighbor averaging of the binary coded response such that <span class="math inline">\(\hat{Y}\)</span> is the proportion of blue’s in the neighborhood, then we assign
@@ -427,13 +246,13 @@ We leave the details to be discussed in Week 2.</p>
 &amp; Orange,\text{ otherwise } \\
 \end{cases} \]</span></p>
 <p>In this case, the predicted class is chosen by majority vote amont the 15 nearest neighbors.</p>
-<p><img src="images/week1/kNN15.png" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="images/week1/kNN15.png" alt="" width="70%" style="display: block; margin: auto;" /></p>
 <p>We observe that the decision boundary separating the blue from the orange region is far more irregular than before and sensitive to local clusters of blue and orange dots. As a result, we have fewer misclassified observations than before. Remember that we can tune the neighborhood size. So, if we take the extreme scenario in which <span class="math inline">\(k=1\)</span> and we only consider <strong>one</strong> neighbor, we have</p>
-<p><img src="images/week1/kNN1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="images/week1/kNN1.png" alt="" width="70%" style="display: block; margin: auto;" /></p>
 <p>This results in a much rougher decision boundary with hardly any misclassified data. However, is this the ideal choice? The answer is no, but in order to understand the reason we need to consider the <em>generalization error</em>.</p>
 <p>Up to now, we have used the same data for training and comparison purposes. As a result, a method like <span class="math inline">\(k\)</span>NN has seemingly 0 error for <span class="math inline">\(k=1\)</span>. In order to make fair comparisons, we should consider another data set, independent of the one used to fit the data, so that we can compute the test/generalization error for both methods.</p>
 <p>In the plot below, we compare the misclassification error on the testing data set as a function of the degrees of freedom. In other words, we compare several <span class="math inline">\(k\)</span>NN fits (for different <span class="math inline">\(k\)</span>s) and the regression fit. The testing set here contains 10,000 observations.</p>
-<p><img src="images/week1/traintesterror.png" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="images/week1/traintesterror.png" alt="" width="70%" style="display: block; margin: auto;" /></p>
 <p>The magenta curve is the test error and the blue curve is the training error for the <span class="math inline">\(k\)</span>NN classification for different <span class="math inline">\(k\)</span>s. In our simulated example, we used a 5-fold cross validation method to identify the optimal <span class="math inline">\(k\)</span>. The results for the optimal <span class="math inline">\(k\)</span> in <span class="math inline">\(k\)</span>NN are denoted with a diamond. The results for linear regression are the
 magenta and blue triangles at 3 DFs (the DFs were determined based on the dimension of the linear model we fitted).</p>
 <p>The regression method has the advantage of it being linear with only <span class="math inline">\(p=3\)</span> parameters to estimate which means that it has a relatively <em>low variance</em>. However, the linearity assumption seems to be quite restrictive for the classification problem under consideration, which means that we expect to have high bias.</p>
@@ -442,8 +261,9 @@ magenta and blue triangles at 3 DFs (the DFs were determined based on the dimens
 <div id="code-for-the-examples-in-the-lectures" class="section level3 hasAnchor" number="1.5.4">
 <h3><span class="header-section-number">1.5.4</span> Code for the Examples in the Lectures<a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>We replicate one of the examples in the ESL book to illustrate the differences between the two simplest prediction methods for binary outcomes: the <em>Regression method</em> and the <em><span class="math inline">\(k\)</span>-Nearest-Neighbors method</em>.</p>
-<p>The python version of the example below was written by our TA Jim Yici Yan and can be found here: <a href="data/week1/W1_kNNvsLR.html"> <b>Python Version</b> </a> <br></p>
-<p></br></p>
+<p>The python version of the example below was written by our TA Jim Yici Yan and can be found here: <a href="data/week1/W1_kNNvsLR.html"> <b>Python Version</b> </a></p>
+<p> 
+ </p>
 <div id="simulation" class="section level4 hasAnchor" number="1.5.4.1">
 <h4><span class="header-section-number">1.5.4.1</span> Simulation<a href="two-toy-examples-knn-vs.-linear-regression.html#simulation" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <ul>
@@ -454,7 +274,7 @@ magenta and blue triangles at 3 DFs (the DFs were determined based on the dimens
 <li>In total, we generate <em>200 training samples</em> (<span class="math inline">\(n=100\)</span> for each class), and we assign labels to the training data (100 <code>Class 1</code> and 100 <code>Class 0</code>).</li>
 <li>Similarly, we generate <em>10,000 test samples</em>.</li>
 </ul>
-<p></br></p>
+<p> </p>
 </div>
 <div id="code-for-the-simulation" class="section level4 hasAnchor" number="1.5.4.2">
 <h4><span class="header-section-number">1.5.4.2</span> Code for the Simulation<a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-simulation" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -463,9 +283,9 @@ magenta and blue triangles at 3 DFs (the DFs were determined based on the dimens
 <span id="cb1-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb1-2" tabindex="-1"></a>sigma <span class="ot">=</span> <span class="dv">1</span>;       <span class="do">## St. Dev for the Normals (common)</span></span>
 <span id="cb1-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb1-3" tabindex="-1"></a>mu1 <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>);   <span class="do">## Vector of means for the first Normal</span></span>
 <span id="cb1-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb1-4" tabindex="-1"></a>mu0 <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>);   <span class="do">## Vector of means for the second Normal</span></span></code></pre></div>
-<p><br>
-Generate <span class="math inline">\(n\)</span> i.i.d. (independent and identically distributed) samples from each normal to create the <em>training</em> data set.</p>
-<p><br></p>
+<p> </p>
+<p>Generate <span class="math inline">\(n\)</span> i.i.d. (independent and identically distributed) samples from each normal to create the <em>training</em> data set.</p>
+<p> </p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb2-1" tabindex="-1"></a>n <span class="ot">=</span> <span class="dv">100</span>;         <span class="do">## Training Sample Size for each Normal</span></span>
 <span id="cb2-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb2-2" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb2-3" tabindex="-1"></a><span class="do">## rnorm(2*n*p) generates 2*n*p  N(0,1) random variables.</span></span>
@@ -482,59 +302,55 @@ Generate <span class="math inline">\(n\)</span> i.i.d. (independent and identica
 <span id="cb2-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb2-14" tabindex="-1"></a></span>
 <span id="cb2-15"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb2-15" tabindex="-1"></a><span class="do">## We generate the 0 or 1 labels.</span></span>
 <span id="cb2-16"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb2-16" tabindex="-1"></a>Ytrain <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,n), <span class="fu">rep</span>(<span class="dv">0</span>,n)))</span></code></pre></div>
-<p><br>
-Generate <span class="math inline">\(N\)</span> <em>test</em> samples in a similar way:</p>
-<p><br></p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-1" tabindex="-1"></a>N <span class="ot">=</span> <span class="dv">10000</span></span>
+<p> </p>
+<p>Generate <span class="math inline">\(N\)</span> <em>test</em> samples in a similar way:</p>
+<p> </p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-1" tabindex="-1"></a>N<span class="ot">=</span><span class="dv">10000</span>;  </span>
 <span id="cb3-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-2" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-3" tabindex="-1"></a>testdata <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">2</span> <span class="sc">*</span> N <span class="sc">*</span> p), <span class="dv">2</span> <span class="sc">*</span> N, p) <span class="sc">*</span> sigma <span class="sc">+</span> <span class="fu">rbind</span>(<span class="fu">matrix</span>(<span class="fu">rep</span>(mu1,</span>
-<span id="cb3-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-4" tabindex="-1"></a>    N), <span class="at">nrow =</span> N, <span class="at">byrow =</span> <span class="cn">TRUE</span>), <span class="fu">matrix</span>(<span class="fu">rep</span>(mu0, N), <span class="at">nrow =</span> N,</span>
-<span id="cb3-5"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-5" tabindex="-1"></a>    <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb3-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-3" tabindex="-1"></a>testdata <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">2</span><span class="sc">*</span>N<span class="sc">*</span>p), <span class="dv">2</span><span class="sc">*</span>N, p)<span class="sc">*</span>sigma<span class="sc">+</span> </span>
+<span id="cb3-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-4" tabindex="-1"></a>           <span class="fu">rbind</span>(<span class="fu">matrix</span>(<span class="fu">rep</span>(mu1, N), <span class="at">nrow=</span>N,<span class="at">byrow=</span><span class="cn">TRUE</span>), </span>
+<span id="cb3-5"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-5" tabindex="-1"></a>           <span class="fu">matrix</span>(<span class="fu">rep</span>(mu0, N), <span class="at">nrow=</span>N, <span class="at">byrow=</span><span class="cn">TRUE</span>))</span>
 <span id="cb3-6"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-6" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-7" tabindex="-1"></a>Ytest <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, N), <span class="fu">rep</span>(<span class="dv">0</span>, N)))</span></code></pre></div>
-<br>
-<hr>
-<p><br></p>
+<span id="cb3-7"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb3-7" tabindex="-1"></a>Ytest <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,N), <span class="fu">rep</span>(<span class="dv">0</span>,N)))</span></code></pre></div>
+<p> </p>
 </div>
 <div id="visualization-of-the-simulated-data" class="section level4 hasAnchor" number="1.5.4.3">
 <h4><span class="header-section-number">1.5.4.3</span> Visualization of the Simulated Data<a href="two-toy-examples-knn-vs.-linear-regression.html#visualization-of-the-simulated-data" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p><em>This section also serves as a review of plotting in R.</em></p>
-<p><br></p>
-<p>We visualize the data we generated – those in the <code>traindata</code> matrix.
-<br></p>
+<p> </p>
+<p>We visualize the data we generated – those in the <code>traindata</code> matrix.</p>
+<p> </p>
 <p>In the figure generated by the code below, points from two groups are colored in orange and blue, respectively; the two centers are plotted as +, and a legend is added to explain the association of each color.</p>
-<p><br></p>
+<p> </p>
 </div>
 <div id="using-the-default-r-functions-for-plotting" class="section level4 hasAnchor" number="1.5.4.4">
 <h4><span class="header-section-number">1.5.4.4</span> Using the default R functions for plotting<a href="two-toy-examples-knn-vs.-linear-regression.html#using-the-default-r-functions-for-plotting" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-1" tabindex="-1"></a><span class="do">## Create an empty plotting area: The axes are the two</span></span>
-<span id="cb4-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-2" tabindex="-1"></a><span class="do">## vectors of normals generated, each one saved in a column</span></span>
-<span id="cb4-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-3" tabindex="-1"></a><span class="do">## of the `traindata` matrix.  The following line creates</span></span>
-<span id="cb4-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-4" tabindex="-1"></a><span class="do">## an empty plot, since we used the option type=&#39;n&#39; We do</span></span>
-<span id="cb4-5"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-5" tabindex="-1"></a><span class="do">## this so that we can color-code the data.</span></span>
-<span id="cb4-6"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-6" tabindex="-1"></a><span class="fu">plot</span>(traindata[, <span class="dv">1</span>], traindata[, <span class="dv">2</span>], <span class="at">type =</span> <span class="st">&quot;n&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>)</span>
-<span id="cb4-7"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-7" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-8" tabindex="-1"></a><span class="co"># Add the &#39;Class 1&#39; points - in blue color.</span></span>
-<span id="cb4-9"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-9" tabindex="-1"></a><span class="fu">points</span>(traindata[<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span>], traindata[<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">2</span>], <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span>
-<span id="cb4-10"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-10" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-11" tabindex="-1"></a><span class="co"># Add the &#39;Class 0&#39; points - in orange color</span></span>
-<span id="cb4-12"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-12" tabindex="-1"></a><span class="fu">points</span>(traindata[(n <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">2</span> <span class="sc">*</span> n), <span class="dv">1</span>], traindata[(n <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">2</span> <span class="sc">*</span></span>
-<span id="cb4-13"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-13" tabindex="-1"></a>    n), <span class="dv">2</span>], <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">col =</span> <span class="st">&quot;orange&quot;</span>)</span>
-<span id="cb4-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-14" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-15" tabindex="-1"></a><span class="co"># Add the centers for class 1</span></span>
-<span id="cb4-16"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-16" tabindex="-1"></a><span class="fu">points</span>(mu1[<span class="dv">1</span>], mu1[<span class="dv">2</span>], <span class="at">pch =</span> <span class="dv">13</span>, <span class="at">cex =</span> <span class="fl">1.5</span>, <span class="at">col =</span> <span class="st">&quot;green&quot;</span>)</span>
-<span id="cb4-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-17" tabindex="-1"></a></span>
-<span id="cb4-18"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-18" tabindex="-1"></a><span class="co"># Add the centers for class 0</span></span>
-<span id="cb4-19"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-19" tabindex="-1"></a><span class="fu">points</span>(mu0[<span class="dv">1</span>], mu0[<span class="dv">2</span>], <span class="at">pch =</span> <span class="dv">13</span>, <span class="at">cex =</span> <span class="fl">1.5</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>)</span>
-<span id="cb4-20"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-20" tabindex="-1"></a></span>
-<span id="cb4-21"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-21" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">16</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>),</span>
-<span id="cb4-22"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-22" tabindex="-1"></a>    <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Class 1&quot;</span>, <span class="st">&quot;Class 0&quot;</span>))</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-1" tabindex="-1"></a><span class="do">## Create an empty plotting area: The axes are the two vectors of normals generated, </span></span>
+<span id="cb4-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-2" tabindex="-1"></a><span class="do">## each one saved in a column of the `traindata` matrix.</span></span>
+<span id="cb4-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-3" tabindex="-1"></a><span class="do">## The following line creates an empty plot, since we used the option type=&quot;n&quot;</span></span>
+<span id="cb4-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-4" tabindex="-1"></a><span class="do">## We do this so that we can color-code the data.</span></span>
+<span id="cb4-5"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-5" tabindex="-1"></a><span class="fu">plot</span>(traindata[,<span class="dv">1</span>], traindata[,<span class="dv">2</span>], <span class="at">type=</span><span class="st">&quot;n&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;&quot;</span>);</span>
+<span id="cb4-6"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-6" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-7" tabindex="-1"></a><span class="co"># Add the &quot;Class 1&quot; points - in blue color.</span></span>
+<span id="cb4-8"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-8" tabindex="-1"></a><span class="fu">points</span>(traindata[<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">1</span>], traindata[<span class="dv">1</span><span class="sc">:</span>n,<span class="dv">2</span>], <span class="at">pch=</span><span class="dv">16</span>, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>);</span>
+<span id="cb4-9"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-10" tabindex="-1"></a><span class="co"># Add the &quot;Class 0&quot; points - in orange color</span></span>
+<span id="cb4-11"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-11" tabindex="-1"></a><span class="fu">points</span>(traindata[(n<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">2</span><span class="sc">*</span>n),<span class="dv">1</span>], traindata[(n<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">2</span><span class="sc">*</span>n),<span class="dv">2</span>], <span class="at">pch=</span><span class="dv">16</span>, <span class="at">col=</span><span class="st">&quot;orange&quot;</span>); </span>
+<span id="cb4-12"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-12" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-13" tabindex="-1"></a><span class="co"># Add the  centers for class 1</span></span>
+<span id="cb4-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-14" tabindex="-1"></a><span class="fu">points</span>(mu1[<span class="dv">1</span>], mu1[<span class="dv">2</span>], <span class="at">pch=</span><span class="dv">13</span>, <span class="at">cex=</span><span class="fl">1.5</span>, <span class="at">col=</span><span class="st">&quot;green&quot;</span>);    </span>
+<span id="cb4-15"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-15" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-16" tabindex="-1"></a><span class="co"># Add the  centers for class 0</span></span>
+<span id="cb4-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-17" tabindex="-1"></a><span class="fu">points</span>(mu0[<span class="dv">1</span>], mu0[<span class="dv">2</span>], <span class="at">pch=</span><span class="dv">13</span>, <span class="at">cex=</span><span class="fl">1.5</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>);   </span>
+<span id="cb4-18"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-18" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-19" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">16</span>,<span class="dv">16</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>), </span>
+<span id="cb4-20"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb4-20" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Class 1&quot;</span>, <span class="st">&quot;Class 0&quot;</span>))</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-15-1.png" alt="" width="672" /></p>
 </div>
 <div id="using-the-ggplot2-r-library" class="section level4 hasAnchor" number="1.5.4.5">
 <h4><span class="header-section-number">1.5.4.5</span> Using the <code>ggplot2</code> R library<a href="two-toy-examples-knn-vs.-linear-regression.html#using-the-ggplot2-r-library" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>In this section, we present an alternative way to construct the plot above via the <code>ggplot2</code> package. The <code>ggplot2</code> package allows us to create elaborate plots. More information can be found here: <a href="http://ggplot2.org/" class="uri">http://ggplot2.org/</a></p>
-<p><br></p>
+<p> </p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb5-1" tabindex="-1"></a><span class="co"># install.package(&quot;ggplot2&quot;)</span></span>
 <span id="cb5-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb5-2" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;ggplot2&quot;</span>)</span>
 <span id="cb5-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb5-3" tabindex="-1"></a></span>
@@ -556,13 +372,13 @@ Generate <span class="math inline">\(N\)</span> <em>test</em> samples in a simil
 <span id="cb5-19"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb5-19" tabindex="-1"></a>        <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y=</span><span class="st">&quot;&quot;</span>)  <span class="do">## remove axes labels</span></span>
 <span id="cb5-20"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb5-20" tabindex="-1"></a>  </span>
 <span id="cb5-21"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb5-21" tabindex="-1"></a><span class="fu">plot</span>(training.scatter)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-16-1.png" alt="" width="672" /></p>
 </div>
 <div id="k-nearest-neighbors-method" class="section level4 hasAnchor" number="1.5.4.6">
 <h4><span class="header-section-number">1.5.4.6</span> <span class="math inline">\(k\)</span> Nearest-Neighbors Method<a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors-method" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p><br></p>
+<p> </p>
 <p>To apply the <span class="math inline">\(k\)</span>-NN method, we need to choose <span class="math inline">\(k\)</span>. In the example below, we use the neighborhood sizes suggested from the textbook (ESL). We also apply and plot the results for <span class="math inline">\(k=1\)</span> and <span class="math inline">\(k=15\)</span>.</p>
-<p><br></p>
+<p> </p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb6-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;class&quot;</span>) </span>
 <span id="cb6-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb6-2" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb6-3" tabindex="-1"></a>neighbor_size <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">151</span>, <span class="dv">101</span>, <span class="dv">69</span>,  <span class="dv">45</span>, <span class="dv">31</span>, <span class="dv">21</span>, <span class="dv">11</span>, <span class="dv">7</span>, <span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">1</span>); <span class="do">## These are different k&#39;s to try.</span></span>
@@ -582,55 +398,51 @@ Generate <span class="math inline">\(N\)</span> <em>test</em> samples in a simil
 <span id="cb6-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb6-17" tabindex="-1"></a></span>
 <span id="cb6-18"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb6-18" tabindex="-1"></a><span class="fu">cbind</span>(train.err.knn, test.err.knn)    <span class="do">## matrix containing the train and test errors</span></span></code></pre></div>
 <pre><code>##       train.err.knn test.err.knn
-##  [1,]         0.250      0.23925
-##  [2,]         0.255      0.23855
-##  [3,]         0.265      0.24110
-##  [4,]         0.260      0.24440
-##  [5,]         0.270      0.24465
-##  [6,]         0.280      0.24780
-##  [7,]         0.250      0.25545
-##  [8,]         0.240      0.25835
-##  [9,]         0.235      0.26670
-## [10,]         0.190      0.28470
-## [11,]         0.000      0.32095</code></pre>
-<p><br></p>
+##  [1,]         0.220      0.25325
+##  [2,]         0.230      0.24850
+##  [3,]         0.230      0.24735
+##  [4,]         0.225      0.24765
+##  [5,]         0.235      0.24885
+##  [6,]         0.210      0.24945
+##  [7,]         0.185      0.25085
+##  [8,]         0.180      0.25940
+##  [9,]         0.190      0.26460
+## [10,]         0.160      0.27545
+## [11,]         0.000      0.30800</code></pre>
+<p> </p>
 </div>
 <div id="fold-cross-validation-for-choosing-optimal-k" class="section level4 hasAnchor" number="1.5.4.7">
 <h4><span class="header-section-number">1.5.4.7</span> 5-Fold Cross-Validation for Choosing optimal <span class="math inline">\(k\)</span><a href="two-toy-examples-knn-vs.-linear-regression.html#fold-cross-validation-for-choosing-optimal-k" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>A systematic way to determine the <em>optimal</em> value for the neighborhood size, <span class="math inline">\(k\)</span>, in a range of values is the so-called 5-fold Cross-Validation (CV) method. Essentially, the method selects the <span class="math inline">\(k\)</span> value that minimizes the CV error. In a nutshell, the 5-fold CV error for each <span class="math inline">\(k\)</span> is a <em>sum of 5 prediction errors</em>, one corresponding to each fold.
 <br></p>
 <p>In the code below, we have an outside loop from 1 to 5 (the folds), and an inside loop from 1 to <span class="math inline">\(m\)</span> (all possible values for <span class="math inline">\(k\)</span>). Inside the loop, we use 80% (i.e., four folds) of the data as training and predict on the 20% (i.e., one fold) holdout set.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-1" tabindex="-1"></a><span class="do">## In this chunk of code, we use the same vector of k&#39;s as</span></span>
-<span id="cb8-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-2" tabindex="-1"></a><span class="do">## above - the neighbor_size vector of size m</span></span>
-<span id="cb8-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-3" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-4" tabindex="-1"></a><span class="do">## Initialize a vector cv.error to store the CV error for</span></span>
-<span id="cb8-5"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-5" tabindex="-1"></a><span class="do">## each k.</span></span>
-<span id="cb8-6"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-6" tabindex="-1"></a>cv.error <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">0</span>, m)</span>
-<span id="cb8-7"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-7" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-8" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-9" tabindex="-1"></a>id <span class="ot">=</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="dv">2</span> <span class="sc">*</span> n), (<span class="dv">2</span> <span class="sc">*</span> n), <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb8-10"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-10" tabindex="-1"></a>fold <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">40</span>, <span class="dv">80</span>, <span class="dv">120</span>, <span class="dv">160</span>, <span class="dv">200</span>)</span>
-<span id="cb8-11"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-11" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-12" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>) <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>m) {</span>
-<span id="cb8-13"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-13" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-14" tabindex="-1"></a>    <span class="do">## ith.fold = rows which are in the i-th fold</span></span>
-<span id="cb8-15"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-15" tabindex="-1"></a>    ith.fold <span class="ot">=</span> id[(fold[i] <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>fold[i <span class="sc">+</span> <span class="dv">1</span>]]</span>
-<span id="cb8-16"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-16" tabindex="-1"></a>    tmp <span class="ot">=</span> <span class="fu">knn</span>(traindata[<span class="sc">-</span>ith.fold, ], traindata[ith.fold, ],</span>
-<span id="cb8-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-17" tabindex="-1"></a>        Ytrain[<span class="sc">-</span>ith.fold], <span class="at">k =</span> neighbor_size[j])</span>
-<span id="cb8-18"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-18" tabindex="-1"></a>    cv.error[j] <span class="ot">=</span> cv.error[j] <span class="sc">+</span> <span class="fu">sum</span>(tmp <span class="sc">!=</span> Ytrain[ith.fold])</span>
-<span id="cb8-19"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-19" tabindex="-1"></a>}</span>
-<span id="cb8-20"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-20" tabindex="-1"></a></span>
-<span id="cb8-21"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-21" tabindex="-1"></a><span class="do">## Find the optimal k value based 5-fold CV</span></span>
-<span id="cb8-22"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-22" tabindex="-1"></a>k.optimal <span class="ot">=</span> neighbor_size[<span class="fu">order</span>(cv.error)[<span class="dv">1</span>]]</span>
-<span id="cb8-23"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-23" tabindex="-1"></a></span>
-<span id="cb8-24"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-24" tabindex="-1"></a><span class="do">## Error of KNN for the k is chosen by 5-fold CV</span></span>
-<span id="cb8-25"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-25" tabindex="-1"></a>Ytrain.pred <span class="ot">=</span> <span class="fu">knn</span>(traindata, traindata, Ytrain, <span class="at">k =</span> k.optimal)</span>
-<span id="cb8-26"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-26" tabindex="-1"></a>train.err.knn.CV <span class="ot">=</span> <span class="fu">sum</span>(Ytrain <span class="sc">!=</span> Ytrain.pred)<span class="sc">/</span>(<span class="dv">2</span> <span class="sc">*</span> n)</span>
-<span id="cb8-27"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-27" tabindex="-1"></a>Ytest.pred <span class="ot">=</span> <span class="fu">knn</span>(traindata, testdata, Ytrain, <span class="at">k =</span> k.optimal)</span>
-<span id="cb8-28"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-28" tabindex="-1"></a>test.err.knn.CV <span class="ot">=</span> <span class="fu">sum</span>(Ytest <span class="sc">!=</span> Ytest.pred)<span class="sc">/</span>(<span class="dv">2</span> <span class="sc">*</span> N)</span></code></pre></div>
-<br>
-<hr>
-<p><br></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-1" tabindex="-1"></a><span class="do">## In this chunk of code, we use the same vector of k&#39;s as above - the neighbor_size vector of size m</span></span>
+<span id="cb8-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-2" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-3" tabindex="-1"></a><span class="do">## Initialize a vector cv.error to store the CV error for each k.</span></span>
+<span id="cb8-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-4" tabindex="-1"></a>cv.error <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">0</span>,m);</span>
+<span id="cb8-5"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-5" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-7" tabindex="-1"></a>id <span class="ot">=</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="dv">2</span><span class="sc">*</span>n),(<span class="dv">2</span><span class="sc">*</span>n), <span class="at">replace=</span><span class="cn">FALSE</span>);</span>
+<span id="cb8-8"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-8" tabindex="-1"></a>fold <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">40</span>,  <span class="dv">80</span>, <span class="dv">120</span>, <span class="dv">160</span>, <span class="dv">200</span>)</span>
+<span id="cb8-9"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-9" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-10" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb8-11"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-11" tabindex="-1"></a>    <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>m){</span>
+<span id="cb8-12"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-12" tabindex="-1"></a>      </span>
+<span id="cb8-13"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-13" tabindex="-1"></a>      <span class="do">## ith.fold = rows which are in the i-th fold</span></span>
+<span id="cb8-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-14" tabindex="-1"></a>      ith.fold <span class="ot">=</span> id[(fold[i]<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>fold[i<span class="sc">+</span><span class="dv">1</span>]];   </span>
+<span id="cb8-15"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-15" tabindex="-1"></a>      tmp <span class="ot">=</span> <span class="fu">knn</span>(traindata[<span class="sc">-</span>ith.fold,], traindata[ith.fold,], Ytrain[<span class="sc">-</span>ith.fold], <span class="at">k=</span>neighbor_size[j]);</span>
+<span id="cb8-16"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-16" tabindex="-1"></a>      cv.error[j]<span class="ot">=</span>cv.error[j] <span class="sc">+</span> <span class="fu">sum</span>(tmp <span class="sc">!=</span> Ytrain[ith.fold])</span>
+<span id="cb8-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-17" tabindex="-1"></a>    }</span>
+<span id="cb8-18"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-18" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-19" tabindex="-1"></a><span class="do">## Find the optimal k value based 5-fold CV</span></span>
+<span id="cb8-20"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-20" tabindex="-1"></a>k.optimal <span class="ot">=</span> neighbor_size[<span class="fu">order</span>(cv.error)[<span class="dv">1</span>]]  </span>
+<span id="cb8-21"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-21" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-22" tabindex="-1"></a><span class="do">## Error of KNN for the k is chosen by 5-fold CV</span></span>
+<span id="cb8-23"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-23" tabindex="-1"></a>Ytrain.pred <span class="ot">=</span> <span class="fu">knn</span>(traindata, traindata, Ytrain, <span class="at">k=</span>k.optimal)</span>
+<span id="cb8-24"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-24" tabindex="-1"></a>train.err.knn.CV <span class="ot">=</span> <span class="fu">sum</span>(Ytrain <span class="sc">!=</span> Ytrain.pred)<span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>n)</span>
+<span id="cb8-25"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-25" tabindex="-1"></a>Ytest.pred <span class="ot">=</span> <span class="fu">knn</span>(traindata, testdata, Ytrain,<span class="at">k=</span>k.optimal)</span>
+<span id="cb8-26"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb8-26" tabindex="-1"></a>test.err.knn.CV <span class="ot">=</span> <span class="fu">sum</span>(Ytest <span class="sc">!=</span> Ytest.pred)<span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>N)  </span></code></pre></div>
+<p>  </p>
 </div>
 <div id="least-squares-method" class="section level4 hasAnchor" number="1.5.4.8">
 <h4><span class="header-section-number">1.5.4.8</span> Least Squares Method<a href="two-toy-examples-knn-vs.-linear-regression.html#least-squares-method" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -639,50 +451,45 @@ We run a regression of <code>Ytrain</code> vs. the <code>traindata</code>, and 
 <span class="math display">\[\hat{Y} = \begin{cases} &amp; 1, \text{ if } fitted(Y) &gt; 0.5\\
                           &amp; 0, \text{ if } fitted(Y) \leq 0.5
             \end{cases} \]</span></p>
-<p><br></p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-1" tabindex="-1"></a><span class="do">## Run a regression using the lm function Ytrain is a</span></span>
-<span id="cb9-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-2" tabindex="-1"></a><span class="do">## factor, so we need to convert it to a numeric vector to</span></span>
-<span id="cb9-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-3" tabindex="-1"></a><span class="do">## run the lm</span></span>
-<span id="cb9-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-4" tabindex="-1"></a>RegModel <span class="ot">=</span> <span class="fu">lm</span>(<span class="fu">as.numeric</span>(Ytrain) <span class="sc">-</span> <span class="dv">1</span> <span class="sc">~</span> traindata)</span>
-<span id="cb9-5"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-5" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-6" tabindex="-1"></a><span class="do">## Compute the \hat{Y} for training</span></span>
-<span id="cb9-7"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-7" tabindex="-1"></a>Ytrain_pred_LS <span class="ot">=</span> <span class="fu">as.numeric</span>(RegModel<span class="sc">$</span>fitted <span class="sc">&gt;</span> <span class="fl">0.5</span>)</span>
-<span id="cb9-8"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-8" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-9" tabindex="-1"></a><span class="do">## Compute the predicted values for testing data and then</span></span>
-<span id="cb9-10"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-10" tabindex="-1"></a><span class="do">## the \hat{Y}</span></span>
-<span id="cb9-11"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-11" tabindex="-1"></a>Ytest_pred_LS <span class="ot">=</span> RegModel<span class="sc">$</span>coef[<span class="dv">1</span>] <span class="sc">+</span> RegModel<span class="sc">$</span>coef[<span class="dv">2</span>] <span class="sc">*</span> testdata[,</span>
-<span id="cb9-12"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-12" tabindex="-1"></a>    <span class="dv">1</span>] <span class="sc">+</span> RegModel<span class="sc">$</span>coef[<span class="dv">3</span>] <span class="sc">*</span> testdata[, <span class="dv">2</span>]</span>
-<span id="cb9-13"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-13" tabindex="-1"></a>Ytest_pred_LS <span class="ot">=</span> <span class="fu">as.numeric</span>(Ytest_pred_LS <span class="sc">&gt;</span> <span class="fl">0.5</span>)</span>
-<span id="cb9-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-14" tabindex="-1"></a></span>
-<span id="cb9-15"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-15" tabindex="-1"></a></span>
-<span id="cb9-16"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-16" tabindex="-1"></a><span class="do">## Cross-tab for training data and training error</span></span>
-<span id="cb9-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-17" tabindex="-1"></a><span class="fu">table</span>(Ytrain, Ytrain_pred_LS)</span></code></pre></div>
+<p> </p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-1" tabindex="-1"></a><span class="do">## Run a regression using the lm function</span></span>
+<span id="cb9-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-2" tabindex="-1"></a><span class="do">## Ytrain is a factor, so we need to convert it to a numeric vector to run the lm</span></span>
+<span id="cb9-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-3" tabindex="-1"></a>RegModel <span class="ot">=</span> <span class="fu">lm</span>(<span class="fu">as.numeric</span>(Ytrain)<span class="sc">-</span><span class="dv">1</span> <span class="sc">~</span> traindata)</span>
+<span id="cb9-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-4" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-5" tabindex="-1"></a><span class="do">## Compute the \hat{Y} for training </span></span>
+<span id="cb9-6"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-6" tabindex="-1"></a>Ytrain_pred_LS <span class="ot">=</span> <span class="fu">as.numeric</span>(RegModel<span class="sc">$</span>fitted <span class="sc">&gt;</span> <span class="fl">0.5</span>)</span>
+<span id="cb9-7"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-7" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-8" tabindex="-1"></a><span class="do">## Compute the predicted values for testing data and then the \hat{Y}</span></span>
+<span id="cb9-9"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-9" tabindex="-1"></a>Ytest_pred_LS <span class="ot">=</span> RegModel<span class="sc">$</span>coef[<span class="dv">1</span>] <span class="sc">+</span> RegModel<span class="sc">$</span>coef[<span class="dv">2</span>] <span class="sc">*</span> testdata[,<span class="dv">1</span>] <span class="sc">+</span> RegModel<span class="sc">$</span>coef[<span class="dv">3</span>] <span class="sc">*</span> testdata[,<span class="dv">2</span>]</span>
+<span id="cb9-10"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-10" tabindex="-1"></a>Ytest_pred_LS <span class="ot">=</span> <span class="fu">as.numeric</span>(Ytest_pred_LS <span class="sc">&gt;</span> <span class="fl">0.5</span> )</span>
+<span id="cb9-11"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-11" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-12" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-13" tabindex="-1"></a><span class="do">## Cross-tab for training data and training error</span></span>
+<span id="cb9-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb9-14" tabindex="-1"></a><span class="fu">table</span>(Ytrain, Ytrain_pred_LS);   </span></code></pre></div>
 <pre><code>##       Ytrain_pred_LS
 ## Ytrain  0  1
-##      0 75 25
-##      1 26 74</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-1" tabindex="-1"></a>train.err.LS <span class="ot">=</span> <span class="fu">sum</span>(Ytrain <span class="sc">!=</span> Ytrain_pred_LS)<span class="sc">/</span>(<span class="dv">2</span> <span class="sc">*</span> n)</span>
+##      0 77 23
+##      1 22 78</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-1" tabindex="-1"></a>train.err.LS <span class="ot">=</span> <span class="fu">sum</span>(Ytrain <span class="sc">!=</span>  Ytrain_pred_LS) <span class="sc">/</span> (<span class="dv">2</span><span class="sc">*</span>n);  </span>
 <span id="cb11-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-2" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-3" tabindex="-1"></a><span class="do">## Cross-tab for test data and test error</span></span>
-<span id="cb11-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-4" tabindex="-1"></a><span class="fu">table</span>(Ytest, Ytest_pred_LS)</span></code></pre></div>
+<span id="cb11-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb11-4" tabindex="-1"></a><span class="fu">table</span>(Ytest, Ytest_pred_LS);     </span></code></pre></div>
 <pre><code>##      Ytest_pred_LS
 ## Ytest    0    1
-##     0 7502 2498
-##     1 2274 7726</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb13-1" tabindex="-1"></a>test.err.LS <span class="ot">=</span> <span class="fu">sum</span>(Ytest <span class="sc">!=</span> Ytest_pred_LS)<span class="sc">/</span>(<span class="dv">2</span> <span class="sc">*</span> N)</span></code></pre></div>
-<br>
-<hr>
-<p><br></p>
+##     0 7350 2650
+##     1 2377 7623</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb13-1" tabindex="-1"></a>test.err.LS <span class="ot">=</span> <span class="fu">sum</span>(Ytest <span class="sc">!=</span>  Ytest_pred_LS) <span class="sc">/</span> (<span class="dv">2</span><span class="sc">*</span>N);</span></code></pre></div>
+<p>  </p>
 </div>
 <div id="illustration-of-the-results" class="section level4 hasAnchor" number="1.5.4.9">
 <h4><span class="header-section-number">1.5.4.9</span> Illustration of the Results<a href="two-toy-examples-knn-vs.-linear-regression.html#illustration-of-the-results" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p><br>
 First, we illustrate the classification achieved by each method.</p>
-<p><br><br></p>
+<p> </p>
 </div>
 <div id="knn-classification-for-two-ks-k-15-and-k-1" class="section level4 hasAnchor" number="1.5.4.10">
 <h4><span class="header-section-number">1.5.4.10</span> kNN Classification for two k’s: k = 15 and k = 1<a href="two-toy-examples-knn-vs.-linear-regression.html#knn-classification-for-two-ks-k-15-and-k-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p><br></p>
+<p> </p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb14-1" tabindex="-1"></a><span class="do">## Grid Using kNN Classification: We first define the boundaries for the grid</span></span>
 <span id="cb14-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb14-2" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb14-3" tabindex="-1"></a>x.min <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">min</span>(mytraindata<span class="sc">$</span>X1), <span class="at">digits=</span><span class="dv">1</span>)<span class="sc">-</span><span class="fl">0.1</span></span>
@@ -720,7 +527,7 @@ First, we illustrate the classification achieved by each method.</p>
 <span id="cb14-35"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb14-35" tabindex="-1"></a>            <span class="fu">ggtitle</span>(<span class="st">&quot;kNN Classification for k=15&quot;</span>) </span>
 <span id="cb14-36"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb14-36" tabindex="-1"></a></span>
 <span id="cb14-37"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb14-37" tabindex="-1"></a><span class="fu">plot</span>(knn.plot<span class="fl">.15</span>)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-20-1.png" alt="" width="672" /></p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb15-1" tabindex="-1"></a><span class="do">## Plot for k=1</span></span>
 <span id="cb15-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb15-2" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb15-3" tabindex="-1"></a>knn.yhat<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">knn</span>(traindata, x.new, Ytrain,  <span class="at">k=</span><span class="dv">1</span>) </span>
@@ -736,71 +543,65 @@ First, we illustrate the classification achieved by each method.</p>
 <span id="cb15-13"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb15-13" tabindex="-1"></a>            <span class="fu">ggtitle</span>(<span class="st">&quot;kNN Classification for k=1&quot;</span>) </span>
 <span id="cb15-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb15-14" tabindex="-1"></a></span>
 <span id="cb15-15"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb15-15" tabindex="-1"></a><span class="fu">plot</span>(knn.plot<span class="fl">.1</span>)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-20-2.png" width="672" /></p>
-<p><br><br></p>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-20-2.png" alt="" width="672" /></p>
+<p> </p>
 </div>
 <div id="regression-classification" class="section level4 hasAnchor" number="1.5.4.11">
 <h4><span class="header-section-number">1.5.4.11</span> Regression Classification<a href="two-toy-examples-knn-vs.-linear-regression.html#regression-classification" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p><br></p>
+<p> </p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-1" tabindex="-1"></a><span class="do">## Grid Using Linear Model Classification</span></span>
 <span id="cb16-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-2" tabindex="-1"></a></span>
-<span id="cb16-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-3" tabindex="-1"></a>RegModel <span class="ot">=</span> <span class="fu">lm</span>(<span class="fu">as.numeric</span>(Ytrain) <span class="sc">-</span> <span class="dv">1</span> <span class="sc">~</span> traindata)</span>
+<span id="cb16-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-3" tabindex="-1"></a>RegModel <span class="ot">=</span> <span class="fu">lm</span>(<span class="fu">as.numeric</span>(Ytrain)<span class="sc">-</span><span class="dv">1</span> <span class="sc">~</span> traindata)</span>
 <span id="cb16-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-4" tabindex="-1"></a>beta.hat <span class="ot">=</span> <span class="fu">coef</span>(RegModel)</span>
 <span id="cb16-5"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-5" tabindex="-1"></a></span>
 <span id="cb16-6"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-6" tabindex="-1"></a><span class="do">## We use the same ranges for the grid as before</span></span>
 <span id="cb16-7"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-7" tabindex="-1"></a></span>
-<span id="cb16-8"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-8" tabindex="-1"></a>Reg.yhat <span class="ot">=</span> <span class="fu">as.matrix</span>(<span class="fu">cbind</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">nrow</span>(x.new)), x.new)) <span class="sc">%*%</span> beta.hat  <span class="do">## predicted Y values</span></span>
-<span id="cb16-9"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-9" tabindex="-1"></a>Reg.pred <span class="ot">=</span> <span class="fu">ifelse</span>(Reg.yhat <span class="sc">&gt;</span> <span class="fl">0.5</span>, <span class="st">&quot;1&quot;</span>, <span class="st">&quot;0&quot;</span>)  <span class="do">## convert numeric Y to factor</span></span>
+<span id="cb16-8"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-8" tabindex="-1"></a>Reg.yhat <span class="ot">=</span> <span class="fu">as.matrix</span>(<span class="fu">cbind</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">nrow</span>(x.new)), x.new)) <span class="sc">%*%</span> beta.hat   <span class="do">## predicted Y values</span></span>
+<span id="cb16-9"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-9" tabindex="-1"></a>Reg.pred <span class="ot">=</span> <span class="fu">ifelse</span>(Reg.yhat <span class="sc">&gt;</span> <span class="fl">0.5</span>, <span class="st">&quot;1&quot;</span>, <span class="st">&quot;0&quot;</span>)   <span class="do">## convert numeric Y to factor</span></span>
 <span id="cb16-10"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-10" tabindex="-1"></a></span>
 <span id="cb16-11"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-11" tabindex="-1"></a>Reg.plot.data <span class="ot">=</span> <span class="fu">cbind</span>(x.new, Reg.pred)</span>
 <span id="cb16-12"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-12" tabindex="-1"></a></span>
-<span id="cb16-13"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-13" tabindex="-1"></a><span class="do">## Basic plot is same as before, so now we add the</span></span>
-<span id="cb16-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-14" tabindex="-1"></a><span class="do">## regression boundary and classiffication results</span></span>
-<span id="cb16-15"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-15" tabindex="-1"></a>reg.plot <span class="ot">=</span> grid.plot <span class="sc">+</span> <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="sc">-</span>beta.hat[<span class="dv">2</span>]<span class="sc">/</span>beta.hat[<span class="dv">3</span>],</span>
-<span id="cb16-16"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-16" tabindex="-1"></a>    <span class="at">intercept =</span> (<span class="fl">0.5</span> <span class="sc">-</span> beta.hat[<span class="dv">1</span>])<span class="sc">/</span>beta.hat[<span class="dv">3</span>], <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
-<span id="cb16-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-17" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> Reg.plot.data, <span class="fu">aes</span>(<span class="at">x =</span> X1, <span class="at">y =</span> X2, <span class="at">color =</span> Reg.pred),</span>
-<span id="cb16-18"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-18" tabindex="-1"></a>        <span class="at">size =</span> <span class="fl">0.05</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;Regression Classification&quot;</span>)</span>
+<span id="cb16-13"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-13" tabindex="-1"></a><span class="do">## Basic plot is same as before, so now we add the regression boundary and classiffication results</span></span>
+<span id="cb16-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-14" tabindex="-1"></a>reg.plot <span class="ot">=</span> grid.plot <span class="sc">+</span> </span>
+<span id="cb16-15"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-15" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb16-16"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-16" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="sc">-</span>beta.hat[<span class="dv">2</span>]<span class="sc">/</span>beta.hat[<span class="dv">3</span>], <span class="at">intercept=</span>(.<span class="dv">5</span><span class="sc">-</span>beta.hat[<span class="dv">1</span>])<span class="sc">/</span>beta.hat[<span class="dv">3</span>],<span class="at">color=</span><span class="st">&quot;black&quot;</span>)  <span class="sc">+</span></span>
+<span id="cb16-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-17" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> Reg.plot.data, <span class="fu">aes</span>(<span class="at">x=</span>X1, <span class="at">y=</span>X2, <span class="at">color=</span>Reg.pred), <span class="at">size=</span><span class="fl">0.05</span>) <span class="sc">+</span></span>
+<span id="cb16-18"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-18" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Regression Classification&quot;</span>)</span>
 <span id="cb16-19"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-19" tabindex="-1"></a></span>
 <span id="cb16-20"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb16-20" tabindex="-1"></a><span class="fu">plot</span>(reg.plot)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
-<p><br><br></p>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-21-1.png" alt="" width="672" /></p>
+<p> </p>
 </div>
 <div id="plot-the-performance-and-compare-the-two-methods" class="section level4 hasAnchor" number="1.5.4.12">
 <h4><span class="header-section-number">1.5.4.12</span> Plot the Performance and Compare the two Methods<a href="two-toy-examples-knn-vs.-linear-regression.html#plot-the-performance-and-compare-the-two-methods" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p><br></p>
+<p> </p>
 <p>Test errors are in <code>magenta</code> and training errors are in <code>blue</code>. The upper <span class="math inline">\(x\)</span>-coordinate indicates the <span class="math inline">\(k\)</span> values, and the lower <span class="math inline">\(x\)</span>-coordinate indicates the degrees-of-freedom of the <span class="math inline">\(k\)</span>NN procedures so that the labels are reciprocally related to <span class="math inline">\(k\)</span>.</p>
-<p><br></p>
+<p> </p>
 <p>The training and test errors for linear regression are plotted at <span class="math inline">\(df = 3\)</span> (corresponding to <span class="math inline">\(k = (2n)/3\)</span>), since the linear model has 3 parameters, i.e., 3 dfs.</p>
-<p><br></p>
+<p> </p>
 <p>The training and test errors for KNN with <span class="math inline">\(k\)</span> chosen by CV are plotted at the chose <span class="math inline">\(k\)</span> values.</p>
-<p><br></p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">c</span>(<span class="fl">0.5</span>, m), <span class="fu">range</span>(test.err.LS, train.err.LS, test.err.knn,</span>
-<span id="cb17-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-2" tabindex="-1"></a>    train.err.knn), <span class="at">type =</span> <span class="st">&quot;n&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Degrees of Freedom&quot;</span>,</span>
-<span id="cb17-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-3" tabindex="-1"></a>    <span class="at">ylab =</span> <span class="st">&quot;Error&quot;</span>, <span class="at">xaxt =</span> <span class="st">&quot;n&quot;</span>)</span>
-<span id="cb17-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-4" tabindex="-1"></a></span>
-<span id="cb17-5"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-5" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">round</span>((<span class="dv">2</span> <span class="sc">*</span> n)<span class="sc">/</span>neighbor_size)</span>
-<span id="cb17-6"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-6" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="dv">1</span><span class="sc">:</span>m, <span class="at">labels =</span> df)</span>
-<span id="cb17-7"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-7" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">3</span>, <span class="at">at =</span> <span class="dv">1</span><span class="sc">:</span>m, <span class="at">labels =</span> neighbor_size)</span>
-<span id="cb17-8"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-8" tabindex="-1"></a></span>
-<span id="cb17-9"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-9" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">1</span><span class="sc">:</span>m, test.err.knn, <span class="at">col =</span> <span class="st">&quot;magenta&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>)</span>
-<span id="cb17-10"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-10" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span>m, test.err.knn, <span class="at">col =</span> <span class="st">&quot;magenta&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb17-11"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-11" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">1</span><span class="sc">:</span>m, train.err.knn, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>)</span>
-<span id="cb17-12"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-12" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span>m, train.err.knn, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lty =</span> <span class="dv">3</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb17-13"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-13" tabindex="-1"></a></span>
-<span id="cb17-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-14" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">3</span>, train.err.LS, <span class="at">pch =</span> <span class="dv">2</span>, <span class="at">cex =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span>
-<span id="cb17-15"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-15" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">3</span>, test.err.LS, <span class="at">pch =</span> <span class="dv">2</span>, <span class="at">cex =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;magenta&quot;</span>)</span>
-<span id="cb17-16"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-16" tabindex="-1"></a></span>
-<span id="cb17-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-17" tabindex="-1"></a><span class="fu">points</span>((<span class="dv">1</span><span class="sc">:</span>m)[neighbor_size <span class="sc">==</span> k.optimal], train.err.knn.CV, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>,</span>
-<span id="cb17-18"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-18" tabindex="-1"></a>    <span class="at">pch =</span> <span class="dv">5</span>, <span class="at">cex =</span> <span class="dv">2</span>)</span>
-<span id="cb17-19"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-19" tabindex="-1"></a><span class="fu">points</span>((<span class="dv">1</span><span class="sc">:</span>m)[neighbor_size <span class="sc">==</span> k.optimal], test.err.knn.CV, <span class="at">col =</span> <span class="st">&quot;magenta&quot;</span>,</span>
-<span id="cb17-20"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-20" tabindex="-1"></a>    <span class="at">pch =</span> <span class="dv">5</span>, <span class="at">cex =</span> <span class="dv">2</span>)</span>
-<span id="cb17-21"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-21" tabindex="-1"></a></span>
-<span id="cb17-22"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-22" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomleft&quot;</span>, <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">16</span>, <span class="dv">16</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>,</span>
-<span id="cb17-23"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-23" tabindex="-1"></a>    <span class="st">&quot;magenta&quot;</span>), <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Regression Training Error&quot;</span>, <span class="st">&quot;Regression Testing Error&quot;</span>,</span>
-<span id="cb17-24"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-24" tabindex="-1"></a>    <span class="st">&quot;kNN Optimal k Training Error&quot;</span>, <span class="st">&quot;kNN Optimal k Testing Error&quot;</span>,</span>
-<span id="cb17-25"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-25" tabindex="-1"></a>    <span class="st">&quot;kNN different k Training Error&quot;</span>, <span class="st">&quot;kNN different k Testing Error&quot;</span>),</span>
-<span id="cb17-26"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-26" tabindex="-1"></a>    <span class="at">cex =</span> <span class="fl">0.75</span>)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p> </p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">c</span>(<span class="fl">0.5</span>,m), <span class="fu">range</span>(test.err.LS, train.err.LS, test.err.knn, train.err.knn),</span>
+<span id="cb17-2"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-2" tabindex="-1"></a>                  <span class="at">type=</span><span class="st">&quot;n&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Degrees of Freedom&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Error&quot;</span>, <span class="at">xaxt=</span><span class="st">&quot;n&quot;</span>)</span>
+<span id="cb17-3"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-3" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-4" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">round</span>((<span class="dv">2</span><span class="sc">*</span>n)<span class="sc">/</span>neighbor_size)</span>
+<span id="cb17-5"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-5" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at=</span><span class="dv">1</span><span class="sc">:</span>m, <span class="at">labels=</span>df)</span>
+<span id="cb17-6"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-6" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">3</span>, <span class="at">at=</span><span class="dv">1</span><span class="sc">:</span>m, <span class="at">labels=</span>neighbor_size)</span>
+<span id="cb17-7"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-7" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-8" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">1</span><span class="sc">:</span>m, test.err.knn, <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>, <span class="at">pch=</span><span class="dv">16</span>)</span>
+<span id="cb17-9"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-9" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span>m, test.err.knn, <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb17-10"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-10" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">1</span><span class="sc">:</span>m, train.err.knn, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">pch=</span><span class="dv">16</span>)</span>
+<span id="cb17-11"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-11" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span>m, train.err.knn, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">lty=</span><span class="dv">3</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb17-12"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-12" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-13" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">3</span>, train.err.LS, <span class="at">pch=</span><span class="dv">2</span>, <span class="at">cex=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb17-14"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-14" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">3</span>, test.err.LS, <span class="at">pch=</span><span class="dv">2</span>, <span class="at">cex=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>)</span>
+<span id="cb17-15"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-15" tabindex="-1"></a></span>
+<span id="cb17-16"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-16" tabindex="-1"></a><span class="fu">points</span>((<span class="dv">1</span><span class="sc">:</span>m)[neighbor_size <span class="sc">==</span> k.optimal], train.err.knn.CV, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">pch=</span><span class="dv">5</span>, <span class="at">cex=</span><span class="dv">2</span>)</span>
+<span id="cb17-17"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-17" tabindex="-1"></a><span class="fu">points</span>((<span class="dv">1</span><span class="sc">:</span>m)[neighbor_size <span class="sc">==</span> k.optimal], test.err.knn.CV, <span class="at">col=</span><span class="st">&quot;magenta&quot;</span>, <span class="at">pch=</span><span class="dv">5</span>, <span class="at">cex=</span><span class="dv">2</span>)</span>
+<span id="cb17-18"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-18" tabindex="-1"></a></span>
+<span id="cb17-19"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-19" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomleft&quot;</span>, <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">16</span>, <span class="dv">16</span>),  <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;magenta&quot;</span>), </span>
+<span id="cb17-20"><a href="two-toy-examples-knn-vs.-linear-regression.html#cb17-20" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Regression Training Error&quot;</span>, <span class="st">&quot;Regression Testing Error&quot;</span>, <span class="st">&quot;kNN Optimal k Training Error&quot;</span>, <span class="st">&quot;kNN Optimal k Testing Error&quot;</span>, <span class="st">&quot;kNN different k Training Error&quot;</span>, <span class="st">&quot;kNN different k Testing Error&quot;</span>), <span class="at">cex=</span><span class="fl">0.75</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-22-1.png" alt="" width="672" /></p>
 
 </div>
 </div>
@@ -811,8 +612,8 @@ First, we illustrate the classification achieved by each method.</p>
           </div>
         </div>
       </div>
-<a href="bias-variance-trade-off.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="linear-regression-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="bias-variance-trade-off.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -839,12 +640,12 @@ gitbook.start({
   },
   "fontsettings": {
     "theme": "white",
-    "family": "sans serif",
-    "size": 1
+    "family": "sans-serif",
+    "size": 2
   },
   "edit": {
-    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/01-intro.Rmd",
-    "text": "Edit"
+    "link": null,
+    "text": null
   },
   "history": {
     "link": null,
@@ -854,18 +655,15 @@ gitbook.start({
     "link": null,
     "text": null
   },
-  "download": ["my-598PSL.epub"],
+  "download": ["my-598PSL.pdf", "my-598PSL.epub"],
   "search": {
     "engine": "fuse",
     "options": null
   },
   "toc": {
     "collapse": "subsection",
-    "toc_depth": 4,
-    "toc_float": true,
     "scroll_highlight": true
-  },
-  "title": "CS 598 Practical Statistical Learning"
+  }
 });
 });
 </script>
