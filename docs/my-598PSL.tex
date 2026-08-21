@@ -1190,7 +1190,7 @@ If outliers appear to be problematic, useful practical steps include:
   using winsorization to limit the influence of extreme values.
 \end{enumerate}
 
-\section{\texorpdfstring{The \texttt{Birthweight} Data Set Example}{The Birthweight Data Set Example}}\label{the-birthweight-data-set-example}
+\section{\texorpdfstring{The \texttt{Birthweight} Example}{The Birthweight Example}}\label{the-birthweight-example}
 
 ~
 
@@ -1239,6 +1239,629 @@ The analysis of this data set is available in R and Python.
 ~
 
 The data analysis example also includes a highly correlated data set (\texttt{seatpos}) from Faraway's book on ``Linear Models in R''. You can download this data here: seatpos.csv
+
+\chapter{Variable Selection \& Regularization}\label{variable-selection-regularization}
+
+Consider the multiple linear regression model with \(p\) predictors \textbf{plus} an intercept:
+\[Y \sim 1+ X_1+X_2+ \ldots+X_p\]
+
+In many applications the number of explanatory variables \(p\) is large; in some cases we even have \(p \gg n\). This does not mean that every variable is relevant to the response \(Y\). In fact, \emph{only a small fraction} of the \(p\) variables is typically believed to be relevant.
+
+Our \textbf{goal} in this chapter is to develop methods that efficiently identify the predictors that are useful for estimating or predicting the response. Because the least-squares estimator \(\hat{\beta}\) is unbiased, the coefficients of irrelevant variables tend to be close to zero. Nevertheless, if our primary objective is good prediction, we must still ask whether it is beneficial to remove those unnecessary variables from the model.
+
+~
+
+To understand the consequences of including superfluous predictors, we first examine the \textbf{training} and \textbf{testing} errors more carefully.
+
+~
+
+\section{Training vs.~Testing Errors}\label{training-vs.-testing-errors}
+
+Consider that we \emph{split our data in two parts}:
+
+\begin{itemize}
+\item
+  \textbf{Training data} \(\{\mathbf{x}_i, y_i \}_{i=1}^n\): used to fit the model
+\item
+  \textbf{Testing data} \(\{\mathbf{x}_i, y_i^* \}_{i=1}^n\): an \textbf{independent} data set collected at the same locations \(\mathbf{x}_i\)
+\end{itemize}
+
+\textbf{Remark}: In practice we are given a single data set that we randomly partition into a training set and a testing set (typically allocating roughly 80 \% of the observations to training).
+
+~
+
+We assume that both \emph{testing} and \emph{training} observations come from the same population (or are observed at the same design points \(\mathbf{x}_i\)). Statistically we may therefore write
+
+\[\mathbf{y}_{n\times 1},\,\,  \mathbf{y}^*_{n\times 1}  \sim^{iid} N_n(\mathbf{\mu},\sigma^2 \mathbf{I}_n) \text{ and } \mathbf{\mu}=\mathbf{X}\mathbf{\beta}\]
+
+or equivalently,
+
+\[ \mathbf{y} = \mathbf{X}\mathbf{\beta} + \mathbf{\varepsilon},\, \mathbf{\varepsilon} \sim^{iid} \mathcal{N}_n(\mathbf{0},\sigma^2 \mathbf{I}_n) \quad \text{ and } \quad \mathbf{y}^* =\mathbf{X}\mathbf{\beta} + \mathbf{\varepsilon}^*,\, \mathbf{\varepsilon}^* \sim^{iid} \mathcal{N}_n(\mathbf{0},\sigma^2 \mathbf{I}_n) \]
+\[ \text{ with }\,\, \mathbf{\varepsilon},  \mathbf{\varepsilon}^* \,\,  \text{ independent}.\]
+
+~
+
+Having these models in mind, we compute the \textbf{MSE for train and testing data}:~
+
+For simplicity we suppress the intercept in the calculations below (so the model dimension is \(p\) rather than \(p+1\)). The expected training and testing mean squared errors are then:
+
+\begin{align*}
+{\color{blue} {\mathbb{E}\bigl(\text{Train Error}\bigr)}} & =  \mathbb{E}\Bigl|\Bigl|\mathbf{y}-\hat{\mathbf{y}} \Bigr|\Bigr|^2=\mathbb{E}\Bigl|\Bigl|(\mathbf{I - H})\mathbf{y}\Bigr|\Bigr|^2\\
+  &=tr \Bigl((\mathbf{I - H})Cov(\mathbf{y})(\mathbf{I - H})^T \Bigr)\\
+  & = \sigma^2 tr\Bigl( (\mathbf{I - H}) \Bigr)=  (n-p) \sigma^2\\
+  &= {\color{blue} {n\sigma^2 \mathbf{-} p \sigma^2}}\\
+\end{align*}
+
+~
+
+\begin{align*}
+{\color{blue} {\mathbb{E}\bigl(\text{Test Error} \bigr)}} & = \mathbb{E}\Bigl|\Bigl|\mathbf{y}^*-\mathbf{X}\hat{\mathbf{\beta}}\Bigr|\Bigr|^2\\
+&= \mathbb{E}\Bigl|\Bigl|(\mathbf{y}^*- \mathbf{X} \mathbf{\beta})+(\mathbf{X} \mathbf{\beta}-\mathbf{X}\hat{\mathbf{\beta}})\Bigr|\Bigr|^2\\
+&= \mathbb{E}\Bigl|\Bigl|\mathbf{y}^* -\mathbf{\mu}\Bigr|\Bigr|^2 + \mathbb{E}\Bigl|\Bigl|\mathbf{X} \mathbf{\beta}-\mathbf{X}\hat{\mathbf{\beta}}\Bigr|\Bigr|^2\\
+&= \mathbb{E}||\mathbf{\varepsilon}^*||^2 + tr\Bigl(\mathbf{X}Cov(\hat{\mathbf{\beta}})\mathbf{X}^T \Bigr)\\
+&= n \sigma^2 +\sigma^2 tr\mathbf{H}\\
+&= {\color{blue} {n \sigma^2 \mathbf{+}  p \sigma^2}}\\
+\end{align*}
+
+~
+
+From these expressions we see that
+
+\begin{itemize}
+\item
+  the \emph{training error decreases with \(p\)} .
+\item
+  the \emph{testing error increases with \(p\)} .
+\end{itemize}
+
+~
+
+Consequently, if the sole objective is pure prediction, simply adding more columns to \(\mathbf{X}\) is not automatically beneficial. Does this imply that the intercept-only model (\(p=0\))---the model with the smallest expected test error under the calculation above---is optimal? \textbf{No.}
+
+~
+
+The preceding analysis rests on two important \textbf{assumptions}:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  The conditional mean \(E(\mathbf{Y}|\mathbf{X})\) lies in the column space of \(\mathbf{X}\); that is, there exists a coefficient vector \(\beta\) such that \(\mathbb{E}(\mathbf{Y}\mid\mathbf{X}) =\mathbf{X}\beta\).
+\item
+  The design matrix \(\mathbf{X}\) contains \emph{all} available predictors. When we fit a linear model that uses only a \textbf{subset} of the columns of \(\mathbf{X}\), an additional \textbf{bias} term appears.
+\end{enumerate}
+
+~
+
+More generally we may face a model of the form
+\[Y = f(X) + \varepsilon\]
+in which \(f\) is not linear.
+
+Approximating \(f\) by a linear function \(f^*\) introduces bias. Even when the true relationship is linear, omitting relevant predictors likewise produces bias.
+
+In the presence of bias the expected errors become:
+
+\begin{align*}
+\mathbb{E}\bigl(\text{Test Error}\bigr)^2 &= n\sigma^2 + \color{blue}{p\sigma^2} + \color{orange}{Bias}\\
+\mathbb{E}\bigl(\text{Training Error}\bigr)^2 &= n\sigma^2 - \color{blue}{p\sigma^2} + \color{orange}{Bias}
+\end{align*}
+where \(p\sigma^2\) is the unavoidable error -- the \(\varepsilon\) -- and Bias is the model error.
+
+\begin{itemize}
+\item
+  Larger model (\(p\) large) \(\rightarrow\) small Bias, large Variance (\(p\sigma^2\)).
+\item
+  Smaller model (\(p\) small) \(\rightarrow\) large Bias, small Variance (\(p\sigma^2\)).
+\end{itemize}
+
+Reducing the test (prediction) error therefore requires finding a good \textbf{trade-off between bias and variance}.
+
+~
+
+\section{Subset Selection}\label{subset-selection}
+
+The basic idea of \emph{subset selection} is to score every candidate model by an information criterion that balances
+
+\[\text{Training Error + Complexity Penalty}\]
+
+and then to search for the model with the best score. For linear regression the complexity of a model increases with the number of predictors \(p\).
+
+\begin{itemize}
+\item
+  \textbf{Training Error}: an increasing function of \(RSS\).
+\item
+  \textbf{Complexity Penalty}: an increasing function of \(p\).
+\end{itemize}
+
+~
+
+\begin{quote}
+Why not simply use \(R^2\) or RSS? Both \(R^2\) and RSS improve (or at least never worsen) whenever a new variable is added, so they do not penalize the inclusion of irrelevant predictors.
+\end{quote}
+
+~
+
+\subsection{Information Criteria}\label{information-criteria}
+
+\textbf{Akaike Information Criterion \& Bayesian Information Criterion}
+
+\(AIC\) and \(BIC\) are defined as
+
+\begin{align*}
+AIC &= -2\cdot loglik  + 2\; p \\
+BIC &= -2\cdot loglik  + \log(n)\; p
+\end{align*}
+where \(p\) is the number of predictors in the model under consideration and \(\log\text{lik}\) is the maximized log-likelihood. For the normal-error linear model the first term reduces to
+\[-2 \cdot  loglik = n\log \frac{RSS}{n} \]
+(up to an additive constant that does not affect model comparison). Consequently
+
+\begin{align*}
+AIC &= n\log \frac{RSS}{n} + 2\; p\\
+BIC &= n\log \frac{RSS}{n} + \log(n)\; p
+\end{align*}
+
+\textbf{Lower} values of AIC or BIC are preferred. When \(n\) is large, the penalty for an extra predictor is substantially heavier under BIC than under AIC; thus AIC tends to select larger models than BIC.
+
+~
+
+\textbf{Adjusted-\(R^2\) for model with \(p\) predictors}
+
+\begin{align*}
+R^2_a & = 1-\frac{RSS/(n-p-1)}{TSS/(n-1)}\\
+& = 1- (1-R^2)\Bigl(\frac{n-1}{n-p-1}\Bigr)\\
+& = {\color{blue}{1-\frac{\hat{\sigma}^2}{\hat{\sigma}^2_0}}}
+\end{align*}
+where \(\hat{\sigma}^2\) is the residual variance estimate for the current model and \(\hat{\sigma}_0^2\) is the residual variance estimate for the intercept-only model.
+
+\textbf{Higher} values of \(R^2_a\) are preferred.
+
+~
+
+\textbf{Mallow's \(C_p\)}
+
+\[C_p = \frac{RSS_{\mathbf{p}}}{\hat{\sigma}_0^2} +2p-n\]
+
+where \(\hat{\sigma}_0^2\) is the residual variance estimate obtained from the \emph{full} model. Mallows' \(C_p\) behaves similarly to AIC; \textbf{lower} values are preferred.
+
+~
+
+\textbf{Illustration of Complexity Criteria vs.~\(p\)}
+
+~
+
+The figure below shows how the adjusted \(R^2\), Mallows' \(C_p\), AIC and BIC change with the number of predictors \(p\) for the \texttt{student-grades} data set introduced in the previous section.
+
+~
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.95\linewidth]{images/week3/criteria} 
+
+}
+
+\caption{Subset selection criteria vs. p.}\label{fig:unnamed-chunk-16}
+\end{figure}
+
+~
+
+\subsection{Search Algorithms}\label{search-algorithms}
+
+With \(p\) available predictors there are \(2^p\) possible models. When \(p\) is modest we can evaluate all of them; when \(p\) is large we need systematic search strategies.
+
+~
+
+\textbf{Level-wise search algorithms}: These procedures return a globally optimal solution among all possible models and are practical for up to roughly 40 variables.
+~
+
+The idea is that they identify the \(m\) different models (default \(m=8\) in \texttt{R}) that have the smallest residual sum of squares, then score those models with the chosen information criterion. The algorithm need not examine every subset: if, for example, \(RSS(X_1,X_2)<RSS(X_3,X_4,X_5,X_6)\), then every size-2 or size-3 sub-model of \({X_3,X_4,X_5,X_6}\) can be safely skipped (``leaped over'').
+
+~
+
+\textbf{Greedy algorithms}: These algorithms add or remove predictors according to an information criterion (AIC, BIC, \ldots). Three common variants are:
+
+\begin{itemize}
+\item
+  \emph{Backward elimination}: start with the full model and successively delete the predictor whose removal most improves the criterion, until no further improvement is possible;
+\item
+  \emph{Forward selection}: start with the null model and successively add the predictor that most improves the criterion;
+\item
+  \emph{Stepwise selection}: at each step consider both adding and deleting a single predictor.
+\end{itemize}
+
+Greedy methods are computationally efficient but return only a \emph{locally optimal} model; in practice this is usually satisfactory.
+
+~
+
+\subsubsection*{Some practical considerations}\label{some-practical-considerations}
+\addcontentsline{toc}{subsubsection}{Some practical considerations}
+
+When \(p\gg n\) it is infeasible to begin with the full model. A common screening strategy is therefore:
+
+\begin{itemize}
+\item
+  Rank the \(p\) predictors by the absolute value of their marginal correlation with \(Y\).
+\item
+  Retain only the top \(K\) predictors (e.g., \(K=n/3\)).
+\item
+  Apply a stepwise procedure that is still allowed to re-introduce previously discarded variables.
+\end{itemize}
+
+~
+
+\section{Shrinkage Methods}\label{shrinkage-methods}
+
+The variable-selection methods discussed earlier work well when the number of predictors is moderate (for example, level-wise algorithms are practical for \(p<40\)). In this section we study two shrinkage methods that can handle larger \(p\) by continuously shrinking coefficient estimates toward zero, thereby \emph{balancing the bias--variance trade-off}.
+
+We can re-frame the earlier approaches as a single penalized least-squares problem:
+
+~
+
+\textbf{Regression with Penalization}
+
+\begin{align*}
+\hat{\beta} &= \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2 + \underbrace{\lambda \sum_{j=1}^{p} \mathbf{1}_{\beta_j \neq 0}}_{\text{penalty}}\\
+&=  \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2 + \underbrace{\lambda ||\beta||_0}_{\text{penalty}}
+\end{align*}
+where \(||\beta||_0 = \sum_{j=1}^{p} \mathbf{1}_{\beta_j \neq 0}\) simply counts the number of non-zero coefficients. Different choices of the penalty parameter \(\lambda\) recover the information criteria we studied previously.
+
+Replacing the \(\ell_0\) ``norm'' by a convex surrogate yields two of the most widely used \emph{penalized regression} methods:
+
+\begin{itemize}
+\item
+  \textbf{Ridge Regression}
+  \[\hat{\beta} =  \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2 + \underbrace{\lambda ||\beta||^2}_{\text{penalty}}, \text{ where } ||\beta||^2 = \sum_{j=1}^{p} \beta_j^2\]
+\item
+  \textbf{Lasso Regression}
+  \[\hat{\beta} =  \arg\min_{\beta} ||\mathbf{y} - \mathbf{X}\beta||^2 + \underbrace{\lambda |\beta|}_{\text{penalty}}, \text{ where }  |\beta| = \sum_{j=1}^{p} |\beta_j|\]
+\end{itemize}
+
+~
+
+Before examining the mathematics and implementation of these methods, we note two important practical considerations.
+
+\textbf{Implementation Considerations}
+
+Neither the \(\ell_1\) nor the \(\ell_2\) penalty is invariant to location or scale. Consequently the penalized estimators are sensitive to the units in which the predictors are measured. It is therefore standard practice to \textbf{center and scale} each column of the design matrix:
+
+\[\tilde{\mathbf{x}}_{j} = \frac{ \mathbf{x}_{j} - \bar{\mathbf{x}}_{j} } { sd_{\mathbf{x}_{j}}} \]
+
+and to center the response,
+\[\mathbf{\tilde{y}}_i = \mathbf{y}_{i} - \bar{\mathbf{y}}\]
+
+After model fitting the coefficients can be transformed back to the original scale for interpretation and prediction. The intercept is recovered by
+
+\[\hat{\beta}_0 = \bar{y} - \sum_{j=1}^{n} \hat{\beta}_j \bar{\mathbf{x}}_{j} \]
+
+\begin{quote}
+The R package \texttt{glmnet} performs the centering, scaling, and back-transformation automatically.)
+\end{quote}
+
+\begin{quote}
+In Python, \texttt{scikit-learn}'s Ridge, Lasso, and ElasticNet do not automatically center and scale the predictors. You should do this yourself---most commonly by placing a StandardScaler inside a Pipeline. The fitted coefficients are then returned on the scaled scale; you can transform them back to the original scale if needed. There is also a Python port of the original glmnet Fortran code that mirrors the R package's automatic standardization and back-transformation behavior.
+\end{quote}
+
+~
+
+\subsection{Ridge Regression}\label{ridge-regression}
+
+Ridge regression shrinks the coefficients of a linear model by adding an \(\ell_2\) penalty. It is especially useful when predictors are highly collinear and ordinary least-squares estimates become unstable. The method was originally introduced by Tikhonov as a way to stabilize the normal equations by adding a non-negative constant to the diagonal of \(\mathbf{X}^\top\mathbf{X}\).
+
+~
+
+\textbf{Ridge Regression}
+
+Solve
+\[\text{minimize}_{\beta}\,  (y-X \beta)^T(y-X \beta) + {\color{blue}{\lambda \sum_j \beta_j^2}}\]
+for a fixed \(\lambda \ge 0\).
+
+After the predictors have been standardized and the response centered, the ridge estimator admits the \textbf{closed-form} expression
+
+\[\hat{\beta}_{\text{Ridge}}=(X^T X+\underbrace{\lambda I}_{\text{ridge}})^{-1} X^T y\]
+
+When \(\lambda=0\) the estimator reduces to ordinary least squares; as \(\lambda\to\infty\) the coefficients shrink to zero. In practice \(\lambda\) is chosen by cross-validation (or generalized cross-validation). A well-known drawback is that the ridge estimator is biased: \(\mathbb{E}(\hat{\beta}_{\text{ridge}})=\beta+\text{bias}\).
+
+~
+To gain intuition, first suppose the columns of \(\mathbf{X}\) are orthonormal, so that \(\mathbf{X}^\top\mathbf{X}=\mathbf{I}_p\). Then
+
+\[\hat{\beta}_{ridge} = \bigl(\mathbf{X}^T \mathbf{X} + \lambda I \bigr)^{-1} \mathbf{X}^T \mathbf{y} = \frac{1}{1+\lambda} \mathbf{X}^T \mathbf{y}\]
+and the fitted values satisfy
+\[\hat{\mathbf{y}}_{ridge} = \mathbf{X} \hat{\beta}_{ridge} = \frac{1}{1+\lambda}\; \hat{\mathbf{y}}_{LS} \]
+
+~
+
+When the columns are not orthogonal the same geometric picture can be obtained via the singular-value decomposition (SVD).
+
+~
+
+\subsubsection*{Singular Value Decomposition (SVD)}\label{singular-value-decomposition-svd}
+\addcontentsline{toc}{subsubsection}{Singular Value Decomposition (SVD)}
+
+The SVD is a fundamental matrix factorization used throughout applied mathematics, statistics, and machine learning. Principal-component analysis is a special case of the SVD.
+
+\textbf{SVD of \(\mathbf{X}_{n\times p}\)}
+
+Any matrix \(\mathbf{X}_{n\times p}\) admits the factorization
+\[\mathbf{X} = \mathbf{U}_{n\times p} \; \mathbf{D}_{p\times p}\, \mathbf{V}_{p\times p}^T\]
+
+where
+
+\begin{itemize}
+\item
+  \(\mathbf{U}_{n\times p}\) has orthonormal columns that span \(\mathcal{C}(\mathbf{X})\),
+\item
+  \(\mathbf{V}_{p\times p}\) is an orthogonal matrix whose columns span \(\mathbb{R}^p\),
+\item
+  \(\mathbf{D}_{p\times p}\) contains the singular values \(d_1\ge\dots\ge d_p\ge 0\).
+\end{itemize}
+
+If any \(d_j=0\), then \(\mathbf{X}\) is rank-deficient.
+
+This factorization of the matrix \(\mathbf{X}\) is called the \textbf{singular value decomposition of} \(\mathbf{X}\), and the columns of \(\mathbf{U}\) and \(\mathbf{V}\) are called the left- and right-hand \textbf{singular vectors} of \(\mathbf{X}\).
+
+For the remainder of the discussion we assume \(n>p\) and \(\operatorname{rank}(\mathbf{X})=p\) (so \(d_p>0\)).
+
+~
+\textbf{Useful Properties of the SVD}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  The right singular vectors (columns of \(\mathbf{V}\)) are orthonormal eigenvectors of \(\mathbf{X}^\top\mathbf{X}\).
+\item
+  The left singular vectors (columns of \(\mathbf{U}\)) are orthonormal eigenvectors of \(\mathbf{X}\mathbf{X}^\top\).
+\item
+  The columns of \(\mathbf{V}\) are the \emph{principal-component directions} of the columns of \(\mathbf{X}\).
+\item
+  The first principal-component direction \(\mathbf{v}_1\) maximizes the sample variance of the linear combination \(\mathbf{z}_1=\mathbf{X}\mathbf{v}_1=\mathbf{u}_1 d_1\) among all unit-norm coefficient vectors.
+\item
+  The singular values are the square roots of the eigenvalues of both \(\mathbf{X}^\top\mathbf{X}\) and \(\mathbf{X}\mathbf{X}^\top\).
+\item
+  The largest singular value satisfies
+  \[
+  d_1=\max_{\|\mathbf{x}\|=1}\|\mathbf{X}\mathbf{x}\|_2.
+  \]
+\end{enumerate}
+
+The principal-component \emph{scores} are the columns of the matrix \(\mathbf{S}=\mathbf{U}\mathbf{D}\); they give the coordinates of the observations in the principal-component basis:
+\[
+\mathbf{X}=\mathbf{S}\mathbf{V}^\top.
+\]
+~
+
+\subsubsection*{SVD of Fitted Values: LS vs.~Ridge}\label{svd-of-fitted-values-ls-vs.-ridge}
+\addcontentsline{toc}{subsubsection}{SVD of Fitted Values: LS vs.~Ridge}
+
+Using the SVD we can write the ordinary-least-squares fitted values as
+
+\begin{align*}
+{\color{blue}{\hat{\mathbf{y}}_{LS}}} &= \mathbf{X} \hat{\beta}_{LS}= \mathbf{X} \bigl(\mathbf{X}^T \mathbf{X} \bigr)^{-1} \mathbf{X}^T \mathbf{y}\\
+&= \mathbf{U} \; \mathbf{D}\; \mathbf{V}^T \bigl(\mathbf{V}\; \mathbf{D}^2\; \mathbf{V}^T\bigr)^{-1} \mathbf{V}\; \mathbf{D}\;\mathbf{U}^T \mathbf{y}\\
+&= \mathbf{U} \; \mathbf{D}\; \mathbf{V}^T \bigl( \mathbf{V}^T \bigl)^{-1}\; \mathbf{D}^{-2}\; \mathbf{V}^{-1} \mathbf{V}\; \mathbf{D}\;\mathbf{U}^T \mathbf{y}\\
+&= \mathbf{U} \; \mathbf{D}\; \mathbf{D}^{-2}\mathbf{D}\;\mathbf{U}^T \mathbf{y}\\
+&= {\color{blue}{\mathbf{U} \mathbf{U}^T \mathbf{y}}}\\
+&= {\color{blue}{\sum_{j=1}^{p} \bigl(\mathbf{u}_j^T \mathbf{y} \bigr) \mathbf{u}_{j}}}
+\end{align*}
+(The algebraic steps rely on \(\mathbf{X}^\top\mathbf{X}=\mathbf{V}\mathbf{D}^2\mathbf{V}^\top\) and the orthonormality of \(\mathbf{U}\) and \(\mathbf{V}\).)
+
+~
+
+For ridge regression the same calculation yields
+
+\begin{align*}
+{\color{blue}{\hat{\mathbf{y}}_{ridge}}} &= \mathbf{X} \hat{\beta}_{ridge}\\
+&= \mathbf{X} \bigl(\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I} \bigr)^{-1} \mathbf{X}^T \mathbf{y}\\
+&= \mathbf{U}\;\mathbf{D}\;\mathbf{V}^T \bigl(  \mathbf{V}\; \mathbf{D}^2\; \mathbf{V}^T + \lambda \mathbf{I} \bigr)^{-1}\mathbf{V}\;\mathbf{D}\;\mathbf{U}^T  \mathbf{y}\\
+&= \mathbf{U}\;\mathbf{D}\;\mathbf{V}^T \bigl(  \mathbf{V}\; \mathbf{D}^2\; \mathbf{V}^T + \lambda \mathbf{V}\mathbf{V}^T \bigr)^{-1}\mathbf{V}\;\mathbf{D}\;\mathbf{U}^T  \mathbf{y}\\
+&= \mathbf{U}\;\mathbf{D}\;\mathbf{V}^T \bigl(  \mathbf{V}\; \bigl( \mathbf{D}^2 + \lambda \mathbf{I} \bigr)\;  \mathbf{V}^T \bigr)^{-1}\mathbf{V}\;\mathbf{D}\;\mathbf{U}^T  \mathbf{y}\\
+&= \mathbf{U}\;\mathbf{D}\;\mathbf{V}^T (\mathbf{V}^T)^{-1}\; \bigl( \mathbf{D}^2 + \lambda \mathbf{I} \bigr)^{-1}\;  \mathbf{V}^{-1}\mathbf{V}\;\mathbf{D}\;\mathbf{U}^T  \mathbf{y}\\
+&= {\color{blue}{\mathbf{U}\mathbf{D}\;\bigl( \mathbf{D}^2 + \lambda \mathbf{I} \bigr)^{-1}\; \mathbf{D}\mathbf{U}^T  \mathbf{y}}}
+\end{align*}
+
+Thus ridge regression projects \(\mathbf{y}\) onto the principal-component basis and then multiplies the \(j\)-th coordinate by the shrinkage factor \(d_j^2/(d_j^2+\lambda)\). Components associated with small singular values (low-variance directions) are shrunk more aggressively.
+
+In this last expression note that
+
+\begin{itemize}
+\item
+  \(\mathbf{D}(\mathbf{D}^2+\lambda\mathbf{I})^{-1}\) is a diagonal matrix whose \(j\)-th diagonal entry is \(\dfrac{d_j^2}{d_j^2+\lambda}\),
+\item
+  the vector \(\mathbf{U}^\top\mathbf{y}\) contains the coordinates of \(\mathbf{y}\) in the orthonormal basis spanned by the columns of \(\mathbf{U}\).
+\end{itemize}
+
+Consequently the ridge fitted values simplify to
+\[
+{\color{blue}{\hat{\mathbf{y}}_{\text{ridge}}
+= \sum_{j=1}^{p}\mathbf{u}_j\cdot\frac{d_j^2}{d_j^2+\lambda}\cdot(\mathbf{u}_j^\top\mathbf{y})}}.
+\]
+In other words, ridge regression first projects \(\mathbf{y}\) onto the principal-component basis and then multiplies each coordinate by the shrinkage factor \(\dfrac{d_j^2}{d_j^2+\lambda}\). Equivalently, the ridge estimator shrinks the ordinary-least-squares coefficients by these same factors: the smaller the singular value \(d_j\) (i.e., the lower the sample variance of the corresponding principal component), the stronger the shrinkage.
+
+~
+
+\subsubsection*{Complexity of Ridge Regression}\label{complexity-of-ridge-regression}
+\addcontentsline{toc}{subsubsection}{Complexity of Ridge Regression}
+
+To quantify the complexity of a model, heuristically we need to understand the number of coefficients that need to be estimated. Ordinary least squares with \(p\) predictors has \(p\) degrees of freedom. Because ridge regression shrinks coefficients, its effective degrees of freedom lie strictly between \(0\) and \(p\). If \(\lambda\) is extremely large, there will be no effective covariates left in the model, meaning that they should all be close to zero. On the other hand, if \(\lambda\) is 0, then we go back to linear regression with \(p\) covariates and \(p\) degrees of freedom.
+
+A convenient definition of \textbf{degrees of freedom} is
+\[df = \sum_{i=1}^{n} Cor \bigl(y_i,\; \hat{y}_i \bigr)\]
+
+\begin{itemize}
+\tightlist
+\item
+  For \textbf{ordinary least squares} \(\hat{\mathbf{y}}=\mathbf{H}\mathbf{y}\) with \(\mathbf{H}=\mathbf{X}(\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\), so
+\end{itemize}
+
+\[df = \sum_{i=1}^{n} Cor \bigl(y_i,\; \hat{y}_i \bigr) = \sum_{i=1}^{n} H_{ii} = tr \bigl( \mathbf{H} \bigr) = p\]
+
+\begin{itemize}
+\tightlist
+\item
+  For \textbf{ridge regression} \(\hat{\mathbf{y}}=\mathbf{S}_\lambda\mathbf{y}\) where
+  \[
+  \mathbf{S}_\lambda=\mathbf{X}(\mathbf{X}^\top\mathbf{X}+\lambda\mathbf{I})^{-1}\mathbf{X}^\top.
+  \]
+  Hence
+  \begin{align*}
+  df(\lambda) &= \sum_{i=1}^{n} Cor \bigl(y_i,\; \hat{y}_i \bigr) = \sum_{i=1}^{n} [S_{\lambda}]_{ii}\\
+  &= tr(\mathbf{S}_{\lambda}) \\
+  &=  tr(\mathbf{X} \bigl(\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I} \bigr)^{-1} \mathbf{X}^T)\\
+  &= tr\Biggl( \sum_{j=1}^{p} \frac{d_j^2}{d_j^2 + \lambda} \mathbf{u}_i \mathbf{u}_i^T\Biggr) =  \sum_{j=1}^{p} \frac{d_j^2}{d_j^2 + \lambda}   
+  \end{align*}
+  The effective degrees of freedom decrease monotonically with \(\lambda\) and equal \(p\) when \(\lambda=0\). This expression is often used to choose a grid of \(\lambda\) values that correspond to integer degrees of freedom \(k=1,\dots,p\).
+\end{itemize}
+
+~
+
+\subsection{Lasso Regression}\label{lasso-regression}
+
+Lasso regression replaces the \(\ell_2\) penalty by an \(\ell_1\) penalty.
+
+~
+
+\textbf{Lasso Regression}
+
+Solve
+\[\text{minimize } (y-X \beta)^T (y-X\beta) + \lambda \sum_j |\beta_j|\]
+for a fixed \(\lambda \ge 0\).
+~
+
+In two-dimensions the lasso constraint defines a square, while in higher dimensions it defines a polytope.
+
+~
+
+Lasso is useful when the response can be explained by \emph{few} predictors with zero effect on the remaining predictors (Lasso is similar to a variable selection method). When \(\beta_j=0\) the corresponding predictor is eliminated which is not the case for ridge regression. Therefore, we use lasso when the effect of predictors is \textbf{sparse}. This means that only few predictors will have an effect on the response (e.g.~gene expression data) or when number of predictors is large (\(p>n\)).
+
+~
+
+Unlike ridge regression, the lasso estimator \emph{does not admit a closed-form expression in general}. When the columns of \(\mathbf{X}\) are orthonormal, however, the problem separates coordinate-wise and the solution is given by soft-thresholding.
+
+The lasso solution is defined as
+\[\hat{\beta}_{lasso} = \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl((y-X \beta)^\top(y-X\beta) + \lambda \sum_j |\beta_j| \Bigr)\]
+and does not have a closed form expression.
+~
+
+If we assume that \(\mathbf{X}^T\mathbf{X} = \mathbf{I}_p\), then
+\begin{align*}
+||\mathbf{y} - \mathbf{X}\beta||^2 &= ||\mathbf{y} - \mathbf{X}\hat{\beta}_{LS} + \mathbf{X}\hat{\beta}_{LS} - \mathbf{X}\beta||^2\\
+&=||\mathbf{y} - \mathbf{X}\hat{\beta}_{LS}||^2 + ||\mathbf{X}\hat{\beta}_{LS} - \mathbf{X}\beta||^2
+\end{align*}
+where
+\[2  \bigl( \mathbf{y} - \mathbf{X}\hat{\beta}_{LS}\bigr)^T \bigl(  \mathbf{X}\hat{\beta}_{LS} - \mathbf{X}\beta \bigr) = 2 \; r^T \; \bigl(  \mathbf{X}\hat{\beta}_{LS} - \mathbf{X} \beta\bigr) =0\]
+since the second term is a linear combination of columns of \(\mathbf{X}\) no matter what value \(\beta\) takes, and thus is in \(\mathcal{C}(\mathbf{X})\), therefore orthogonal to the residual vector \(\mathbf{r}\).
+
+~
+
+\subsubsection*{Obtaining the Lasso Solution}\label{obtaining-the-lasso-solution}
+\addcontentsline{toc}{subsubsection}{Obtaining the Lasso Solution}
+
+Under the orthonormality assumption \(\mathbf{X}^\top\mathbf{X}=\mathbf{I}_p\) the lasso criterion reduces to a sum of \(p\) independent one-dimensional problems of the form
+
+\[\arg \min_{x} \bigl( x-a \bigr )^2 + \lambda |x|,\,\, \lambda >0\]
+
+The lasso solution can be expressed as:
+
+\begin{align*}
+\hat{\beta}_{lasso} &= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( ||\mathbf{y}-\mathbf{X} \beta||^2 + \lambda |\beta| \Bigr)\\
+&= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( ||\mathbf{X} \hat{\beta}_{LS} -\mathbf{X} \beta||^2 + \lambda |\beta| \Bigr)\\
+&= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( \bigl(  \hat{\beta}_{LS} - \beta \bigr)^T \mathbf{X}^T \mathbf{X}  \bigl(  \hat{\beta}_{LS} - \beta \bigr) + \lambda |\beta| \Bigr)\\
+&= \arg \min_{\beta\in \mathbb{R}^{p}} \Bigl( \bigl(  \hat{\beta}_{LS} - \beta \bigr)^T  \bigl(  \hat{\beta}_{LS} - \beta \bigr) + \lambda |\beta| \Bigr)\\
+&= \arg \min_{\beta_1, \ldots, \beta_p} \sum_{i=1}^{p}  \Bigl( \bigl(  \beta_{j} - \hat{\beta}_{(LS)j} \bigr)^2  + \lambda |\beta_j| \Bigr)\\
+\end{align*}
+
+Therefore, to solve the one-dim lasso above, define
+\[f(x)  = \bigl( x-a \bigr )^2 + \lambda |x|,\,\, a\in\mathbb{R},\,\,\lambda >0\]
+
+The value \(x^*\) that minimizes \(f(x)\) must satisfy:
+\begin{align*}
+\frac{\partial}{\partial x} \bigl(x^* - a \bigr)^2 + \lambda \;\frac{\partial}{\partial x} |x^*| & = 0\\
+2\bigl(x^* - a \bigr) +\lambda z^* &= 0
+\end{align*}
+where \(z^*\) is the \emph{sub-gradient} of the absolute value function evaluated at \(x^*\), which equals to \(sign(x^*)\) if \(x^*\neq 0\) and any number in {[}-1,1{]}, if \(x^*=0\).
+
+The unique minimizer is the \textbf{soft-thresholding operator}
+\[
+x^*=S_{\lambda/2}(a)
+= \operatorname{sign}(a)\bigl(|a|-\lambda/2\bigr)_+
+=
+\begin{cases}
+a-\lambda/2 & \text{if }a>\lambda/2,\\
+0 & \text{if }|a|\le\lambda/2,\\
+a+\lambda/2 & \text{if }a<-\lambda/2.
+\end{cases}
+\]
+Consequently the \emph{orthonormal lasso solution} is simply
+\[
+\hat{\beta}_j^{\text{lasso}}
+= S_{\lambda/2} \Bigl(\hat{\beta}_j^{\text{LS}}\Bigr).
+\]
+A sufficiently large \(\lambda\) forces some coefficients to zero, so the lasso simultaneously selects variables and shrinks the retained coefficients.
+
+~
+
+\textbf{Remarks}
+
+\begin{itemize}
+\item
+  Lasso is especially attractive when the underlying signal is \emph{sparse}, since lasso will ``make'' some of the \(\beta\) coefficients zero keeping the coefficients that will have an effect on \(\mathbf{y}\). This is the reason why this method also works when the number of predictors is larger than the sample size (\(p>n\)). These are scenarios often encountered in genomic or proteomic data where the design matrices tend to have a lot of zeros and too many predictors.
+\item
+  In lasso as in ridge regression, we can select \(\lambda\) using Cross-Validation (CV). When \(\lambda\) increases, the number of predictors decreases.
+\end{itemize}
+
+~
+
+\textbf{Comparing Ridge Regression and Lasso}
+
+Ridge regression performs proportional shrinkage and tends to work well when many predictors have moderate effects of similar size. Lasso performs both shrinkage and selection and is preferable when only a few predictors have large effects and the rest are essentially zero. Because the true sparsity pattern is rarely known in advance, cross-validation is the practical tool for deciding which method is better for a given data set.
+
+Geometrically, the residual-sum-of-squares contours are ellipses centered at the ordinary-least-squares estimate. Ridge regression finds the first point where these ellipses touch the disk \(\beta^\top \beta\le t\); lasso finds the first point where they touch the diamond \(\|\beta\|_1\le t\). The corners of the diamond make exact zeros possible.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.75\linewidth]{images/week3/ridge-lasso_comparisson} 
+
+}
+
+\caption{Contour of the optimization for Lasso (left) and Ridge (right).}\label{fig:unnamed-chunk-17}
+\end{figure}
+
+In the picture below, we can see the difference in the contours of optimization for lasso (left) and Ridge (right) when there are only two parameters. The residual sum of squares has elliptical contours, centered at the full least squares estimate, \(\hat{\beta}_{LS}\). The constraint region for ridge regression is the disk \(\beta_1^2 + \beta_2^2 \leq t\), while that for lasso is the diamond \(|\beta_1| + |\beta_2| \leq t\). Both methods find the first point where the elliptical contours hit the constraint region. Unlike the disk, the diamond has corners which means that if the solution occurs at a corner, then it has one parameter
+\(\beta_j\) equal to zero. When \(p>2\), the diamond becomes a rhomboid, and has many corners, flat edges and faces; there are many more opportunities for the estimated parameters to be zero.
+
+~
+
+\subsubsection*{\texorpdfstring{Lasso with \(p>n\)}{Lasso with p\textgreater n}}\label{lasso-with-pn}
+\addcontentsline{toc}{subsubsection}{Lasso with \(p>n\)}
+
+\begin{itemize}
+\item
+  When \(\mathbf{X}\) has full column rank the lasso criterion is strictly convex, so the minimizer is unique.
+\item
+  When \(\mathbf{X}\) is rank-deficient (in particular when \(p>n\)) the criterion remains convex but is no longer strictly convex; consequently the solution need not be unique. In the \(p>n\) regime the lasso selects at most \(n\) variables before saturating---an intrinsic limitation of the convex optimization problem.
+\end{itemize}
+
+~
+
+\section{\texorpdfstring{The \texttt{Student\ Performance} Example}{The Student Performance Example}}\label{the-student-performance-example}
+
+Up to now, we studied two complementary approaches to controlling model complexity in linear regression. Classical subset-selection methods (best-subset, forward, backward, and stepwise) explicitly search over candidate models and penalize complexity via information criteria such as AIC, BIC, adjusted \(R^2\), or Mallows' \(C_p\).
+
+When the number of predictors is large, continuous shrinkage methods become preferable. Ridge regression (\(\ell_2\) penalty) produces a closed-form estimator that shrinks all coefficients toward zero, with stronger shrinkage applied to low-variance principal-component directions; it is especially useful under multicollinearity but does not perform variable selection. Lasso regression (\(\ell_1\) penalty) simultaneously shrinks coefficients and sets some of them exactly to zero, thereby combining estimation and variable selection; it is particularly effective when the underlying signal is sparse or when \(p>n\). Both ridge and lasso require the predictors to be centered and scaled, and the tuning parameter \(\lambda\) is typically chosen by cross-validation.
+
+The choice between these methods ultimately depends on the \emph{bias--variance trade-off} and on whether sparsity is expected in the true model.
+
+~
+
+In this final section we illustrate the practical implementation of the variable-selection and shrinkage methods developed earlier, using a real data example.
+
+The analysis is based on the \texttt{student-mat.csv} data set, which contains information on student achievement in secondary education at two Portuguese schools. The original study is described in:
+
+\begin{quote}
+``Using data mining to predict secondary school student performance''
+By P. Cortez, A. M. G. Silva. 2008. Published in Proceedings of 5th Annual Future Business Technology Conference.
+\end{quote}
+
+The data are publicly available from the UCI Machine Learning Repository: here
+
+The analysis of this data set is available in R and Python.
 
 \bibliography{book.bib,packages.bib}
 

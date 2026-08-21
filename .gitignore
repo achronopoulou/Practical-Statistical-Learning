@@ -27,3 +27,7 @@ my-598PSL.epub
 .Rhistory
 .RData
 .Ruserdata
+
+# Temp python files
+Examples/
+Examples.zip

@@ -1,3 +1,5 @@
+fig:unnamed-chunk-16
+fig:unnamed-chunk-17
 introduction-to-statistical-learning
 examples-of-statistical-learning-problems
 supervised-learning-framework
@@ -18,4 +20,13 @@ hypothesis-testing-in-mlr
 categorical-variables-in-mlr
 collinearity
 model-diagnostics
-the-birthweight-data-set-example
+the-birthweight-example
+variable-selection-regularization
+training-vs.-testing-errors
+subset-selection
+information-criteria
+search-algorithms
+shrinkage-methods
+ridge-regression
+lasso-regression
+the-student-performance-example

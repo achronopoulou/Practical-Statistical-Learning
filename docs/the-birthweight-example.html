@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Linear Regression Models | CS 598 Practical Statistical Learning</title>
+  <title>2.11 The Birthweight Example | CS 598 Practical Statistical Learning</title>
   <meta name="description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Linear Regression Models | CS 598 Practical Statistical Learning" />
+  <meta property="og:title" content="2.11 The Birthweight Example | CS 598 Practical Statistical Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Linear Regression Models | CS 598 Practical Statistical Learning" />
+  <meta name="twitter:title" content="2.11 The Birthweight Example | CS 598 Practical Statistical Learning" />
   
   <meta name="twitter:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="two-toy-examples-k-nn-vs.-linear-regression.html"/>
-<link rel="next" href="multiple-linear-regression-mlr-model.html"/>
+<link rel="prev" href="model-diagnostics.html"/>
+<link rel="next" href="variable-selection-regularization.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -168,35 +168,42 @@ $(document).ready(function() {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="linear-regression-models" class="section level1 hasAnchor" number="2">
-<h1><span class="header-section-number">Chapter 2</span> Linear Regression Models<a href="linear-regression-models.html#linear-regression-models" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>A regression model is a model for the <font color="darkblue"><strong>conditional expectation</strong> of the response/outcome variable</font> given a set of predictors/features. A linear regression model specifically assumes that <span class="math inline">\(E(Y \mid \mathbf{X} = \mathbf{x})\)</span> is a linear function of the inputs <span class="math inline">\(X_1, X_2, \ldots, X_p\)</span>, i.e.,</p>
-<p><font color="darkblue">
-<span class="math display">\[E(Y|\mathbf{X}=\mathbf{x}) \sim \beta_0 + \beta_1 X_1 + \ldots + \beta_p X_p\]</span>
-</font></p>
-<p>To describe the properties and characteristics of the multiple linear regression (MLR) model, we introduce the <code>Birthweight</code> example.</p>
- 
-<div class="examplebox">
-<p><strong>Introduction to the <code>Birthweight</code> Example</strong></p>
-<p>The goal of the birthweight study is to <strong>predict</strong> the birthweight (<em>response</em>/ <em>outcome</em>) of a newborn baby given a set of <em>predictors</em>/<em>features</em>, specifically for babies born prematurely.</p>
-<p>The features include baby-related characteristics, such as length, weight, head circumference, gestation period, and parent characteristics, such as mother’s/father’s height, smoking habits, mother’s pre-pregnancy weight, mother’s/father’s age, etc.</p>
-<p><img src="images/week2/birthweight1a.png" alt="" width="70%" style="display: block; margin: auto;" /></p>
-</div>
+<div id="the-birthweight-example" class="section level2 hasAnchor" number="2.11">
+<h2><span class="header-section-number">2.11</span> The <code>Birthweight</code> Example<a href="the-birthweight-example.html#the-birthweight-example" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p> </p>
-<p>The <strong>predictors</strong> we consider may be:</p>
+<p>The <code>birthweight.csv</code> data set contains observations on 42 babies. The variables are:</p>
 <ul>
-<li><p><font color="darkblue">quantitative</font>, such as length, weight, or gestation period;</p></li>
-<li><p><font color="darkblue">qualitative/categorical</font>, such as smoking habits (yes/no); or</p></li>
-<li><p><font color="darkblue">transformations of quantitative inputs</font>. Examples include power transformations (e.g., <span class="math inline">\(X_3^3\)</span>), continuous functions of variables (e.g., <span class="math inline">\(\log X_5\)</span>), polynomial expansions (e.g., <span class="math inline">\(\sum_{k=1}^{n} c_k X_7^k\)</span>), and interactions (e.g., <span class="math inline">\(X_1 \cdot X_2\)</span>).</p></li>
+<li><code>ID</code>: Unique Identification number of a baby</li>
+<li><code>Length</code>: Length of the baby at time of birth in cm (<span class="math inline">\(X_1\)</span>)</li>
+<li><code>Birthweight</code>: Weight of the baby at time of birth in kg (<span class="math inline">\(Y\)</span>)</li>
+<li><code>Headcirc</code>: Head circumference of the baby at time of birth in cm (<span class="math inline">\(X_2\)</span>)</li>
+<li><code>Gestation</code>: Completed weeks of gestation (<span class="math inline">\(X_3\)</span>)</li>
+<li><code>smoker</code>: Mother is/is not a smoker {0: No, 1: Yes} (<span class="math inline">\(X_4\)</span>)</li>
+<li><code>mage</code>: Mother’s age at time of birth (<span class="math inline">\(X_5\)</span>)</li>
+<li><code>mnocig</code>: Mother’s number of cigarettes smoked per day (<span class="math inline">\(X_6\)</span>)</li>
+<li><code>mheight</code>: Mother’s height in cm (<span class="math inline">\(X_7\)</span>)</li>
+<li><code>mppwt</code>: Mother’s pre-pregnancy weight (<span class="math inline">\(X_8\)</span>)</li>
+<li><code>fage</code>: Father’s age at time of birth (<span class="math inline">\(X_9\)</span>)</li>
+<li><code>fedyrs</code>: Father’s years of education (<span class="math inline">\(X_{10}\)</span>)</li>
+<li><code>fnocig</code>: Father’s number of cigarettes smoked per day (<span class="math inline">\(X_{11}\)</span>)</li>
+<li><code>fheight</code>: Father’s height (<span class="math inline">\(X_{12}\)</span>)</li>
 </ul>
+<p> </p>
+<p>You can download the data file here: <a href="data/week2/Birthweight.csv" download> Birthweight.csv </a>.</p>
+<p> </p>
+<p>The analysis of this data set is available in <a href="code/ch2_RCode.html" target="_blank">R</a> and <a href="code/ch2_PythonCode.html" target="_blank">Python</a>.</p>
+<p> </p>
+<p>The data analysis example also includes a highly correlated data set (<code>seatpos</code>) from Faraway’s book on “Linear Models in R”. You can download this data here: <a href="data/week2/seatpos.csv" download>seatpos.csv</a></p>
+
 </div>
+<!-- </div> -->
             </section>
 
           </div>
         </div>
       </div>
-<a href="two-toy-examples-k-nn-vs.-linear-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="multiple-linear-regression-mlr-model.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="model-diagnostics.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="variable-selection-regularization.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
