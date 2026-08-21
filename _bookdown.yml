@@ -7,7 +7,7 @@ book_filename: "my-598PSL"
 rmd_files:
   - "index.Rmd"
   - "01-intro.Rmd"
-  # - "02-regression.Rmd"
+  - "02-regression.Rmd"
   # - "03-variableselection.Rmd"
   # - "04-nonlinearregression.Rmd"
   # - "05-regressiontrees.Rmd"

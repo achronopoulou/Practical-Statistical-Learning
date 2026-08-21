@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Linear Regression Models | CS 598 Practical Statistical Learning</title>
+  <title>Chapter 3 Linear Regression Models | CS 598 Practical Statistical Learning</title>
   <meta name="description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Linear Regression Models | CS 598 Practical Statistical Learning" />
+  <meta property="og:title" content="Chapter 3 Linear Regression Models | CS 598 Practical Statistical Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Linear Regression Models | CS 598 Practical Statistical Learning" />
+  <meta name="twitter:title" content="Chapter 3 Linear Regression Models | CS 598 Practical Statistical Learning" />
   
   <meta name="twitter:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   
@@ -23,14 +23,14 @@
 <meta name="author" content="Alexandra Chronopoulou" />
 
 
-<meta name="date" content="2026-08-21" />
+<meta name="date" content="2026-08-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="two-toy-examples-k-nn-vs.-linear-regression.html"/>
+<link rel="prev" href="linear-regression-models.html"/>
 <link rel="next" href="multiple-linear-regression-mlr-model.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -52,37 +52,73 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
-<script>
-$(document).ready(function() {
-  function collapseTOC() {
-    // 1. Collapse everything
-    $(".book-summary ul.summary ul").hide();
 
-    // 2. Find the current page filename
-    var currentPage = window.location.pathname.split("/").pop();
-    if (!currentPage || currentPage === "") currentPage = "index.html";
 
-    // 3. Find the <li> that matches the current page and expand its parents + children
-    var $current = $(".book-summary li[data-path='" + currentPage + "']");
-    if ($current.length) {
-      $current.parents("ul").show();
-      $current.children("ul").show();
-    }
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
   }
-
-  // Run on load
-  collapseTOC();
-
-  // Run on every page change
-  if (typeof gitbook !== "undefined") {
-    gitbook.events.bind("page.change", function() {
-      setTimeout(collapseTOC, 30);
-    });
-  }
-});
-</script>
-
-
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
 
 <style type="text/css">
   
@@ -119,19 +155,20 @@ $(document).ready(function() {
 <li class="chapter" data-level="1.5.3" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#a-simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> A Simulated (Binary) Classification Example</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
+<li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a></li>
+<li class="chapter" data-level="3" data-path="linear-regression-models-1.html"><a href="linear-regression-models-1.html"><i class="fa fa-check"></i><b>3</b> Linear Regression Models</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>2.1</b> Multiple Linear Regression (MLR) Model</a></li>
-<li class="chapter" data-level="2.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>2.2</b> MLR Model Fitting</a></li>
-<li class="chapter" data-level="2.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>2.3</b> Least-Squares &amp; Normal Equations</a></li>
-<li class="chapter" data-level="2.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>2.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
-<li class="chapter" data-level="2.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>2.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
-<li class="chapter" data-level="2.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>2.6</b> Rank deficiency</a></li>
-<li class="chapter" data-level="2.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>2.7</b> Hypothesis Testing in MLR</a></li>
-<li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
-<li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
-<li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
-<li class="chapter" data-level="2.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Data Set Example</a></li>
+<li class="chapter" data-level="3.1" data-path="multiple-linear-regression-mlr-model.html"><a href="multiple-linear-regression-mlr-model.html"><i class="fa fa-check"></i><b>3.1</b> Multiple Linear Regression (MLR) Model</a></li>
+<li class="chapter" data-level="3.2" data-path="mlr-model-fitting.html"><a href="mlr-model-fitting.html"><i class="fa fa-check"></i><b>3.2</b> MLR Model Fitting</a></li>
+<li class="chapter" data-level="3.3" data-path="least-squares-normal-equations.html"><a href="least-squares-normal-equations.html"><i class="fa fa-check"></i><b>3.3</b> Least-Squares &amp; Normal Equations</a></li>
+<li class="chapter" data-level="3.4" data-path="goodness-of-fit-r-square.html"><a href="goodness-of-fit-r-square.html"><i class="fa fa-check"></i><b>3.4</b> Goodness-Of-Fit: <span class="math inline">\(R\)</span>-Square</a></li>
+<li class="chapter" data-level="3.5" data-path="linear-transformations-on-x.html"><a href="linear-transformations-on-x.html"><i class="fa fa-check"></i><b>3.5</b> Linear Transformations on <span class="math inline">\(X\)</span></a></li>
+<li class="chapter" data-level="3.6" data-path="rank-deficiency.html"><a href="rank-deficiency.html"><i class="fa fa-check"></i><b>3.6</b> Rank deficiency</a></li>
+<li class="chapter" data-level="3.7" data-path="hypothesis-testing-in-mlr.html"><a href="hypothesis-testing-in-mlr.html"><i class="fa fa-check"></i><b>3.7</b> Hypothesis Testing in MLR</a></li>
+<li class="chapter" data-level="3.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>3.8</b> Categorical Variables in MLR</a></li>
+<li class="chapter" data-level="3.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>3.9</b> Collinearity</a></li>
+<li class="chapter" data-level="3.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>3.10</b> Model Diagnostics</a></li>
+<li class="chapter" data-level="3.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>3.11</b> The <code>Birthweight</code> Data Set Example</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="_blank">Published with bookdown</a></li>
@@ -153,8 +190,8 @@ $(document).ready(function() {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="linear-regression-models" class="section level1 hasAnchor" number="2">
-<h1><span class="header-section-number">Chapter 2</span> Linear Regression Models<a href="linear-regression-models.html#linear-regression-models" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="linear-regression-models-1" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Linear Regression Models<a href="linear-regression-models-1.html#linear-regression-models-1" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>A regression model is a model for the <font color="darkblue"><strong>conditional expectation</strong> of the response/outcome variable</font> given a set of predictors/features. A linear regression model specifically assumes that <span class="math inline">\(E(Y \mid \mathbf{X} = \mathbf{x})\)</span> is a linear function of the inputs <span class="math inline">\(X_1, X_2, \ldots, X_p\)</span>, i.e.,</p>
 <p><font color="darkblue">
 <span class="math display">\[E(Y|\mathbf{X}=\mathbf{x}) \sim \beta_0 + \beta_1 X_1 + \ldots + \beta_p X_p\]</span>
@@ -180,7 +217,7 @@ $(document).ready(function() {
           </div>
         </div>
       </div>
-<a href="two-toy-examples-k-nn-vs.-linear-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="linear-regression-models.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 <a href="multiple-linear-regression-mlr-model.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>

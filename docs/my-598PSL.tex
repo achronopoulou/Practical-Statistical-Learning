@@ -159,7 +159,7 @@
 
 \title{CS 598 Practical Statistical Learning}
 \author{Alexandra Chronopoulou}
-\date{2026-08-19}
+\date{2026-08-21}
 
 \begin{document}
 \maketitle
@@ -575,6 +575,670 @@ The magenta curve is the test error and the blue curve is the training error of 
 Linear regression has only a few parameters and therefore relatively low variance, but the linearity assumption is restrictive for this problem and produces high bias.
 
 In contrast, \(k\)-NN makes almost no assumption about the shape of the decision boundary (apart from a mild local-smoothness condition). This flexibility yields low bias but high variance; the extreme case \(k=1\) corresponds to roughly \(n\) parameters and severely overfits. It can be shown that \(k\)-NN is consistent when \(k,n\to\infty\) with \(k/n\to 0\). The price of that consistency is the high variance that appears when the effective number of parameters becomes large.
+
+\chapter{Linear Regression Models}\label{linear-regression-models}
+
+A regression model is a model for the \textbf{conditional expectation} of the response/outcome variable given a set of predictors/features. A linear regression model specifically assumes that \(E(Y \mid \mathbf{X} = \mathbf{x})\) is a linear function of the inputs \(X_1, X_2, \ldots, X_p\), i.e.,
+
+\[E(Y|\mathbf{X}=\mathbf{x}) \sim \beta_0 + \beta_1 X_1 + \ldots + \beta_p X_p\]
+
+To describe the properties and characteristics of the multiple linear regression (MLR) model, we introduce the \texttt{Birthweight} example.
+
+~
+
+\textbf{Introduction to the \texttt{Birthweight} Example}
+
+The goal of the birthweight study is to \textbf{predict} the birthweight (\emph{response}/ \emph{outcome}) of a newborn baby given a set of \emph{predictors}/\emph{features}, specifically for babies born prematurely.
+
+The features include baby-related characteristics, such as length, weight, head circumference, gestation period, and parent characteristics, such as mother's/father's height, smoking habits, mother's pre-pregnancy weight, mother's/father's age, etc.
+
+\begin{center}\includegraphics[width=0.7\linewidth]{images/week2/birthweight1a} \end{center}
+
+~
+
+The \textbf{predictors} we consider may be:
+
+\begin{itemize}
+\item
+  quantitative, such as length, weight, or gestation period;
+\item
+  qualitative/categorical, such as smoking habits (yes/no); or
+\item
+  transformations of quantitative inputs. Examples include power transformations (e.g., \(X_3^3\)), continuous functions of variables (e.g., \(\log X_5\)), polynomial expansions (e.g., \(\sum_{k=1}^{n} c_k X_7^k\)), and interactions (e.g., \(X_1 \cdot X_2\)).
+\end{itemize}
+
+\section{Multiple Linear Regression (MLR) Model}\label{multiple-linear-regression-mlr-model}
+
+The model formulation is given by:
+~
+
+\textbf{Multiple Linear Regression Model}
+
+\[ Y = \beta_0 + \beta_1 X_1 + \ldots + \beta_p X_p + \varepsilon \]
+where
+
+\begin{itemize}
+\item
+  \(\beta_0\) is the intercept
+\item
+  \(\beta_j\) is the regression coefficient associated with predictor \(X_j\)
+\item
+  \(\varepsilon\) is the error term
+  The usual assumptions for the error terms are \(\varepsilon \sim IID \bigl(0, \sigma^2 \mathbf{I} \bigr)\)
+\end{itemize}
+
+~
+
+Given the \textbf{training data} \(\bigl\{ x_{i1},\; x_{i2}, \ldots, x_{ip};\, y_i\bigr\}_{i=1}^{n}\), we can rewrite the model as
+\[ y_i = \beta_0 + \beta_1 x_{i1} + \ldots + \beta_p x_{ip} + \varepsilon_i,\,\, i=1, \ldots, n\]
+where \(n\) is the sample size. Using the following matrix representation for the response and the features:
+\[
+    \mathbf{y}=\left(\begin{array}{c} 
+      y_{1} \\ y_{2} \\ \vdots \\ y_{n}
+    \end{array}\right)
+    \quad
+    \mathbf{\varepsilon}=\left(\begin{array}{c} 
+      \varepsilon_{1} \\ \varepsilon_{2} \\ \vdots \\ \varepsilon_{n}
+    \end{array}\right)
+    \quad
+    \mathbf{\beta}=\left(\begin{array}{c} 
+      \beta_{0} \\ \beta_{1} \\ \vdots \\ \beta_p
+    \end{array}\right)\quad
+    \mathbf{X}=\left(\begin{array}{cccc}
+    1 & x_{11} & \cdots & x_{1p} \\
+    1 & x_{21} & \cdots & x_{2p}   \\
+      \vdots & \vdots & \ddots & \vdots\\
+   1 & x_{n1} & \cdots & x_{np}  \\
+    \end{array} \right)
+  \]
+the model equation can be written in as
+\[\left(\begin{array}{c} 
+      y_{1} \\ y_{2} \\ \vdots \\ y_{n}
+    \end{array}\right) = \left(\begin{array}{ccccc}
+   1&x_{11}& \cdots &x_{1p} \\
+   1& x_{21}& \cdots&x_{2p}   \\
+   \vdots & \vdots & \ddots & \vdots\\
+  1 & x_{n1} & \cdots & x_{np}  \\
+    \end{array} \right) \left(\begin{array}{c} 
+      \beta_{0} \\ \beta_{1} \\ \vdots \\ \beta_p
+    \end{array}\right)\quad + 
+\left(\begin{array}{c} 
+      \varepsilon_{1} \\ \varepsilon_{2} \\ \vdots \\ \varepsilon_{n}
+    \end{array}\right)
+  \]
+which leads to the concise form
+
+\[
+  \begin{array}{cccccc}
+\mathbf{y}_{n\times 1} &=&\mathbf{X}_{n\times (p+1)}  &\mathbf{\beta}_{(p+1)\times 1}&+&\mathbf{\varepsilon}_{n\times 1}\\
+\uparrow & & \uparrow & \uparrow & & \uparrow\\
+\text{Response} &&\text{Design} & \text{Coefficients} & & \text{Error}\\
+&&\text{Matrix} & && \text{Term}\\
+\end{array}
+\]
+where \(n\) is the sample size, and \(p+1\) is number of columns of \(\mathbf{X}\) (the \(p\) predictors plus the intercept).
+
+~
+
+\section{MLR Model Fitting}\label{mlr-model-fitting}
+
+Given the training data \(\bigl\{ x_{i1},\; x_{i2}, \ldots, x_{ip};\, y_i\bigr\}_{i=1}^{n}\), we want to estimate \(\mathbf{\beta}\) , i.e.~express:
+\[
+    \hat{\mathbf{\beta}} \;=\; 
+      \left(\hat{\beta}_0,\hat{\beta}_1,\ldots,\hat{\beta}_p\right)^{T}
+  \]
+as a \textbf{function of the data}.
+
+The estimated regression coefficients \(\hat{\beta}\) are obtained by minimizing the \emph{Residual Sum of Squares} (RSS):
+\[RSS \;\;=\;\; ||\mathbf{y} - \mathbf{X} \beta||^2 = (\mathbf{y} - \mathbf{X} \beta)^{T} (\mathbf{y} - \mathbf{X}\beta)\]
+The RSS minimizes the (Euclidean) distance of the points from the regression surface:
+
+\begin{center}\includegraphics[width=0.4\linewidth]{images/week2/lsreg} \end{center}
+
+This approach makes minimal assumptions, since it only requires that the pairs \((x_i, y_i)\) are \emph{random draws from their population}. Specifically, it makes \textbf{no assumptions} about the underlying distribution of the response. It simply finds the \textbf{best linear fit}, without assuming that the model is valid. In fact, the true underlying model does not even need to be linear for this method to produce estimators. Therefore, it often works well regardless of how the data were obtained. If a linear model provides a good approximation to a non-linear truth, then the regression surface can also be viewed as a measure \textbf{lack-of-fit}.
+
+~
+
+\subsubsection*{Least-Squares Method}\label{least-squares-method}
+\addcontentsline{toc}{subsubsection}{Least-Squares Method}
+
+We want to estimate the \textbf{vector} of coefficients \(\mathbf{\beta}\) by minimizing the \emph{sum of squared residuals}:
+\[RSS\;\;=\;\; ||y - \mathbf{X} \beta||^2 = (y - \mathbf{X} \beta)^{T} (y - \mathbf{X}\beta)\]
+We take derivatives with respect to \(\beta\) and set them equal to zero:
+\begin{align*}
+\frac{\partial RSS}{\partial \beta}  &= \mathbf{0}_{p\times 1} \,\, \Leftrightarrow \\
+-2 \;\mathbf{X}^T_{p\times n} (y - \mathbf{X}\beta)_{n\times 1} &= \mathbf{0}_{p\times 1}
+\end{align*}
+
+This leads to the so-called \textbf{Normal Equations}
+\[\mathbf{X}^T (y - \mathbf{X}\beta) = \mathbf{0}\]
+
+Solving the Normal Equations
+\[(\mathbf{X}^T\mathbf{X})\;\beta  = \mathbf{X}^T\; y  \]
+leads to the
+
+\textbf{Least Squares Estimators in MLR}
+\[\hat{\beta} = (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\; y\]
+
+We assume that \textbf{the rank of \(\mathbf{X}\) is \(p+1\)}, i.e.~no columns of \(\mathbf{X}\) are a linear combinations of the other columns. \emph{Since \(\mathbf{X}\) has full column rank, the inverse of \((\mathbf{X}^T\mathbf{X})\) exists}.
+
+~
+
+\subsubsection*{Fitted, Predicted Values \& Residuals}\label{fitted-predicted-values-residuals}
+\addcontentsline{toc}{subsubsection}{Fitted, Predicted Values \& Residuals}
+
+The \textbf{fitted value} of \(y_i\) at \(x_i = \bigl( x_{i1}, x_{i2}, \ldots , x_{ip}\bigr)\) is computed as:
+\[\hat{y_{i}} = \hat{\beta}_0 + \hat{\beta}_1 x_{i1}+ \hat{\beta}_2 x_{i2} + \ldots + \hat{\beta}_p x_{ip}\]
+
+More generally, using matrix formulation, the \textbf{fitted values} of \(\mathbf{y}\) are given by
+\begin{align*}
+\hat{\mathbf{y}}_{n\times 1} &= \mathbf{X}  \hat{\beta} \\
+&= \mathbf{X}  (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\; y\\
+&=  \mathbf{X}  (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\; y := \mathbf{H}_{n \times n} y_{n\times 1}
+\end{align*}
+
+where we define the \emph{hat matrix}
+
+\textbf{The Hat Matrix}
+
+\[ \mathbf{H}_{n \times n} =  \mathbf{X}  (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\]
+It is called the \textbf{hat matrix} because it produces the ``\emph{y-hat}'' values: \(\hat{y} = \mathbf{H} t\).
+
+The \textbf{predicted value} of \(y\) at a new point \(x_i^* = \bigl( x_{i1}^*, x_{i2}^*, \ldots , x_{ip}^*\bigr)\) is
+\[\hat{\mathbf{y}}^* = \hat{\beta}_0 + \hat{\beta}_1 x_{i1}^* + \hat{\beta}_2 x_{i2}^* + \ldots + \hat{\beta}_p x_{ip}^*\]
+In matrix form, the \textbf{predicted values} are
+\[\hat{\mathbf{y}}^* = \mathbf{X}^* \hat{\beta}\]
+
+\begin{quote}
+Note: The key difference between the fitted and predicted values is that the vector \(\mathbf{x}\) belongs to the training data (it has already been observed), whereas \(\mathbf{x}^*\) is an \textbf{unobserved} feature vector that is \textbf{independent} of the training data.
+\end{quote}
+
+~
+
+The \textbf{residual} at observation \(i\) is
+\begin{align*}
+r_{i} &= y_i - \hat{y}_i \\
+&= y_i - \hat{\beta}_0 - \hat{\beta}_1 x_{i1} - \hat{\beta}_2 x_{i2} - \ldots - \hat{\beta}_p x_{ip}
+\end{align*}
+
+In matrix form the residual vector is
+\begin{align*}
+\mathbf{r}_{n\times 1} &= \mathbf{y} - \hat{\mathbf{y}} \\
+&= \mathbf{y} - \mathbf{X}\hat{\beta} = \mathbf{y} - \mathbf{X} (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\;  y \\
+&= \mathbf{y} - \mathbf{H} \mathbf{y} = (\mathbf{I} -\mathbf{H}) \mathbf{y}
+\end{align*}
+
+The residuals \(\mathbf{r}\) are used to estimate the \textbf{error variance}:
+\[\hat{\sigma}^2 = \frac{1}{n-p-1}\sum_i r_i^2 = \frac{RSS}{n-p-1}\]
+The denominator \(n-p-1\) is the \emph{degrees of freedom of the residuals} .
+
+~
+
+\subsubsection*{Properties of the Residuals}\label{properties-of-the-residuals}
+\addcontentsline{toc}{subsubsection}{Properties of the Residuals}
+
+The least-squares estimator \(\hat{\beta}\) satisfies the \textbf{normal equations}
+\[\mathbf{X}^T (\mathbf{y} - \hat{\mathbf{y}}) = \mathbf{X}^T (\mathbf{y} - \mathbf{X}\hat{\beta}) = \mathbf{0}\]
+
+From this we obtain the following properties of the residual vector \(\mathbf{r}\):
+
+\begin{itemize}
+\item
+  The residual vector is orthogonal to every column of \(\mathbf{X}\):
+  \begin{align*}
+  \mathbf{X}^T\; \mathbf{r} &= \mathbf{X}^T (\mathbf{y}-\mathbf{X}\hat{\beta})\\
+  &= \mathbf{X}^T \mathbf{y} - \mathbf{X}^T\mathbf{X}\hat{\beta}\\
+  &= \mathbf{X}^T \mathbf{y} -  (\mathbf{X}^T \mathbf{X} )(\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\; \mathbf{y} = \mathbf{0}
+  \end{align*}
+\item
+  The residual vector is also orthogonal to the vector of fitted values:
+  \[\hat{\mathbf{y}}^T \;\mathbf{r} = \hat{\beta}^{T} \mathbf{X}^{T} \;\mathbf{r} = \mathbf{0}\]
+  Thus, the residual vector \(\mathbf{r}\) is \textbf{orthogonal to each column of \(\mathbf{X}\) and to \(\hat{\mathbf{y}}\)}.
+\end{itemize}
+
+~
+
+\begin{quote}
+When the model is used for prediction at a new point \(\mathbf{x}^*\), two different interval estimates are commonly reported: (i) a confidence interval for the mean response \(E(Y\mid\mathbf{x}^*)\), and (ii) a prediction interval for a new individual observation \(Y^*\).
+The prediction interval is wider because it must also account for the irreducible error variance \(\sigma^2\).
+\end{quote}
+
+\section{Least-Squares \& Normal Equations}\label{least-squares-normal-equations}
+
+In this section, we focus on the system of linear equations that we solve to obtain the least-squares estimators for \(\beta\). Recall, that we want to find a vector \(\hat{\beta}\) that minimizes
+
+\[\min_{\beta} ||\mathbf{y} - \mathbf{X} \beta||^2\]
+\emph{Any vector that provides a minimum value of this expression is called a least-squares solution}.
+
+The set of all least squares solutions is precisely the \textbf{set of solutions} to the normal equations
+\[(\mathbf{X}^T \mathbf{X}) \beta = \mathbf{X}^T \mathbf{y}\]
+There is a \emph{unique} solution \textbf{if and only if} \(rank(\mathbf{X}) = p+1\) in which case \(\bigl(\mathbf{X}^T \mathbf{X}\bigr)\) is invertible.
+
+~
+
+\subsection*{System of Linear Equations}\label{system-of-linear-equations}
+
+\paragraph*{Linear Algebra Review}\label{linear-algebra-review}
+\addcontentsline{toc}{paragraph}{Linear Algebra Review}
+
+Let us review a few facts from linear algebra related to solutions of a system of linear equations. For simplicity of notation, we use the \emph{generic} system of equations:
+\[\mathbf{A} z = c\]
+where
+\[ \mathbf{A}=\left(\begin{array}{cccc}
+    a_{11} & a_{12} & \cdots & a_{1k} \\
+    a_{21} & a_{22} & \cdots & a_{2k}   \\
+      \vdots & \vdots & \ddots & \vdots\\
+  a_{m1} & a_{m2} & \cdots & a_{mk}  \\
+    \end{array} \right),\quad
+    z =\left(\begin{array}{c}
+    z_{1} \\
+    z_{2}   \\
+   \vdots\\
+    z_{m}  \\
+    \end{array} \right),\quad
+    c =\left(\begin{array}{c}
+    c_{1} \\
+    c_{2}   \\
+   \vdots\\
+    c_{m}  \\
+    \end{array} \right)
+    \]
+
+Denote by \(\mathbf{A}_{i} = \bigl( a_{1i}, a_{2i}, \ldots, a_{mi}\bigr)^T\) the vector representing the \(i\)th \emph{column} of \(\mathbf{A}\). Then, \(\mathcal{C}(\mathbf{A})\) is the space generated by the columns of \(\mathbf{A}\), i.e.~the span of \(\bigl\{\mathbf{A}_1, \mathbf{A}_2, \ldots, \mathbf{A}_{k}\bigr\}\).
+
+\textbf{Definition}
+
+The \textbf{span} of a collection of vectors \(\bigl(\mathbf{A}_1, \mathbf{A}_2, \ldots, \mathbf{A}_{k}\bigr)\) is the set of all linear combinations of these vectors:
+\begin{align*}
+&span \bigl(\mathbf{A}_1, \mathbf{A}_2, \ldots, \mathbf{A}_{k}\bigr) \\
+&= \Bigl\{ d_1 \mathbf{A}_1 + d_2 \mathbf{A}_2 + \ldots + d_k \mathbf{A}_{k}, \text{ for any constants } d_1, \ldots, d_k \in \mathbb{R}
+\Bigr\}
+\end{align*}
+
+The column space of \(\mathbf{A}\), \(\mathcal{C}(\mathbf{A})\), is a \textbf{subspace} in \(\mathbb{R}^m\). A linear subspace of \(\mathbb{R}^m\) can be thought of as a ``flat'' surface within \(\mathbb{R}^m\); it is a collection of vectors that is closed under linear combinations. Illustrations of subspaces of \(\mathbb{R}^n\) are shown below:
+
+\includegraphics[width=0.35\linewidth,height=\textheight,keepaspectratio]{my-598PSL_files/images/week2/subspace1.png} \includegraphics[width=0.35\linewidth,height=\textheight,keepaspectratio]{my-598PSL_files/images/week2/subspace2.png}
+
+~
+
+\subsubsection*{\texorpdfstring{Solving the System of Equations \(\mathbf{A}z=c\)}{Solving the System of Equations \textbackslash mathbf\{A\}z=c}}\label{solving-the-system-of-equations-mathbfazc}
+\addcontentsline{toc}{subsubsection}{Solving the System of Equations \(\mathbf{A}z=c\)}
+
+For the system \(\mathbf{A} z = c\) to have a solution, \(c\) must lie in the column space of \(\mathbf{A}\), i.e.~\(c \in \mathcal{C}(\mathbf{A})\). This follows directly from the definition of matrix multiplication:
+\[\mathbf{A} z = c \, \Leftrightarrow \, c = z_1 \mathbf{A}_1 + \ldots + z_k \mathbf{A}_k\]
+
+When \(c \notin \mathcal{C}(\mathbf{A})\), we instead seek the vector \(\hat{c} \in \mathcal{C}(\mathbf{A})\) that is closest to \(c\). In that case, the equation \(\mathbf{A} z = \hat{c}\) has a solution, and \(\hat{c}\) comes as close as possible to the original vector \(c\).
+To obtain \(\hat{c}\) we \textbf{project} \(c\) \textbf{orthogonally} onto \(\mathcal{C}(\mathbf{A})\) by multiplying both sides by \(\mathbf{A}^T\):
+
+\[\mathbf{A}^T\mathbf{A} z = \mathbf{A}^T c\]
+* These are the normal equations.
+
+In the sketch to the right, \(\mathcal{C}(\mathbf{A})\), the space spanned by the columns of \(\mathbf{A}\), is a \emph{flat} surface, and \(c\) is a point lying off that flat surface. The \textbf{shortest distance} from the point \(c\) to the plane \(\mathcal{C}(\mathbf{A})\) is the line segment \emph{orthogonal} to the plane.
+
+The \emph{normal equations} locate the point in \(\mathcal{C}\bigl(\mathbf{A}\Bigr)\) that is closest to \(c\) by means of an orthogonal projection.
+
+~
+
+\subsection*{Geometric Representation of LS}\label{geometric-representation-of-ls}
+
+Translating the preceding discussion into the linear-regression setting:
+
+\begin{itemize}
+\item
+  \(\mathcal{C}(\mathbf{X})\) is the subspace \emph{spanned} by the columns of the design matrix, i.e.~by the predictors \(X_1\), \(X_2\), \(\ldots\), \(X_p\). It is a \emph{flat} subspace of \(\mathbb{R}^n\).
+\item
+  The response \(\mathbf{y}\) is a vector lying \textbf{off} this subspace, and the fitted value \(\hat{\mathbf{y}}\) is the orthogonal projection of \(\mathbf{y}\) onto \(\mathcal{C}(\mathbf{X})\).
+\item
+  The residual vector \(\mathbf{r} = \mathbf{y} - \hat{\mathbf{y}}\) is \textbf{orthogonal} both to \(\hat{\mathbf{y}}\) and to the entire subspace \(\mathcal{C}\bigl( \mathbf{X} \bigr)\).
+\end{itemize}
+
+~
+
+In other words, the least-squares method decomposes the data vector \(\mathbf{y}\) into two orthogonal components:
+\[\mathbf{y}_{n\times 1} = \hat{\mathbf{y}}_{n\times 1} + \mathbf{r}_{n\times 1}\]
+
+~
+
+\section{\texorpdfstring{Goodness-Of-Fit: \(R\)-Square}{Goodness-Of-Fit: R-Square}}\label{goodness-of-fit-r-square}
+
+A measure of how well the model fits the data is the \textbf{\(R\)-square} (also called \textbf{coefficient of determination} or the \emph{percentage of variance explained}). It is defined as
+
+\begin{align*}
+R^2 &=  \frac{\sum_i (\hat{y}_i - \bar{y})^2}{\sum_i (y_i - \bar{y})^2}\quad = \frac{\text{distance of model from grand mean}}{\text{distance of observations from grand mean }}\\ 
+& =  \frac{||\hat{\mathbf{y}} - \bar{\mathbf{y}}||^2}{||\mathbf{y} - \bar{\mathbf{y}}||^2} \\
+&= \frac{||\mathbf{y} - \bar{\mathbf{y}}||^2 - ||\hat{\mathbf{y}} - \mathbf{y}||^2  }{||\mathbf{y} - \bar{\mathbf{y}}||^2} \\
+&= 1 - \frac{||\hat{\mathbf{y}} - \mathbf{y}||^2 }{||\mathbf{y} - \bar{\mathbf{y}}||^2}\, := 1 - \frac{RSS}{TSS}
+\end{align*}
+The second-to-last equality follows from the orthogonal decomposition
+\[\underbrace{||\mathbf{y} - \bar{\mathbf{y}}||^2}_{\substack{\text{ total}\\\text{ variation  }}} = \underbrace{||\hat{\mathbf{y}} - \bar{\mathbf{y}}||^2}_{\substack{\text{ model variation }\\ \text{ from mean }}} + \underbrace{|| \hat{\mathbf{y}} - \mathbf{y}||^2}_{\text{ error  }}\]
+
+~
+
+\paragraph*{\texorpdfstring{Properties of \(R^2\) }{Properties of R\^{}2 }}\label{properties-of-r2}
+\addcontentsline{toc}{paragraph}{Properties of \(R^2\) }
+
+\begin{itemize}
+\item
+  \(0\leq R^2 \leq 1\)
+\item
+  \(R^2\) is invariant of any location or scale change of \(Y\) or of the predictors \(X\).
+\item
+  \(R^2\) alone does not tell us much about the quality of the LS fit.
+\item
+  A small \(R^2\) does not necessarily imply that the LS model is poor.
+\item
+  Adding a new predictor, even if it is randomly generated and completely unrelated to \(Y\), decreases the \(RSS\) and therefore increases \(R^2\).
+\end{itemize}
+
+These relationships are illustrated in the two plots below:
+
+\begin{center}\includegraphics[width=0.6\linewidth]{images/week2/rsq} \end{center}
+
+\begin{center}\includegraphics[width=0.6\linewidth]{images/week2/rss} \end{center}
+
+~
+
+\section{\texorpdfstring{Linear Transformations on \(X\)}{Linear Transformations on X}}\label{linear-transformations-on-x}
+
+Suppose we have a linear regression model of \(Y\) on the predictors \(X\). If we \textbf{scale} or \textbf{shift} a predictor, the fitted values \(\hat{\mathbf{y}}\) and \(R^2\) remain unchanged, but the LS estimators \(\hat{\beta}\) change.
+
+\subsubsection*{Some Examples}\label{some-examples}
+\addcontentsline{toc}{subsubsection}{Some Examples}
+
+\begin{itemize}
+\item
+  Scaling a predictor, i.e.~\(\tilde{x}_{i2} =  2 x_{i2}\) or \(\tilde{x}_{i3} =  x_{i3}/4\), does not affect \(\hat{\mathbf{y}}\) or \(R^2\).
+\item
+  In the \texttt{birthweight} example, the length of a baby is recorded in cm. Converting the length column to inches by the transformation \(\tilde{X}_1 = X_1/2.54\) leaves the predicted values unchanged.
+\end{itemize}
+
+These statements remain true, if we apply any linear transformation of the \(p\) predictors \textbf{as long as the transformation does not change the rank of \(\mathbf{X}\)}.
+
+\section{Rank deficiency}\label{rank-deficiency}
+
+The design matrix \(\mathbf{X}\) is an \(n\times (p+1)\) matrix. If this matrix is \textbf{not of full rank} (i.e., its columns are not linearly independent), the matrix \(\mathbf{X}^T \mathbf{X}\) cannot be inverted. This means that there is redundancy among the columns of \(\mathbf{X}\): at least one column can be written as a linear combination of other columns. Consequently, \(\mathbf{X^T X}\) is \emph{singular} and the LS solution is not unique (an \emph{identifiability problem}).
+
+Nevertheless, the column space \(\mathcal{C}(\mathbf{X})\) remains well-defined, so the fitted vector \(\hat{y}\) is still well-defined and can be computed. \texttt{R} and \texttt{Python} handle this situation, and the resulting model can still be used for prediction.
+
+~
+
+\section{Hypothesis Testing in MLR}\label{hypothesis-testing-in-mlr}
+
+When fitting a regression model, we often want to understand which predictors are statistically significant, or which of two models (a larger one or a smaller one) is more appropriate --either for prediction or for estimation.
+
+Testing for the statistical significance of one or more predictors can be formulated either as a test that the corresponding coefficient(s) equal zero, or as a model-comparison test. In this course we summarize all such testing questions with the following hypothesis test:
+
+\[
+\begin{cases}
+& H_0: \text{ Reduced Model with } p_0 \text{ coefficients}\\
+& H_{\alpha}: \text{ Full (larger) Model with } p_{\alpha} \text{ coefficients}\\
+\end{cases}
+\]
+Obviously, \(p_{\alpha} > p_0\), since the reduced model is a special case of the full model. Consequently we expect the reduced model to have a larger residual sum of squares: \(RSS_0 \geq RSS_{\alpha}\). The main tool for this comparison is the \textbf{partial \(F\) test}:
+
+\textbf{Partial \(F\) test}
+
+\emph{Hypothesis Test:}
+\[
+\begin{cases}
+& H_0: \text{ Reduced Model with } p_0 \text{ coefficients}\\
+& H_{\alpha}: \text{ Full/ Larger Model with } p_{\alpha} \text{ coefficients}\\
+\end{cases}
+\]
+
+\emph{Test Statistic:}
+\[F=\frac{\bigl(RSS_0 - RSS_{\alpha}\bigr)/(p_{\alpha} - p_0)}{RSS_{\alpha}/ \bigl(n-p_{\alpha} \bigr)}\,  \sim \, F_{p_{\alpha} - p_0, n-p_{\alpha}}\]
+
+\emph{Decision Rule:}
+Reject \(H_0\), if the \(F\) test statistic is large (or larger than \(F_{p_{\alpha} - p_0, n-p_{\alpha}}\)), i.e.~the variation missed by the reduced model, when being compared with the error variance, is significantly large.
+
+~
+
+~
+
+\begin{itemize}
+\item
+  The \textbf{numerator} in the partial \(F\) test measures the extra variation in the data not explained by the reduced model, but explained by the full model.
+\item
+  The \textbf{denomimator} is the variation in the data not explained by the full model (i.e., not explained by either model), which is used to estimate the error variance.
+\end{itemize}
+
+~
+
+\textbf{Birthweight Example (cont'd)}
+
+We wish to test whether the group of predictors that describe the father's characteristics (i.e.~variables \(X_9\) -- \(X_{12}\)) is jointly significant. The hypotheses are
+
+\[\begin{cases}
+ &H_0: Y \sim  1+  \beta_{1} X_{1} + \ldots + \beta_{8}X_{8} \\
+ & H_{\alpha}:  Y \sim  1+  \beta_1 X_1 + \ldots + \beta_{8}X_{8}+ \ldots + \beta_{12} X_{12} 
+ \end{cases} 
+ \]
+Here \(p_0 = 8+1\) (8 predictors plus intercept) and \(p_{\alpha}=12+1\) is the number of \(\beta\)'s in the full model. Extracting \(RSS_0\) and \(RSS_{\alpha}\) in \texttt{R}/\texttt{Python} and computing the partial \(F\) test statistic yields \(F = 0.7225\). Because this value is smaller than the critical value \$ F\_\{4,, n-13\} \approx 2.7\$ we do not reject \(H_0\) and prefer the reduced model.
+
+~
+
+\subsubsection*{\texorpdfstring{Partial \(F\) Test: Special Cases }{Partial F Test: Special Cases }}\label{partial-f-test-special-cases}
+\addcontentsline{toc}{subsubsection}{Partial \(F\) Test: Special Cases }
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Test for a Single Predictor \(\beta_j\)}
+\end{itemize}
+
+\[\begin{cases}
+ & H_0: Y \sim  1+  \beta_1 X_1 + \ldots + \beta_{j-1}X_{j-1} + \qquad \quad \; \beta_{j+1} X_{j+1} + \ldots + \beta_p X_p \\
+ & H_{\alpha}:  Y \sim  1+  \beta_1 X_1 + \ldots + \beta_{j-1}X_{j-1} +  \beta_{j} X_{j} + \beta_{j+1} X_{j+1} + \ldots + \beta_p X_p \\
+ \end{cases} 
+ \]
+The partial \(F\) test for a single coefficient \(\beta_j\) is exactly equivalent to the usual \(t\)-test\$
+\[t_j = \frac{\hat{\beta}_j}{\widehat{\operatorname{se}}(\hat{\beta}_j)} \sim t_{n-p-1}\]
+under \(H_0: \beta_j = 0\). In practice most software reports the \(t\)-statistic and its \(p\)-value directly.
+
+~
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Test for all Predictors}
+\end{itemize}
+
+\[\begin{cases}
+ &H_0: Y \sim  1 \qquad \text{[intercept-only model]} \\
+ & H_{\alpha}:  Y \sim  1+  \beta_1 X_1 + \ldots + \beta_{j-1}X_{j-1} +  \beta_{j} X_{j} + \beta_{j+1} X_{j+1} + \ldots + \beta_p X_p \\
+ \end{cases} 
+ \]
+This is the \textbf{overall \(F\)} test, which can be viewed as a \emph{goodness-of-fit test} for the regression model.
+
+~
+
+\section{Categorical Variables in MLR}\label{categorical-variables-in-mlr}
+
+As we discussed, some of the predictors may be \emph{categorical}. Consider a categorical predictor with \(k\) levels. When it is included in a linear regression model it is represented it is represented by binary indicator variables. Two common coding schemes are used:
+
+\textbf{One-hot encoding} creates \$k \$ binary indicators, one for each level:
+\[D_i =
+\begin{cases}
+1 & \text{if the observation belongs to level } i, \\
+0 & \text{otherwise}.
+\end{cases}\]
+
+\textbf{Dummy coding} (the default in classical linear regression) creates only \$ k-1 \$ binary indicators and absorbs one level into the intercept. The indicators take the form
+\[D_i =
+\begin{cases}
+0 & \text{if the observation is not at level } i, \\
+1 & \text{if the observation is at level } i,
+\end{cases}\]
+where the omitted level is called the reference level.
+
+\textbf{An Example with Categorical Variables}
+
+Consider a categorical predictor with three levels (\(a\), \(b\), \(c\)).
+
+One-hot encoding produces \(k = 3\) columns:
+\[\begin{pmatrix}
+a \\ a \\ b \\ b \\ b \\ c \\ c
+\end{pmatrix}
+\quad\Longrightarrow\quad
+\begin{pmatrix}
+1 & 0 & 0 \\
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 1 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+0 & 0 & 1
+\end{pmatrix}\]
+
+Dummy coding (with level \(c\) as the reference) produces \(k-1 = 2\) columns:
+\[\begin{pmatrix}
+a \\ a \\ b \\ b \\ b \\ c \\ c
+\end{pmatrix}
+\quad\Longrightarrow\quad
+\begin{pmatrix}
+1 & 0 \\
+1 & 0 \\
+0 & 1 \\
+0 & 1 \\
+0 & 1 \\
+0 & 0 \\
+0 & 0
+\end{pmatrix}\]
+
+In the dummy-coding matrix, Column 1 is the indicator for level \(a\) and Column 2 is the indicator for level \(b\). Level \(c\) is absorbed into the intercept.
+
+~
+
+\begin{quote}
+In general any level may be chosen as the reference level; the choice is usually driven by subject-matter context rather than by statistical considerations.
+\end{quote}
+
+\subsubsection*{Dummy coding vs.~One-hot encoding}\label{dummy-coding-vs.-one-hot-encoding}
+\addcontentsline{toc}{subsubsection}{Dummy coding vs.~One-hot encoding}
+
+\begin{itemize}
+\item
+  Dummy coding uses \(k-1\) indicators and keeps the design matrix full rank when an intercept is present. This is the standard approach in classical linear regression.
+\item
+  One-hot encoding uses \(k\) indicators. When an intercept is also included, the \(k\) columns sum to the constant vector \(\mathbf{1}\), creating perfect multicollinearity; \(\mathbf{X}^T\mathbf{X}\) becomes singular and the ordinary least-squares estimator is no longer unique.
+\item
+  Fitted and predicted values are identical under both codings. \emph{Only the interpretation of the individual coefficients changes.} In practice, any level may be chosen as the reference; the choice is usually guided by subject-matter context rather than by statistical considerations.
+\end{itemize}
+
+~
+
+\section{Collinearity}\label{collinearity}
+
+In practice we often encounter data sets in which many of the predictors are highly correlated with one another. In such cases the fitted values and the sampling variances of the regression coefficients can depend heavily on which particular predictors are included in the model. The resulting estimators become sensitive and unreliable.
+
+Possible \emph{symptoms} of collinearity include :
+
+\begin{enumerate}
+\def\labelenumi{(\roman{enumi})}
+\item
+  high pairwise (sample) correlation among the predictors,
+\item
+  a relatively large \(R^2\),
+\item
+  a statistically significant overall \(F\) test even though non of the individual predictors is statistically significant.
+\end{enumerate}
+
+Specific diagnostic tests and metrics exist for quantifying the severity of collinearity, but they lie beyond the scope of this course.
+
+The simplest remedy is to remove one or more predictors from each highly correlated group. More advanced approaches include principal-component analysis (PCA) and regularization methods based on penalized least squares.
+
+~
+
+\section{Model Diagnostics}\label{model-diagnostics}
+
+We made several assumptions when defining the linear regression model
+\[\mathbf{y} =  \mathbf{X}\beta + \varepsilon,\,\, \text{ where } \,\, \varepsilon \sim IID(0, \sigma^2)\]
+
+These assumptions are:
+
+\begin{itemize}
+\item
+  \emph{Linearity}: the conditional mean of \(Y\) is a linear function of the predictors.
+\item
+  \emph{Constant Variance}(homoscedasticity): all responses share a common, constant variance \(\sigma^2\).
+\item
+  \emph{Uncorrelated errors}: the errors \(\varepsilon_i\) and \(\varepsilon_j\) (and therefore \(Y_i\) and \(Y_j\)) are uncorrelated for \(i\neq j\).
+\item
+  \emph{(Normality)}: this is not required for the derivation of the least-squares estimators themselves. It becomes necessary, however, when we want exact finite-sample distributional results for the estimators, fitted values, and residuals, and it is especially important for hypothesis testing.
+\end{itemize}
+
+If the goal is to interpret the effects of the predictors on the response (rather than pure prediction), all of the above assumptions should be checked with diagnostic plots and tests, and appropriate remedial measures should be taken when they are violated.
+
+Because the primary focus of this course is prediction, we refer students to a dedicated regression course or textbook for a thorough treatment of diagnostics and remedial measures in multiple linear regression.
+
+~
+
+\subsection*{Outliers}\label{outliers}
+
+Outliers can be a concern in both large and small data sets. When the sample size is modest, it is advisable to test formally for outliers---for example, with tests based on the leave-one-out prediction error. In very large data sets such tests lose power and are less useful; one should instead adjust for multiple comparisons or adopt alternative strategies.
+
+If outliers appear to be problematic, useful practical steps include:
+
+\begin{enumerate}
+\def\labelenumi{(\roman{enumi})}
+\item
+  examining the range of each variable,
+\item
+  applying a log, square-root, or other suitable transformation to right-skewed predictors or to the response \(Y\), and
+\item
+  using winsorization to limit the influence of extreme values.
+\end{enumerate}
+
+\section{\texorpdfstring{The \texttt{Birthweight} Data Set Example}{The Birthweight Data Set Example}}\label{the-birthweight-data-set-example}
+
+~
+
+The \texttt{birthweight.csv} data set contains observations on 42 babies. The variables are:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{ID}: Unique Identification number of a baby
+\item
+  \texttt{Length}: Length of the baby at time of birth in cm (\(X_1\))
+\item
+  \texttt{Birthweight}: Weight of the baby at time of birth in kg (\(Y\))
+\item
+  \texttt{Headcirc}: Head circumference of the baby at time of birth in cm (\(X_2\))
+\item
+  \texttt{Gestation}: Completed weeks of gestation (\(X_3\))
+\item
+  \texttt{smoker}: Mother is/is not a smoker \{0: No, 1: Yes\} (\(X_4\))
+\item
+  \texttt{mage}: Mother's age at time of birth (\(X_5\))
+\item
+  \texttt{mnocig}: Mother's number of cigarettes smoked per day (\(X_6\))
+\item
+  \texttt{mheight}: Mother's height in cm (\(X_7\))
+\item
+  \texttt{mppwt}: Mother's pre-pregnancy weight (\(X_8\))
+\item
+  \texttt{fage}: Father's age at time of birth (\(X_9\))
+\item
+  \texttt{fedyrs}: Father's years of education (\(X_{10}\))
+\item
+  \texttt{fnocig}: Father's number of cigarettes smoked per day (\(X_{11}\))
+\item
+  \texttt{fheight}: Father's height (\(X_{12}\))
+\end{itemize}
+
+~
+
+You can download the data file here: Birthweight.csv .
+
+~
+
+The analysis of this data set is available in R and Python.
+
+~
+
+The data analysis example also includes a highly correlated data set (\texttt{seatpos}) from Faraway's book on ``Linear Models in R''. You can download this data here: seatpos.csv
 
 \bibliography{book.bib,packages.bib}
 

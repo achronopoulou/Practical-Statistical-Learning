@@ -1,0 +1,29 @@
+<script>
+$(document).ready(function() {
+  function collapseTOC() {
+    // 1. Collapse everything
+    $(".book-summary ul.summary ul").hide();
+
+    // 2. Find the current page filename
+    var currentPage = window.location.pathname.split("/").pop();
+    if (!currentPage || currentPage === "") currentPage = "index.html";
+
+    // 3. Find the <li> that matches the current page and expand its parents + children
+    var $current = $(".book-summary li[data-path='" + currentPage + "']");
+    if ($current.length) {
+      $current.parents("ul").show();
+      $current.children("ul").show();
+    }
+  }
+
+  // Run on load
+  collapseTOC();
+
+  // Run on every page change
+  if (typeof gitbook !== "undefined") {
+    gitbook.events.bind("page.change", function() {
+      setTimeout(collapseTOC, 30);
+    });
+  }
+});
+</script>

@@ -7,3 +7,15 @@ two-toy-examples-k-nn-vs.-linear-regression
 k-nearest-neighbors
 linear-regression
 a-simulated-binary-classification-example
+linear-regression-models
+multiple-linear-regression-mlr-model
+mlr-model-fitting
+least-squares-normal-equations
+goodness-of-fit-r-square
+linear-transformations-on-x
+rank-deficiency
+hypothesis-testing-in-mlr
+categorical-variables-in-mlr
+collinearity
+model-diagnostics
+the-birthweight-data-set-example
