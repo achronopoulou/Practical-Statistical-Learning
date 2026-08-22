@@ -905,7 +905,7 @@ The smoothing parameter is selected by the same criteria used for ridge regressi
 In this chapter we relaxed the linearity assumption of classical regression by introducing polynomial regression, regression splines, and smoothing splines. All three approaches remain linear in the parameters, so they can still be fit by (penalized) least squares, yet they are flexible enough to capture nonlinear relationships. We now illustrate smoothing splines—the method that requires the least manual tuning of knots—with a classic data set on U.S. birth rates.
 
 
-The analysis of this data set  is available in <a href="code/ch4_RCode.html" target="_blank">R</a> and  <a href="code/ch4_PythonCodeExamples.html" target="_blank">Python</a>.
+The analysis of this data set  is available in <a href="code/ch4_RCode.html" target="_blank">R</a> and  <a href="code/ch4_PythonCode.html" target="_blank">Python</a>.
 
 &nbsp; &nbsp; &nbsp;
 
