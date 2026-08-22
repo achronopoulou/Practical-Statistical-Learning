@@ -9,7 +9,7 @@ rmd_files:
   - "01-intro.Rmd"
   - "02-regression.Rmd"
   - "03-variableselection.Rmd"
-  # - "04-nonlinearregression.Rmd"
+  - "04-nonlinearregression.Rmd"
   # - "05-regressiontrees.Rmd"
   # - "06-classification.Rmd"
   # - "07-logisticregression.Rmd"

@@ -36,6 +36,46 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{longtable,booktabs,array}
 \newcounter{none} % for unnumbered tables
 \usepackage{calc} % for calculating minipage widths
@@ -1862,6 +1902,1477 @@ By P. Cortez, A. M. G. Silva. 2008. Published in Proceedings of 5th Annual Futur
 The data are publicly available from the UCI Machine Learning Repository: here
 
 The analysis of this data set is available in R and Python.
+
+\chapter{NonLinear Regression}\label{nonlinear-regression}
+
+As we discussed in the previous sections, multiple linear regression relies on a set of assumptions about the error terms (normality, homoscedasticity, and independence) together with the fundamental assumption that the mean response is a linear function of the predictors. When one or more of these assumptions are violated, the applicability of the linear model is limited. In this section we focus on \textbf{relaxing the linearity assumption} and introduce three of the most widely used approaches to nonlinear regression:
+
+\begin{enumerate}
+\def\labelenumi{(\roman{enumi})}
+\tightlist
+\item
+  Polynomial regression
+\item
+  Regression splines
+\item
+  Smoothing splines
+\end{enumerate}
+
+~
+~
+
+\subsubsection*{A Note on Nonlinearity}\label{a-note-on-nonlinearity}
+\addcontentsline{toc}{subsubsection}{A Note on Nonlinearity}
+
+Assume that the true underlying model takes the form
+
+\[Y = f(\mathbf{X}) + \varepsilon\]
+
+where \(\varepsilon\) satisfies the usual assumptions. So far we have \textbf{approximated} the \emph{unknown} function \(f\) with a multiple linear regression model:
+
+\[Y_i = \beta_0 + \beta_1 X_{i1} +  \beta_2 X_{i2} +\ldots +  \beta_p X_{ip} +\varepsilon_i \]
+
+This model is linear both in the predictors \(X_{ij}\) and in the coefficients \(\beta_j\).
+
+Now consider the following two models:
+\[Y_i = \beta_1 X_{i1} +  \beta_2 X_{i1}^2 +\beta_3 X_{i2} + \beta_4 X_{i2}^2 +  \beta_5 X_{i1} X_{i2} +\varepsilon_i \]
+or
+\[\log_{10}Y_i = \beta_1 X_{i1} +  \beta_2 \sqrt{X_{i1}} +\beta_3 e^{X_{i3}} +\varepsilon_i\]
+
+Both are nonlinear in the predictors but remain linear in the coefficients \(\beta_j\).
+In contrast, the model
+\[Y_i =  \frac{\gamma_0}{1+ \gamma_1 e^{\gamma_2 X_i}} + \varepsilon_i \]
+is nonlinear in both the parameters \emph{and} the predictors.
+
+In this chapter we approximate the general nonlinear relationship \(f\) using models that are nonlinear in the predictors (so that we can capture nonlinear associations between the response and the features) yet linear in the coefficients. Equivalently, these models can be viewed as ordinary linear regressions in which the original predictors have been replaced by nonlinear transformations of those predictors.
+
+The main advantage of this approach is that we can often describe nonlinear relationships effectively while still estimating the parameters easily. Because the models remain linear in the parameters, the coefficients continue to be obtained by ordinary least squares, which again reduces to solving a system of linear equations.
+
+\section{Polynomial Regression}\label{polynomial-regression}
+
+The simplest form of nonlinear regression is polynomial regression, which extends the linear model by including higher-order powers of the predictor(s). To study this approach we first introduce polynomial basis functions.
+
+~
+
+\subsection{Polynomial Basis Functions}\label{polynomial-basis-functions}
+
+If \(b_j(x)\) denotes the \(j\)th basis function, then any function \(f\) that lies in the span of these basis functions can be written
+
+\[f(x) = \sum_{j=0}^{d} b_j(x) \beta_j\]
+for suitable coefficients \(\beta_j\). Consequently the nonlinear model \(y_i = f(x_i) + \varepsilon_i\) becomes a linear model in the coefficients:
+\[y_i = \beta_0 + \sum_{j=1}^{d} b_j(x_i) \beta_j + \varepsilon_i\]
+
+Suppose we believe that \(f\) is a polynomial of degree at most 4. A natural basis for the space of all such polynomials is
+
+\begin{align*}
+b_0(x) &= 1\\
+b_1(x) &= x\\
+b_2(x) &= x^2\\
+b_3(x) &= x^3\\
+b_4(x) &= x^4
+\end{align*}
+The corresponding model is therefore
+\[y_i = \underbrace{\beta_0 + \beta_1 x_i+\beta_2 x^2_i+ \beta_3 x^3_i + \beta_4 x^4_i}_{= \beta_0 + \sum_{j=1}^{d} b_j(x_i) \beta_j} +\varepsilon_i\]
+
+~
+
+\textbf{Illustration of the Polynomial Basis Functions}
+
+The following code plots the individual polynomial basis functions of degree 0 through 4 and a linear combination of them.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OtherTok{=} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{by =} \FloatTok{0.001}\NormalTok{)}
+\NormalTok{b0 }\OtherTok{=} \FunctionTok{rep}\NormalTok{(}\DecValTok{1}\NormalTok{, }\FunctionTok{length}\NormalTok{(x))}
+\NormalTok{b1 }\OtherTok{=}\NormalTok{ x}
+\NormalTok{b2 }\OtherTok{=}\NormalTok{ x}\SpecialCharTok{\^{}}\DecValTok{2}
+\NormalTok{b3 }\OtherTok{=}\NormalTok{ x}\SpecialCharTok{\^{}}\DecValTok{3}
+\NormalTok{b4 }\OtherTok{=}\NormalTok{ x}\SpecialCharTok{\^{}}\DecValTok{4}
+
+\NormalTok{fun1 }\OtherTok{=} \DecValTok{4} \SpecialCharTok{*}\NormalTok{ b0 }\SpecialCharTok{{-}} \DecValTok{10} \SpecialCharTok{*}\NormalTok{ b1 }\SpecialCharTok{+} \DecValTok{16} \SpecialCharTok{*}\NormalTok{ b2 }\SpecialCharTok{+} \DecValTok{2} \SpecialCharTok{*}\NormalTok{ b3 }\SpecialCharTok{{-}} \DecValTok{10} \SpecialCharTok{*}\NormalTok{ b4}
+
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(x, b0, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\StringTok{"b"}\NormalTok{[}\DecValTok{0}\NormalTok{] }\SpecialCharTok{*} \StringTok{"(x)=1"}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(x, b1, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\StringTok{"b"}\NormalTok{[}\DecValTok{1}\NormalTok{] }\SpecialCharTok{*} \StringTok{"(x)=x"}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(x, b2, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\StringTok{"b"}\NormalTok{[}\DecValTok{2}\NormalTok{] }\SpecialCharTok{*} \StringTok{"(x)=x"}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(x, b3, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\StringTok{"b"}\NormalTok{[}\DecValTok{3}\NormalTok{] }\SpecialCharTok{*} \StringTok{"(x)=x"}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(x, b4, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\StringTok{"b"}\NormalTok{[}\DecValTok{4}\NormalTok{] }\SpecialCharTok{*} \StringTok{"(x)=x"}\SpecialCharTok{\^{}}\DecValTok{4}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(x, fun1, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"f(x)"}\NormalTok{, }\AttributeTok{main =} \FunctionTok{expression}\NormalTok{(}\StringTok{"f(x) =  4 {-} 10 x + 16 x"}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{*}
+    \StringTok{"+ 2 x"}\SpecialCharTok{\^{}}\DecValTok{3} \SpecialCharTok{*} \StringTok{"{-} 10 x"}\SpecialCharTok{\^{}}\DecValTok{4}\NormalTok{), }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-18-1.pdf}}
+
+~
+
+\subsection{Polynomial Regression}\label{polynomial-regression-1}
+
+From now on we assume that the predictor \(x\) is one-dimensional; the multivariate case will be discussed later. For \(x_i\in\mathbb{R}\) the polynomial regression model of degree \(d\) is
+\[
+y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \cdots + \beta_d x_i^d + \varepsilon_i
+\]
+
+We simply create the new variables \(X_2 = X^2, \ldots, X_d = X^d\) and treat the problem as ordinary multiple linear regression:
+\[
+\begin{pmatrix}
+y_1 \\ y_2 \\ \vdots \\ y_n
+\end{pmatrix}_{n \times 1}
+=
+\begin{pmatrix}
+1 & x_1 & x_1^2 & \cdots & x_1^d \\
+1 & x_2 & x_2^2 & \cdots & x_2^d \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & x_n & x_n^2 & \cdots & x_n^d
+\end{pmatrix}_{n \times (d+1)}
+\begin{pmatrix}
+\beta_0 \\ \beta_1 \\ \vdots \\ \beta_d
+\end{pmatrix}_{(d+1) \times 1}
++ \varepsilon
+\]
+
+~
+
+\textbf{Polynomial Regression Model}
+
+A \emph{non-linear} mean function can be represented with a polynomial basis as
+
+\[y_i = f(x_i) + \varepsilon_i \,\,\, \longrightarrow \,\,\, y_i =\beta_0 + \sum_{j=1}^{d} b_j(x_i) \beta_j + \varepsilon_i\]
+
+where \(d\) is the degree of the polynomial.
+
+~
+
+\subsubsection*{\texorpdfstring{How do we choose \(d\)? }{How do we choose d? }}\label{how-do-we-choose-d}
+\addcontentsline{toc}{subsubsection}{How do we choose \(d\)? }
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \emph{Forward Approach}: Begin with a linear model and successively add higher-order terms until the most recently added term is no longer statistically significant.
+\item
+  \emph{Backward Approach}: Start with a high-degree polynomial and successively remove the highest-order term that is not statistically significant.
+\end{enumerate}
+
+Once a degree \(d\) has been selected, we ordinarily do not test the significance of the lower-order terms. In other words, a polynomial of degree \(d\) is understood to contain all powers up to \(d\).
+
+~
+
+Reasoning
+
+In regression we prefer results that are invariant to simple location or scale changes of the predictor. Consider the following illustration. Suppose the data \(\{(y_i, x_i)\}_{i=1}^n\) are generated by
+\[
+y_i = x_i^2 + \varepsilon_i, \quad \varepsilon_i \sim \mathcal{N}(0, \sigma^2).
+\]
+If the predictor is recorded instead as \(z_i = x_i + 2\), the same relationship becomes
+\[
+y_i = (z_i - 2)^2 + \varepsilon_i = 4 - 4z_i + z_i^2 + \varepsilon_i.
+\]
+A linear term that was absent in the original scale now appears. Consequently, once we decide that a degree-\(d\) polynomial is appropriate we retain every lower-order term.
+
+\textbf{Exception}: If scientific knowledge dictates a specific functional form (for example, a pure quadratic relationship \(Y\approx X^2+C\) arising from a physical law), then it is legitimate to test whether the lower-order terms may be omitted.
+
+~
+
+\textbf{The Chicago Pumpkins Example}
+
+The file \texttt{pumpkins.csv} contains information regarding the \texttt{size} and \texttt{price} of pumpkins sold in the Chicago area (data can be found here.). Our goal is to \emph{predict} the pumpkin size from price.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pumpkins }\OtherTok{=} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/week4/chicagopumpkins.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(pumpkins}\SpecialCharTok{$}\NormalTok{price, pumpkins}\SpecialCharTok{$}\NormalTok{size, }\AttributeTok{pch =} \DecValTok{20}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"Pumpkin\textquotesingle{}s Price"}\NormalTok{,}
+    \AttributeTok{ylab =} \StringTok{"Pumpkins\textquotesingle{} Size"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-19-1.pdf}}
+A linear fit is visibly inadequate:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkins }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}}\NormalTok{ price, }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkins)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ price, data = pumpkins)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.6272 -0.7594  0.2244  0.3728  2.8245 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 0.5948315  0.0988339   6.018 6.35e-09 ***
+## price       0.0096781  0.0006856  14.117  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9477 on 246 degrees of freedom
+## Multiple R-squared:  0.4475, Adjusted R-squared:  0.4453 
+## F-statistic: 199.3 on 1 and 246 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+Although price is statistically significant, \(R^2\) is modest and the scatter plot does not support a straight-line relationship.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}}\NormalTok{ price, }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{points}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}}\NormalTok{ price, }\AttributeTok{data =}\NormalTok{ pumpkins, }\AttributeTok{pch =} \DecValTok{8}\NormalTok{)}
+\FunctionTok{abline}\NormalTok{(lm.pumpkins, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-21-1.pdf}}
+
+~
+We therefore consider higher-order polynomials, first by forward selection and then by backward elimination.
+
+\textbf{(1) Forward selection.}
+We start with a linear model and add successive powers until the newest term becomes insignificant.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Forward Selection}
+\NormalTok{lm.pumpkins }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}}\NormalTok{ price, }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkins)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ price, data = pumpkins)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.6272 -0.7594  0.2244  0.3728  2.8245 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 0.5948315  0.0988339   6.018 6.35e-09 ***
+## price       0.0096781  0.0006856  14.117  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9477 on 246 degrees of freedom
+## Multiple R-squared:  0.4475, Adjusted R-squared:  0.4453 
+## F-statistic: 199.3 on 1 and 246 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkins2 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}}\NormalTok{ price }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkins2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ price + I(price^2), data = pumpkins)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.6438 -0.6029  0.3695  0.4895  2.3941 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  1.093e-01  1.174e-01   0.932    0.353    
+## price        3.037e-02  3.208e-03   9.469  < 2e-16 ***
+## I(price^2)  -9.051e-05  1.375e-05  -6.582  2.8e-10 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.8754 on 245 degrees of freedom
+## Multiple R-squared:  0.5305, Adjusted R-squared:  0.5267 
+## F-statistic: 138.4 on 2 and 245 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkins3 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}}\NormalTok{ price }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkins3)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ price + I(price^2) + I(price^3), data = pumpkins)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.2786 -0.4937 -0.1368  0.5531  1.8633 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) -1.414e+00  1.691e-01   -8.36 4.83e-15 ***
+## price        1.256e-01  9.079e-03   13.83  < 2e-16 ***
+## I(price^2)  -9.845e-04  8.239e-05  -11.95  < 2e-16 ***
+## I(price^3)   2.228e-06  2.034e-07   10.95  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7182 on 244 degrees of freedom
+## Multiple R-squared:  0.6853, Adjusted R-squared:  0.6814 
+## F-statistic: 177.1 on 3 and 244 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkins4 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}}\NormalTok{ price }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{4}\NormalTok{),}
+    \AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkins4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ price + I(price^2) + I(price^3) + I(price^4), 
+##     data = pumpkins)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.3200 -0.4497 -0.1241  0.5539  1.7925 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) -2.871e+00  3.782e-01  -7.590 6.83e-13 ***
+## price        2.314e-01  2.630e-02   8.800 2.60e-16 ***
+## I(price^2)  -2.565e-03  3.785e-04  -6.776 9.25e-11 ***
+## I(price^3)   1.061e-05  1.973e-06   5.378 1.76e-07 ***
+## I(price^4)  -1.470e-08  3.443e-09  -4.271 2.80e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.6941 on 243 degrees of freedom
+## Multiple R-squared:  0.7073, Adjusted R-squared:  0.7025 
+## F-statistic: 146.8 on 4 and 243 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkins5 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}}\NormalTok{ price }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{5}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkins5)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ price + I(price^2) + I(price^3) + I(price^4) + 
+##     I(price^5), data = pumpkins)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.38082 -0.46537 -0.08211  0.53463  1.91954 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)  
+## (Intercept) -1.691e+00  7.112e-01  -2.378   0.0182 *
+## price        1.305e-01  5.791e-02   2.253   0.0251 *
+## I(price^2)  -2.479e-04  1.244e-03  -0.199   0.8422  
+## I(price^3)  -1.078e-05  1.113e-05  -0.969   0.3333  
+## I(price^4)   7.118e-08  4.409e-08   1.615   0.1077  
+## I(price^5)  -1.248e-10  6.386e-11  -1.954   0.0519 .
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.6901 on 242 degrees of freedom
+## Multiple R-squared:  0.7118, Adjusted R-squared:  0.7059 
+## F-statistic: 119.6 on 5 and 242 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+The fifth-order term has a \(p\)-value of 0.0519, which exceeds the conventional 5\% threshold. We therefore stop at degree 4. The fitted model is
+\[\hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x + \hat{\beta}_2 x^2 + \hat{\beta}_3 x^3 + \hat{\beta}_4 x^4 \]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{newprice }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{price =} \FunctionTok{seq}\NormalTok{(}\DecValTok{17}\NormalTok{, }\DecValTok{255}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(pumpkins}\SpecialCharTok{$}\NormalTok{price, pumpkins}\SpecialCharTok{$}\NormalTok{size, }\AttributeTok{pch =} \DecValTok{20}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+    \AttributeTok{xlab =} \StringTok{"Pumpkin\textquotesingle{}s Price"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Pumpkins\textquotesingle{} Size"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Forward Selection Models"}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkins, newprice), }\AttributeTok{col =} \StringTok{"yellow"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{1}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkins2, newprice), }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{1}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkins3, newprice), }\AttributeTok{col =} \StringTok{"orange"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{1}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkins4, newprice), }\AttributeTok{col =} \StringTok{"magenta"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{1}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkins5, newprice), }\AttributeTok{col =} \StringTok{"green"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{1}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{legend}\NormalTok{(}\DecValTok{230}\NormalTok{, }\FloatTok{1.45}\NormalTok{, }\AttributeTok{legend =} \FunctionTok{c}\NormalTok{(}\StringTok{"d=1"}\NormalTok{, }\StringTok{"d=2"}\NormalTok{, }\StringTok{"d=3"}\NormalTok{, }\StringTok{"d=4"}\NormalTok{, }\StringTok{"d=5"}\NormalTok{),}
+    \AttributeTok{col =} \FunctionTok{c}\NormalTok{(}\StringTok{"yellow"}\NormalTok{, }\StringTok{"blue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{, }\StringTok{"magenta"}\NormalTok{, }\StringTok{"green"}\NormalTok{),}
+    \AttributeTok{lty =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{cex =} \FloatTok{0.8}\NormalTok{, }\AttributeTok{lwd =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-23-1.pdf}}
+
+The magenta curve corresponds to the selected degree-4 model.
+
+~
+
+\textbf{(2) Backward elimination.}
+We begin with a high-degree polynomial and remove terms until the highest-order coefficient is significant.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkins10 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}}\NormalTok{ price }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{5}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{6}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{7}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{8}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{9}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{10}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkins10)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ price + I(price^2) + I(price^3) + I(price^4) + 
+##     I(price^5) + I(price^6) + I(price^7) + I(price^8) + I(price^9) + 
+##     I(price^10), data = pumpkins)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.44082 -0.45530 -0.01853  0.53535  2.12546 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)
+## (Intercept)  1.331e+01  2.671e+01   0.498    0.619
+## price       -2.191e+00  4.274e+00  -0.513    0.609
+## I(price^2)   1.396e-01  2.625e-01   0.532    0.595
+## I(price^3)  -4.389e-03  8.140e-03  -0.539    0.590
+## I(price^4)   8.198e-05  1.458e-04   0.562    0.575
+## I(price^5)  -9.818e-07  1.624e-06  -0.605    0.546
+## I(price^6)   7.731e-09  1.163e-08   0.664    0.507
+## I(price^7)  -3.970e-11  5.374e-11  -0.739    0.461
+## I(price^8)   1.276e-13  1.549e-13   0.824    0.411
+## I(price^9)  -2.321e-16  2.535e-16  -0.916    0.361
+## I(price^10)  1.821e-19  1.800e-19   1.012    0.313
+## 
+## Residual standard error: 0.6483 on 237 degrees of freedom
+## Multiple R-squared:  0.7509, Adjusted R-squared:  0.7404 
+## F-statistic: 71.45 on 10 and 237 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkins9 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}}\NormalTok{ price }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{5}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{6}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{7}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{8}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{9}\NormalTok{),}
+    \AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkins9)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ price + I(price^2) + I(price^3) + I(price^4) + 
+##     I(price^5) + I(price^6) + I(price^7) + I(price^8) + I(price^9), 
+##     data = pumpkins)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.4514 -0.4230 -0.0091  0.5177  2.1072 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)  
+## (Intercept) -1.191e+01  9.589e+00  -1.242   0.2154  
+## price        1.877e+00  1.450e+00   1.295   0.1967  
+## I(price^2)  -1.125e-01  8.271e-02  -1.360   0.1751  
+## I(price^3)   3.506e-03  2.316e-03   1.514   0.1314  
+## I(price^4)  -6.094e-05  3.623e-05  -1.682   0.0939 .
+## I(price^5)   6.252e-07  3.391e-07   1.844   0.0664 .
+## I(price^6)  -3.875e-09  1.945e-09  -1.993   0.0475 *
+## I(price^7)   1.425e-11  6.704e-12   2.125   0.0346 *
+## I(price^8)  -2.859e-14  1.276e-14  -2.241   0.0259 *
+## I(price^9)   2.411e-17  1.030e-17   2.340   0.0201 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.6483 on 238 degrees of freedom
+## Multiple R-squared:  0.7499, Adjusted R-squared:  0.7404 
+## F-statistic: 79.27 on 9 and 238 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkins8 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}}\NormalTok{ price }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{5}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{6}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{7}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(price}\SpecialCharTok{\^{}}\DecValTok{8}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkins8)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ price + I(price^2) + I(price^3) + I(price^4) + 
+##     I(price^5) + I(price^6) + I(price^7) + I(price^8), data = pumpkins)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.39988 -0.45678 -0.05827  0.53309  2.02119 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  9.140e+00  3.347e+00   2.731 0.006791 ** 
+## price       -1.368e+00  4.257e-01  -3.215 0.001486 ** 
+## I(price^2)   7.522e-02  2.032e-02   3.702 0.000266 ***
+## I(price^3)  -1.798e-03  4.783e-04  -3.759 0.000214 ***
+## I(price^4)   2.262e-05  6.154e-06   3.675 0.000293 ***
+## I(price^5)  -1.611e-07  4.541e-08  -3.549 0.000466 ***
+## I(price^6)   6.535e-10  1.918e-10   3.407 0.000771 ***
+## I(price^7)  -1.406e-12  4.316e-13  -3.259 0.001282 ** 
+## I(price^8)   1.246e-15  4.008e-16   3.108 0.002112 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.6544 on 239 degrees of freedom
+## Multiple R-squared:  0.7441, Adjusted R-squared:  0.7355 
+## F-statistic: 86.87 on 8 and 239 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+Starting from degree 10 we arrive at a degree-9 model. The corresponding fits are shown below.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{newprice }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{price =} \FunctionTok{seq}\NormalTok{(}\DecValTok{17}\NormalTok{, }\DecValTok{255}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(pumpkins}\SpecialCharTok{$}\NormalTok{price, pumpkins}\SpecialCharTok{$}\NormalTok{size, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{), }\AttributeTok{pch =} \DecValTok{20}\NormalTok{,}
+    \AttributeTok{xlab =} \StringTok{"Pumpkin\textquotesingle{}s Price"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Pumpkins\textquotesingle{} Size"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Backward Selection Models"}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkins10, newprice), }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{2}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkins9, newprice), }\AttributeTok{col =} \StringTok{"orange"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{2}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkins8, newprice), }\AttributeTok{col =} \StringTok{"magenta"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{2}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{legend}\NormalTok{(}\DecValTok{226}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{legend =} \FunctionTok{c}\NormalTok{(}\StringTok{"d=10"}\NormalTok{, }\StringTok{"d=9"}\NormalTok{, }\StringTok{"d=8"}\NormalTok{), }\AttributeTok{col =} \FunctionTok{c}\NormalTok{(}\StringTok{"blue"}\NormalTok{,}
+    \StringTok{"orange"}\NormalTok{, }\StringTok{"magenta"}\NormalTok{), }\AttributeTok{lty =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{), }\AttributeTok{cex =} \FloatTok{0.8}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-25-1.pdf}}
+
+The magenta curve is the degree-9 fit selected by backward elimination.
+
+As always, the final model should be subjected to the usual residual diagnostics.
+
+~
+
+\subsection{Orthogonal Polynomials}\label{orthogonal-polynomials}
+
+High-degree polynomials are generally not recommended: they tend to be numerically unstable, hard to interpret, and the successive powers \(x,x^2,\dots,x^d\) are highly correlated, producing severe multicollinearity. One remedy is to work with orthogonal polynomials
+\[y_i=\beta_0+\beta_1z_1+\ldots+\beta_d z_d+\varepsilon_i\]
+where each \$ z\_j \$ is a polynomial of exact degree \(j\) constructed so that
+\[z_j^\top z_k = 0 \quad\text{for all }j\neq k.\]\\
+\strut ~
+
+\textbf{The Chicago Pumpkins Example}
+In R the function poly generates orthogonal polynomial bases. The forward- and backward-selection procedures can be repeated with orthogonal polynomials as follows.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Forward Selection}
+\NormalTok{lm.pumpkinsO2 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(price, }\DecValTok{2}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkinsO2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ poly(price, 2), data = pumpkins)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.6438 -0.6029  0.3695  0.4895  2.3941 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)      1.70161    0.05559  30.612  < 2e-16 ***
+## poly(price, 2)1 13.37846    0.87538  15.283  < 2e-16 ***
+## poly(price, 2)2 -5.76139    0.87538  -6.582  2.8e-10 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.8754 on 245 degrees of freedom
+## Multiple R-squared:  0.5305, Adjusted R-squared:  0.5267 
+## F-statistic: 138.4 on 2 and 245 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkinsO3 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(price, }\DecValTok{3}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkinsO3)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ poly(price, 3), data = pumpkins)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.2786 -0.4937 -0.1368  0.5531  1.8633 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)       1.7016     0.0456  37.313  < 2e-16 ***
+## poly(price, 3)1  13.3785     0.7182  18.628  < 2e-16 ***
+## poly(price, 3)2  -5.7614     0.7182  -8.022 4.35e-14 ***
+## poly(price, 3)3   7.8672     0.7182  10.954  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7182 on 244 degrees of freedom
+## Multiple R-squared:  0.6853, Adjusted R-squared:  0.6814 
+## F-statistic: 177.1 on 3 and 244 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkinsO4 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(price, }\DecValTok{4}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkinsO4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ poly(price, 4), data = pumpkins)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.3200 -0.4497 -0.1241  0.5539  1.7925 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)      1.70161    0.04407  38.608  < 2e-16 ***
+## poly(price, 4)1 13.37846    0.69408  19.275  < 2e-16 ***
+## poly(price, 4)2 -5.76139    0.69408  -8.301 7.22e-15 ***
+## poly(price, 4)3  7.86718    0.69408  11.335  < 2e-16 ***
+## poly(price, 4)4 -2.96423    0.69408  -4.271 2.80e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.6941 on 243 degrees of freedom
+## Multiple R-squared:  0.7073, Adjusted R-squared:  0.7025 
+## F-statistic: 146.8 on 4 and 243 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkinsO5 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(price, }\DecValTok{5}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkinsO5)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ poly(price, 5), data = pumpkins)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.38082 -0.46537 -0.08211  0.53463  1.91954 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)      1.70161    0.04382  38.831  < 2e-16 ***
+## poly(price, 5)1 13.37846    0.69009  19.387  < 2e-16 ***
+## poly(price, 5)2 -5.76139    0.69009  -8.349 5.35e-15 ***
+## poly(price, 5)3  7.86718    0.69009  11.400  < 2e-16 ***
+## poly(price, 5)4 -2.96423    0.69009  -4.295 2.53e-05 ***
+## poly(price, 5)5 -1.34841    0.69009  -1.954   0.0519 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.6901 on 242 degrees of freedom
+## Multiple R-squared:  0.7118, Adjusted R-squared:  0.7059 
+## F-statistic: 119.6 on 5 and 242 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{newprice }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{price =} \FunctionTok{seq}\NormalTok{(}\DecValTok{17}\NormalTok{, }\DecValTok{255}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(pumpkins}\SpecialCharTok{$}\NormalTok{price, pumpkins}\SpecialCharTok{$}\NormalTok{size, }\AttributeTok{pch =} \DecValTok{20}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+    \AttributeTok{xlab =} \StringTok{"Pumpkin\textquotesingle{}s Price"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Pumpkins\textquotesingle{} Size"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Forward Selection Models: Orthogonal Polynomials"}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkinsO2, newprice), }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{1}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkinsO3, newprice), }\AttributeTok{col =} \StringTok{"orange"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{1}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkinsO4, newprice), }\AttributeTok{col =} \StringTok{"magenta"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{1}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkinsO5, newprice), }\AttributeTok{col =} \StringTok{"green"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{1}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{legend}\NormalTok{(}\DecValTok{230}\NormalTok{, }\FloatTok{1.3}\NormalTok{, }\AttributeTok{legend =} \FunctionTok{c}\NormalTok{(}\StringTok{"d=2"}\NormalTok{, }\StringTok{"d=3"}\NormalTok{, }\StringTok{"d=4"}\NormalTok{, }\StringTok{"d=5"}\NormalTok{), }\AttributeTok{col =} \FunctionTok{c}\NormalTok{(}\StringTok{"blue"}\NormalTok{,}
+    \StringTok{"orange"}\NormalTok{, }\StringTok{"magenta"}\NormalTok{, }\StringTok{"green"}\NormalTok{), }\AttributeTok{lty =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{cex =} \FloatTok{0.8}\NormalTok{,}
+    \AttributeTok{lwd =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-26-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Backward Selection}
+\NormalTok{lm.pumpkinsO10 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(price, }\DecValTok{10}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkinsO10)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ poly(price, 10), data = pumpkins)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.44082 -0.45530 -0.01853  0.53535  2.12546 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)        1.70161    0.04117  41.335  < 2e-16 ***
+## poly(price, 10)1  13.37846    0.64829  20.636  < 2e-16 ***
+## poly(price, 10)2  -5.76139    0.64829  -8.887  < 2e-16 ***
+## poly(price, 10)3   7.86718    0.64829  12.135  < 2e-16 ***
+## poly(price, 10)4  -2.96423    0.64829  -4.572 7.77e-06 ***
+## poly(price, 10)5  -1.34841    0.64829  -2.080  0.03861 *  
+## poly(price, 10)6  -1.45456    0.64829  -2.244  0.02578 *  
+## poly(price, 10)7  -2.57955    0.64829  -3.979 9.20e-05 ***
+## poly(price, 10)8   2.03378    0.64829   3.137  0.00192 ** 
+## poly(price, 10)9   1.51698    0.64829   2.340  0.02012 *  
+## poly(price, 10)10  0.65591    0.64829   1.012  0.31269    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.6483 on 237 degrees of freedom
+## Multiple R-squared:  0.7509, Adjusted R-squared:  0.7404 
+## F-statistic: 71.45 on 10 and 237 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkinsO9 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(price, }\DecValTok{9}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkinsO9)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ poly(price, 9), data = pumpkins)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.4514 -0.4230 -0.0091  0.5177  2.1072 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)      1.70161    0.04117  41.333  < 2e-16 ***
+## poly(price, 9)1 13.37846    0.64833  20.635  < 2e-16 ***
+## poly(price, 9)2 -5.76139    0.64833  -8.887  < 2e-16 ***
+## poly(price, 9)3  7.86718    0.64833  12.135  < 2e-16 ***
+## poly(price, 9)4 -2.96423    0.64833  -4.572 7.76e-06 ***
+## poly(price, 9)5 -1.34841    0.64833  -2.080  0.03861 *  
+## poly(price, 9)6 -1.45456    0.64833  -2.244  0.02578 *  
+## poly(price, 9)7 -2.57955    0.64833  -3.979 9.20e-05 ***
+## poly(price, 9)8  2.03378    0.64833   3.137  0.00192 ** 
+## poly(price, 9)9  1.51698    0.64833   2.340  0.02012 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.6483 on 238 degrees of freedom
+## Multiple R-squared:  0.7499, Adjusted R-squared:  0.7404 
+## F-statistic: 79.27 on 9 and 238 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.pumpkinsO8 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(size }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(price, }\DecValTok{8}\NormalTok{), }\AttributeTok{data =}\NormalTok{ pumpkins)}
+\FunctionTok{summary}\NormalTok{(lm.pumpkinsO8)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = size ~ poly(price, 8), data = pumpkins)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.39988 -0.45678 -0.05827  0.53309  2.02119 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)      1.70161    0.04155  40.951  < 2e-16 ***
+## poly(price, 8)1 13.37846    0.65437  20.445  < 2e-16 ***
+## poly(price, 8)2 -5.76139    0.65437  -8.805 2.71e-16 ***
+## poly(price, 8)3  7.86718    0.65437  12.023  < 2e-16 ***
+## poly(price, 8)4 -2.96423    0.65437  -4.530 9.32e-06 ***
+## poly(price, 8)5 -1.34841    0.65437  -2.061 0.040421 *  
+## poly(price, 8)6 -1.45456    0.65437  -2.223 0.027162 *  
+## poly(price, 8)7 -2.57955    0.65437  -3.942 0.000106 ***
+## poly(price, 8)8  2.03378    0.65437   3.108 0.002112 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.6544 on 239 degrees of freedom
+## Multiple R-squared:  0.7441, Adjusted R-squared:  0.7355 
+## F-statistic: 86.87 on 8 and 239 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(pumpkins}\SpecialCharTok{$}\NormalTok{price, pumpkins}\SpecialCharTok{$}\NormalTok{size, }\AttributeTok{pch =} \DecValTok{20}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+    \AttributeTok{xlab =} \StringTok{"Pumpkin\textquotesingle{}s Price"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Pumpkins\textquotesingle{} Size"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Backward Selection Models: Orthogonal Polynomials"}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkinsO10, newprice), }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{2}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkinsO9, newprice), }\AttributeTok{col =} \StringTok{"orange"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{2}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(newprice}\SpecialCharTok{$}\NormalTok{price, }\FunctionTok{predict}\NormalTok{(lm.pumpkinsO8, newprice), }\AttributeTok{col =} \StringTok{"magenta"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{2}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{legend}\NormalTok{(}\DecValTok{225}\NormalTok{, }\FloatTok{1.2}\NormalTok{, }\AttributeTok{legend =} \FunctionTok{c}\NormalTok{(}\StringTok{"d=10"}\NormalTok{, }\StringTok{"d=9"}\NormalTok{, }\StringTok{"d=8"}\NormalTok{), }\AttributeTok{col =} \FunctionTok{c}\NormalTok{(}\StringTok{"blue"}\NormalTok{,}
+    \StringTok{"orange"}\NormalTok{, }\StringTok{"magenta"}\NormalTok{), }\AttributeTok{lty =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{), }\AttributeTok{cex =} \FloatTok{0.8}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-26-2.pdf}}
+
+~
+
+\subsection{Piece-wise Polynomials}\label{piece-wise-polynomials}
+
+When the true mean function \(\mathbb{E}(Y\mid X=x)=f(x)\) is highly oscillatory, a single high-degree polynomial may be required. Such polynomials are often undesirable. An attractive alternative is to use piecewise polynomials:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Partition the range of \(x\) into contiguous intervals.
+\item
+  Inside each interval approximate \(f\) by a low-degree polynomial (typically quadratic or cubic) whose coefficients are allowed to differ across intervals.
+\item
+  Impose continuity (and possibly continuity of derivatives) at the knots that separate the intervals.
+\end{enumerate}
+
+The resulting fit is sometimes called \emph{broken-stick} regression when the pieces are linear. The principal advantage is that each observation influences the fit only locally; the principal disadvantage is that the overall curve is usually less smooth than a single global polynomial of comparable complexity.
+
+~
+
+\section{Splines Regression}\label{splines-regression}
+
+\emph{Splines} are piecewise polynomials thar are constructed so that thay can be both sensitive and smooth, but also capture local features of the data.
+
+A \textbf{Cubic Spline} is a curve constructed from sections of cubic polynomials, joined together so that the curve is \emph{continuous up to second derivative}. The points at which the sections join are called the \textbf{knots} of the spline. For a conventional spline, the knots occur wherever there is a datum, but for the regression splines the locations of the knots must be chosen. Typically, the knots would either be \emph{evenly spaced} through the range of observed \(x\) values, or placed at the \emph{quantiles} of the distribution of unique \(x\) values. Each section of cubic has different coefficients, but at the knots \emph{it will match its neighboring sections in value and first two derivatives}.
+
+\textbf{Cubic Splines (Mathematical) Definition}
+
+A function \(g\) defined on \([a,b]\) is a \textbf{cubic spline} with respect to \textbf{knots} \(\{\xi_i\}_{i=1}^m\) (specifically \(a<\xi_1<\xi_2<\ldots<\xi_m<b\)) if:
+
+\begin{itemize}
+\item
+  \(g\) is a cubic polynomial in each of the \(m+1\) intervals, i.e.
+  \[g(x) =d_ix^3+c_ix^2+b_ix+a_i,\quad x\in [\xi_i,\xi_{i+1}]\]
+  where \(i=0,\ldots, m\), \(\xi_0=a\) and \(\xi_{m+1}=b\).
+\item
+  \(g\) is continuous up to the \emph{2nd} derivative. Since \(g\) is continuous up to the \emph{2nd} derivative \emph{for any point inside an interval}, it suffices to check the following conditions:
+  \[g^{(0,1,2)} (\xi_i^+)=g^{(0,1,2)}(\xi_i^-),\quad i=1, \ldots, m\]
+  This expression indicates that the function and the first and second order derivatives are continuous at the knots.
+\end{itemize}
+
+~
+
+\textbf{How many free parameters do we need to represent a cubic spline?}
+
+\textbf{(+)} 4 parameters \((d_i,c_i,b_i,a_i)\) \emph{for each of the \((m+1)\) intervals}.
+
+\textbf{(-)} 3 constraints \emph{at each of the \(m\) knots} (continuity constraints).
+
+The total number of free parameters (similar to the number of degrees of freedom) is:
+\[4(m+1) - 3m = m + 4\]
+
+~
+
+\textbf{A property of the cubic splines}
+
+Suppose the knots \(\{\xi_i\}_{i=1}^m\) are given.
+
+\begin{itemize}
+\tightlist
+\item
+  If \(g_1(x)\) and \(g_2(x)\) are cubic splines, the linear combination
+  \[a_1g_1(x)+a_2g_2(x)\]
+  is also a cubic spline, where \(a_1\) and \(a_2\) are known constants.~
+\end{itemize}
+
+That is, for a set of given knots, the corresponding \emph{cubic splines form a linear space (of functions) with dim \((m + 4)\)}.
+
+~
+
+\subsection{Examples of Cubic Splines Basis}\label{examples-of-cubic-splines-basis}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  A set of basis functions for cubic splines (w.r.t knots \(\{\xi_i\}_{i=1}^m\)) is given by:
+  \begin{align*}
+    h_0(x)&= 1\\
+     h_1(x)&=x\\
+    h_2(x)&=x^2\\
+    h_3(x)&=x^3;\\
+    h_{i+3}(x) &= (x-\xi_i)_+^3,\quad i=1,2,\ldots,m\\
+  \end{align*}
+  That is, any cubic spline can be uniquely expressed as:
+  \[ \beta_0 +\sum_{j=1}^{m+3}\beta_j h_j(x)\]
+\end{enumerate}
+
+~
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Given knot locations, there are many alternative, but equivalent ways of writing down a basis for cubic splines. For example, \emph{another} basis for cubic splines can be written as:
+  \begin{align*}
+  h_0(x) &= 1\\
+  h_1(x) &= x\\
+  h_{i+1}(x) &= R(x, \xi_i^*),\,\, i=1, \ldots, q-1
+  \end{align*}
+  where
+  \begin{align*}
+  R(x,z) &= \left[  (z-1/2)^2 - 1/12\right] \left[  (x-1/2)^2 - 1/12\right]/4\\
+  & \quad \,- \left[  (|x-z|-1/2)^4 - 1/2   (|x-z|-1/2)^2 + 7/240\right] /24\\
+  \end{align*}
+\end{enumerate}
+
+\textbf{An Example of a Cubic Splines Basis}
+
+We first define the function \(R(x,z)\) as above in \texttt{R}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{R\_xz }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x, z) \{}
+\NormalTok{    ((z }\SpecialCharTok{{-}} \FloatTok{0.5}\NormalTok{)}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{{-}} \DecValTok{1}\SpecialCharTok{/}\DecValTok{12}\NormalTok{) }\SpecialCharTok{*}\NormalTok{ ((x }\SpecialCharTok{{-}} \FloatTok{0.5}\NormalTok{)}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{{-}} \DecValTok{1}\SpecialCharTok{/}\DecValTok{12}\NormalTok{)}\SpecialCharTok{/}\DecValTok{4} \SpecialCharTok{{-}}\NormalTok{ ((}\FunctionTok{abs}\NormalTok{(x }\SpecialCharTok{{-}}
+\NormalTok{        z) }\SpecialCharTok{{-}} \FloatTok{0.5}\NormalTok{)}\SpecialCharTok{\^{}}\DecValTok{4} \SpecialCharTok{{-}}\NormalTok{ (}\FunctionTok{abs}\NormalTok{(x }\SpecialCharTok{{-}}\NormalTok{ z) }\SpecialCharTok{{-}} \FloatTok{0.5}\NormalTok{)}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\DecValTok{2} \SpecialCharTok{+} \DecValTok{7}\SpecialCharTok{/}\DecValTok{240}\NormalTok{)}\SpecialCharTok{/}\DecValTok{24}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+We then need to define the knots
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{new.knots }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\DecValTok{6}\NormalTok{, }\DecValTok{3}\SpecialCharTok{/}\DecValTok{6}\NormalTok{, }\DecValTok{5}\SpecialCharTok{/}\DecValTok{6}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+In regression examples the \(x\) variable will be the predictor (there is no need to generate any \(x\) values). Here, we need a ``generic'' \(x\) for illustration purposes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OtherTok{=} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{by =} \FloatTok{0.01}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Finally, we defined the splines functions, based on the definition given above:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{spline1 }\OtherTok{=} \FunctionTok{rep}\NormalTok{(}\DecValTok{1}\NormalTok{, }\FunctionTok{length}\NormalTok{(x))  }\CommentTok{\# First basis function}
+\NormalTok{spline2 }\OtherTok{=}\NormalTok{ x  }\CommentTok{\# Second basis function}
+\NormalTok{spline3 }\OtherTok{=} \FunctionTok{R\_xz}\NormalTok{(x, new.knots[}\DecValTok{1}\NormalTok{])  }\CommentTok{\# Third basis function }
+\NormalTok{spline4 }\OtherTok{=} \FunctionTok{R\_xz}\NormalTok{(x, new.knots[}\DecValTok{2}\NormalTok{])  }\CommentTok{\# Fourth basis function }
+\NormalTok{spline5 }\OtherTok{=} \FunctionTok{R\_xz}\NormalTok{(x, new.knots[}\DecValTok{3}\NormalTok{])  }\CommentTok{\# Fifth basis function }
+\end{Highlighting}
+\end{Shaded}
+
+If we want to represent a function using the basis above, we have:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fun1s }\OtherTok{=} \DecValTok{4} \SpecialCharTok{*}\NormalTok{ spline1 }\SpecialCharTok{{-}} \FloatTok{0.05} \SpecialCharTok{*}\NormalTok{ spline2 }\SpecialCharTok{{-}} \DecValTok{6} \SpecialCharTok{*}\NormalTok{ spline3 }\SpecialCharTok{+} \DecValTok{2} \SpecialCharTok{*}\NormalTok{ spline4 }\SpecialCharTok{+}
+    \DecValTok{10} \SpecialCharTok{*}\NormalTok{ spline5}
+\end{Highlighting}
+\end{Shaded}
+
+For illustration purposes, we plot the basis functions defined above as well as the function \(f\):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(x, spline1, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\StringTok{"h"}\NormalTok{[}\DecValTok{0}\NormalTok{] }\SpecialCharTok{*}
+    \StringTok{"(x)=1"}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(x, spline2, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\StringTok{"h"}\NormalTok{[}\DecValTok{1}\NormalTok{] }\SpecialCharTok{*}
+    \StringTok{"(x)=x"}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(x, spline3, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{2}\NormalTok{](x)) }\SpecialCharTok{*}
+    \StringTok{"="} \SpecialCharTok{*} \FunctionTok{paste}\NormalTok{(}\FunctionTok{R}\NormalTok{(x, xi[}\DecValTok{1}\NormalTok{]))))}
+\FunctionTok{plot}\NormalTok{(x, spline4, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{3}\NormalTok{](x)) }\SpecialCharTok{*}
+    \StringTok{"="} \SpecialCharTok{*} \FunctionTok{paste}\NormalTok{(}\FunctionTok{R}\NormalTok{(x, xi[}\DecValTok{2}\NormalTok{]))))}
+\FunctionTok{plot}\NormalTok{(x, spline5, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{4}\NormalTok{](x)) }\SpecialCharTok{*}
+    \StringTok{"="} \SpecialCharTok{*} \FunctionTok{paste}\NormalTok{(}\FunctionTok{R}\NormalTok{(x, xi[}\DecValTok{3}\NormalTok{]))))}
+\FunctionTok{plot}\NormalTok{(x, fun1s, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"f(x)"}\NormalTok{, }\AttributeTok{main =} \FunctionTok{expression}\NormalTok{(}\StringTok{"f(x) =  4 {-} 0.05 h"}\NormalTok{[}\DecValTok{1}\NormalTok{] }\SpecialCharTok{*}
+    \StringTok{" {-} 6 h"}\NormalTok{[}\DecValTok{2}\NormalTok{] }\SpecialCharTok{*} \StringTok{"+ 2 h"}\NormalTok{[}\DecValTok{3}\NormalTok{] }\SpecialCharTok{*} \StringTok{"+ 10 h"}\NormalTok{[}\DecValTok{4}\NormalTok{]), }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-32-1.pdf}}
+
+~
+
+\subsection{\texorpdfstring{B-Splines Basis Functions in \texttt{R}}{B-Splines Basis Functions in R}}\label{b-splines-basis-functions-in-r}
+
+In this course one of the cubic spline bases we will use is the \textbf{B-spline} basis.
+
+\textbf{Cubic B Splines Definition}
+
+The cubic B-spline basis on an interval \$ {[}a,b{]} \$ with interior knots \$ \{\xi\emph{i\}}\{i=1\}\^{}m \$ satisfies the following properties:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Each basis function is nonzero only on an interval spanned by four successive knots (and is zero elsewhere).
+\item
+  On every sub-interval between consecutive knots the basis function is a cubic polynomial.
+\item
+  The basis function is continuous and has continuous first and second derivatives at every knot.
+\item
+  The basis function integrates to 1 over its support.
+\item
+  The two boundary basis functions are modified so that the required continuity conditions hold at the endpoints \(a\) and \(b\).
+\end{enumerate}
+
+These bases are provided by the \texttt{splines} library in \texttt{R}; the generating function is \texttt{bs()}.
+
+Its \textbf{main arguments} are
+
+\begin{itemize}
+\item
+  \texttt{x}: the predictor vector.
+\item
+  \texttt{df}: desired degrees of freedom (number of columns of the returned basis matrix).
+\item
+  \texttt{knots}: vector of interior knot locations.
+\item
+  \texttt{degree}: degree of the piecewise polynomial (default = 3, i.e., cubic).
+\item
+  \texttt{intercept}: if \texttt{TRUE} an intercept column is included in the basis; default is \texttt{FALSE.}
+  (This is not the intercept of the eventual regression model.)
+\item
+  \texttt{Boundary.knots}: the two boundary knots at which the basis is anchored; by default they are set to the range of the non-missing values of \texttt{x}
+\end{itemize}
+
+(The full documentation is available here.)
+
+In practice we supply either the vector knots or the integer df, but not both. All other arguments are left at their defaults.
+
+~
+
+The value returned by \texttt{bs()} is a matrix with \texttt{length(x)} rows.
+
+\begin{itemize}
+\item
+  If df is supplied the matrix has df columns.
+\item
+  If knots is supplied the number of columns equals
+  \[\text{length(knots)} + \text{degree} + \text{as.integer(intercept)}.\]
+  With the default \texttt{intercept\ =\ FALSE} this reduces to length(knots) + 3.
+\end{itemize}
+
+~
+
+Specifying knots versus degrees of freedom**
+
+If the knot locations are known, pass them via the \texttt{knots} argument:
+
+\textbf{Defining \texttt{knots} location in \texttt{bs()}}
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(splines)}
+\NormalTok{x }\OtherTok{=} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{by =} \FloatTok{0.01}\NormalTok{)  }\CommentTok{\# generic \textasciigrave{}x\textasciigrave{} for illustration purposes}
+\NormalTok{new.knots }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\DecValTok{6}\NormalTok{, }\DecValTok{3}\SpecialCharTok{/}\DecValTok{6}\NormalTok{, }\DecValTok{5}\SpecialCharTok{/}\DecValTok{6}\NormalTok{)  }\CommentTok{\# define three knots at locations 1/6, 3/6, 5/6.}
+\NormalTok{Bsplines.basis1 }\OtherTok{=} \FunctionTok{bs}\NormalTok{(x, }\AttributeTok{knots =}\NormalTok{ new.knots)}
+\FunctionTok{head}\NormalTok{(Bsplines.basis1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             1         2         3 4 5 6
+## [1,] 0.000000 0.0000000 0.0000000 0 0 0
+## [2,] 0.165912 0.0034896 0.0000144 0 0 0
+## [3,] 0.304896 0.0135168 0.0001152 0 0 0
+## [4,] 0.418824 0.0294192 0.0003888 0 0 0
+## [5,] 0.509568 0.0505344 0.0009216 0 0 0
+## [6,] 0.579000 0.0762000 0.0018000 0 0 0
+\end{verbatim}
+
+In this case, \texttt{R} sets
+\[\text{df = length(knots) + degree}\]
+(or one more if \textbf{if \texttt{intercept=TRUE}}).
+
+~
+
+\begin{itemize}
+\tightlist
+\item
+  If a target degrees of freedom is preferred, pass \texttt{df}. Then \texttt{bs()} places df - degree interior knots at suitable quantiles of \texttt{x} (or \texttt{df\ -\ degree\ -\ 1} knots when \texttt{intercept\ =\ TRUE}).
+\end{itemize}
+
+\textbf{Specifying degrees of freedom with \texttt{bs()}}
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OtherTok{=} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{by =} \FloatTok{0.01}\NormalTok{)  }\CommentTok{\# generic \textasciigrave{}x\textasciigrave{} for illustration purposes}
+\NormalTok{Bsplines.basis2 }\OtherTok{=} \FunctionTok{bs}\NormalTok{(x, }\AttributeTok{df =} \DecValTok{4}\NormalTok{)}
+\FunctionTok{head}\NormalTok{(Bsplines.basis2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             1        2        3 4
+## [1,] 0.000000 0.000000 0.000000 0
+## [2,] 0.058214 0.000592 0.000002 0
+## [3,] 0.112912 0.002336 0.000016 0
+## [4,] 0.164178 0.005184 0.000054 0
+## [5,] 0.212096 0.009088 0.000128 0
+## [6,] 0.256750 0.014000 0.000250 0
+\end{verbatim}
+
+~
+
+The following code illustrates the first six B-spline basis functions obtained from the three knots defined above.
+
+\textbf{Illustration of B Splines Basis Function}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Bsplines.basis }\OtherTok{=} \FunctionTok{bs}\NormalTok{(x, }\AttributeTok{knots =}\NormalTok{ new.knots)}
+\FunctionTok{dim}\NormalTok{(Bsplines.basis)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 101   6
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(Bsplines.basis)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             1         2         3 4 5 6
+## [1,] 0.000000 0.0000000 0.0000000 0 0 0
+## [2,] 0.165912 0.0034896 0.0000144 0 0 0
+## [3,] 0.304896 0.0135168 0.0001152 0 0 0
+## [4,] 0.418824 0.0294192 0.0003888 0 0 0
+## [5,] 0.509568 0.0505344 0.0009216 0 0 0
+## [6,] 0.579000 0.0762000 0.0018000 0 0 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(x, Bsplines.basis[, }\DecValTok{1}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{1}\NormalTok{](x))))}
+\FunctionTok{plot}\NormalTok{(x, Bsplines.basis[, }\DecValTok{2}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{2}\NormalTok{](x))))}
+\FunctionTok{plot}\NormalTok{(x, Bsplines.basis[, }\DecValTok{3}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{3}\NormalTok{](x))))}
+\FunctionTok{plot}\NormalTok{(x, Bsplines.basis[, }\DecValTok{4}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{4}\NormalTok{](x))))}
+\FunctionTok{plot}\NormalTok{(x, Bsplines.basis[, }\DecValTok{5}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{5}\NormalTok{](x))))}
+\FunctionTok{plot}\NormalTok{(x, Bsplines.basis[, }\DecValTok{6}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{6}\NormalTok{](x))))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-36-1.pdf}}
+
+~
+
+\subsection{Natural Cubic Splines (NCS)}\label{natural-cubic-splines-ncs}
+
+A cubic spline on \([a,b]\) is called a \textbf{natural cubic spline} if its second and third derivatives vanish at the endpoints \(a\) and \(b\). Consequently the spline is linear on the two extreme intervals \([a,\xi_1]\) and \([\xi_m,b]\). The linearity constraints reduce the dimension of the space: a natural cubic spline with \(m\) interior knots has only \(m\) degrees of freedom (the usual textbook count).
+
+\textbf{Remark}\\
+If we place a knot at every distinct observation \[   x_i   \] and use a natural cubic spline, the resulting interpolant is a smooth curve that passes through every data point \[   (x_i,y_i)   \].
+
+\textbf{Natural Cubic Spline}
+
+One convenient basis for the space of natural cubic splines with \(m\) interior knots is
+\begin{align*}
+ N_1(x) &= 1\\
+ N_2(x) &= x\\
+ N_{k+2} (x) &= d_k(x) - d_{k-1}(x)
+ \end{align*}
+where
+\[d_k(x) = \frac{(x-\xi_k)_{+}^{3} - (x-\xi_{m})_{+}^{3}}{\xi_m - \xi_k}\]
+Each of these functions has vanishing second and third derivatives for \(x\ge\xi_m\).
+
+~
+
+In \texttt{R} natural cubic splines are generated by the function \texttt{ns()} from the same \texttt{splines} package:
+
+\[ ns(x, df, knots, intercept=FALSE, Boundary.knots) \]
+(Note that the default value of intercept is FALSE, exactly as for bs().)
+
+\textbf{Natural Cubic Splines in \texttt{R}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{NCS.basis }\OtherTok{=} \FunctionTok{ns}\NormalTok{(x, }\AttributeTok{knots =}\NormalTok{ new.knots, }\AttributeTok{Boundary.knots =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+\FunctionTok{dim}\NormalTok{(NCS.basis)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 101   4
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(x, NCS.basis[, }\DecValTok{1}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{1}\NormalTok{](x))))}
+\FunctionTok{plot}\NormalTok{(x, NCS.basis[, }\DecValTok{2}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{2}\NormalTok{](x))))}
+\FunctionTok{plot}\NormalTok{(x, NCS.basis[, }\DecValTok{3}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{3}\NormalTok{](x))))}
+\FunctionTok{plot}\NormalTok{(x, NCS.basis[, }\DecValTok{4}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(h[}\DecValTok{4}\NormalTok{](x))))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-37-1.pdf}}
+
+~
+Because the spline is forced to be linear outside the boundary knots, observations that fall outside those knots do not influence the fit. By default, therefore, R places the boundary knots at the minimum and maximum of the observed \[   x_i   \].
+
+\textbf{Knots versus degrees of freedom for \texttt{ns()}}
+
+\begin{itemize}
+\item
+  If interior knot locations are supplied, the number of columns of the basis matrix is\\
+  \[ \text{length(knots)} + 1 + \text{as.integer(intercept)}\]
+\item
+  If a target \texttt{df} is supplied, R places\\
+  \[  m = \text{df} - 1 - \text{intercept}\]
+  interior knots at quantiles of \(x\).
+\end{itemize}
+
+~
+
+\subsection{Regression Splines}\label{regression-splines}
+
+For a fixed set of knots the corresponding cubic splines form a linear space of dimension \[   m+4   \]. \textbf{Regression splines} simply expand the mean function in this basis:
+
+\[g(x)=\beta_1 h_1(x)+\beta_2 h_2(x)+\ldots+\beta_p h_p(x)\]
+
+\begin{itemize}
+\item
+  Ordinary Cubic Splines: \(p=m+4\).
+\item
+  Natural Cubic Splines (NCS): \(p=m\).
+\end{itemize}
+
+On the observed data the model may be written in matrix form
+\[
+      \begin{pmatrix}
+        y_1\\
+        y_2\\
+        \ldots\\
+        y_n
+      \end{pmatrix}_{n\times 1} =
+      \begin{pmatrix}
+         h_1(x_1)& \ldots & h_{p}(x_1)\\
+          h_1(x_2)& \ldots & h_{p}(x_2)\\
+         \\
+           h_1(x_n)& \ldots & h_{p}(x_n)
+      \end{pmatrix}_{n\times p}
+      \begin{pmatrix}
+      \beta_1\\
+      \beta_2\\
+      \ldots\\
+      \beta_p
+      \end{pmatrix}_{p\times 1}
+\]
+where the \$ n\times p\$ matrix \(\mathbf{F}\) contains the basis functions evaluated at the \(x_i\). The coefficient vector is obtained by ordinary least squares:
+Therefore, we can estimate the coefficients \(\mathbf{\beta}\) by solving the following Least-Squares problem:
+\[\hat{\mathbf{\beta}}= \arg\min_{\mathbf{\beta}}||\mathbf{y} - \mathbf{F}{\mathbf{\beta}|}|^2\]
+
+~
+
+\subsection{K-Fold Cross-Validation}\label{k-fold-cross-validation}
+
+A practical difficulty with regression splines is the choice of the number (and location) of knots, or equivalently the degrees of freedom. One systematic approach is \[   K   \]-fold cross-validation:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Fix a candidate number of knots (or degrees of freedom).
+\item
+  Randomly partition the data into \(K\) roughly equal folds.
+\item
+  For each fold \(k=1,\dots,K\):
+
+  \begin{itemize}
+  \item
+    hold fold \(k\) out as a validation set,
+  \item
+    fit the regression spline on the remaining \(K-1\) folds,
+  \item
+    compute the mean squared error \(\mathrm{MSE}_k\) on the held-out fold.
+  \end{itemize}
+\item
+  Average the \(K\) errors:
+  \[\mathrm{CV}(K) = \frac1K\sum_{k=1}^K\mathrm{MSE}_k.\]
+\item
+  Repeat the whole procedure for every candidate number of knots / degrees of freedom.
+\item
+  Select the value that minimises \(\mathrm{CV}(K)\).
+\end{enumerate}
+
+A schematic illustration of the procedure appears below.
+
+\begin{center}\includegraphics[width=0.6\linewidth]{images/week4/kfold} \end{center}
+
+\section{Smoothing Splines}\label{smoothing-splines}
+
+In regression splines we must choose both the number and the locations of the knots (or, equivalently, the degrees of freedom). As we have seen, B-splines and natural cubic splines both construct an \(n\times p\) basis matrix \(\mathbf{F}\) and then fit a linear model on that basis. Inevitably this requires decisions about the order of the spline, the number of knots (often guided by AIC, BIC or cross-validation), and even the placement of those knots---tasks that can be quite challenging. It is therefore natural to ask whether there exists an alternative approach that selects the effective complexity of the fit automatically.
+
+A smoothing spline is designed precisely to balance fidelity to the data against smoothness of the fitted curve. The construction begins with an extreme idea: place a knot at every distinct observed value \(x_1,\dots,x_n\). This produces a natural-cubic-spline basis of dimension \(n\),
+\[\mathbf{y}_{n\times 1} = \mathbf{F}_{n\times p} \beta_{p\times 1}\]
+
+Such a basis can interpolate the data perfectly and therefore overfits. To control the overfitting we borrow the idea of penalization introduced earlier and minimize a ridge-type objective
+\[\min_{\beta} \Bigl\{ ||\mathbf{y}-\mathbf{F} \beta ||^2 + \lambda \beta^T \Omega \beta \Bigr\}\]
+where the tuning parameter \(\lambda\ge 0\) is typically chosen by cross-validation and the penalty matrix \(\Omega\) will be defined shortly.
+We now examine whether the solution of this penalized problem possesses attractive statistical properties.
+
+~
+
+\subsection{The Roughness Penalty Approach}\label{the-roughness-penalty-approach}
+
+Let \(S[a,b]\) be the space of all ``smooth'\,' functions defined on \([a,b]\). This is a second order Sobolev space where global polynomial functions and cubic splines functions live (\(S[a,b]\) is an infinite-dimensional function space. Our goal is to find the best function in \(S[a,b]\) to approximate \(f\).
+
+Let us consider solving the following Penalized Residual Sum of Squares problem:
+\[
+RSS_\lambda(g) = \sum_{i=1}^n [y_i - g(x_i)]^2  + \lambda \int_a^b [g''(x)]^2 dx.
+\]
+where \(\lambda\) is a smoothing parameter. The first term measures the closeness of the model to the data, while the second term penalizes the roughness/curvature of the function. We solve this problem on \([a,b]=[\min x_i, \max _i]\) for functions with finite roughness penalty \(\int_a^b [g''(x)]^2 dx < \infty\). This is known as a second order Sobolev space.
+
+~
+Note that \(\int_a^b [g''(x)]^2 dx\) is called the \textbf{roughness penalty}.
+~
+
+From the expression above, we can see that \(\lambda\) is the smoothing parameter that controls the bias-variance trade-off. Therefore, when \(\lambda=0\), we interpolate the data and that leads us to overfitting. When \(\lambda=\infty\), then we return to linear least-squares regression. It turns out that the solution to the penalized residual sum of squares has to be a NCS. Indeed,
+
+\textbf{Theorem}
+\[\min_g RSS_{\lambda}(g) = \min_{\tilde{g}} RSS_{\lambda}(\tilde{g}) \]\}
+where \(\tilde{g}\) is a NCS with knots at the unique \(n\) data points.
+
+Let \(g(x)\) be the optimal solution. Since the loss part in \(RSS_\lambda(g)\) only involves \(n\) data points, we can find define a natural cubic spline (NCS) fit that we can call \(\tilde{g}(x)\) such that it matches \(g(x)\) at the observations \(x_i\), \(i=1, \ldots, n\), i.e.
+\[g(x_i) = \tilde{g}(x_i), i=1, \ldots, n\]
+We can always find such \(\tilde{g}\) since our space consists of \(n\) basis. Then, we can show that
+\[\int g^{''2} dx \geq \int  \tilde{g}^{''2} dx\]
+meaning that we will \emph{always} prefer the \(\tilde{g}\), the NCS ``representation'\,' of
+\(g\), since the \emph{penalty} is smaller, and the \emph{loss} doesn't change.
+
+\subsection{Proof}\label{proof}
+
+To establish the Theorem, we essentially need to show that
+\[\int g''^{2} dx \geq \int  \tilde{g}''^{2} dx\]
+
+Thus, we define \(h(x) = g(x) - \tilde{g}(x)\) for which we know that \(h(x_i)=0\) for \(i=1, \ldots, n\). Then
+\[ \int g''^2 \, dx  = \int \tilde{g}''^2 \, dx  + \int h''^2 \, dx  + 2 \int \tilde{g}'' h'' \, dx
+\]
+and without loss of generality assuming that the \(x_i\)s are ordered, we obtain:
+\begin{align*}
+\int \tilde{g}'' h'' \, dx  &= \tilde{g}'' h' \Big|_a^b 
+- \int_a^b h' \tilde{g}^{(3)} \, dx\\
+&= - \sum_{i=1}^{n-1} \tilde{g}^{(3)}\!\left(x_j^+\right) 
+\int_{x_j}^{x_{j+1}} h' \, dx 
+\quad (\tilde{g}^{(3)} \text{ constant piecewise})\\
+&= - \sum_{i=1}^{n-1} \tilde{g}^{(3)}\!\left(x_j^+\right) 
+\left(h(x_{j+1}) - h(x_j)\right)
+\end{align*}
+The second equation is because \(\tilde{g}\) is a NCS and therefore we know that it has zero second derivative on the two boundaries \(a\) and \(b\). The third equation is true, because \(\tilde{g}\) is at most a 3rd order polynomial on any region and as a consequence has constant third derivatives, which we can pull out of the integration. The last equation holds because we said that \(h(x)=0\) on all the observation points \(x_i\). Therefore, this shows that the roughness penalty of our NCS solution is no larger than the best solution \(g\). If we also take into account that \(\tilde{g}\) is also in the space \(S[a,b]\), then \(g\) must be our NCS solution.
+
+~
+~
+
+\section{Fitting Smoothing Splines}\label{fitting-smoothing-splines}
+
+From the preceding discussion we conclude that the minimizer admits a finite-dimensional representation
+\[\hat{g}(x) = \sum_i \beta_i N_i(x)\]
+where the \(N_i\) are a natural-cubic-spline basis with knots placed at the unique observed values of \$ x \$. Substituting this expansion into the roughness penalty yields
+\begin{align*}
+\int_{a}^{b} g^{''2} dx &= \int  \left( \sum_i \beta_i N_i^{''}(x)\right)^2 dx\\
+&= \sum_{i,j} \beta_i \beta_j \int N_i^{''}(x) N_j^{''}(x) dx\\
+&=\beta^T \Omega \beta
+\end{align*}
+where the \(n\times n\) penalty matrix has entries
+\[\Omega_{ij} = \int N^{''}_{i}(x) N^{''}_{j}(x) dx\]
+
+Consequently the penalized residual sum of squares becomes a function of the coefficient vector alone:
+
+\[RSS_{\lambda}(\beta) = (\mathbf{y} - \mathbf{F}\beta)^T(\mathbf{y} - \mathbf{F}\beta) + \lambda  \beta^T \Omega \beta \]
+
+This is a ridge-type criterion whose minimizer is given in closed form by
+
+\[\hat{\beta} = \arg \min_{\beta} RSS_{\lambda}(\beta)\]
+\[=(\mathbf{F}^T \mathbf{F} +\lambda \Omega)^{-1} \mathbf{F}^T \mathbf{y}\]
+
+The smoothing spline version of the ``hat'\,' matrix is called the \textbf{smoother matrix}
+\[\mathbf{\hat{y}} = \mathbf{F} (\mathbf{F}^T \mathbf{F} +\lambda \Omega)^{-1} \mathbf{F}^T \mathbf{y} = S_{\lambda} \mathbf{y}\]
+
+~
+
+\textbf{Remarks}
+
+We have done the analysis of degrees of freedom for ridge type regression. The degrees of freedom of a smoothing spline are
+\[df = tr(S_{\lambda})\]
+which ranges between \(0\) and \(n\). Under a special choice of basis (Demmler and Reinsch,
+1975), a basis with double orthogonality property, can lead to
+\[\mathbf{F}^T \mathbf{F} = \mathbf{I}, \Omega = diag(d_i)\]
+where \(d_i\)s are arranges in an increasing order and in addition \(d_2=d_1=0\). Using this basis we have
+\[\hat{\beta} = (\mathbf{F}^T \mathbf{F} +\lambda \Omega)^{-1} \mathbf{F}^T \mathbf{y} = \Bigl(\mathbf{I} + \lambda diag(d_i) \Bigr)^{-1} \mathbf{F}^T \mathbf{y}\]
+i.e.
+\[\hat{\beta}_i = \frac{1}{1+\lambda d_i} \hat{\beta}_i^{LS}\]
+
+\textbf{Choosing \(\lambda\)}
+
+The smoothing parameter is selected by the same criteria used for ridge regression.
+
+\begin{itemize}
+\item
+  Leave-one-out CV:
+  \[
+  \text{CV}(\lambda) = \frac{1}{n} \sum_{i=1}^n \left( \frac{y_i - \hat g(x_i)}{1 - S_\lambda(i,i)} \right)^2.
+  \]
+\item
+  Generalized CV:
+  \[
+  \text{GCV}(\lambda) = \frac{1}{n} \sum_{i=1}^n \left( \frac{y_i - \hat g(x_i)}{1 - \tfrac{1}{n}\text{tr}(S_\lambda)} \right)^2.
+  \]
+  ~
+\end{itemize}
+
+\section{\texorpdfstring{The \texttt{Birthrates} Example}{The Birthrates Example}}\label{the-birthrates-example}
+
+In this chapter we relaxed the linearity assumption of classical regression by introducing polynomial regression, regression splines, and smoothing splines. All three approaches remain linear in the parameters, so they can still be fit by (penalized) least squares, yet they are flexible enough to capture nonlinear relationships. We now illustrate smoothing splines---the method that requires the least manual tuning of knots---with a classic data set on U.S. birth rates.
+
+The analysis of this data set is available in R and Python.
+
+~ ~ ~
+
+\textbf{Remark:}
+
+In the following Python file, you will also find the code for all the R examples illustrated in this chapter:
+Examples in Python
 
 \bibliography{book.bib,packages.bib}
 
