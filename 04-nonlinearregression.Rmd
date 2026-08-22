@@ -897,7 +897,7 @@ The smoothing parameter is selected by the same criteria used for ridge regressi
   \text{GCV}(\lambda) = \frac{1}{n} \sum_{i=1}^n \left( \frac{y_i - \hat g(x_i)}{1 - \tfrac{1}{n}\text{tr}(S_\lambda)} \right)^2.
   \]
   &nbsp;
-  
+
   
 ## The `Birthrates` Example
 
