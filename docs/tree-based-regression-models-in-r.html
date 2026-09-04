@@ -4,26 +4,26 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>5.3 Tree-Based Regression Models in R | CS 598 Practical Statistical Learning</title>
-  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
-  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+  <title>6.3 Tree-Based Regression Models in R | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="5.3 Tree-Based Regression Models in R | CS 598 Practical Statistical Learning" />
+  <meta property="og:title" content="6.3 Tree-Based Regression Models in R | CS 598 Practical Statistical Learning" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
-  <meta name="github-repo" content="rstudio/bookdown-demo" />
+  <meta property="og:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
+  
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="5.3 Tree-Based Regression Models in R | CS 598 Practical Statistical Learning" />
+  <meta name="twitter:title" content="6.3 Tree-Based Regression Models in R | CS 598 Practical Statistical Learning" />
   
-  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="twitter:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   
 
 <meta name="author" content="Alexandra Chronopoulou" />
 
 
-<meta name="date" content="2025-12-05" />
+<meta name="date" content="2026-09-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,13 +52,41 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
-<script src="libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<script>
+$(document).ready(function() {
+  function collapseTOC() {
+    // 1. Collapse everything
+    $(".book-summary ul.summary ul").hide();
+
+    // 2. Find the current page filename
+    var currentPage = window.location.pathname.split("/").pop();
+    if (!currentPage || currentPage === "") currentPage = "index.html";
+
+    // 3. Find the <li> that matches the current page and expand its parents + children
+    var $current = $(".book-summary li[data-path='" + currentPage + "']");
+    if ($current.length) {
+      $current.parents("ul").show();
+      $current.children("ul").show();
+    }
+  }
+
+  // Run on load
+  collapseTOC();
+
+  // Run on every page change
+  if (typeof gitbook !== "undefined") {
+    gitbook.events.bind("page.change", function() {
+      setTimeout(collapseTOC, 30);
+    });
+  }
+});
+</script>
 
 
 <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -68,7 +96,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -139,22 +167,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+<li><a href="./">CS 598 PSL – A. Chronopoulou</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Course Information</a></li>
 <li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
 <ul>
 <li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
 <li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
-<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.3" data-path="why-statistical-learning-is-challenging.html"><a href="why-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why Statistical Learning is Challenging</a></li>
 <li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
-<li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>-NN vs. Linear Regression</a>
 <ul>
-<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
-<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
-<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
-<li class="chapter" data-level="1.5.4" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures"><i class="fa fa-check"></i><b>1.5.4</b> Code for the Examples in the Lectures</a></li>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#a-simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> A Simulated (Binary) Classification Example</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
@@ -169,14 +196,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
 <li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
 <li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
-<li class="chapter" data-level="2.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Data Set Example</a></li>
+<li class="chapter" data-level="2.11" data-path="the-birthweight-example.html"><a href="the-birthweight-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Example</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="training-vs.-testing-errors.html"><a href="training-vs.-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training vs. Testing Errors</a></li>
 <li class="chapter" data-level="3.2" data-path="subset-selection.html"><a href="subset-selection.html"><i class="fa fa-check"></i><b>3.2</b> Subset Selection</a>
 <ul>
-<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria-based-procedures"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria-based procedures</a></li>
+<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria</a></li>
 <li class="chapter" data-level="3.2.2" data-path="subset-selection.html"><a href="subset-selection.html#search-algorithms"><i class="fa fa-check"></i><b>3.2.2</b> Search Algorithms</a></li>
 </ul></li>
 <li class="chapter" data-level="3.3" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html"><i class="fa fa-check"></i><b>3.3</b> Shrinkage Methods</a>
@@ -184,16 +211,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
 <li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a>
-<ul>
-<li class="chapter" data-level="3.4.1" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#ridge-regression-1"><i class="fa fa-check"></i><b>3.4.1</b> Ridge Regression</a></li>
-<li class="chapter" data-level="3.4.2" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#lasso-regression-1"><i class="fa fa-check"></i><b>3.4.2</b> LASSO Regression</a></li>
-<li class="chapter" data-level="3.4.3" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#refit-to-reduce-bias"><i class="fa fa-check"></i><b>3.4.3</b> Refit to Reduce Bias</a></li>
-</ul></li>
+<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
 <ul>
-<li class="chapter" data-level="4.0.1" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html#a-note-on-nonlinearity"><i class="fa fa-check"></i><b>4.0.1</b> A Note on Nonlinearity</a></li>
 <li class="chapter" data-level="4.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html"><i class="fa fa-check"></i><b>4.1</b> Polynomial Regression</a>
 <ul>
 <li class="chapter" data-level="4.1.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-basis-functions"><i class="fa fa-check"></i><b>4.1.1</b> Polynomial Basis Functions</a></li>
@@ -215,130 +236,98 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.2" data-path="smoothing-splines.html"><a href="smoothing-splines.html#proof"><i class="fa fa-check"></i><b>4.3.2</b> Proof</a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
-<li class="chapter" data-level="4.5" data-path="the-birthrates-example-in-r.html"><a href="the-birthrates-example-in-r.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example in R</a></li>
+<li class="chapter" data-level="4.5" data-path="the-birthrates-example.html"><a href="the-birthrates-example.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="regression-trees.html"><a href="regression-trees.html"><i class="fa fa-check"></i><b>5</b> Regression Trees</a>
+<li class="chapter" data-level="5" data-path="introduction-to-neural-networks-for-regression.html"><a href="introduction-to-neural-networks-for-regression.html"><i class="fa fa-check"></i><b>5</b> Introduction to Neural Networks for Regression</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="single-tree-building.html"><a href="single-tree-building.html"><i class="fa fa-check"></i><b>5.1</b> Single-Tree Building</a>
+<li class="chapter" data-level="5.1" data-path="learning-by-fitting-a-model.html"><a href="learning-by-fitting-a-model.html"><i class="fa fa-check"></i><b>5.1</b> Learning by Fitting a Model</a></li>
+<li class="chapter" data-level="5.2" data-path="a-neuron-two-ways-to-think-about-it.html"><a href="a-neuron-two-ways-to-think-about-it.html"><i class="fa fa-check"></i><b>5.2</b> A Neuron: Two ways to think about it</a></li>
+<li class="chapter" data-level="5.3" data-path="illustration-predicting-house-prices.html"><a href="illustration-predicting-house-prices.html"><i class="fa fa-check"></i><b>5.3</b> Illustration: Predicting House Prices</a></li>
+<li class="chapter" data-level="5.4" data-path="same-loss-new-f_beta.html"><a href="same-loss-new-f_beta.html"><i class="fa fa-check"></i><b>5.4</b> Same Loss, New <span class="math inline">\(f_\beta\)</span></a></li>
+<li class="chapter" data-level="5.5" data-path="stacking-units-is-learning-phi.html"><a href="stacking-units-is-learning-phi.html"><i class="fa fa-check"></i><b>5.5</b> Stacking Units is Learning <span class="math inline">\(\phi\)</span></a>
 <ul>
-<li class="chapter" data-level="5.1.1" data-path="single-tree-building.html"><a href="single-tree-building.html#prediction-at-leaf-nodes"><i class="fa fa-check"></i><b>5.1.1</b> Prediction at Leaf Nodes</a></li>
-<li class="chapter" data-level="5.1.2" data-path="single-tree-building.html"><a href="single-tree-building.html#split-criterion"><i class="fa fa-check"></i><b>5.1.2</b> Split Criterion</a></li>
-<li class="chapter" data-level="5.1.3" data-path="single-tree-building.html"><a href="single-tree-building.html#single-tree-pruning"><i class="fa fa-check"></i><b>5.1.3</b> Single-Tree Pruning</a></li>
+<li class="chapter" data-level="5.5.1" data-path="stacking-units-is-learning-phi.html"><a href="stacking-units-is-learning-phi.html#hidden-units"><i class="fa fa-check"></i><b>5.5.1</b> Hidden Units</a></li>
+<li class="chapter" data-level="5.5.2" data-path="stacking-units-is-learning-phi.html"><a href="stacking-units-is-learning-phi.html#fully-connected-layers"><i class="fa fa-check"></i><b>5.5.2</b> Fully Connected Layers</a></li>
 </ul></li>
-<li class="chapter" data-level="5.2" data-path="regression-forests.html"><a href="regression-forests.html"><i class="fa fa-check"></i><b>5.2</b> Regression Forests</a>
+<li class="chapter" data-level="5.6" data-path="activations-depth-and-approximation.html"><a href="activations-depth-and-approximation.html"><i class="fa fa-check"></i><b>5.6</b> Activations, Depth, and Approximation</a></li>
+<li class="chapter" data-level="5.7" data-path="backpropagation.html"><a href="backpropagation.html"><i class="fa fa-check"></i><b>5.7</b> Backpropagation</a>
 <ul>
-<li class="chapter" data-level="5.2.1" data-path="regression-forests.html"><a href="regression-forests.html#weak-and-strong-learners"><i class="fa fa-check"></i><b>5.2.1</b> Weak and Strong Learners</a></li>
-<li class="chapter" data-level="5.2.2" data-path="regression-forests.html"><a href="regression-forests.html#bootstrap-aggregation-bagging"><i class="fa fa-check"></i><b>5.2.2</b> Bootstrap Aggregation (Bagging)</a></li>
-<li class="chapter" data-level="5.2.3" data-path="regression-forests.html"><a href="regression-forests.html#random-forests"><i class="fa fa-check"></i><b>5.2.3</b> Random Forests</a></li>
-<li class="chapter" data-level="5.2.4" data-path="regression-forests.html"><a href="regression-forests.html#out-of-bag-oob-samples"><i class="fa fa-check"></i><b>5.2.4</b> Out-of-Bag (OOB) Samples</a></li>
-<li class="chapter" data-level="5.2.5" data-path="regression-forests.html"><a href="regression-forests.html#boosting-trees"><i class="fa fa-check"></i><b>5.2.5</b> Boosting Trees</a></li>
+<li class="chapter" data-level="5.7.1" data-path="backpropagation.html"><a href="backpropagation.html#the-theorem-behind"><i class="fa fa-check"></i><b>5.7.1</b> The Theorem Behind</a></li>
+<li class="chapter" data-level="" data-path="backpropagation.html"><a href="backpropagation.html#proof-1"><i class="fa fa-check"></i>Proof</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html"><i class="fa fa-check"></i><b>5.3</b> Tree-Based Regression Models in R</a></li>
+<li class="chapter" data-level="5.8" data-path="capacity-nonconvexity-and-penalty.html"><a href="capacity-nonconvexity-and-penalty.html"><i class="fa fa-check"></i><b>5.8</b> Capacity, Nonconvexity, and Penalty</a></li>
+<li class="chapter" data-level="5.9" data-path="when-to-specify-phi-instead-of-learning-it.html"><a href="when-to-specify-phi-instead-of-learning-it.html"><i class="fa fa-check"></i><b>5.9</b> When to specify <span class="math inline">\(\phi\)</span> instead of learning it!</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="introduction-to-classification.html"><a href="introduction-to-classification.html"><i class="fa fa-check"></i><b>6</b> Introduction to Classification</a>
+<li class="chapter" data-level="6" data-path="regression-trees.html"><a href="regression-trees.html"><i class="fa fa-check"></i><b>6</b> Regression Trees</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html"><i class="fa fa-check"></i><b>6.1</b> Discriminant Analysis</a>
+<li class="chapter" data-level="6.1" data-path="single-tree-building.html"><a href="single-tree-building.html"><i class="fa fa-check"></i><b>6.1</b> Single-Tree Building</a>
 <ul>
-<li class="chapter" data-level="6.1.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#quadratic-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.1</b> Quadratic Discriminant Analysis</a></li>
-<li class="chapter" data-level="6.1.2" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#linear-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.2</b> Linear Discriminant Analysis</a></li>
-<li class="chapter" data-level="6.1.3" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#reduced-rank-lda"><i class="fa fa-check"></i><b>6.1.3</b> Reduced Rank LDA</a></li>
+<li class="chapter" data-level="6.1.1" data-path="single-tree-building.html"><a href="single-tree-building.html#prediction-at-leaf-nodes"><i class="fa fa-check"></i><b>6.1.1</b> Prediction at Leaf Nodes</a></li>
+<li class="chapter" data-level="6.1.2" data-path="single-tree-building.html"><a href="single-tree-building.html#split-criterion"><i class="fa fa-check"></i><b>6.1.2</b> Split Criterion</a></li>
+<li class="chapter" data-level="6.1.3" data-path="single-tree-building.html"><a href="single-tree-building.html#single-tree-pruning"><i class="fa fa-check"></i><b>6.1.3</b> Single-Tree Pruning</a></li>
 </ul></li>
-<li class="chapter" data-level="6.2" data-path="fisher-discriminant-analysis-fda.html"><a href="fisher-discriminant-analysis-fda.html"><i class="fa fa-check"></i><b>6.2</b> Fisher Discriminant Analysis (FDA)</a></li>
-<li class="chapter" data-level="6.3" data-path="naive-bayes-classifiers.html"><a href="naive-bayes-classifiers.html"><i class="fa fa-check"></i><b>6.3</b> Naive Bayes Classifiers</a></li>
-<li class="chapter" data-level="6.4" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html"><i class="fa fa-check"></i><b>6.4</b> The <code>Digits</code> Recognition Example</a>
+<li class="chapter" data-level="6.2" data-path="regression-forests.html"><a href="regression-forests.html"><i class="fa fa-check"></i><b>6.2</b> Regression Forests</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="regression-forests.html"><a href="regression-forests.html#weak-and-strong-learners"><i class="fa fa-check"></i><b>6.2.1</b> Weak and Strong Learners</a></li>
+<li class="chapter" data-level="6.2.2" data-path="regression-forests.html"><a href="regression-forests.html#bootstrap-aggregation-bagging"><i class="fa fa-check"></i><b>6.2.2</b> Bootstrap Aggregation (Bagging)</a></li>
+<li class="chapter" data-level="6.2.3" data-path="regression-forests.html"><a href="regression-forests.html#random-forests"><i class="fa fa-check"></i><b>6.2.3</b> Random Forests</a></li>
+<li class="chapter" data-level="6.2.4" data-path="regression-forests.html"><a href="regression-forests.html#out-of-bag-oob-samples"><i class="fa fa-check"></i><b>6.2.4</b> Out-of-Bag (OOB) Samples</a></li>
+<li class="chapter" data-level="6.2.5" data-path="regression-forests.html"><a href="regression-forests.html#boosting-trees"><i class="fa fa-check"></i><b>6.2.5</b> Boosting Trees</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html"><i class="fa fa-check"></i><b>6.3</b> Tree-Based Regression Models in R</a>
+<ul>
+<li class="chapter" data-level="" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html#a-simple-regression-tree"><i class="fa fa-check"></i>A Simple Regression Tree</a></li>
+<li class="chapter" data-level="" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html#fitting-and-pruning-a-regression-tree"><i class="fa fa-check"></i>Fitting and Pruning a Regression Tree</a></li>
+<li class="chapter" data-level="6.3.1" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html#cross-validation-and-the-cp-table"><i class="fa fa-check"></i><b>6.3.1</b> Cross-validation and the CP Table</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>6.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="introduction-to-classification.html"><a href="introduction-to-classification.html"><i class="fa fa-check"></i><b>7</b> Introduction to Classification</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html"><i class="fa fa-check"></i><b>7.1</b> Discriminant Analysis</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#quadratic-discriminant-analysis"><i class="fa fa-check"></i><b>7.1.1</b> Quadratic Discriminant Analysis</a></li>
+<li class="chapter" data-level="7.1.2" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#linear-discriminant-analysis"><i class="fa fa-check"></i><b>7.1.2</b> Linear Discriminant Analysis</a></li>
+<li class="chapter" data-level="7.1.3" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#reduced-rank-lda"><i class="fa fa-check"></i><b>7.1.3</b> Reduced-Rank LDA</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="fisher-discriminant-analysis-fda.html"><a href="fisher-discriminant-analysis-fda.html"><i class="fa fa-check"></i><b>7.2</b> Fisher Discriminant Analysis (FDA)</a></li>
+<li class="chapter" data-level="7.3" data-path="naive-bayes-classifiers.html"><a href="naive-bayes-classifiers.html"><i class="fa fa-check"></i><b>7.3</b> Naive Bayes Classifiers</a></li>
+<li class="chapter" data-level="7.4" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html"><i class="fa fa-check"></i><b>7.4</b> The <code>Digits</code> Recognition Example</a>
 <ul>
 <li class="chapter" data-level="" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html#naive-bayes-prediction"><i class="fa fa-check"></i>Naive Bayes Prediction</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>7</b> Logistic Regression</a>
+<li class="chapter" data-level="8" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>8</b> Logistic Regression</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html"><i class="fa fa-check"></i><b>7.1</b> Fitting a Logistic Regression model</a>
+<li class="chapter" data-level="8.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html"><i class="fa fa-check"></i><b>8.1</b> Fitting a Logistic Regression Model</a>
 <ul>
-<li class="chapter" data-level="7.1.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html#maximum-likelihood-approach"><i class="fa fa-check"></i><b>7.1.1</b> Maximum Likelihood Approach</a></li>
+<li class="chapter" data-level="8.1.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html#maximum-likelihood-approach"><i class="fa fa-check"></i><b>8.1.1</b> Maximum Likelihood Approach</a></li>
 </ul></li>
-<li class="chapter" data-level="7.2" data-path="logistic-regression-with-separable-data.html"><a href="logistic-regression-with-separable-data.html"><i class="fa fa-check"></i><b>7.2</b> Logistic Regression with Separable Data</a></li>
-<li class="chapter" data-level="7.3" data-path="retrospective-sampling.html"><a href="retrospective-sampling.html"><i class="fa fa-check"></i><b>7.3</b> Retrospective Sampling</a></li>
-<li class="chapter" data-level="7.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html"><i class="fa fa-check"></i><b>7.4</b> Logistic Regression for the <code>Heart</code> dataset in R</a>
+<li class="chapter" data-level="8.2" data-path="logistic-regression-with-separable-data.html"><a href="logistic-regression-with-separable-data.html"><i class="fa fa-check"></i><b>8.2</b> Logistic Regression with Separable Data</a></li>
+<li class="chapter" data-level="8.3" data-path="retrospective-sampling.html"><a href="retrospective-sampling.html"><i class="fa fa-check"></i><b>8.3</b> Retrospective Sampling</a></li>
+<li class="chapter" data-level="8.4" data-path="logistic-regression-for-the-heart-data-set-in-r.html"><a href="logistic-regression-for-the-heart-data-set-in-r.html"><i class="fa fa-check"></i><b>8.4</b> Logistic Regression for the <code>Heart</code> Data Set in R</a>
 <ul>
-<li class="chapter" data-level="7.4.1" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#goodness-of-fit"><i class="fa fa-check"></i><b>7.4.1</b> Goodness-of-Fit</a></li>
-<li class="chapter" data-level="7.4.2" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#variable-selection"><i class="fa fa-check"></i><b>7.4.2</b> Variable Selection</a></li>
-<li class="chapter" data-level="7.4.3" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#penalized-logistic-regression"><i class="fa fa-check"></i><b>7.4.3</b> Penalized Logistic Regression</a></li>
-<li class="chapter" data-level="7.4.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#illustration-of-divergence-of-ml-estimators"><i class="fa fa-check"></i><b>7.4.4</b> Illustration of divergence of ML estimators</a></li>
-</ul></li>
-</ul></li>
-<li class="chapter" data-level="8" data-path="support-vector-machines.html"><a href="support-vector-machines.html"><i class="fa fa-check"></i><b>8</b> Support Vector Machines</a>
-<ul>
-<li class="chapter" data-level="8.1" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html"><i class="fa fa-check"></i><b>8.1</b> Linear SVM in Separable Case: <em>Separation Margin</em></a>
-<ul>
-<li class="chapter" data-level="8.1.1" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>8.1.1</b> Maximum-Margin Classifier</a></li>
-<li class="chapter" data-level="8.1.2" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#the-kkt-conditions-from-the-primal-to-the-dual"><i class="fa fa-check"></i><b>8.1.2</b> The KKT Conditions: From the Primal to the Dual</a></li>
-<li class="chapter" data-level="8.1.3" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#solving-the-dual-problem"><i class="fa fa-check"></i><b>8.1.3</b> Solving the Dual Problem</a></li>
-</ul></li>
-<li class="chapter" data-level="8.2" data-path="linear-svm-in-non-separable-case-slack-variables.html"><a href="linear-svm-in-non-separable-case-slack-variables.html"><i class="fa fa-check"></i><b>8.2</b> Linear SVM in non-Separable Case: <em>Slack Variables</em></a></li>
-<li class="chapter" data-level="8.3" data-path="non-linear-svm-the-kernel-trick.html"><a href="non-linear-svm-the-kernel-trick.html"><i class="fa fa-check"></i><b>8.3</b> Non-linear SVM: <em>The Kernel Trick</em></a></li>
-<li class="chapter" data-level="8.4" data-path="svm-as-a-penalization-method.html"><a href="svm-as-a-penalization-method.html"><i class="fa fa-check"></i><b>8.4</b> SVM as a Penalization Method</a></li>
-<li class="chapter" data-level="8.5" data-path="svm-examples-in-r.html"><a href="svm-examples-in-r.html"><i class="fa fa-check"></i><b>8.5</b> SVM Examples in R</a></li>
-</ul></li>
-<li class="chapter" data-level="9" data-path="classification-trees.html"><a href="classification-trees.html"><i class="fa fa-check"></i><b>9</b> Classification Trees</a>
-<ul>
-<li class="chapter" data-level="9.1" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html"><i class="fa fa-check"></i><b>9.1</b> Splitting Rules in Classification Trees</a>
-<ul>
-<li class="chapter" data-level="9.1.1" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html#impurity-measures"><i class="fa fa-check"></i><b>9.1.1</b> Impurity Measures</a></li>
-<li class="chapter" data-level="" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html#splitting-rules-categorical-predictors"><i class="fa fa-check"></i>Splitting Rules: Categorical Predictors</a></li>
-</ul></li>
-<li class="chapter" data-level="9.2" data-path="random-forests-1.html"><a href="random-forests-1.html"><i class="fa fa-check"></i><b>9.2</b> Random Forests</a>
-<ul>
-<li class="chapter" data-level="9.2.1" data-path="random-forests-1.html"><a href="random-forests-1.html#bagging-predictors-for-classification"><i class="fa fa-check"></i><b>9.2.1</b> Bagging Predictors for Classification</a></li>
-<li class="chapter" data-level="9.2.2" data-path="random-forests-1.html"><a href="random-forests-1.html#random-forests-2"><i class="fa fa-check"></i><b>9.2.2</b> Random Forests</a></li>
-</ul></li>
-<li class="chapter" data-level="9.3" data-path="boosting.html"><a href="boosting.html"><i class="fa fa-check"></i><b>9.3</b> Boosting</a>
-<ul>
-<li class="chapter" data-level="9.3.1" data-path="boosting.html"><a href="boosting.html#adaboost"><i class="fa fa-check"></i><b>9.3.1</b> AdaBoost</a></li>
-<li class="chapter" data-level="9.3.2" data-path="boosting.html"><a href="boosting.html#training-error-bound"><i class="fa fa-check"></i><b>9.3.2</b> Training Error Bound</a></li>
-<li class="chapter" data-level="9.3.3" data-path="boosting.html"><a href="boosting.html#gradient-boosting-forward-stage-wise-additive-model"><i class="fa fa-check"></i><b>9.3.3</b> Gradient Boosting: Forward Stage-wise Additive Model</a></li>
-<li class="chapter" data-level="9.3.4" data-path="boosting.html"><a href="boosting.html#boosting-in-r"><i class="fa fa-check"></i><b>9.3.4</b> Boosting in R</a></li>
+<li class="chapter" data-level="8.4.1" data-path="logistic-regression-for-the-heart-data-set-in-r.html"><a href="logistic-regression-for-the-heart-data-set-in-r.html#goodness-of-fit"><i class="fa fa-check"></i><b>8.4.1</b> Goodness of Fit</a></li>
+<li class="chapter" data-level="8.4.2" data-path="logistic-regression-for-the-heart-data-set-in-r.html"><a href="logistic-regression-for-the-heart-data-set-in-r.html#variable-selection"><i class="fa fa-check"></i><b>8.4.2</b> Variable Selection</a></li>
+<li class="chapter" data-level="8.4.3" data-path="logistic-regression-for-the-heart-data-set-in-r.html"><a href="logistic-regression-for-the-heart-data-set-in-r.html#penalized-logistic-regression"><i class="fa fa-check"></i><b>8.4.3</b> Penalized Logistic Regression</a></li>
+<li class="chapter" data-level="8.4.4" data-path="logistic-regression-for-the-heart-data-set-in-r.html"><a href="logistic-regression-for-the-heart-data-set-in-r.html#illustration-of-divergence-of-the-mle"><i class="fa fa-check"></i><b>8.4.4</b> Illustration of Divergence of the MLE</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="recommender-systems.html"><a href="recommender-systems.html"><i class="fa fa-check"></i><b>10</b> Recommender Systems</a>
+<li class="chapter" data-level="9" data-path="support-vector-machines.html"><a href="support-vector-machines.html"><i class="fa fa-check"></i><b>9</b> Support Vector Machines</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="content-based-methods.html"><a href="content-based-methods.html"><i class="fa fa-check"></i><b>10.1</b> Content-Based Methods</a></li>
-<li class="chapter" data-level="10.2" data-path="collaborative-filtering.html"><a href="collaborative-filtering.html"><i class="fa fa-check"></i><b>10.2</b> Collaborative Filtering</a></li>
-<li class="chapter" data-level="10.3" data-path="latent-factor-model.html"><a href="latent-factor-model.html"><i class="fa fa-check"></i><b>10.3</b> Latent Factor Model</a></li>
-<li class="chapter" data-level="10.4" data-path="challenges-strategies.html"><a href="challenges-strategies.html"><i class="fa fa-check"></i><b>10.4</b> Challenges &amp; Strategies</a></li>
+<li class="chapter" data-level="9.1" data-path="linear-svm-in-the-separable-case-separation-margin.html"><a href="linear-svm-in-the-separable-case-separation-margin.html"><i class="fa fa-check"></i><b>9.1</b> Linear SVM in the Separable Case: <em>Separation Margin</em></a>
+<ul>
+<li class="chapter" data-level="9.1.1" data-path="linear-svm-in-the-separable-case-separation-margin.html"><a href="linear-svm-in-the-separable-case-separation-margin.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>9.1.1</b> Maximum-Margin Classifier</a></li>
+<li class="chapter" data-level="9.1.2" data-path="linear-svm-in-the-separable-case-separation-margin.html"><a href="linear-svm-in-the-separable-case-separation-margin.html#the-kkt-conditions-from-the-primal-to-the-dual"><i class="fa fa-check"></i><b>9.1.2</b> The KKT Conditions: From the Primal to the Dual</a></li>
+<li class="chapter" data-level="9.1.3" data-path="linear-svm-in-the-separable-case-separation-margin.html"><a href="linear-svm-in-the-separable-case-separation-margin.html#solving-the-dual-problem"><i class="fa fa-check"></i><b>9.1.3</b> Solving the Dual Problem</a></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="clustering-analysis.html"><a href="clustering-analysis.html"><i class="fa fa-check"></i><b>11</b> Clustering Analysis</a>
-<ul>
-<li class="chapter" data-level="11.1" data-path="introduction-to-clustering.html"><a href="introduction-to-clustering.html"><i class="fa fa-check"></i><b>11.1</b> Introduction to Clustering</a></li>
-<li class="chapter" data-level="11.2" data-path="k-means-clustering.html"><a href="k-means-clustering.html"><i class="fa fa-check"></i><b>11.2</b> <span class="math inline">\(K\)</span>-means Clustering</a>
-<ul>
-<li class="chapter" data-level="11.2.1" data-path="k-means-clustering.html"><a href="k-means-clustering.html#categorical-variables-in-clustering"><i class="fa fa-check"></i><b>11.2.1</b> Categorical Variables in Clustering</a></li>
-<li class="chapter" data-level="11.2.2" data-path="k-means-clustering.html"><a href="k-means-clustering.html#tuning-k-means-how-to-choose-k"><i class="fa fa-check"></i><b>11.2.2</b> Tuning <span class="math inline">\(K\)</span>-Means: How to Choose <span class="math inline">\(K\)</span></a></li>
-</ul></li>
-<li class="chapter" data-level="11.3" data-path="hierarchical-clustering.html"><a href="hierarchical-clustering.html"><i class="fa fa-check"></i><b>11.3</b> Hierarchical Clustering</a></li>
-<li class="chapter" data-level="11.4" data-path="self-organizing-maps.html"><a href="self-organizing-maps.html"><i class="fa fa-check"></i><b>11.4</b> Self-Organizing Maps</a></li>
-<li class="chapter" data-level="11.5" data-path="spectral-clustering.html"><a href="spectral-clustering.html"><i class="fa fa-check"></i><b>11.5</b> Spectral Clustering</a></li>
-</ul></li>
-<li class="chapter" data-level="12" data-path="latent-structure-models.html"><a href="latent-structure-models.html"><i class="fa fa-check"></i><b>12</b> Latent Structure Models</a>
-<ul>
-<li class="chapter" data-level="12.1" data-path="gaussian-mixtures.html"><a href="gaussian-mixtures.html"><i class="fa fa-check"></i><b>12.1</b> Gaussian Mixtures</a></li>
-<li class="chapter" data-level="12.2" data-path="em-algorithm.html"><a href="em-algorithm.html"><i class="fa fa-check"></i><b>12.2</b> EM Algorithm</a>
-<ul>
-<li class="chapter" data-level="" data-path="em-algorithm.html"><a href="em-algorithm.html#connection-with-k-means"><i class="fa fa-check"></i>Connection with <span class="math inline">\(k\)</span>-Means</a></li>
-</ul></li>
-<li class="chapter" data-level="12.3" data-path="em-algorithm-general-framework.html"><a href="em-algorithm-general-framework.html"><i class="fa fa-check"></i><b>12.3</b> EM Algorithm: General Framework</a></li>
-<li class="chapter" data-level="12.4" data-path="the-mm-algorithm.html"><a href="the-mm-algorithm.html"><i class="fa fa-check"></i><b>12.4</b> The MM Algorithm</a>
-<ul>
-<li class="chapter" data-level="12.4.1" data-path="the-mm-algorithm.html"><a href="the-mm-algorithm.html#ascend-property"><i class="fa fa-check"></i><b>12.4.1</b> Ascend Property</a></li>
-</ul></li>
-<li class="chapter" data-level="12.5" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html"><i class="fa fa-check"></i><b>12.5</b> Hidden Markov Models</a>
-<ul>
-<li class="chapter" data-level="12.5.1" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html#em-algorithm-for-hmm-discrete-case"><i class="fa fa-check"></i><b>12.5.1</b> EM Algorithm for HMM (discrete case)</a></li>
-<li class="chapter" data-level="12.5.2" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html#forward-backward-algorithm-for-hmm"><i class="fa fa-check"></i><b>12.5.2</b> Forward-Backward Algorithm for HMM</a></li>
-</ul></li>
-<li class="chapter" data-level="12.6" data-path="inference-on-the-hidden-states-z.html"><a href="inference-on-the-hidden-states-z.html"><i class="fa fa-check"></i><b>12.6</b> Inference on the Hidden States <span class="math inline">\(Z\)</span></a></li>
+<li class="chapter" data-level="9.2" data-path="linear-svm-in-the-non-separable-case-slack-variables.html"><a href="linear-svm-in-the-non-separable-case-slack-variables.html"><i class="fa fa-check"></i><b>9.2</b> Linear SVM in the Non-Separable Case: <em>Slack Variables</em></a></li>
+<li class="chapter" data-level="9.3" data-path="nonlinear-svm-the-kernel-trick.html"><a href="nonlinear-svm-the-kernel-trick.html"><i class="fa fa-check"></i><b>9.3</b> Nonlinear SVM: <em>The Kernel Trick</em></a></li>
+<li class="chapter" data-level="9.4" data-path="svm-as-a-penalization-method.html"><a href="svm-as-a-penalization-method.html"><i class="fa fa-check"></i><b>9.4</b> SVM as a Penalization Method</a></li>
+<li class="chapter" data-level="9.5" data-path="svm-examples-in-r.html"><a href="svm-examples-in-r.html"><i class="fa fa-check"></i><b>9.5</b> SVM Examples in R</a></li>
 </ul></li>
 <li class="divider"></li>
-<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+<li><a href="https://github.com/rstudio/bookdown" target="_blank">Published with bookdown</a></li>
 
 </ul>
 
@@ -357,50 +346,73 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="tree-based-regression-models-in-r" class="section level2 hasAnchor" number="5.3">
-<h2><span class="header-section-number">5.3</span> Tree-Based Regression Models in R<a href="tree-based-regression-models-in-r.html#tree-based-regression-models-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p><br>
-<br>
-The python version of the example below was written by our TA Peng Xu and can be found here: <a href="data/week6/W6_RegTrees.html"> <b>Python Code for Regression Trees</b> </a>.<br></p>
-<p><br><br></p>
-<div class="sourceCode" id="cb340"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb340-1"><a href="tree-based-regression-models-in-r.html#cb340-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb340-2"><a href="tree-based-regression-models-in-r.html#cb340-2" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
-<span id="cb340-3"><a href="tree-based-regression-models-in-r.html#cb340-3" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
-<span id="cb340-4"><a href="tree-based-regression-models-in-r.html#cb340-4" tabindex="-1"></a><span class="fu">library</span>(tree)</span></code></pre></div>
-<p><br><br></p>
-<p>The <code>whitewines.csv</code> data set contains information related to white variants of the Portuguese `<code>Vinho Verde" wine.  &lt;br&gt;&lt;br&gt; Specifically, we have recorded the following information:  (a)</code>fixed acidity<code>,  (b)</code>volatile acidity<code>,  (c)</code>citric acid<code>,  (d)</code>residual sugar<code>,  (e)</code>chlorides<code>,  (f)</code>free sulfur dioxide<code>,  (g)</code>total sulfur dioxide<code>,  (h)</code>density<code>,  (i)</code>pH<code>,  (j)</code>sulphates<code>,  (k)</code>alcohol<code>,  (l)</code>quality` (score between 0 and 10)
-<br><br>
+<div id="tree-based-regression-models-in-r" class="section level2 hasAnchor" number="6.3">
+<h2><span class="header-section-number">6.3</span> Tree-Based Regression Models in R<a href="tree-based-regression-models-in-r.html#tree-based-regression-models-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p> 
+ </p>
+<p>The Python version of this section can be found here: <a href="code/ch6_PythonExample.html"> <b>Python Code for Regression Trees</b> </a>. It replicates (in spirit) the work that is done in this section. It also comments on differences between the two languages.</p>
+<p> </p>
+<p>  </p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="tree-based-regression-models-in-r.html#cb59-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb59-2"><a href="tree-based-regression-models-in-r.html#cb59-2" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb59-3"><a href="tree-based-regression-models-in-r.html#cb59-3" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb59-4"><a href="tree-based-regression-models-in-r.html#cb59-4" tabindex="-1"></a><span class="fu">library</span>(tree)</span></code></pre></div>
+<p>  </p>
+<p>The <code>whitewines.csv</code> data set contains information on white variants of the Portuguese “Vinho Verde” wine.
+  
+The columns are:
+(a) <code>fixed acidity</code>,
+(b) <code>volatile acidity</code>,
+(c) <code>citric acid</code>,
+(d) <code>residual sugar</code>,
+(e) <code>chlorides</code>,
+(f) <code>free sulfur dioxide</code>,
+(g) <code>total sulfur dioxide</code>,
+(h) <code>density</code>,
+(i) <code>pH</code>,
+(j) <code>sulphates</code>,
+(k) <code>alcohol</code>,
+(l) <code>quality</code> (score between 0 and 10).
+  
 The data set can be downloaded here: <a href="data/week6/whitewines.csv" download> whitewines.csv </a>
-<br><br></p>
-<div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="tree-based-regression-models-in-r.html#cb341-1" tabindex="-1"></a>whitewines <span class="ot">=</span> <span class="fu">read.table</span>(<span class="st">&quot;data/week6/whitewines.csv&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>,</span>
-<span id="cb341-2"><a href="tree-based-regression-models-in-r.html#cb341-2" tabindex="-1"></a>    <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb341-3"><a href="tree-based-regression-models-in-r.html#cb341-3" tabindex="-1"></a><span class="fu">head</span>(whitewines)</span></code></pre></div>
-<pre><code>##   fixed.acidity volatile.acidity citric.acid residual.sugar chlorides free.sulfur.dioxide
-## 1           7.0             0.27        0.36           20.7     0.045                  45
-## 2           6.3             0.30        0.34            1.6     0.049                  14
-## 3           8.1             0.28        0.40            6.9     0.050                  30
-## 4           7.2             0.23        0.32            8.5     0.058                  47
-## 5           7.2             0.23        0.32            8.5     0.058                  47
-## 6           8.1             0.28        0.40            6.9     0.050                  30
-##   total.sulfur.dioxide density   pH sulphates alcohol quality
-## 1                  170  1.0010 3.00      0.45     8.8       6
-## 2                  132  0.9940 3.30      0.49     9.5       6
-## 3                   97  0.9951 3.26      0.44    10.1       6
-## 4                  186  0.9956 3.19      0.40     9.9       6
-## 5                  186  0.9956 3.19      0.40     9.9       6
-## 6                   97  0.9951 3.26      0.44    10.1       6</code></pre>
-<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="tree-based-regression-models-in-r.html#cb343-1" tabindex="-1"></a><span class="fu">dim</span>(whitewines)</span></code></pre></div>
+  </p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="tree-based-regression-models-in-r.html#cb60-1" tabindex="-1"></a>whitewines <span class="ot">=</span> <span class="fu">read.table</span>(<span class="st">&quot;data/week6/whitewines.csv&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>,</span>
+<span id="cb60-2"><a href="tree-based-regression-models-in-r.html#cb60-2" tabindex="-1"></a>    <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb60-3"><a href="tree-based-regression-models-in-r.html#cb60-3" tabindex="-1"></a><span class="fu">head</span>(whitewines)</span></code></pre></div>
+<pre><code>##   fixed.acidity volatile.acidity citric.acid residual.sugar chlorides
+## 1           7.0             0.27        0.36           20.7     0.045
+## 2           6.3             0.30        0.34            1.6     0.049
+## 3           8.1             0.28        0.40            6.9     0.050
+## 4           7.2             0.23        0.32            8.5     0.058
+## 5           7.2             0.23        0.32            8.5     0.058
+## 6           8.1             0.28        0.40            6.9     0.050
+##   free.sulfur.dioxide total.sulfur.dioxide density   pH sulphates alcohol
+## 1                  45                  170  1.0010 3.00      0.45     8.8
+## 2                  14                  132  0.9940 3.30      0.49     9.5
+## 3                  30                   97  0.9951 3.26      0.44    10.1
+## 4                  47                  186  0.9956 3.19      0.40     9.9
+## 5                  47                  186  0.9956 3.19      0.40     9.9
+## 6                  30                   97  0.9951 3.26      0.44    10.1
+##   quality
+## 1       6
+## 2       6
+## 3       6
+## 4       6
+## 5       6
+## 6       6</code></pre>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="tree-based-regression-models-in-r.html#cb62-1" tabindex="-1"></a><span class="fu">dim</span>(whitewines)</span></code></pre></div>
 <pre><code>## [1] 4898   12</code></pre>
-<p><br><br></p>
-<p>In <code>R</code> there are two packages that fit <strong>tree</strong> models: <code>tree</code> and <code>rpart</code>. The first package we only used it to generate the first figures in the slides via its function <code>partition.tree</code>. Below is the code that generates the plots in the lectures.</p>
-<p><br><br></p>
-<div id="the-tree-package" class="section level3 unlisted unnumbered hasAnchor">
-<h3>The <code>tree</code> Package<a href="tree-based-regression-models-in-r.html#the-tree-package" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><br></p>
-<p>The syntax for fitting a regression tree with tree is similar to that used for linear regression models. For illustration purposes, let’s focus on just two predictors: <code>alcohol</code> and <code>volatile.acidity</code> to predict <code>quality</code>.</p>
-<p>We start by fitting the tree:</p>
-<div class="sourceCode" id="cb345"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb345-1"><a href="tree-based-regression-models-in-r.html#cb345-1" tabindex="-1"></a>quality.tree <span class="ot">=</span> <span class="fu">tree</span>(quality <span class="sc">~</span> alcohol <span class="sc">+</span> volatile.acidity, <span class="at">data =</span> whitewines)</span>
-<span id="cb345-2"><a href="tree-based-regression-models-in-r.html#cb345-2" tabindex="-1"></a>quality.tree</span></code></pre></div>
+<p>  </p>
+<p>Two <code>R</code> packages fit <strong>tree</strong> models here: <code>tree</code> and <code>rpart</code>. We use <code>tree</code> only for <code>partition.tree</code>, which produced the first figures in the notes. The remaining code uses <code>rpart</code>.</p>
+<p>  </p>
+<div id="a-simple-regression-tree" class="section level3 unnumbered hasAnchor">
+<h3>A Simple Regression Tree<a href="tree-based-regression-models-in-r.html#a-simple-regression-tree" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p> 
+In <code>R</code> we use the tree package for this two-predictor illustration.
+The syntax for <code>tree</code> is similar to that for a linear model. For illustration, predict <code>quality</code> from <code>alcohol</code> and <code>volatile.acidity</code> only.</p>
+<p>Fit the tree:</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="tree-based-regression-models-in-r.html#cb64-1" tabindex="-1"></a>quality.tree <span class="ot">=</span> <span class="fu">tree</span>(quality <span class="sc">~</span> alcohol <span class="sc">+</span> volatile.acidity, <span class="at">data =</span> whitewines)</span>
+<span id="cb64-2"><a href="tree-based-regression-models-in-r.html#cb64-2" tabindex="-1"></a>quality.tree</span></code></pre></div>
 <pre><code>## node), split, n, deviance, yval
 ##       * denotes terminal node
 ## 
@@ -413,22 +425,22 @@ The data set can be downloaded here: <a href="data/week6/whitewines.csv" downloa
 ##       12) volatile.acidity &lt; 0.465 865  616.50 6.150 *
 ##       13) volatile.acidity &gt; 0.465 16   13.94 4.562 *
 ##      7) alcohol &gt; 11.7417 932  624.70 6.549 *</code></pre>
-<p>To illustrate the tree structure, we plot the fitted tree model:</p>
-<div class="sourceCode" id="cb347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb347-1"><a href="tree-based-regression-models-in-r.html#cb347-1" tabindex="-1"></a><span class="fu">plot</span>(quality.tree)</span>
-<span id="cb347-2"><a href="tree-based-regression-models-in-r.html#cb347-2" tabindex="-1"></a><span class="fu">text</span>(quality.tree, <span class="at">cex =</span> <span class="fl">0.75</span>)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-165-1.png" width="672" /></p>
-<p>and create the rectangular regions (as in the lecture), we have:</p>
-<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="tree-based-regression-models-in-r.html#cb348-1" tabindex="-1"></a>quality.quantiles <span class="ot">=</span> <span class="fu">cut</span>(whitewines<span class="sc">$</span>quality, <span class="fu">unique</span>(<span class="fu">quantile</span>(whitewines<span class="sc">$</span>quality,</span>
-<span id="cb348-2"><a href="tree-based-regression-models-in-r.html#cb348-2" tabindex="-1"></a>    <span class="dv">0</span><span class="sc">:</span><span class="dv">5</span><span class="sc">/</span><span class="dv">5</span>)), <span class="at">include.lowest =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb348-3"><a href="tree-based-regression-models-in-r.html#cb348-3" tabindex="-1"></a></span>
-<span id="cb348-4"><a href="tree-based-regression-models-in-r.html#cb348-4" tabindex="-1"></a><span class="fu">plot</span>(whitewines<span class="sc">$</span>alcohol, whitewines<span class="sc">$</span>volatile.acidity, <span class="at">col =</span> <span class="fu">grey</span>(<span class="dv">5</span><span class="sc">:</span><span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)[quality.quantiles],</span>
-<span id="cb348-5"><a href="tree-based-regression-models-in-r.html#cb348-5" tabindex="-1"></a>    <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">ylab =</span> <span class="st">&quot;volatile.acidity&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;alcohol&quot;</span>)</span>
-<span id="cb348-6"><a href="tree-based-regression-models-in-r.html#cb348-6" tabindex="-1"></a><span class="fu">partition.tree</span>(quality.tree, <span class="at">ordvars =</span> <span class="fu">c</span>(<span class="st">&quot;alcohol&quot;</span>, <span class="st">&quot;volatile.acidity&quot;</span>),</span>
-<span id="cb348-7"><a href="tree-based-regression-models-in-r.html#cb348-7" tabindex="-1"></a>    <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-166-1.png" width="672" /></p>
-<p>If we want, we can also prune the tree using the <code>prune.tree</code> function:</p>
-<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb349-1"><a href="tree-based-regression-models-in-r.html#cb349-1" tabindex="-1"></a>smaller.tree <span class="ot">=</span> <span class="fu">prune.tree</span>(quality.tree, <span class="at">best =</span> <span class="dv">4</span>)</span>
-<span id="cb349-2"><a href="tree-based-regression-models-in-r.html#cb349-2" tabindex="-1"></a>smaller.tree</span></code></pre></div>
+<p>Plot the tree:</p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="tree-based-regression-models-in-r.html#cb66-1" tabindex="-1"></a><span class="fu">plot</span>(quality.tree)</span>
+<span id="cb66-2"><a href="tree-based-regression-models-in-r.html#cb66-2" tabindex="-1"></a><span class="fu">text</span>(quality.tree, <span class="at">cex =</span> <span class="fl">0.75</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-44-1.png" alt="" width="672" /></p>
+<p>The corresponding rectangular partition of the two-dimensional feature space is</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="tree-based-regression-models-in-r.html#cb67-1" tabindex="-1"></a>quality.quantiles <span class="ot">=</span> <span class="fu">cut</span>(whitewines<span class="sc">$</span>quality, <span class="fu">unique</span>(<span class="fu">quantile</span>(whitewines<span class="sc">$</span>quality,</span>
+<span id="cb67-2"><a href="tree-based-regression-models-in-r.html#cb67-2" tabindex="-1"></a>    <span class="dv">0</span><span class="sc">:</span><span class="dv">5</span><span class="sc">/</span><span class="dv">5</span>)), <span class="at">include.lowest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb67-3"><a href="tree-based-regression-models-in-r.html#cb67-3" tabindex="-1"></a></span>
+<span id="cb67-4"><a href="tree-based-regression-models-in-r.html#cb67-4" tabindex="-1"></a><span class="fu">plot</span>(whitewines<span class="sc">$</span>alcohol, whitewines<span class="sc">$</span>volatile.acidity, <span class="at">col =</span> <span class="fu">grey</span>(<span class="dv">5</span><span class="sc">:</span><span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)[quality.quantiles],</span>
+<span id="cb67-5"><a href="tree-based-regression-models-in-r.html#cb67-5" tabindex="-1"></a>    <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">ylab =</span> <span class="st">&quot;volatile.acidity&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;alcohol&quot;</span>)</span>
+<span id="cb67-6"><a href="tree-based-regression-models-in-r.html#cb67-6" tabindex="-1"></a><span class="fu">partition.tree</span>(quality.tree, <span class="at">ordvars =</span> <span class="fu">c</span>(<span class="st">&quot;alcohol&quot;</span>, <span class="st">&quot;volatile.acidity&quot;</span>),</span>
+<span id="cb67-7"><a href="tree-based-regression-models-in-r.html#cb67-7" tabindex="-1"></a>    <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-45-1.png" alt="" width="672" /></p>
+<p><code>prune.tree</code> shrinks the tree to a chosen number of leaves:</p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="tree-based-regression-models-in-r.html#cb68-1" tabindex="-1"></a>smaller.tree <span class="ot">=</span> <span class="fu">prune.tree</span>(quality.tree, <span class="at">best =</span> <span class="dv">4</span>)</span>
+<span id="cb68-2"><a href="tree-based-regression-models-in-r.html#cb68-2" tabindex="-1"></a>smaller.tree</span></code></pre></div>
 <pre><code>## node), split, n, deviance, yval
 ##       * denotes terminal node
 ## 
@@ -439,44 +451,45 @@ The data set can be downloaded here: <a href="data/week6/whitewines.csv" downloa
 ##   3) alcohol &gt; 10.85 1813 1378.0 6.341  
 ##     6) alcohol &lt; 11.7417 881  670.0 6.121 *
 ##     7) alcohol &gt; 11.7417 932  624.7 6.549 *</code></pre>
-<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb351-1"><a href="tree-based-regression-models-in-r.html#cb351-1" tabindex="-1"></a><span class="fu">plot</span>(smaller.tree)</span>
-<span id="cb351-2"><a href="tree-based-regression-models-in-r.html#cb351-2" tabindex="-1"></a><span class="fu">text</span>(smaller.tree, <span class="at">cex =</span> <span class="fl">0.75</span>)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-167-1.png" width="672" /></p>
-<p>We now detach the <code>tree</code> package and switch to the <code>rpart</code> package.</p>
-<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="tree-based-regression-models-in-r.html#cb352-1" tabindex="-1"></a><span class="fu">detach</span>(<span class="st">&quot;package:tree&quot;</span>)</span></code></pre></div>
-<p><br><br></p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="tree-based-regression-models-in-r.html#cb70-1" tabindex="-1"></a><span class="fu">plot</span>(smaller.tree)</span>
+<span id="cb70-2"><a href="tree-based-regression-models-in-r.html#cb70-2" tabindex="-1"></a><span class="fu">text</span>(smaller.tree, <span class="at">cex =</span> <span class="fl">0.75</span>)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-46-1.png" alt="" width="672" /></p>
+<p>Detach <code>tree</code> before moving to <code>rpart</code> so that the two <code>plot</code> methods do not clash.</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="tree-based-regression-models-in-r.html#cb71-1" tabindex="-1"></a><span class="fu">detach</span>(<span class="st">&quot;package:tree&quot;</span>)</span></code></pre></div>
+<p>  </p>
 </div>
-<div id="the-rpart-package" class="section level3 unlisted unnumbered hasAnchor">
-<h3>The <code>rpart</code> Package<a href="tree-based-regression-models-in-r.html#the-rpart-package" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><br></p>
-<div id="fitting-a-regression-tree" class="section level4 unnumbered hasAnchor">
-<h4>Fitting a Regression Tree<a href="tree-based-regression-models-in-r.html#fitting-a-regression-tree" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>The syntax for fitting a regression tree with <code>rpart</code> to the one we use for linear regression models. The default tree plot may not be visually appealing, so for better visualization, we can use the <code>rpart.plot</code> package.</p>
-<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="tree-based-regression-models-in-r.html#cb353-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">598</span>)</span>
-<span id="cb353-2"><a href="tree-based-regression-models-in-r.html#cb353-2" tabindex="-1"></a>wine.tree1 <span class="ot">=</span> <span class="fu">rpart</span>(quality <span class="sc">~</span> ., <span class="at">data =</span> whitewines)</span>
-<span id="cb353-3"><a href="tree-based-regression-models-in-r.html#cb353-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb353-4"><a href="tree-based-regression-models-in-r.html#cb353-4" tabindex="-1"></a><span class="fu">plot</span>(wine.tree1)</span>
-<span id="cb353-5"><a href="tree-based-regression-models-in-r.html#cb353-5" tabindex="-1"></a><span class="fu">rpart.plot</span>(wine.tree1)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-169-1.png" width="672" />
-<em>Note</em> that in this example (unlike the previous one), we use all predictors not just two.
-<br>
-<br></p>
+<div id="fitting-and-pruning-a-regression-tree" class="section level3 unnumbered hasAnchor">
+<h3>Fitting and Pruning a Regression Tree<a href="tree-based-regression-models-in-r.html#fitting-and-pruning-a-regression-tree" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p> </p>
+<p>In <code>R</code> we use <code>rpart</code>. The syntax for <code>rpart</code> is again the usual formula interface. The default <code>plot</code> is plain; <code>rpart.plot</code> is easier to read.</p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="tree-based-regression-models-in-r.html#cb72-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">598</span>)</span>
+<span id="cb72-2"><a href="tree-based-regression-models-in-r.html#cb72-2" tabindex="-1"></a>wine.tree1 <span class="ot">=</span> <span class="fu">rpart</span>(quality <span class="sc">~</span> ., <span class="at">data =</span> whitewines)</span>
+<span id="cb72-3"><a href="tree-based-regression-models-in-r.html#cb72-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb72-4"><a href="tree-based-regression-models-in-r.html#cb72-4" tabindex="-1"></a><span class="fu">plot</span>(wine.tree1)</span>
+<span id="cb72-5"><a href="tree-based-regression-models-in-r.html#cb72-5" tabindex="-1"></a><span class="fu">rpart.plot</span>(wine.tree1)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-48-1.png" alt="" width="672" />
+Unlike the <code>tree</code> example, this fit uses every predictor.
+ 
+ </p>
+<div id="reading-the-tree" class="section level4 unnumbered hasAnchor">
+<h4>Reading the Tree<a href="tree-based-regression-models-in-r.html#reading-the-tree" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Read the <code>rpart.plot</code> from the root down. The root prints the mean of <code>quality</code> over the whole sample and <span class="math inline">\(100\%\)</span> of the rows. The first split is on <code>alcohol</code>. The left child holds the lower-alcohol rows and a lower mean; the right child holds the rest. Leaves sit at the bottom; their shading tracks the size of the prediction. Exact means and percentages will match the printed tree for this data set and this <code>rpart</code> version.
+  </p>
 </div>
-<div id="understanding-the-fitted-tree" class="section level4 unnumbered hasAnchor">
-<h4>Understanding the Fitted Tree<a href="tree-based-regression-models-in-r.html#understanding-the-fitted-tree" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Starting at the root node, the average value for all observations is <strong>5.9</strong>, representing 100% of the data points. The <em>first split</em> occurs based on the variable <code>alcohol</code>. The left node contains roughly 63% of the samples with an average of <strong>5.6</strong>, while the right node contains the remaining 37% with an average of <strong>6.3</strong>. Leaf nodes appear at the bottom, and their color shading indicates the magnitude of their predictions.
-<br><br></p>
-<p><font color=blue><strong>Cross-Validation</strong></font></p>
-<p><strong>Cross-validation</strong> is automatically performed when using the <code>rpart</code> command. To inspect the cross-validation for pruning, use the <code>printcp</code> command, which provides a table.</p>
-<p><em>CP</em> stands for <strong>Complexity Parameter</strong> which is a scaled version of <span class="math inline">\(\alpha\)</span> – the <em>price</em> or <em>penalty</em> we pay for keeping a split.</p>
-<p><br></p>
-<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="tree-based-regression-models-in-r.html#cb354-1" tabindex="-1"></a><span class="fu">printcp</span>(wine.tree1)</span></code></pre></div>
+</div>
+<div id="cross-validation-and-the-cp-table" class="section level3 hasAnchor" number="6.3.1">
+<h3><span class="header-section-number">6.3.1</span> Cross-validation and the CP Table<a href="tree-based-regression-models-in-r.html#cross-validation-and-the-cp-table" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Cross-validation</strong> is built into <code>rpart</code>. Use <code>printcp</code> to inspect the pruning table.</p>
+<p><em>CP</em> is the <strong>complexity parameter</strong>, a scaled version of <span class="math inline">\(\alpha\)</span> – the <em>price</em> of a leaf.</p>
+<p> </p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="tree-based-regression-models-in-r.html#cb73-1" tabindex="-1"></a><span class="fu">printcp</span>(wine.tree1)</span></code></pre></div>
 <pre><code>## 
 ## Regression tree:
 ## rpart(formula = quality ~ ., data = whitewines)
 ## 
 ## Variables actually used in tree construction:
-## [1] alcohol             density             free.sulfur.dioxide volatile.acidity   
+## [1] alcohol             density             free.sulfur.dioxide
+## [4] volatile.acidity   
 ## 
 ## Root node error: 3841/4898 = 0.7842
 ## 
@@ -489,29 +502,40 @@ The data set can be downloaded here: <a href="data/week6/whitewines.csv" downloa
 ## 4 0.017711      3   0.75918 0.76429 0.018478
 ## 5 0.010355      4   0.74147 0.75134 0.018065
 ## 6 0.010000      6   0.72076 0.74656 0.017995</code></pre>
-<p><br></p>
-<p><strong>In the output above:</strong><br>
-<code>nsplit</code> means the number of splits, which implies that the number of leaf nodes (or size of a tree) is equal to <span class="math inline">\(nsplit + 1\)</span>.<br>
-<code>rel error</code> and <code>xerror</code> are the training error (RSS) and CV error, but these values are relative to a reference training error at the root node. Recall that the connection between <span class="math inline">\(\alpha\)</span> and CP is</p>
-<p><span class="math display">\[RSS(T) = \alpha |T|,  \frac{RSS(T)}{RSS(root)} + CP \cdot |T|\]</span>
-<br></p>
+<p> </p>
+<p><strong>In the output above:</strong></p>
+<p> </p>
+<ul>
+<li><p><code>nsplit</code> is the number of splits. The number of leaves is <code>nsplit + 1</code>.</p></li>
+<li><p><code>rel error</code> is the training RSS of that subtree, divided by the RSS of the root.</p></li>
+<li><p><code>xerror</code> is the same quantity estimated by cross-validation (also relative to the root). <code>xstd</code> is the standard error of <code>xerror</code>.</p></li>
+</ul>
+<p><code>cp</code> is a <strong>scaled</strong> version of the penalty <span class="math inline">\(\alpha\)</span> from cost-complexity pruning. If <span class="math inline">\(T_0\)</span> denotes the root and <span class="math inline">\(R(T)\)</span> is RSS, <code>rpart</code> uses</p>
+<p><span class="math display">\[R_{\mathrm{cp}}(T) = \frac{R(T)}{R(T_0)} + \mathrm{cp}\,|T|. \]</span></p>
+<p>That is the same criterion as <span class="math inline">\(R_{\alpha}(T)=R(T)+\alpha|T|\)</span> with</p>
+<p><span class="math display">\[ \mathrm{cp} = \frac{\alpha}{R(T_0)}. \]</span></p>
+<p>(The constant that distinguishes a penalty on leaves from a penalty on splits does not change which subtree is optimal for a given <span class="math inline">\(\mathrm{cp}\)</span>.)</p>
+<p>In the <code>cptable</code>, when <code>nsplit</code> increases by one from row <span class="math inline">\(i\)</span> to row <span class="math inline">\(i+1\)</span>,</p>
+<p><span class="math display">\[\texttt{rel error}_i - \texttt{rel error}_{i+1}=\texttt{CP}_i.\]</span></p>
+<p>That difference is the drop in <em>relative</em> RSS from the extra split. It is the largest <span class="math inline">\(\mathrm{cp}\)</span> for which that split is still worth keeping on the training data. Cross-validation (<code>xerror</code>) is what we use to decide whether the split is worth keeping for prediction.</p>
+<p> </p>
 <p><font color=blue><strong>Pruning</strong></font></p>
-<p>We can employ the <code>prune</code> command to obtain the optimal subtree by providing specific Complexity Parameter (CP) values. As an example:</p>
-<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="tree-based-regression-models-in-r.html#cb356-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.3</span>)</span></code></pre></div>
+<p><code>prune</code> returns a subtree for a chosen <code>cp</code>:</p>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="tree-based-regression-models-in-r.html#cb75-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.3</span>)</span></code></pre></div>
 <pre><code>## n= 4898 
 ## 
 ## node), split, n, deviance, yval
 ##       * denotes terminal node
 ## 
 ## 1) root 4898 3840.99 5.877909 *</code></pre>
-<div class="sourceCode" id="cb358"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb358-1"><a href="tree-based-regression-models-in-r.html#cb358-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="tree-based-regression-models-in-r.html#cb77-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.2</span>)</span></code></pre></div>
 <pre><code>## n= 4898 
 ## 
 ## node), split, n, deviance, yval
 ##       * denotes terminal node
 ## 
 ## 1) root 4898 3840.99 5.877909 *</code></pre>
-<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="tree-based-regression-models-in-r.html#cb360-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.156</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="tree-based-regression-models-in-r.html#cb79-1" tabindex="-1"></a><span class="fu">prune</span>(wine.tree1, <span class="at">cp =</span> <span class="fl">0.156</span>)</span></code></pre></div>
 <pre><code>## n= 4898 
 ## 
 ## node), split, n, deviance, yval
@@ -520,49 +544,48 @@ The data set can be downloaded here: <a href="data/week6/whitewines.csv" downloa
 ## 1) root 4898 3840.990 5.877909  
 ##   2) alcohol&lt; 10.85 3085 1844.906 5.605511 *
 ##   3) alcohol&gt;=10.85 1813 1377.659 6.341423 *</code></pre>
-<p>A CV path plot</p>
-<div class="sourceCode" id="cb362"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb362-1"><a href="tree-based-regression-models-in-r.html#cb362-1" tabindex="-1"></a><span class="fu">plotcp</span>(wine.tree1)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-172-1.png" width="672" /></p>
-<p>If you are uncertain whether the cross-validation error has reached its minimum, you can start with a larger tree:</p>
-<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="tree-based-regression-models-in-r.html#cb363-1" tabindex="-1"></a>wine.tree2 <span class="ot">=</span> <span class="fu">rpart</span>(quality <span class="sc">~</span> ., <span class="at">data =</span> whitewines, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">cp =</span> <span class="dv">0</span>,</span>
-<span id="cb363-2"><a href="tree-based-regression-models-in-r.html#cb363-2" tabindex="-1"></a>    <span class="at">xval =</span> <span class="dv">10</span>))</span>
-<span id="cb363-3"><a href="tree-based-regression-models-in-r.html#cb363-3" tabindex="-1"></a><span class="co"># printcp(wine.tree2)</span></span>
-<span id="cb363-4"><a href="tree-based-regression-models-in-r.html#cb363-4" tabindex="-1"></a><span class="fu">plot</span>(wine.tree2)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-173-1.png" width="672" /></p>
-<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="tree-based-regression-models-in-r.html#cb364-1" tabindex="-1"></a><span class="fu">plotcp</span>(wine.tree2)</span></code></pre></div>
-<p><img src="my-598PSL_files/figure-html/unnamed-chunk-174-1.png" width="672" /></p>
-<p><br></p>
+<p>The CV path:</p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="tree-based-regression-models-in-r.html#cb81-1" tabindex="-1"></a><span class="fu">plotcp</span>(wine.tree1)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-51-1.png" alt="" width="672" /></p>
+<p>If the default tree looks too small to have reached the CV minimum, grow a larger tree by setting <code>cp = 0</code>:</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="tree-based-regression-models-in-r.html#cb82-1" tabindex="-1"></a>wine.tree2 <span class="ot">=</span> <span class="fu">rpart</span>(quality <span class="sc">~</span> ., <span class="at">data =</span> whitewines, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">cp =</span> <span class="dv">0</span>,</span>
+<span id="cb82-2"><a href="tree-based-regression-models-in-r.html#cb82-2" tabindex="-1"></a>    <span class="at">xval =</span> <span class="dv">10</span>))</span>
+<span id="cb82-3"><a href="tree-based-regression-models-in-r.html#cb82-3" tabindex="-1"></a><span class="fu">plot</span>(wine.tree2)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-52-1.png" alt="" width="672" /></p>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="tree-based-regression-models-in-r.html#cb83-1" tabindex="-1"></a><span class="fu">plotcp</span>(wine.tree2)</span></code></pre></div>
+<p><img src="my-598PSL_files/figure-html/unnamed-chunk-53-1.png" alt="" width="672" /></p>
+<p> </p>
 <p><font color=blue><strong>Optimal CP Value</strong></font></p>
-<p>We can use either the <em>Minimum Cross-Validation error</em> or the <em>One Standard Error (1-SE)</em> rule to choose the <strong>optimal CP</strong> value for pruning.</p>
-<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="tree-based-regression-models-in-r.html#cb365-1" tabindex="-1"></a><span class="co"># Index of CP with lowest xerror</span></span>
-<span id="cb365-2"><a href="tree-based-regression-models-in-r.html#cb365-2" tabindex="-1"></a>optimal.cp <span class="ot">=</span> <span class="fu">which.min</span>(wine.tree2<span class="sc">$</span>cptable[, <span class="st">&quot;xerror&quot;</span>])</span>
-<span id="cb365-3"><a href="tree-based-regression-models-in-r.html#cb365-3" tabindex="-1"></a></span>
-<span id="cb365-4"><a href="tree-based-regression-models-in-r.html#cb365-4" tabindex="-1"></a><span class="co"># The optimal CP value</span></span>
-<span id="cb365-5"><a href="tree-based-regression-models-in-r.html#cb365-5" tabindex="-1"></a>wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">4</span>]</span></code></pre></div>
+<p>Choose <span class="math inline">\(\mathrm{cp}\)</span> by the <em>minimum cross-validation error</em> or by the <em>one-standard-error (1-SE)</em> rule.</p>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="tree-based-regression-models-in-r.html#cb84-1" tabindex="-1"></a><span class="co"># Index of CP with lowest xerror</span></span>
+<span id="cb84-2"><a href="tree-based-regression-models-in-r.html#cb84-2" tabindex="-1"></a>optimal.cp <span class="ot">=</span> <span class="fu">which.min</span>(wine.tree2<span class="sc">$</span>cptable[, <span class="st">&quot;xerror&quot;</span>])</span>
+<span id="cb84-3"><a href="tree-based-regression-models-in-r.html#cb84-3" tabindex="-1"></a></span>
+<span id="cb84-4"><a href="tree-based-regression-models-in-r.html#cb84-4" tabindex="-1"></a><span class="co"># The optimal CP value (column &#39;xerror&#39;)</span></span>
+<span id="cb84-5"><a href="tree-based-regression-models-in-r.html#cb84-5" tabindex="-1"></a>wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">4</span>]</span></code></pre></div>
 <pre><code>## [1] 0.6961474</code></pre>
-<div class="sourceCode" id="cb367"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb367-1"><a href="tree-based-regression-models-in-r.html#cb367-1" tabindex="-1"></a><span class="co"># upper bound for equivalent optimal xerror</span></span>
-<span id="cb367-2"><a href="tree-based-regression-models-in-r.html#cb367-2" tabindex="-1"></a>wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">4</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp,</span>
-<span id="cb367-3"><a href="tree-based-regression-models-in-r.html#cb367-3" tabindex="-1"></a>    <span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="tree-based-regression-models-in-r.html#cb86-1" tabindex="-1"></a><span class="co"># upper bound for equivalent optimal xerror</span></span>
+<span id="cb86-2"><a href="tree-based-regression-models-in-r.html#cb86-2" tabindex="-1"></a>wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">4</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp,</span>
+<span id="cb86-3"><a href="tree-based-regression-models-in-r.html#cb86-3" tabindex="-1"></a>    <span class="dv">5</span>]</span></code></pre></div>
 <pre><code>## [1] 0.713746</code></pre>
-<div class="sourceCode" id="cb369"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb369-1"><a href="tree-based-regression-models-in-r.html#cb369-1" tabindex="-1"></a><span class="co"># Row IDs for CPs whose xerror are equivalent to</span></span>
-<span id="cb369-2"><a href="tree-based-regression-models-in-r.html#cb369-2" tabindex="-1"></a><span class="co"># min(xerror)</span></span>
-<span id="cb369-3"><a href="tree-based-regression-models-in-r.html#cb369-3" tabindex="-1"></a>tmp.id <span class="ot">=</span> <span class="fu">which</span>(wine.tree2<span class="sc">$</span>cptable[, <span class="dv">4</span>] <span class="sc">&lt;=</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp,</span>
-<span id="cb369-4"><a href="tree-based-regression-models-in-r.html#cb369-4" tabindex="-1"></a>    <span class="dv">4</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">5</span>])</span>
-<span id="cb369-5"><a href="tree-based-regression-models-in-r.html#cb369-5" tabindex="-1"></a>tmp.id <span class="ot">=</span> <span class="fu">min</span>(tmp.id)</span>
-<span id="cb369-6"><a href="tree-based-regression-models-in-r.html#cb369-6" tabindex="-1"></a></span>
-<span id="cb369-7"><a href="tree-based-regression-models-in-r.html#cb369-7" tabindex="-1"></a><span class="co"># CP.1se = any value between row(tmp.id) and(tmp.id - 1)</span></span>
-<span id="cb369-8"><a href="tree-based-regression-models-in-r.html#cb369-8" tabindex="-1"></a>CP<span class="fl">.1</span>se <span class="ot">=</span> (wine.tree2<span class="sc">$</span>cptable[tmp.id <span class="sc">-</span> <span class="dv">1</span>, <span class="dv">1</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[tmp.id,</span>
-<span id="cb369-9"><a href="tree-based-regression-models-in-r.html#cb369-9" tabindex="-1"></a>    <span class="dv">1</span>])<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb369-10"><a href="tree-based-regression-models-in-r.html#cb369-10" tabindex="-1"></a></span>
-<span id="cb369-11"><a href="tree-based-regression-models-in-r.html#cb369-11" tabindex="-1"></a><span class="co"># Prune tree with CP.1se</span></span>
-<span id="cb369-12"><a href="tree-based-regression-models-in-r.html#cb369-12" tabindex="-1"></a>wine.tree3 <span class="ot">=</span> <span class="fu">prune</span>(wine.tree2, <span class="at">cp =</span> CP<span class="fl">.1</span>se)</span></code></pre></div>
-<p>Let us now try to understand the relationship between the <em>1st column</em> and the <em>3rd column</em> of the CP table. The difference between adjacent rel error in the table is equivalent to the corresponding CP values. This difference signifies the <strong>improvement gained in RSS by adding an additional split</strong>, effectively setting the <em>cost</em> of that split.</p>
-<div class="sourceCode" id="cb370"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb370-1"><a href="tree-based-regression-models-in-r.html#cb370-1" tabindex="-1"></a><span class="co"># cbind(wine.tree2$cptable[, 1],</span></span>
-<span id="cb370-2"><a href="tree-based-regression-models-in-r.html#cb370-2" tabindex="-1"></a><span class="co"># c(-diff(wine.tree2$cptable[, 3]), 0))</span></span></code></pre></div>
-<p><br></p>
-<p>After the tree is fit, the predict function <code>predict.rpart</code> from the <code>rpart</code> package can be used for making predictions on new or existing data.</p>
-<p><br><br></p>
-</div>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="tree-based-regression-models-in-r.html#cb88-1" tabindex="-1"></a><span class="co"># smallest tree whose xerror is within one SE of the</span></span>
+<span id="cb88-2"><a href="tree-based-regression-models-in-r.html#cb88-2" tabindex="-1"></a><span class="co"># minimum</span></span>
+<span id="cb88-3"><a href="tree-based-regression-models-in-r.html#cb88-3" tabindex="-1"></a>tmp.id <span class="ot">=</span> <span class="fu">which</span>(wine.tree2<span class="sc">$</span>cptable[, <span class="dv">4</span>] <span class="sc">&lt;=</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp,</span>
+<span id="cb88-4"><a href="tree-based-regression-models-in-r.html#cb88-4" tabindex="-1"></a>    <span class="dv">4</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[optimal.cp, <span class="dv">5</span>])</span>
+<span id="cb88-5"><a href="tree-based-regression-models-in-r.html#cb88-5" tabindex="-1"></a>tmp.id <span class="ot">=</span> <span class="fu">min</span>(tmp.id)</span>
+<span id="cb88-6"><a href="tree-based-regression-models-in-r.html#cb88-6" tabindex="-1"></a></span>
+<span id="cb88-7"><a href="tree-based-regression-models-in-r.html#cb88-7" tabindex="-1"></a><span class="co"># CP.1se: midpoint of the cp values on either side of that</span></span>
+<span id="cb88-8"><a href="tree-based-regression-models-in-r.html#cb88-8" tabindex="-1"></a><span class="co"># row</span></span>
+<span id="cb88-9"><a href="tree-based-regression-models-in-r.html#cb88-9" tabindex="-1"></a>CP<span class="fl">.1</span>se <span class="ot">=</span> (wine.tree2<span class="sc">$</span>cptable[tmp.id <span class="sc">-</span> <span class="dv">1</span>, <span class="dv">1</span>] <span class="sc">+</span> wine.tree2<span class="sc">$</span>cptable[tmp.id,</span>
+<span id="cb88-10"><a href="tree-based-regression-models-in-r.html#cb88-10" tabindex="-1"></a>    <span class="dv">1</span>])<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb88-11"><a href="tree-based-regression-models-in-r.html#cb88-11" tabindex="-1"></a></span>
+<span id="cb88-12"><a href="tree-based-regression-models-in-r.html#cb88-12" tabindex="-1"></a><span class="co"># Prune tree with CP.1se</span></span>
+<span id="cb88-13"><a href="tree-based-regression-models-in-r.html#cb88-13" tabindex="-1"></a>wine.tree3 <span class="ot">=</span> <span class="fu">prune</span>(wine.tree2, <span class="at">cp =</span> CP<span class="fl">.1</span>se)</span></code></pre></div>
+<p>The identity between column 1 (<code>CP</code>) and the adjacent drops in column 3 (<code>rel error</code>) is the same one stated after <code>printcp</code>. The commented line below checks it numerically.</p>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="tree-based-regression-models-in-r.html#cb89-1" tabindex="-1"></a><span class="co"># cbind(wine.tree2$cptable[, 1],</span></span>
+<span id="cb89-2"><a href="tree-based-regression-models-in-r.html#cb89-2" tabindex="-1"></a><span class="co"># c(-diff(wine.tree2$cptable[, 3]), 0))</span></span></code></pre></div>
+<p> </p>
+<p>After the tree is fit, <code>predict()</code> (the <code>predict.rpart</code> method) produces fitted values on new or existing rows.</p>
+<p>  </p>
 </div>
 </div>
             </section>
@@ -598,12 +621,12 @@ gitbook.start({
   },
   "fontsettings": {
     "theme": "white",
-    "family": "sans serif",
-    "size": 1
+    "family": "sans-serif",
+    "size": 2
   },
   "edit": {
-    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/05-regressiontrees.Rmd",
-    "text": "Edit"
+    "link": null,
+    "text": null
   },
   "history": {
     "link": null,
@@ -613,18 +636,15 @@ gitbook.start({
     "link": null,
     "text": null
   },
-  "download": ["my-598PSL.epub"],
+  "download": ["my-598PSL.pdf", "my-598PSL.epub"],
   "search": {
     "engine": "fuse",
     "options": null
   },
   "toc": {
     "collapse": "subsection",
-    "toc_depth": 4,
-    "toc_float": true,
     "scroll_highlight": true
-  },
-  "title": "CS 598 Practical Statistical Learning"
+  }
 });
 });
 </script>

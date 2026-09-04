@@ -4,26 +4,26 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>5.2 Regression Forests | CS 598 Practical Statistical Learning</title>
-  <meta name="description" content="Lecture notes for “CS 598 PSL”." />
-  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+  <title>6.2 Regression Forests | CS 598 Practical Statistical Learning</title>
+  <meta name="description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="5.2 Regression Forests | CS 598 Practical Statistical Learning" />
+  <meta property="og:title" content="6.2 Regression Forests | CS 598 Practical Statistical Learning" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Lecture notes for “CS 598 PSL”." />
-  <meta name="github-repo" content="rstudio/bookdown-demo" />
+  <meta property="og:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
+  
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="5.2 Regression Forests | CS 598 Practical Statistical Learning" />
+  <meta name="twitter:title" content="6.2 Regression Forests | CS 598 Practical Statistical Learning" />
   
-  <meta name="twitter:description" content="Lecture notes for “CS 598 PSL”." />
+  <meta name="twitter:description" content="Lecture Notes for CS 598 Practical Statistical Learning." />
   
 
 <meta name="author" content="Alexandra Chronopoulou" />
 
 
-<meta name="date" content="2025-12-05" />
+<meta name="date" content="2026-09-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,13 +52,41 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
-<script src="libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<script>
+$(document).ready(function() {
+  function collapseTOC() {
+    // 1. Collapse everything
+    $(".book-summary ul.summary ul").hide();
+
+    // 2. Find the current page filename
+    var currentPage = window.location.pathname.split("/").pop();
+    if (!currentPage || currentPage === "") currentPage = "index.html";
+
+    // 3. Find the <li> that matches the current page and expand its parents + children
+    var $current = $(".book-summary li[data-path='" + currentPage + "']");
+    if ($current.length) {
+      $current.parents("ul").show();
+      $current.children("ul").show();
+    }
+  }
+
+  // Run on load
+  collapseTOC();
+
+  // Run on every page change
+  if (typeof gitbook !== "undefined") {
+    gitbook.events.bind("page.change", function() {
+      setTimeout(collapseTOC, 30);
+    });
+  }
+});
+</script>
 
 
 <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -68,7 +96,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -139,22 +167,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">CS 598 PSL A. Chronopoulou</a></li>
+<li><a href="./">CS 598 PSL – A. Chronopoulou</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><font color="darkblue"> Course Information </font></a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Course Information</a></li>
 <li class="chapter" data-level="1" data-path="introduction-to-statistical-learning.html"><a href="introduction-to-statistical-learning.html"><i class="fa fa-check"></i><b>1</b> Introduction to Statistical Learning</a>
 <ul>
 <li class="chapter" data-level="1.1" data-path="examples-of-statistical-learning-problems.html"><a href="examples-of-statistical-learning-problems.html"><i class="fa fa-check"></i><b>1.1</b> Examples of Statistical Learning Problems</a></li>
 <li class="chapter" data-level="1.2" data-path="supervised-learning-framework.html"><a href="supervised-learning-framework.html"><i class="fa fa-check"></i><b>1.2</b> Supervised Learning Framework</a></li>
-<li class="chapter" data-level="1.3" data-path="why-is-statistical-learning-is-challenging.html"><a href="why-is-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why is Statistical Learning is Challenging</a></li>
+<li class="chapter" data-level="1.3" data-path="why-statistical-learning-is-challenging.html"><a href="why-statistical-learning-is-challenging.html"><i class="fa fa-check"></i><b>1.3</b> Why Statistical Learning is Challenging</a></li>
 <li class="chapter" data-level="1.4" data-path="bias-variance-trade-off.html"><a href="bias-variance-trade-off.html"><i class="fa fa-check"></i><b>1.4</b> Bias-Variance Trade-Off</a></li>
-<li class="chapter" data-level="1.5" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>NN vs. Linear Regression</a>
+<li class="chapter" data-level="1.5" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html"><i class="fa fa-check"></i><b>1.5</b> Two Toy Examples: <span class="math inline">\(k\)</span>-NN vs. Linear Regression</a>
 <ul>
-<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
-<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
-<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> Simulated Binary Classification Example</a></li>
-<li class="chapter" data-level="1.5.4" data-path="two-toy-examples-knn-vs.-linear-regression.html"><a href="two-toy-examples-knn-vs.-linear-regression.html#code-for-the-examples-in-the-lectures"><i class="fa fa-check"></i><b>1.5.4</b> Code for the Examples in the Lectures</a></li>
+<li class="chapter" data-level="1.5.1" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#k-nearest-neighbors"><i class="fa fa-check"></i><b>1.5.1</b> <span class="math inline">\(k\)</span>-Nearest Neighbors</a></li>
+<li class="chapter" data-level="1.5.2" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#linear-regression"><i class="fa fa-check"></i><b>1.5.2</b> Linear Regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="two-toy-examples-k-nn-vs.-linear-regression.html"><a href="two-toy-examples-k-nn-vs.-linear-regression.html#a-simulated-binary-classification-example"><i class="fa fa-check"></i><b>1.5.3</b> A Simulated (Binary) Classification Example</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="linear-regression-models.html"><a href="linear-regression-models.html"><i class="fa fa-check"></i><b>2</b> Linear Regression Models</a>
@@ -169,14 +196,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.8" data-path="categorical-variables-in-mlr.html"><a href="categorical-variables-in-mlr.html"><i class="fa fa-check"></i><b>2.8</b> Categorical Variables in MLR</a></li>
 <li class="chapter" data-level="2.9" data-path="collinearity.html"><a href="collinearity.html"><i class="fa fa-check"></i><b>2.9</b> Collinearity</a></li>
 <li class="chapter" data-level="2.10" data-path="model-diagnostics.html"><a href="model-diagnostics.html"><i class="fa fa-check"></i><b>2.10</b> Model Diagnostics</a></li>
-<li class="chapter" data-level="2.11" data-path="the-birthweight-data-set-example.html"><a href="the-birthweight-data-set-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Data Set Example</a></li>
+<li class="chapter" data-level="2.11" data-path="the-birthweight-example.html"><a href="the-birthweight-example.html"><i class="fa fa-check"></i><b>2.11</b> The <code>Birthweight</code> Example</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="variable-selection-regularization.html"><a href="variable-selection-regularization.html"><i class="fa fa-check"></i><b>3</b> Variable Selection &amp; Regularization</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="training-vs.-testing-errors.html"><a href="training-vs.-testing-errors.html"><i class="fa fa-check"></i><b>3.1</b> Training vs. Testing Errors</a></li>
 <li class="chapter" data-level="3.2" data-path="subset-selection.html"><a href="subset-selection.html"><i class="fa fa-check"></i><b>3.2</b> Subset Selection</a>
 <ul>
-<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria-based-procedures"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria-based procedures</a></li>
+<li class="chapter" data-level="3.2.1" data-path="subset-selection.html"><a href="subset-selection.html#information-criteria"><i class="fa fa-check"></i><b>3.2.1</b> Information Criteria</a></li>
 <li class="chapter" data-level="3.2.2" data-path="subset-selection.html"><a href="subset-selection.html#search-algorithms"><i class="fa fa-check"></i><b>3.2.2</b> Search Algorithms</a></li>
 </ul></li>
 <li class="chapter" data-level="3.3" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html"><i class="fa fa-check"></i><b>3.3</b> Shrinkage Methods</a>
@@ -184,16 +211,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.3.1" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#ridge-regression"><i class="fa fa-check"></i><b>3.3.1</b> Ridge Regression</a></li>
 <li class="chapter" data-level="3.3.2" data-path="shrinkage-methods.html"><a href="shrinkage-methods.html#lasso-regression"><i class="fa fa-check"></i><b>3.3.2</b> Lasso Regression</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a>
-<ul>
-<li class="chapter" data-level="3.4.1" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#ridge-regression-1"><i class="fa fa-check"></i><b>3.4.1</b> Ridge Regression</a></li>
-<li class="chapter" data-level="3.4.2" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#lasso-regression-1"><i class="fa fa-check"></i><b>3.4.2</b> LASSO Regression</a></li>
-<li class="chapter" data-level="3.4.3" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html#refit-to-reduce-bias"><i class="fa fa-check"></i><b>3.4.3</b> Refit to Reduce Bias</a></li>
-</ul></li>
+<li class="chapter" data-level="3.4" data-path="the-student-performance-example.html"><a href="the-student-performance-example.html"><i class="fa fa-check"></i><b>3.4</b> The <code>Student Performance</code> Example</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html"><i class="fa fa-check"></i><b>4</b> NonLinear Regression</a>
 <ul>
-<li class="chapter" data-level="4.0.1" data-path="nonlinear-regression.html"><a href="nonlinear-regression.html#a-note-on-nonlinearity"><i class="fa fa-check"></i><b>4.0.1</b> A Note on Nonlinearity</a></li>
 <li class="chapter" data-level="4.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html"><i class="fa fa-check"></i><b>4.1</b> Polynomial Regression</a>
 <ul>
 <li class="chapter" data-level="4.1.1" data-path="polynomial-regression.html"><a href="polynomial-regression.html#polynomial-basis-functions"><i class="fa fa-check"></i><b>4.1.1</b> Polynomial Basis Functions</a></li>
@@ -215,130 +236,98 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.2" data-path="smoothing-splines.html"><a href="smoothing-splines.html#proof"><i class="fa fa-check"></i><b>4.3.2</b> Proof</a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="fitting-smoothing-splines.html"><a href="fitting-smoothing-splines.html"><i class="fa fa-check"></i><b>4.4</b> Fitting Smoothing Splines</a></li>
-<li class="chapter" data-level="4.5" data-path="the-birthrates-example-in-r.html"><a href="the-birthrates-example-in-r.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example in R</a></li>
+<li class="chapter" data-level="4.5" data-path="the-birthrates-example.html"><a href="the-birthrates-example.html"><i class="fa fa-check"></i><b>4.5</b> The <code>Birthrates</code> Example</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="regression-trees.html"><a href="regression-trees.html"><i class="fa fa-check"></i><b>5</b> Regression Trees</a>
+<li class="chapter" data-level="5" data-path="introduction-to-neural-networks-for-regression.html"><a href="introduction-to-neural-networks-for-regression.html"><i class="fa fa-check"></i><b>5</b> Introduction to Neural Networks for Regression</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="single-tree-building.html"><a href="single-tree-building.html"><i class="fa fa-check"></i><b>5.1</b> Single-Tree Building</a>
+<li class="chapter" data-level="5.1" data-path="learning-by-fitting-a-model.html"><a href="learning-by-fitting-a-model.html"><i class="fa fa-check"></i><b>5.1</b> Learning by Fitting a Model</a></li>
+<li class="chapter" data-level="5.2" data-path="a-neuron-two-ways-to-think-about-it.html"><a href="a-neuron-two-ways-to-think-about-it.html"><i class="fa fa-check"></i><b>5.2</b> A Neuron: Two ways to think about it</a></li>
+<li class="chapter" data-level="5.3" data-path="illustration-predicting-house-prices.html"><a href="illustration-predicting-house-prices.html"><i class="fa fa-check"></i><b>5.3</b> Illustration: Predicting House Prices</a></li>
+<li class="chapter" data-level="5.4" data-path="same-loss-new-f_beta.html"><a href="same-loss-new-f_beta.html"><i class="fa fa-check"></i><b>5.4</b> Same Loss, New <span class="math inline">\(f_\beta\)</span></a></li>
+<li class="chapter" data-level="5.5" data-path="stacking-units-is-learning-phi.html"><a href="stacking-units-is-learning-phi.html"><i class="fa fa-check"></i><b>5.5</b> Stacking Units is Learning <span class="math inline">\(\phi\)</span></a>
 <ul>
-<li class="chapter" data-level="5.1.1" data-path="single-tree-building.html"><a href="single-tree-building.html#prediction-at-leaf-nodes"><i class="fa fa-check"></i><b>5.1.1</b> Prediction at Leaf Nodes</a></li>
-<li class="chapter" data-level="5.1.2" data-path="single-tree-building.html"><a href="single-tree-building.html#split-criterion"><i class="fa fa-check"></i><b>5.1.2</b> Split Criterion</a></li>
-<li class="chapter" data-level="5.1.3" data-path="single-tree-building.html"><a href="single-tree-building.html#single-tree-pruning"><i class="fa fa-check"></i><b>5.1.3</b> Single-Tree Pruning</a></li>
+<li class="chapter" data-level="5.5.1" data-path="stacking-units-is-learning-phi.html"><a href="stacking-units-is-learning-phi.html#hidden-units"><i class="fa fa-check"></i><b>5.5.1</b> Hidden Units</a></li>
+<li class="chapter" data-level="5.5.2" data-path="stacking-units-is-learning-phi.html"><a href="stacking-units-is-learning-phi.html#fully-connected-layers"><i class="fa fa-check"></i><b>5.5.2</b> Fully Connected Layers</a></li>
 </ul></li>
-<li class="chapter" data-level="5.2" data-path="regression-forests.html"><a href="regression-forests.html"><i class="fa fa-check"></i><b>5.2</b> Regression Forests</a>
+<li class="chapter" data-level="5.6" data-path="activations-depth-and-approximation.html"><a href="activations-depth-and-approximation.html"><i class="fa fa-check"></i><b>5.6</b> Activations, Depth, and Approximation</a></li>
+<li class="chapter" data-level="5.7" data-path="backpropagation.html"><a href="backpropagation.html"><i class="fa fa-check"></i><b>5.7</b> Backpropagation</a>
 <ul>
-<li class="chapter" data-level="5.2.1" data-path="regression-forests.html"><a href="regression-forests.html#weak-and-strong-learners"><i class="fa fa-check"></i><b>5.2.1</b> Weak and Strong Learners</a></li>
-<li class="chapter" data-level="5.2.2" data-path="regression-forests.html"><a href="regression-forests.html#bootstrap-aggregation-bagging"><i class="fa fa-check"></i><b>5.2.2</b> Bootstrap Aggregation (Bagging)</a></li>
-<li class="chapter" data-level="5.2.3" data-path="regression-forests.html"><a href="regression-forests.html#random-forests"><i class="fa fa-check"></i><b>5.2.3</b> Random Forests</a></li>
-<li class="chapter" data-level="5.2.4" data-path="regression-forests.html"><a href="regression-forests.html#out-of-bag-oob-samples"><i class="fa fa-check"></i><b>5.2.4</b> Out-of-Bag (OOB) Samples</a></li>
-<li class="chapter" data-level="5.2.5" data-path="regression-forests.html"><a href="regression-forests.html#boosting-trees"><i class="fa fa-check"></i><b>5.2.5</b> Boosting Trees</a></li>
+<li class="chapter" data-level="5.7.1" data-path="backpropagation.html"><a href="backpropagation.html#the-theorem-behind"><i class="fa fa-check"></i><b>5.7.1</b> The Theorem Behind</a></li>
+<li class="chapter" data-level="" data-path="backpropagation.html"><a href="backpropagation.html#proof-1"><i class="fa fa-check"></i>Proof</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html"><i class="fa fa-check"></i><b>5.3</b> Tree-Based Regression Models in R</a></li>
+<li class="chapter" data-level="5.8" data-path="capacity-nonconvexity-and-penalty.html"><a href="capacity-nonconvexity-and-penalty.html"><i class="fa fa-check"></i><b>5.8</b> Capacity, Nonconvexity, and Penalty</a></li>
+<li class="chapter" data-level="5.9" data-path="when-to-specify-phi-instead-of-learning-it.html"><a href="when-to-specify-phi-instead-of-learning-it.html"><i class="fa fa-check"></i><b>5.9</b> When to specify <span class="math inline">\(\phi\)</span> instead of learning it!</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="introduction-to-classification.html"><a href="introduction-to-classification.html"><i class="fa fa-check"></i><b>6</b> Introduction to Classification</a>
+<li class="chapter" data-level="6" data-path="regression-trees.html"><a href="regression-trees.html"><i class="fa fa-check"></i><b>6</b> Regression Trees</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html"><i class="fa fa-check"></i><b>6.1</b> Discriminant Analysis</a>
+<li class="chapter" data-level="6.1" data-path="single-tree-building.html"><a href="single-tree-building.html"><i class="fa fa-check"></i><b>6.1</b> Single-Tree Building</a>
 <ul>
-<li class="chapter" data-level="6.1.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#quadratic-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.1</b> Quadratic Discriminant Analysis</a></li>
-<li class="chapter" data-level="6.1.2" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#linear-discriminant-analysis"><i class="fa fa-check"></i><b>6.1.2</b> Linear Discriminant Analysis</a></li>
-<li class="chapter" data-level="6.1.3" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#reduced-rank-lda"><i class="fa fa-check"></i><b>6.1.3</b> Reduced Rank LDA</a></li>
+<li class="chapter" data-level="6.1.1" data-path="single-tree-building.html"><a href="single-tree-building.html#prediction-at-leaf-nodes"><i class="fa fa-check"></i><b>6.1.1</b> Prediction at Leaf Nodes</a></li>
+<li class="chapter" data-level="6.1.2" data-path="single-tree-building.html"><a href="single-tree-building.html#split-criterion"><i class="fa fa-check"></i><b>6.1.2</b> Split Criterion</a></li>
+<li class="chapter" data-level="6.1.3" data-path="single-tree-building.html"><a href="single-tree-building.html#single-tree-pruning"><i class="fa fa-check"></i><b>6.1.3</b> Single-Tree Pruning</a></li>
 </ul></li>
-<li class="chapter" data-level="6.2" data-path="fisher-discriminant-analysis-fda.html"><a href="fisher-discriminant-analysis-fda.html"><i class="fa fa-check"></i><b>6.2</b> Fisher Discriminant Analysis (FDA)</a></li>
-<li class="chapter" data-level="6.3" data-path="naive-bayes-classifiers.html"><a href="naive-bayes-classifiers.html"><i class="fa fa-check"></i><b>6.3</b> Naive Bayes Classifiers</a></li>
-<li class="chapter" data-level="6.4" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html"><i class="fa fa-check"></i><b>6.4</b> The <code>Digits</code> Recognition Example</a>
+<li class="chapter" data-level="6.2" data-path="regression-forests.html"><a href="regression-forests.html"><i class="fa fa-check"></i><b>6.2</b> Regression Forests</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="regression-forests.html"><a href="regression-forests.html#weak-and-strong-learners"><i class="fa fa-check"></i><b>6.2.1</b> Weak and Strong Learners</a></li>
+<li class="chapter" data-level="6.2.2" data-path="regression-forests.html"><a href="regression-forests.html#bootstrap-aggregation-bagging"><i class="fa fa-check"></i><b>6.2.2</b> Bootstrap Aggregation (Bagging)</a></li>
+<li class="chapter" data-level="6.2.3" data-path="regression-forests.html"><a href="regression-forests.html#random-forests"><i class="fa fa-check"></i><b>6.2.3</b> Random Forests</a></li>
+<li class="chapter" data-level="6.2.4" data-path="regression-forests.html"><a href="regression-forests.html#out-of-bag-oob-samples"><i class="fa fa-check"></i><b>6.2.4</b> Out-of-Bag (OOB) Samples</a></li>
+<li class="chapter" data-level="6.2.5" data-path="regression-forests.html"><a href="regression-forests.html#boosting-trees"><i class="fa fa-check"></i><b>6.2.5</b> Boosting Trees</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html"><i class="fa fa-check"></i><b>6.3</b> Tree-Based Regression Models in R</a>
+<ul>
+<li class="chapter" data-level="" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html#a-simple-regression-tree"><i class="fa fa-check"></i>A Simple Regression Tree</a></li>
+<li class="chapter" data-level="" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html#fitting-and-pruning-a-regression-tree"><i class="fa fa-check"></i>Fitting and Pruning a Regression Tree</a></li>
+<li class="chapter" data-level="6.3.1" data-path="tree-based-regression-models-in-r.html"><a href="tree-based-regression-models-in-r.html#cross-validation-and-the-cp-table"><i class="fa fa-check"></i><b>6.3.1</b> Cross-validation and the CP Table</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>6.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="introduction-to-classification.html"><a href="introduction-to-classification.html"><i class="fa fa-check"></i><b>7</b> Introduction to Classification</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html"><i class="fa fa-check"></i><b>7.1</b> Discriminant Analysis</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#quadratic-discriminant-analysis"><i class="fa fa-check"></i><b>7.1.1</b> Quadratic Discriminant Analysis</a></li>
+<li class="chapter" data-level="7.1.2" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#linear-discriminant-analysis"><i class="fa fa-check"></i><b>7.1.2</b> Linear Discriminant Analysis</a></li>
+<li class="chapter" data-level="7.1.3" data-path="discriminant-analysis.html"><a href="discriminant-analysis.html#reduced-rank-lda"><i class="fa fa-check"></i><b>7.1.3</b> Reduced-Rank LDA</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="fisher-discriminant-analysis-fda.html"><a href="fisher-discriminant-analysis-fda.html"><i class="fa fa-check"></i><b>7.2</b> Fisher Discriminant Analysis (FDA)</a></li>
+<li class="chapter" data-level="7.3" data-path="naive-bayes-classifiers.html"><a href="naive-bayes-classifiers.html"><i class="fa fa-check"></i><b>7.3</b> Naive Bayes Classifiers</a></li>
+<li class="chapter" data-level="7.4" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html"><i class="fa fa-check"></i><b>7.4</b> The <code>Digits</code> Recognition Example</a>
 <ul>
 <li class="chapter" data-level="" data-path="the-digits-recognition-example.html"><a href="the-digits-recognition-example.html#naive-bayes-prediction"><i class="fa fa-check"></i>Naive Bayes Prediction</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>7</b> Logistic Regression</a>
+<li class="chapter" data-level="8" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>8</b> Logistic Regression</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html"><i class="fa fa-check"></i><b>7.1</b> Fitting a Logistic Regression model</a>
+<li class="chapter" data-level="8.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html"><i class="fa fa-check"></i><b>8.1</b> Fitting a Logistic Regression Model</a>
 <ul>
-<li class="chapter" data-level="7.1.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html#maximum-likelihood-approach"><i class="fa fa-check"></i><b>7.1.1</b> Maximum Likelihood Approach</a></li>
+<li class="chapter" data-level="8.1.1" data-path="fitting-a-logistic-regression-model.html"><a href="fitting-a-logistic-regression-model.html#maximum-likelihood-approach"><i class="fa fa-check"></i><b>8.1.1</b> Maximum Likelihood Approach</a></li>
 </ul></li>
-<li class="chapter" data-level="7.2" data-path="logistic-regression-with-separable-data.html"><a href="logistic-regression-with-separable-data.html"><i class="fa fa-check"></i><b>7.2</b> Logistic Regression with Separable Data</a></li>
-<li class="chapter" data-level="7.3" data-path="retrospective-sampling.html"><a href="retrospective-sampling.html"><i class="fa fa-check"></i><b>7.3</b> Retrospective Sampling</a></li>
-<li class="chapter" data-level="7.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html"><i class="fa fa-check"></i><b>7.4</b> Logistic Regression for the <code>Heart</code> dataset in R</a>
+<li class="chapter" data-level="8.2" data-path="logistic-regression-with-separable-data.html"><a href="logistic-regression-with-separable-data.html"><i class="fa fa-check"></i><b>8.2</b> Logistic Regression with Separable Data</a></li>
+<li class="chapter" data-level="8.3" data-path="retrospective-sampling.html"><a href="retrospective-sampling.html"><i class="fa fa-check"></i><b>8.3</b> Retrospective Sampling</a></li>
+<li class="chapter" data-level="8.4" data-path="logistic-regression-for-the-heart-data-set-in-r.html"><a href="logistic-regression-for-the-heart-data-set-in-r.html"><i class="fa fa-check"></i><b>8.4</b> Logistic Regression for the <code>Heart</code> Data Set in R</a>
 <ul>
-<li class="chapter" data-level="7.4.1" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#goodness-of-fit"><i class="fa fa-check"></i><b>7.4.1</b> Goodness-of-Fit</a></li>
-<li class="chapter" data-level="7.4.2" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#variable-selection"><i class="fa fa-check"></i><b>7.4.2</b> Variable Selection</a></li>
-<li class="chapter" data-level="7.4.3" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#penalized-logistic-regression"><i class="fa fa-check"></i><b>7.4.3</b> Penalized Logistic Regression</a></li>
-<li class="chapter" data-level="7.4.4" data-path="logistic-regression-for-the-heart-dataset-in-r.html"><a href="logistic-regression-for-the-heart-dataset-in-r.html#illustration-of-divergence-of-ml-estimators"><i class="fa fa-check"></i><b>7.4.4</b> Illustration of divergence of ML estimators</a></li>
-</ul></li>
-</ul></li>
-<li class="chapter" data-level="8" data-path="support-vector-machines.html"><a href="support-vector-machines.html"><i class="fa fa-check"></i><b>8</b> Support Vector Machines</a>
-<ul>
-<li class="chapter" data-level="8.1" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html"><i class="fa fa-check"></i><b>8.1</b> Linear SVM in Separable Case: <em>Separation Margin</em></a>
-<ul>
-<li class="chapter" data-level="8.1.1" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>8.1.1</b> Maximum-Margin Classifier</a></li>
-<li class="chapter" data-level="8.1.2" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#the-kkt-conditions-from-the-primal-to-the-dual"><i class="fa fa-check"></i><b>8.1.2</b> The KKT Conditions: From the Primal to the Dual</a></li>
-<li class="chapter" data-level="8.1.3" data-path="linear-svm-in-separable-case-separation-margin.html"><a href="linear-svm-in-separable-case-separation-margin.html#solving-the-dual-problem"><i class="fa fa-check"></i><b>8.1.3</b> Solving the Dual Problem</a></li>
-</ul></li>
-<li class="chapter" data-level="8.2" data-path="linear-svm-in-non-separable-case-slack-variables.html"><a href="linear-svm-in-non-separable-case-slack-variables.html"><i class="fa fa-check"></i><b>8.2</b> Linear SVM in non-Separable Case: <em>Slack Variables</em></a></li>
-<li class="chapter" data-level="8.3" data-path="non-linear-svm-the-kernel-trick.html"><a href="non-linear-svm-the-kernel-trick.html"><i class="fa fa-check"></i><b>8.3</b> Non-linear SVM: <em>The Kernel Trick</em></a></li>
-<li class="chapter" data-level="8.4" data-path="svm-as-a-penalization-method.html"><a href="svm-as-a-penalization-method.html"><i class="fa fa-check"></i><b>8.4</b> SVM as a Penalization Method</a></li>
-<li class="chapter" data-level="8.5" data-path="svm-examples-in-r.html"><a href="svm-examples-in-r.html"><i class="fa fa-check"></i><b>8.5</b> SVM Examples in R</a></li>
-</ul></li>
-<li class="chapter" data-level="9" data-path="classification-trees.html"><a href="classification-trees.html"><i class="fa fa-check"></i><b>9</b> Classification Trees</a>
-<ul>
-<li class="chapter" data-level="9.1" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html"><i class="fa fa-check"></i><b>9.1</b> Splitting Rules in Classification Trees</a>
-<ul>
-<li class="chapter" data-level="9.1.1" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html#impurity-measures"><i class="fa fa-check"></i><b>9.1.1</b> Impurity Measures</a></li>
-<li class="chapter" data-level="" data-path="splitting-rules-in-classification-trees.html"><a href="splitting-rules-in-classification-trees.html#splitting-rules-categorical-predictors"><i class="fa fa-check"></i>Splitting Rules: Categorical Predictors</a></li>
-</ul></li>
-<li class="chapter" data-level="9.2" data-path="random-forests-1.html"><a href="random-forests-1.html"><i class="fa fa-check"></i><b>9.2</b> Random Forests</a>
-<ul>
-<li class="chapter" data-level="9.2.1" data-path="random-forests-1.html"><a href="random-forests-1.html#bagging-predictors-for-classification"><i class="fa fa-check"></i><b>9.2.1</b> Bagging Predictors for Classification</a></li>
-<li class="chapter" data-level="9.2.2" data-path="random-forests-1.html"><a href="random-forests-1.html#random-forests-2"><i class="fa fa-check"></i><b>9.2.2</b> Random Forests</a></li>
-</ul></li>
-<li class="chapter" data-level="9.3" data-path="boosting.html"><a href="boosting.html"><i class="fa fa-check"></i><b>9.3</b> Boosting</a>
-<ul>
-<li class="chapter" data-level="9.3.1" data-path="boosting.html"><a href="boosting.html#adaboost"><i class="fa fa-check"></i><b>9.3.1</b> AdaBoost</a></li>
-<li class="chapter" data-level="9.3.2" data-path="boosting.html"><a href="boosting.html#training-error-bound"><i class="fa fa-check"></i><b>9.3.2</b> Training Error Bound</a></li>
-<li class="chapter" data-level="9.3.3" data-path="boosting.html"><a href="boosting.html#gradient-boosting-forward-stage-wise-additive-model"><i class="fa fa-check"></i><b>9.3.3</b> Gradient Boosting: Forward Stage-wise Additive Model</a></li>
-<li class="chapter" data-level="9.3.4" data-path="boosting.html"><a href="boosting.html#boosting-in-r"><i class="fa fa-check"></i><b>9.3.4</b> Boosting in R</a></li>
+<li class="chapter" data-level="8.4.1" data-path="logistic-regression-for-the-heart-data-set-in-r.html"><a href="logistic-regression-for-the-heart-data-set-in-r.html#goodness-of-fit"><i class="fa fa-check"></i><b>8.4.1</b> Goodness of Fit</a></li>
+<li class="chapter" data-level="8.4.2" data-path="logistic-regression-for-the-heart-data-set-in-r.html"><a href="logistic-regression-for-the-heart-data-set-in-r.html#variable-selection"><i class="fa fa-check"></i><b>8.4.2</b> Variable Selection</a></li>
+<li class="chapter" data-level="8.4.3" data-path="logistic-regression-for-the-heart-data-set-in-r.html"><a href="logistic-regression-for-the-heart-data-set-in-r.html#penalized-logistic-regression"><i class="fa fa-check"></i><b>8.4.3</b> Penalized Logistic Regression</a></li>
+<li class="chapter" data-level="8.4.4" data-path="logistic-regression-for-the-heart-data-set-in-r.html"><a href="logistic-regression-for-the-heart-data-set-in-r.html#illustration-of-divergence-of-the-mle"><i class="fa fa-check"></i><b>8.4.4</b> Illustration of Divergence of the MLE</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="recommender-systems.html"><a href="recommender-systems.html"><i class="fa fa-check"></i><b>10</b> Recommender Systems</a>
+<li class="chapter" data-level="9" data-path="support-vector-machines.html"><a href="support-vector-machines.html"><i class="fa fa-check"></i><b>9</b> Support Vector Machines</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="content-based-methods.html"><a href="content-based-methods.html"><i class="fa fa-check"></i><b>10.1</b> Content-Based Methods</a></li>
-<li class="chapter" data-level="10.2" data-path="collaborative-filtering.html"><a href="collaborative-filtering.html"><i class="fa fa-check"></i><b>10.2</b> Collaborative Filtering</a></li>
-<li class="chapter" data-level="10.3" data-path="latent-factor-model.html"><a href="latent-factor-model.html"><i class="fa fa-check"></i><b>10.3</b> Latent Factor Model</a></li>
-<li class="chapter" data-level="10.4" data-path="challenges-strategies.html"><a href="challenges-strategies.html"><i class="fa fa-check"></i><b>10.4</b> Challenges &amp; Strategies</a></li>
+<li class="chapter" data-level="9.1" data-path="linear-svm-in-the-separable-case-separation-margin.html"><a href="linear-svm-in-the-separable-case-separation-margin.html"><i class="fa fa-check"></i><b>9.1</b> Linear SVM in the Separable Case: <em>Separation Margin</em></a>
+<ul>
+<li class="chapter" data-level="9.1.1" data-path="linear-svm-in-the-separable-case-separation-margin.html"><a href="linear-svm-in-the-separable-case-separation-margin.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>9.1.1</b> Maximum-Margin Classifier</a></li>
+<li class="chapter" data-level="9.1.2" data-path="linear-svm-in-the-separable-case-separation-margin.html"><a href="linear-svm-in-the-separable-case-separation-margin.html#the-kkt-conditions-from-the-primal-to-the-dual"><i class="fa fa-check"></i><b>9.1.2</b> The KKT Conditions: From the Primal to the Dual</a></li>
+<li class="chapter" data-level="9.1.3" data-path="linear-svm-in-the-separable-case-separation-margin.html"><a href="linear-svm-in-the-separable-case-separation-margin.html#solving-the-dual-problem"><i class="fa fa-check"></i><b>9.1.3</b> Solving the Dual Problem</a></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="clustering-analysis.html"><a href="clustering-analysis.html"><i class="fa fa-check"></i><b>11</b> Clustering Analysis</a>
-<ul>
-<li class="chapter" data-level="11.1" data-path="introduction-to-clustering.html"><a href="introduction-to-clustering.html"><i class="fa fa-check"></i><b>11.1</b> Introduction to Clustering</a></li>
-<li class="chapter" data-level="11.2" data-path="k-means-clustering.html"><a href="k-means-clustering.html"><i class="fa fa-check"></i><b>11.2</b> <span class="math inline">\(K\)</span>-means Clustering</a>
-<ul>
-<li class="chapter" data-level="11.2.1" data-path="k-means-clustering.html"><a href="k-means-clustering.html#categorical-variables-in-clustering"><i class="fa fa-check"></i><b>11.2.1</b> Categorical Variables in Clustering</a></li>
-<li class="chapter" data-level="11.2.2" data-path="k-means-clustering.html"><a href="k-means-clustering.html#tuning-k-means-how-to-choose-k"><i class="fa fa-check"></i><b>11.2.2</b> Tuning <span class="math inline">\(K\)</span>-Means: How to Choose <span class="math inline">\(K\)</span></a></li>
-</ul></li>
-<li class="chapter" data-level="11.3" data-path="hierarchical-clustering.html"><a href="hierarchical-clustering.html"><i class="fa fa-check"></i><b>11.3</b> Hierarchical Clustering</a></li>
-<li class="chapter" data-level="11.4" data-path="self-organizing-maps.html"><a href="self-organizing-maps.html"><i class="fa fa-check"></i><b>11.4</b> Self-Organizing Maps</a></li>
-<li class="chapter" data-level="11.5" data-path="spectral-clustering.html"><a href="spectral-clustering.html"><i class="fa fa-check"></i><b>11.5</b> Spectral Clustering</a></li>
-</ul></li>
-<li class="chapter" data-level="12" data-path="latent-structure-models.html"><a href="latent-structure-models.html"><i class="fa fa-check"></i><b>12</b> Latent Structure Models</a>
-<ul>
-<li class="chapter" data-level="12.1" data-path="gaussian-mixtures.html"><a href="gaussian-mixtures.html"><i class="fa fa-check"></i><b>12.1</b> Gaussian Mixtures</a></li>
-<li class="chapter" data-level="12.2" data-path="em-algorithm.html"><a href="em-algorithm.html"><i class="fa fa-check"></i><b>12.2</b> EM Algorithm</a>
-<ul>
-<li class="chapter" data-level="" data-path="em-algorithm.html"><a href="em-algorithm.html#connection-with-k-means"><i class="fa fa-check"></i>Connection with <span class="math inline">\(k\)</span>-Means</a></li>
-</ul></li>
-<li class="chapter" data-level="12.3" data-path="em-algorithm-general-framework.html"><a href="em-algorithm-general-framework.html"><i class="fa fa-check"></i><b>12.3</b> EM Algorithm: General Framework</a></li>
-<li class="chapter" data-level="12.4" data-path="the-mm-algorithm.html"><a href="the-mm-algorithm.html"><i class="fa fa-check"></i><b>12.4</b> The MM Algorithm</a>
-<ul>
-<li class="chapter" data-level="12.4.1" data-path="the-mm-algorithm.html"><a href="the-mm-algorithm.html#ascend-property"><i class="fa fa-check"></i><b>12.4.1</b> Ascend Property</a></li>
-</ul></li>
-<li class="chapter" data-level="12.5" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html"><i class="fa fa-check"></i><b>12.5</b> Hidden Markov Models</a>
-<ul>
-<li class="chapter" data-level="12.5.1" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html#em-algorithm-for-hmm-discrete-case"><i class="fa fa-check"></i><b>12.5.1</b> EM Algorithm for HMM (discrete case)</a></li>
-<li class="chapter" data-level="12.5.2" data-path="hidden-markov-models.html"><a href="hidden-markov-models.html#forward-backward-algorithm-for-hmm"><i class="fa fa-check"></i><b>12.5.2</b> Forward-Backward Algorithm for HMM</a></li>
-</ul></li>
-<li class="chapter" data-level="12.6" data-path="inference-on-the-hidden-states-z.html"><a href="inference-on-the-hidden-states-z.html"><i class="fa fa-check"></i><b>12.6</b> Inference on the Hidden States <span class="math inline">\(Z\)</span></a></li>
+<li class="chapter" data-level="9.2" data-path="linear-svm-in-the-non-separable-case-slack-variables.html"><a href="linear-svm-in-the-non-separable-case-slack-variables.html"><i class="fa fa-check"></i><b>9.2</b> Linear SVM in the Non-Separable Case: <em>Slack Variables</em></a></li>
+<li class="chapter" data-level="9.3" data-path="nonlinear-svm-the-kernel-trick.html"><a href="nonlinear-svm-the-kernel-trick.html"><i class="fa fa-check"></i><b>9.3</b> Nonlinear SVM: <em>The Kernel Trick</em></a></li>
+<li class="chapter" data-level="9.4" data-path="svm-as-a-penalization-method.html"><a href="svm-as-a-penalization-method.html"><i class="fa fa-check"></i><b>9.4</b> SVM as a Penalization Method</a></li>
+<li class="chapter" data-level="9.5" data-path="svm-examples-in-r.html"><a href="svm-examples-in-r.html"><i class="fa fa-check"></i><b>9.5</b> SVM Examples in R</a></li>
 </ul></li>
 <li class="divider"></li>
-<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+<li><a href="https://github.com/rstudio/bookdown" target="_blank">Published with bookdown</a></li>
 
 </ul>
 
@@ -357,98 +346,102 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="regression-forests" class="section level2 hasAnchor" number="5.2">
-<h2><span class="header-section-number">5.2</span> Regression Forests<a href="regression-forests.html#regression-forests" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Regression forests naturalyl extend the idea of regression trees by combining many trees into an <strong>ensemble</strong>. Each tree is trained on a randomly samples subset of data features, which reduced correlation among trees and mitigates the overfitting of a single large tree. The final prediction is obtained by averaging out the outputs of the individual trees, leading to a higher accuracy, stability and generalization performance.</p>
-<div id="weak-and-strong-learners" class="section level3 hasAnchor" number="5.2.1">
-<h3><span class="header-section-number">5.2.1</span> Weak and Strong Learners<a href="regression-forests.html#weak-and-strong-learners" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>In our discussion of single-tree models, we highlighted their main drawbacks: they are often unstable – meaning that small small changes in the data can lead to very different trees – and they tend to lack accuracy. For this reason they are considered <strong>weak learners</strong>.</p>
-<p>A natural idea, widely explored in the literature, is to combine many weak learners to form a <strong>strong learner</strong>. Examples of such ensemble methods include bagging, boosting, and random forests.</p>
-<p>Bagging and random forests construct multiple trees under different <em>random perturbations</em>, and <em>average</em> their predictions, while boosting takes a different approach; it <em>progressively</em> trains simple models of small capacity, and then <em>adds</em> them together.</p>
-<br> Conceptually, an <strong>ensemble</strong> of trees is as follows:
-<br>
-<br>
+<div id="regression-forests" class="section level2 hasAnchor" number="6.2">
+<h2><span class="header-section-number">6.2</span> Regression Forests<a href="regression-forests.html#regression-forests" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Regression forests extend a single tree by combining many trees into an <strong>ensemble</strong>. Two sources of randomness are used. First, each tree is grown on a bootstrap sample of the observations (bagging). Second, in a random forest, each split searches only a random subset of the <span class="math inline">\(p\)</span> predictors. The extra randomness makes the trees less correlated. The ensemble prediction is the average of the individual trees, which typically lowers variance relative to one deep tree and improves accuracy and stability. The simple picture of a single tree is lost.</p>
+<div id="weak-and-strong-learners" class="section level3 hasAnchor" number="6.2.1">
+<h3><span class="header-section-number">6.2.1</span> Weak and Strong Learners<a href="regression-forests.html#weak-and-strong-learners" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Single trees have two familiar drawbacks: they are unstable – small changes in the data can produce very different trees – and they often lack accuracy. In that sense a single tree is a <strong>weak learner</strong>.</p>
+<p>A standard response is to combine many weak learners into a <strong>strong learner</strong>. Ensemble methods of this type include bagging, random forests, and boosting.</p>
+<p>Bagging and random forests grow trees under different <em>random perturbations</em> and <em>average</em> their predictions. Boosting is sequential: it <em>progressively</em> fits simple models and <em>adds</em> them together.</p>
+  Conceptually, an <strong>ensemble</strong> of trees looks like this:
+ 
+ 
 <center>
 <img   src="images/week6/treeensemble.png" width="450" height="325">
 </center>
-<p><br><br></p>
+<p>  </p>
 </div>
-<div id="bootstrap-aggregation-bagging" class="section level3 hasAnchor" number="5.2.2">
-<h3><span class="header-section-number">5.2.2</span> Bootstrap Aggregation (Bagging)<a href="regression-forests.html#bootstrap-aggregation-bagging" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Bagging (i.e. for bootstrap aggregation) is an ensemble method designed to reduce the variance of a predictive model—particularly unstable ones. It works by repeatedly <em>resampling</em> the training data <em>with replacement</em>, fitting a model on each bootstrap sample, and then averaging their predictions (<em>for regression</em>) or taking a majority vote (<em>for classification</em>).</p>
-<p>Consider having Training Data denoted by <span class="math inline">\(\mathbf{Z} = \Bigl\{(x_i, y_i)_{i=1}^{n} \Bigr\}\)</span>. Then, we can obtain <strong>bootstrap samples with replacement</strong> <span class="math inline">\(\mathbf{Z}^{*b} = \Bigl \{(x_i^{*b}, y_i^{*b})_{i=1}^{n} \Bigr \}\)</span>, where <span class="math inline">\(b=1, \ldots, B\)</span>, that is
+<div id="bootstrap-aggregation-bagging" class="section level3 hasAnchor" number="6.2.2">
+<h3><span class="header-section-number">6.2.2</span> Bootstrap Aggregation (Bagging)<a href="regression-forests.html#bootstrap-aggregation-bagging" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Bagging (bootstrap aggregation) is an ensemble method designed to reduce the variance of unstable predictors. It repeatedly <em>resamples</em> the training data <em>with replacement</em>, fits a model on each bootstrap sample, and averages the predictions (regression) or takes a majority vote (classification).</p>
+<p>Write the training data as <span class="math inline">\(\mathbf{Z} = \bigl\{(x_i, y_i): i=1,\ldots,n \bigr\}\)</span>. Draw <strong>bootstrap samples</strong> <span class="math inline">\(\mathbf{Z}^{*b} = \bigl\{(x_i^{*b}, y_i^{*b}): i=1,\ldots,n \bigr\}\)</span> for <span class="math inline">\(b=1, \ldots, B\)</span>,
 <span class="math display">\[\begin{align*}
 \mathbf{Z}^{*1} &amp;: (x_1^{*1}, y_1^{*1}), (x_2^{*1}, y_2^{*1}), \ldots, (x_n^{*1}, y_n^{*1})\\
 \mathbf{Z}^{*2} &amp;: (x_1^{*2}, y_1^{*2}), (x_2^{*2}, y_2^{*2}), \ldots, (x_n^{*2}, y_n^{*2})\\
 \vdots &amp;\\
-\mathbf{Z}^{*B}   &amp;: (x_1^{*B}, y_1^{*B}), (x_2^{*B}, y_2^{*B}), \ldots, (x_n^{*B}, y_n^{*B})
+\mathbf{Z}^{*B}   &amp;: (x_1^{*B}, y_1^{*B}), (x_2^{*B}, y_2^{*B}), \ldots, (x_n^{*B}, y_n^{*B}).
 \end{align*}\]</span></p>
-<p>Then, the regression (or classification) function, <span class="math inline">\(\hat{f}^{*b}\)</span>, is trained on each sample <span class="math inline">\(\mathbf{Z}^{*b}\)</span> and the <strong>Bagging Estimate</strong> is defined to be
-<span class="math display">\[\hat{f}_{bag}(x) = \frac{1}{B} \sum_{b=1}^{B} \hat{f}^{*b}(x)\]</span></p>
-<p>Because bagging relies on averaging the predictions of many individual trees, it can substantially reduce the variance of otherwise unstable learners like trees, thus improving predictive performance. However, the simple and interpretable structure of a single tree is lost once it is embedded in an ensemble. Moreover, if the individual trees are highly correlated, the variance reduction achieved through bagging may be limited.</p>
-<p><br><br></p>
+<p>Fit <span class="math inline">\(\hat{f}^{*b}\)</span> on <span class="math inline">\(\mathbf{Z}^{*b}\)</span>. The <strong>bagging estimate</strong> is
+<span class="math display">\[\hat{f}_{\mathrm{bag}}(x) = \frac{1}{B} \sum_{b=1}^{B} \hat{f}^{*b}(x).\]</span></p>
+<p>Averaging many trees can cut variance substantially. Two caveats: the readable structure of one tree is lost, and if the trees stay highly correlated the variance reduction is limited.</p>
+<p>  </p>
 </div>
-<div id="random-forests" class="section level3 hasAnchor" number="5.2.3">
-<h3><span class="header-section-number">5.2.3</span> Random Forests<a href="regression-forests.html#random-forests" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The development of random forests can be seen as the convergence of several ideas that emerged in the 1990s. One major breakthrough was Breiman’s introduction of bagging (bootstrap aggregation) that we discussed above, which demonstrated that averaging unstable predictors like trees could dramatically improve their performance by reducing variance. Around the same time, Ho proposed the random subspace method (1998), showing that further <em>diversity</em> among trees could be achieved by training each one on a randomly selected subset of features. This insight highlighted that injecting randomness into feature selection, not just the data, could strengthen ensembles of trees. Breiman built on both of these advances when he introduced <strong>random forests</strong>: a method that combines <em>bagging</em> with <em>random feature selection</em> at every split. By doing so, random forests create a large collection of de-correlated trees whose averaged predictions are <em>both accurate and stable</em>. This synthesis of bagging and random subspaces represents a turning point in ensemble learning, establishing random forests as one of the most powerful and widely used machine learning methods.</p>
-<p><br></p>
-<p>The random forest algorithm can be described in a few key steps:</p>
+<div id="random-forests" class="section level3 hasAnchor" number="6.2.3">
+<h3><span class="header-section-number">6.2.3</span> Random Forests<a href="regression-forests.html#random-forests" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Random forests grew out of several 1990s ideas. Breiman’s bagging showed that averaging unstable predictors such as trees can reduce variance. Ho’s random subspace method (1998) showed that further <em>diversity</em> is available by training each tree on a random subset of features. Breiman combined the two in <strong>random forests</strong>: bagging plus a random subset of predictors <em>at every split</em>. The result is a large collection of de-correlated trees whose average is typically both more accurate and more stable than a single tree.</p>
+<p> </p>
+<p>The algorithm has a few moving parts:</p>
 <ol style="list-style-type: decimal">
-<li><p><font color=blue> Bootstrap Sampling (Bagging)</font>: For each tree in the forest, a bootstrap sample of the training data is drawn – this introduces variability among the trees.</p></li>
-<li><p><font color=blue> Tree Construction with Random Feature Selection</font>: Each tree is grown on its bootstrap sample, but with an important twist: at each split in the tree, only a randomly chosen subset of features is considered as candidates for the split – his further decorrelates the trees and enhances the variance reduction achieved by averaging.</p></li>
-<li><p><font color=blue> Tree Growth</font>: Typically, the trees in a random forest are grown deep (without pruning), allowing them to capture complex patterns in the data. Overfitting of individual trees is not a concern, since averaging across many trees stabilizes the final model.</p></li>
-<li><p><font color=blue> Prediction</font>: For regression, the forest’s prediction is the average of the predictions from all trees.</p></li>
-<li><p><font color=blue> Out-of-Bag (OOB) Error Estimation</font>:
-Since each bootstrap sample leaves out about one-third of the training data, these “out-of-bag” observations can be used to estimate prediction error, providing a built-in form of cross-validation.</p></li>
+<li><p><font color=blue> Bootstrap sampling (bagging)</font>: each tree is grown on a bootstrap sample of the training data.</p></li>
+<li><p><font color=blue> Random feature selection</font>: at each split, only a random subset of the <span class="math inline">\(p\)</span> features is eligible. That extra randomness decorrelates the trees and improves the variance reduction from averaging.</p></li>
+<li><p><font color=blue> Tree growth</font>: forest trees are usually grown deep and not pruned, so that each tree can be highly flexible. Overfitting of any one tree is less of a concern because the average stabilizes the fit.</p></li>
+<li><p><font color=blue> Prediction</font>: for regression, average the <span class="math inline">\(B\)</span> tree predictions.</p></li>
+<li><p><font color=blue> Out-of-bag (OOB) error</font>:
+each bootstrap sample leaves out about one-third of the rows. Those left-out observations give a built-in estimate of prediction error, close in spirit to cross-validation.</p></li>
 </ol>
-<p><br><br></p>
+<p>  </p>
 <div class="motivationbox">
 <p><strong>Sketch of the Algorithm</strong></p>
 <p>For <span class="math inline">\(b=1, \ldots, B\)</span></p>
 <ol style="list-style-type: decimal">
-<li><p>Draw a bootstrap sample of size <span class="math inline">\(n\)</span> <span class="math inline">\(\mathbf{Z}^{*b}\)</span> from the training data.</p></li>
-<li><p>Grow a BIG tree <span class="math inline">\(T_b\)</span> by recursively repeating the following steps for each terminal node of the tree, until the minimum node size is reached:</p></li>
+<li><p>Draw a bootstrap sample of size <span class="math inline">\(n\)</span>, <span class="math inline">\(\mathbf{Z}^{*b}\)</span>, from the training data.</p></li>
+<li><p>Grow a large tree <span class="math inline">\(T_b\)</span> by repeating the following steps at each terminal node until a minimum node size is reached:</p></li>
 </ol>
-<pre><code>1. Select m variables at random from the p variables.
+<pre><code>1. Select $m$ variables at random from the $p$ variables.
 
-2. Pick the best variable/split-point among the m.
+2. Pick the best variable and split-point among those $m$.
 
-3. Split the node into two children nodes.</code></pre>
-<p>Output the forest, i.e. <em>ensemble</em> of trees: <span class="math inline">\(\{T_b\}_{b=1}^{B}\)</span></p>
-<p>Predict at a new point <span class="math inline">\(x\)</span> (Regression case)
-<span class="math display">\[ \hat{f}^B (x) = \frac{1}{B} \sum_{b=1}^{B} T_b(x)\]</span></p>
+3. Split the node into two children.</code></pre>
+<p>Output the forest <span class="math inline">\(\{T_b\}_{b=1}^{B}\)</span>.</p>
+<p>Predict at a new point <span class="math inline">\(x\)</span> (regression)
+<span class="math display">\[ \hat{f}^B (x) = \frac{1}{B} \sum_{b=1}^{B} T_b(x).\]</span></p>
 </div>
-<p><br></p>
+<p> </p>
 <div id="restrictions" class="section level4 unnumbered hasAnchor">
 <h4>Restrictions<a href="regression-forests.html#restrictions" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>When constructing each tree in the forest, at every split, we consider a subset of <span class="math inline">\(m\)</span> features is chosen at random from the total of <span class="math inline">\(p\)</span> available features. The algorithm then determines the best split using only this subset of <span class="math inline">\(m\)</span> features. A common rule of thumb is to set <span class="math inline">\(m=\sqrt{p}\)</span> for classification and <span class="math inline">\(m=p/3\)</span> for regression.</p>
-<p>By restricting each split to a random subset of features, the trees are less likely to all rely on the same strong predictors, thereby reducing correlation among trees and increasing the overall effectiveness of the ensemble.</p>
-<p><br></p>
+<p>At every split, a subset of <span class="math inline">\(m\)</span> features is drawn from the <span class="math inline">\(p\)</span> available features, and the best split is chosen only among those <span class="math inline">\(m\)</span>. A common rule of thumb is <span class="math inline">\(m=\sqrt{p}\)</span> for classification and <span class="math inline">\(m=p/3\)</span> for regression.</p>
+<p>Restricting the candidate features makes it less likely that every tree leans on the same strong predictors, which lowers correlation among trees and helps the average.</p>
+<p> </p>
 </div>
 </div>
-<div id="out-of-bag-oob-samples" class="section level3 hasAnchor" number="5.2.4">
-<h3><span class="header-section-number">5.2.4</span> Out-of-Bag (OOB) Samples<a href="regression-forests.html#out-of-bag-oob-samples" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Out-of-bag (OOB) samples are the observations that do not appear in the bootstrap dataset <span class="math inline">\(Z^{*b}\)</span> and are therefore not used to build the corresponding tree <span class="math inline">\(T_b\)</span>. These left-out samples provide a natural test set for evaluating <span class="math inline">\(T_b\)</span>. In practice, the OOB error is computed by aggregating predictions for each observation using only the trees where that observation was excluded from training. Implementations such as <code>randomForest</code> report predictions and error rates based on this OOB evaluation. The resulting error estimate is typically very close to what would be obtained through cross-validation.</p>
-<p><br></p>
-<div id="variable-importance" class="section level4 hasAnchor" number="5.2.4.1">
-<h4><span class="header-section-number">5.2.4.1</span> Variable Importance<a href="regression-forests.html#variable-importance" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Variable Importance in Random Forests can be assessed in two main ways. Based on:</p>
+<div id="out-of-bag-oob-samples" class="section level3 hasAnchor" number="6.2.4">
+<h3><span class="header-section-number">6.2.4</span> Out-of-Bag (OOB) Samples<a href="regression-forests.html#out-of-bag-oob-samples" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Out-of-bag samples are the observations that do not appear in <span class="math inline">\(\mathbf{Z}^{*b}\)</span> and so are not used to grow <span class="math inline">\(T_b\)</span>. They are a natural test set for that tree. The OOB error aggregates, for each observation <span class="math inline">\(i\)</span>, only the trees that did not train on <span class="math inline">\(i\)</span>. Packages such as <code>randomForest</code> report predictions and error rates from this calculation. The estimate is typically close to <span class="math inline">\(K\)</span>-fold cross-validation.</p>
+<p> </p>
+<div id="variable-importance" class="section level4 hasAnchor" number="6.2.4.1">
+<h4><span class="header-section-number">6.2.4.1</span> Variable Importance<a href="regression-forests.html#variable-importance" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Two common measures:</p>
 <ol style="list-style-type: decimal">
-<li><p><font color=blue>Reduction in RSS (or Impurity)</font>:
-At each split, the algorithm records the improvement in the residual sum of squares (RSS) that results from splitting on a given variable. This improvement is attributed to the splitting variable. For each variable, these improvements are accumulated over all splits in a tree, and then averaged across all trees in the forest. The result reflects how much each variable contributes to reducing prediction error through the splitting process.</p></li>
-<li><p><font color=blue>Permutation of Predictors</font>:
-For each tree <span class="math inline">\(T_b\)</span>, compute its prediction error on the out-of-bag (OOB) samples (mean squared error for regression, classification error for classification). Next, randomly permute the values of the <span class="math inline">\(j\)</span>th predictor within the OOB data and recalculate the prediction error. The increase in error caused by this permutation indicates the importance of that variable. This difference is averaged across all trees and, to account for variability, further normalized by the corresponding standard deviation.</p></li>
+<li><p><font color=blue>Reduction in RSS (impurity)</font>:
+each split records the drop in RSS and attributes that drop to the variable used. Sum those drops over all splits in a tree, then average over trees. This measures how much the variable is used to reduce training error. It tends to favor variables that offer many candidate cutpoints (numeric variables, or factors with many levels).</p></li>
+<li><p><font color=blue>Permutation of predictors</font>:
+for each tree <span class="math inline">\(T_b\)</span>, compute the OOB prediction error (MSE for regression). Randomly permute predictor <span class="math inline">\(j\)</span> in the OOB data and recompute the error. The increase is a measure of importance for <span class="math inline">\(j\)</span>. Average the increase over trees; <code>randomForest</code> can also divide by the standard deviation of those increases (a scaled importance). Permutation importance can be misleading when predictors are highly correlated: the forest may split on one of several substitutes, and permuting a single <span class="math inline">\(j\)</span> then understates the role of the group.</p></li>
 </ol>
-<p><br><br></p>
+<p>  </p>
 </div>
 </div>
-<div id="boosting-trees" class="section level3 hasAnchor" number="5.2.5">
-<h3><span class="header-section-number">5.2.5</span> Boosting Trees<a href="regression-forests.html#boosting-trees" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Boosting is an ensemble learning technique that combines multiple weak learners, such as trees, into a single, strong predictive model. Unlike bagging or random forests, which grow trees independently, boosting builds trees <strong>sequentially</strong>, with each new tree focused on correcting the errors of the previous ensemble.</p>
-<p>For example, if we consider an additive model,
-<span class="math display">\[F(x) = f_1(x) + f_2(x) + \ldots + f_{T-1}(x) + f_T(x)\]</span>
-it is difficult to solve for all <span class="math inline">\(f_t\)</span>s. Instead we solve it using a forward stagewise greedy algorithm.</p>
-<p>Boosting leads to very high predictive accuracy, often outperforming bagging methods, and it is flexible and capable of capturing complex nonlinear relationships. However, it is more sensitive to noise and outliers compared to bagging methods, and it requires careful tuning of hyperparameters to avoid overfitting.</p>
+<div id="boosting-trees" class="section level3 hasAnchor" number="6.2.5">
+<h3><span class="header-section-number">6.2.5</span> Boosting Trees<a href="regression-forests.html#boosting-trees" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Boosting also builds an ensemble of trees, but the trees are grown <strong>sequentially</strong>. Each new tree is aimed at the errors of the current fit, rather than at a fresh bootstrap sample.</p>
+<p>Write an additive model
+<span class="math display">\[F(x) = f_1(x) + f_2(x) + \ldots + f_T(x).\]</span>
+Fitting all <span class="math inline">\(T\)</span> terms at once is hard. Forward stagewise fitting adds one term at a time. For squared error, tree <span class="math inline">\(t\)</span> is fit to the current residuals and then added with a learning rate <span class="math inline">\(\lambda\)</span>:
+<span class="math display">\[
+F_t(x) = F_{t-1}(x) + \lambda\,\hat h_t(x).
+\]</span>
+Small <span class="math inline">\(\lambda\)</span> and a large <span class="math inline">\(T\)</span>, with <span class="math inline">\(T\)</span> chosen by cross-validation, is the usual regularization.</p>
+<p>Boosting often predicts better than bagging, and it can capture complex nonlinear structure. It is more sensitive to noise and outliers than bagging, and the hyperparameters (<code>n.trees</code>, <code>shrinkage</code>, tree depth) need more care.</p>
 </div>
 </div>
             </section>
@@ -484,12 +477,12 @@ gitbook.start({
   },
   "fontsettings": {
     "theme": "white",
-    "family": "sans serif",
-    "size": 1
+    "family": "sans-serif",
+    "size": 2
   },
   "edit": {
-    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/05-regressiontrees.Rmd",
-    "text": "Edit"
+    "link": null,
+    "text": null
   },
   "history": {
     "link": null,
@@ -499,18 +492,15 @@ gitbook.start({
     "link": null,
     "text": null
   },
-  "download": ["my-598PSL.epub"],
+  "download": ["my-598PSL.pdf", "my-598PSL.epub"],
   "search": {
     "engine": "fuse",
     "options": null
   },
   "toc": {
     "collapse": "subsection",
-    "toc_depth": 4,
-    "toc_float": true,
     "scroll_highlight": true
-  },
-  "title": "CS 598 Practical Statistical Learning"
+  }
 });
 });
 </script>

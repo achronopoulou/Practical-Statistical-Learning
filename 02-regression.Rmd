@@ -491,7 +491,7 @@ We wish to test whether the group of predictors that describe the father’s cha
  & H_{\alpha}:  Y \sim  1+  \beta_1 X_1 + \ldots + \beta_{8}X_{8}+ \ldots + \beta_{12} X_{12} 
  \end{cases} 
  \]
-Here $p_0 = 8+1$ (8 predictors plus intercept) and  $p_{\alpha}=12+1$ is the number of $\beta$'s in the full model. Extracting  $RSS_0$ and $RSS_{\alpha}$ in `R`/`Python` and computing the  partial $F$ test statistic yields $F = 0.7225$. Because this value is smaller than the critical value $  F_{4,\, n-13} \approx 2.7$ we do not reject $H_0$ and prefer the reduced model.
+Here $p_0 = 8+1$ (8 predictors plus intercept) and  $p_{\alpha}=12+1$ is the number of $\beta$'s in the full model. Extracting  $RSS_0$ and $RSS_{\alpha}$ in `R`/`Python` and computing the  partial $F$ test statistic yields $F = 0.7225$. Because this value is smaller than the critical value $F_{4,\, n-13} \approx 2.7$ we do not reject $H_0$ and prefer the reduced model.
  
 </div>
 

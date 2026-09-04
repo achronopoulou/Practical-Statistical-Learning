@@ -1,0 +1,990 @@
+# Support Vector Machines
+
+**Support Vector Machines (SVMs)** are a powerful approach to *supervised learning*, especially for classification. Rather than searching for *any* boundary that separates the classes, SVMs seek the boundary that maximizes the **margin**, that is the <font color="blue">distance between the separating hyperplane and the nearest training points from each class</font>. This focus on the margin is a form of geometric regularization. In the hard-margin linear case it amounts to keeping $\|\beta\|$ small, which controls a complexity measure of the classifier (its VC dimension, or a Rademacher bound). That is a *reason* to expect better generalization to *new* data; it is not a guarantee on any given sample. The same construction highlights the <font color="orange">_support vectors_</font>: the subset of training points that actually define the decision boundary.
+
+<br>
+The flexibility of SVMs extends far beyond linear settings. Through *kernel functions*, the data can be treated as if they had been mapped into a higher-dimensional feature space, so that a linear rule in that space becomes a nonlinear rule in the original $x$. The mapping itself need not be computed. In this way, SVMs combine geometric intuition, optimization, and statistical regularization into a single framework.
+
+<br><br>
+
+## Linear SVM in the Separable Case: _Separation Margin_
+
+We begin with the hard-margin linear classifier, the version associated with Vapnik and Chervonenkis in the 1960s and later developed into the modern SVM (Cortes and Vapnik, 1995). Assume we observe **training data** <font color="blue">$\mathcal{D}_n = \{(x_i, y_i)\}_{i=1}^{n}$</font>, where $x_i \in \mathbb{R}^p$ are the *features* and <font color="blue">$y_i \in \{-1,1\}$</font> is the class label coded as $-1$ or $+1$.
+
+<br>
+The goal is to estimate a real-valued function $f(x)$ and the classification rule $C(x) = \operatorname{sign}\{f(x)\}$. The Bayes-optimal classifier (equal misclassification costs) is
+\[
+C^*(x) = \operatorname{sign}\Bigl\{ P(Y=1\mid X=x) - P(Y=-1 \mid X=x) \Bigr\}.
+\]
+In contrast to logistic regression or DA, SVMs do **not** model $P(Y\mid X)$ or the class-conditional densities $P(X\mid Y)$. They **directly model the decision boundary**. The fitted score $f(x)$ is (up to scale) a signed distance to that boundary, not a class probability. If probabilities are needed later, a common device is Platt scaling: a logistic regression of $y$ on $f(x)$, typically on a hold-out sample. That step is not part of the SVM itself.
+
+<br>
+
+### Maximum-Margin Classifier
+
+With labels $y_i \in \{-1,1\}$, the classification rule based on $f(x)$ is
+<font color="darkblue">
+\begin{align*}
+\hat{y} &= +1 \quad\text{if } f(x)>0,\\
+\hat{y} &= -1 \quad\text{if } f(x)<0.
+\end{align*}
+</font>
+
+<font color="darkblue">The classification is correct if $y_i f(x_i)>0$.</font> The quantity <font color="orange">$y_i f(x_i)$</font> is the **functional margin**: if it is *positive*, the point is on the correct side; if it is *negative*, the point is on the wrong side. Larger positive values mean a more confident correct classification.
+
+```{r, echo=FALSE, fig.align="center", fig.width=6.6, fig.height=6.6, warning=FALSE}
+set.seed(123)
+n <- 6
+p <- 2
+
+xneg <- matrix(rnorm(n * p, mean = 0, sd = 1), n, p)
+xpos <- matrix(rnorm(n * p, mean = 3, sd = 1), n, p)
+x <- rbind(xpos, xneg)
+y <- matrix(as.factor(c(rep(1, n), rep(-1, n))))
+
+plot(x, col = ifelse(y > 0, "blue", "red"),
+     xlim = c(-0.5, 5.6), ylim = c(-1.2, 4.5), pch = 19,
+     xlab = " ", ylab = " ", cex.lab = 1.5)
+legend("bottomright", c("Positive", "Negative"),
+       col = c("blue", "red"), pch = c(19, 19),
+       text.col = c("blue", "red"))
+```
+
+If the classes are **linearly separable**, we look for a linear function $f(x) = x^T\beta + \beta_0$ that separates the two groups. Many such hyperplanes exist:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.align="center", out.width="75%", fig.cap="Separating lines: which one is best?"}
+knitr::include_graphics("images/week9/separable1.png")
+```
+
+<br>
+<br>
+<font color="blue"><i>Among all these lines, which one is best?</i></font><br>
+
+Although many lines can <font color="orange">perfectly separate</font> the two classes, SVMs define the **best** line as <font color="darkblue">the line that maximizes the **separation margin**</font>, that is the width between the two dotted lines:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.align="center", out.width="75%", fig.cap="SVM: maximum-margin separating line"}
+knitr::include_graphics("images/week9/separable2.png")
+```
+
+<br>
+
+#### Mathematical Formulation {-}
+
+Write the linear decision function as
+\[
+f(x) = \beta_0 + x^T\beta.
+\]
+The **separating hyperplane** is the level set
+\[
+L = \bigl\{ x : \beta_0 + x^T\beta = 0 \bigr\}.
+\]
+In the separable case, every observation with $y_i = +1$ satisfies $f(x_i)>0$, and every observation with $y_i = -1$ satisfies $f(x_i)<0$.
+
+<div class="motivationbox">
+The **signed distance** of a point $x$ to the hyperplane is
+\[
+\left\langle \frac{\beta}{\|\beta\|},\, x-x_0 \right\rangle,
+\]
+where $x_0\in L$.
+</div>
+<br>
+<font color="orange">_Remark._</font> When we define a distance we usually take an unsigned version, $|x-x_0|$ or a square, which is always nonnegative. In the SVM derivation we *keep the sign*, because the sign records which side of the hyperplane the point occupies. A positive signed distance means $x$ lies on the side toward which $\beta$ points; a negative signed distance means $x$ lies on the opposite side.
+<br>
+
+To compute the signed distance, pick any $x_0\in L$, so
+<font color="darkblue">
+\[
+f(x_0)=0 \quad\Leftrightarrow\quad x_0^T\beta = -\beta_0.
+\]
+</font>
+Project $x-x_0$ onto the unit normal $\beta/\|\beta\|$:
+\begin{align*}
+\left\langle \frac{\beta}{\|\beta\|},\, x-x_0 \right\rangle
+&= (x-x_0)^T \frac{\beta}{\|\beta\|}\\
+&= \frac{1}{\|\beta\|}\bigl(x^T\beta + \beta_0\bigr)
+= \frac{1}{\|\beta\|}\, f(x).
+\end{align*}
+Thus $f(x)$ is proportional to the signed distance from $x$ to $L$. When $\|\beta\|=1$, $f(x)$ *is* that signed distance.
+
+<br>
+
+The **goal** of the SVM is to separate the two classes and maximize the distance to the closest points from either class (Vapnik, 1996), that is, to construct the <font color="darkblue">**maximum margin**</font>:
+
+<div class="motivationbox">
+\[
+\max_{\beta,\,\beta_0,\,\|\beta\|=1} M
+\]
+\[
+\text{subject to }\quad
+y_i\bigl(x_i^T\beta + \beta_0\bigr) \ge M,\qquad i=1,\ldots,n.
+\]
+</div>
+
+Every training point is then at least a signed distance $M$ from the decision boundary. Equivalently, if $y_i=+1$ we require $f(x_i)\ge M$, and if $y_i=-1$ we require $f(x_i)\le -M$. Maximizing the minimum distance is exactly maximizing the margin.
+
+The constraint $\|\beta\|=1$ is inconvenient because the geometric margin also depends on the scale of $\beta$. Dropping the unit-norm restriction, the same requirement can be written
+<font color="darkblue">
+\[
+\frac{1}{\|\beta\|}\, y_i\bigl(x_i^T\beta + \beta_0\bigr) \ge M.
+\]
+</font>
+The scale of $\beta$ is now free, so we may set $\|\beta\|=1/M$ and rewrite the problem as
+<div class="motivationbox">
+\[
+\min_{\beta,\,\beta_0}\ \frac12\|\beta\|^2
+\]
+\[
+\text{subject to }\quad
+y_i\bigl(x_i^T\beta + \beta_0\bigr) \ge 1,\qquad i=1,\ldots,n.
+\]
+</div>
+
+This constraint says that every point is at least $1/\|\beta\|$ away from the separating plane and lies on the correct side of the corresponding margin line:
+\[
+\begin{cases}
+x_i^T\beta + \beta_0 \ge 1, & \text{if } y_i = +1,\\
+x_i^T\beta + \beta_0 \le -1, & \text{if } y_i = -1.
+\end{cases}
+\]
+The full margin width between the two dotted lines is $2/\|\beta\|$.
+
+If $x_i$ lies **on one of the dotted lines**, that is, if $y_i(x_i^T\beta+\beta_0)-1=0$, the $i$th constraint is *active*. If $y_i(x_i^T\beta+\beta_0)-1>0$, it is *inactive*. At the optimum there must be at least two active points, one from each class; otherwise the margin could be widened.
+
+This is the primal form of the hard-margin SVM:
+
+<div class="motivationbox">
+**Primal form (hard margin)**
+
+\[
+\operatorname{minimize}_{\beta,\,\beta_0}\quad \frac12\|\beta\|^2
+\]
+\[
+\text{subject to }\quad
+y_i\bigl(x_i^T\beta+\beta_0\bigr)\ge 1,\qquad i=1,\ldots,n.
+\]
+</div>
+
+The max-margin problem is a convex quadratic program with linear inequality constraints, so it has no local-optima issues *as a mathematical program*. Feature scaling, a barely separable sample, and solver tolerances can still give a poor numerical fit. This primal is feasible only in the perfectly separable case.
+
+<br><br>
+
+### The KKT Conditions: From the Primal to the Dual
+
+Statistically, the SVM *is* regularized hinge loss: $\sum_i(1-y_i f(x_i))_+ + \lambda\|\beta\|^2$, with $\lambda=1/C$. We derive the dual because that program is equivalent to the hinge problem and because the dual depends on the data only through inner products $x_i^T x_j$. The quadratic program over $\alpha$ is the algorithm; the loss-plus-penalty criterion is the definition. We will return to that view after the kernels.
+
+The <font color="darkblue">Karush–Kuhn–Tucker (KKT)</font> conditions are necessary conditions for optimality in constrained problems (and they are sufficient here because the program is convex). We review the idea briefly, then apply it to the SVM.
+
+With no constraints, a minimum of a differentiable function $f$ requires $\nabla f(x)=0$: there is no direction in which $f$ can still decrease.
+
+<br>
+
+#### Equality-Constrained Optimization {-}
+
+Now minimize $f(x)$ subject to $h(x)=0$. The feasible set is <font color="darkblue">$\mathcal{S}=\{x:h(x)=0\}$</font>. At a constrained minimum the gradient of $f$ need not vanish, but any descent direction of $f$ must be forbidden by the constraint: it must leave $\mathcal{S}$. That is expressed by
+\[
+\nabla f(x) + \lambda\,\nabla h(x) = 0,\qquad \lambda\in\mathbb{R}.
+\]
+Equivalently, the Lagrangian
+\[
+\mathcal{L}(x,\alpha) = f(x) + \alpha\, h(x)
+\]
+is stationary in $x$. Here $\alpha$ is a Lagrange multiplier. Geometrically, $\nabla h(x)$ is orthogonal to the constraint surface. At a constrained local minimum, $\nabla f$ must be orthogonal to that surface as well, so $\nabla f$ and $\nabla h$ are parallel:
+\[
+\nabla f(x^*) = -\alpha\,\nabla h(x^*).
+\]
+
+<br>
+
+#### Inequality-Constrained Optimization {-}
+
+Consider
+<div class="motivationbox">
+\[
+\operatorname{minimize}_{x}\ g(x)
+\qquad\text{subject to}\quad
+h_i(x)\le 0,\quad i=1,\ldots,n.
+\]
+</div>
+The Lagrangian is
+<div class="motivationbox">
+\[
+\mathcal{L}(x,\alpha) = g(x) + \sum_{i=1}^{n} \alpha_i h_i(x),\qquad \alpha_i\ge 0.
+\]
+</div>
+
+Two nested problems are associated with $\mathcal{L}$:
+
+- The **primal** problem,
+<font color="blue">
+\[
+\min_{x}\ \max_{\alpha\ge 0}\ \mathcal{L}(x,\alpha).
+\]
+</font>
+If $x$ violates a constraint, $h_i(x)>0$, we can send $\alpha_i\to\infty$ and make $\mathcal{L}$ arbitrarily large. Hence the inner maximization is finite only for feasible $x$.
+
+- The **dual** problem,
+<font color="blue">
+\[
+\max_{\alpha\ge 0}\ \min_{x}\ \mathcal{L}(x,\alpha).
+\]
+</font>
+
+In general
+<font color="blue">
+\[
+\underbrace{\max_{\alpha\ge 0}\min_{x}\mathcal{L}(x,\alpha)}_{\text{dual}}
+\ \le\
+\underbrace{\min_{x}\max_{\alpha\ge 0}\mathcal{L}(x,\alpha)}_{\text{primal}}.
+\]
+</font>
+Equality holds (strong duality) when $g$ and the $h_i$ are convex and a mild feasibility condition is satisfied. Both conditions hold for the SVM.
+
+<br>
+
+Rewrite the hard-margin SVM as an inequality-constrained program:
+<div class="motivationbox">
+\[
+\min_{\beta,\,\beta_0}\ \frac12\|\beta\|^2
+\]
+\[
+\text{subject to }\quad
+-\bigl\{y_i(x_i^T\beta+\beta_0)-1\bigr\}\le 0,\qquad i=1,\ldots,n.
+\]
+</div>
+The Lagrangian is
+<font color="blue">
+\[
+\mathcal{L}(\beta,\beta_0,\alpha)
+= \frac12\|\beta\|^2
+- \sum_{i=1}^{n}\alpha_i\bigl\{y_i(x_i^T\beta+\beta_0)-1\bigr\},
+\qquad \alpha_i\ge 0.
+\]
+</font>
+We solve the dual: first minimize $\mathcal{L}$ in $(\beta,\beta_0)$, then maximize in $\alpha$.
+
+<br>
+
+### Solving the Dual Problem
+
+Stationarity in $\beta$ and $\beta_0$ gives
+\begin{align*}
+\nabla_{\beta}\mathcal{L}=0
+&\quad\Leftrightarrow\quad
+\beta = \sum_{i=1}^{n}\alpha_i y_i x_i,\\
+\nabla_{\beta_0}\mathcal{L}=0
+&\quad\Leftrightarrow\quad
+\sum_{i=1}^{n}\alpha_i y_i = 0.
+\end{align*}
+Substitute these relations back into $\mathcal{L}$ to obtain the dual objective
+\[
+\mathcal{L}(\alpha)
+= \sum_{i=1}^{n}\alpha_i
+- \frac12\sum_{i=1}^{n}\sum_{j=1}^{n} y_i y_j\alpha_i\alpha_j\, x_i^T x_j.
+\]
+The dual problem is therefore
+\[
+\max_{\alpha}\
+\sum_{i=1}^{n}\alpha_i
+- \frac12\sum_{i,j=1}^{n} y_i y_j\alpha_i\alpha_j\, x_i^T x_j
+\]
+\[
+\text{subject to }\quad
+\alpha_i\ge 0,\quad i=1,\ldots,n,
+\qquad
+\sum_{i=1}^{n}\alpha_i y_i=0.
+\]
+This is again a convex quadratic program. Complementary slackness implies that if a point is *inactive* (strictly on the correct side of its margin line), then $\alpha_i=0$. <font color="darkblue">The points with $\alpha_i>0$ are the **support vectors**.</font> Only they enter the expansion of $\hat\beta$.
+
+<br>
+<div class="motivationbox">
+**Linear SVM algorithm (hard-margin dual)**
+
+1. Solve the dual for $\hat\alpha$.
+2. Recover
+   \[
+   \hat\beta = \sum_{i=1}^{n}\hat\alpha_i y_i x_i.
+   \]
+3. Recover $\hat\beta_0$ from any support vector, using $y_i(x_i^T\hat\beta+\hat\beta_0)=1$. In the hard-margin case we can also take the midpoint of the two closest support vectors from opposite classes:
+   \[
+   \hat\beta_0
+   = -\frac12
+   \Bigl(
+     \max_{i:y_i=-1} x_i^T\hat\beta
+     + \min_{i:y_i=+1} x_i^T\hat\beta
+   \Bigr).
+   \]
+   This midpoint formula is for the hard-margin problem only. Once slack is allowed, the closest points need not lie on the margin. In `e1071` the intercept used in the plots is `-rho` from the solver.
+4. For a new $x$, predict $\operatorname{sign}(x^T\hat\beta+\hat\beta_0)$.
+</div>
+
+#### Remarks {-}
+
+Linear separability means that many hyperplanes classify the training data perfectly. The SVM selects the one with the largest margin. The primal constraints enforce correct classification with a functional margin of at least one. In the dual, the Lagrange multipliers $\alpha_i$ are nonzero only for points that sit on the margin. Those points are the support vectors: if they were removed, the fitted hyperplane would change. All other training points can be moved (a little) or even deleted without affecting $\hat f$.
+
+<br><br>
+
+## Linear SVM in the Non-Separable Case: _Slack Variables_
+
+If the classes are not linearly separable, a zero training error is impossible and the hard-margin problem is infeasible.
+
+```{r, echo=FALSE, fig.align="center", fig.width=6.6, fig.height=6.6}
+set.seed(345)
+n <- 10
+p <- 2
+
+xneg <- matrix(rnorm(n * p, mean = 0, sd = 1), n, p)
+xpos <- matrix(rnorm(n * p, mean = 1.5, sd = 1), n, p)
+x <- rbind(xpos, xneg)
+y <- matrix(as.factor(c(rep(1, n), rep(-1, n))))
+
+library(e1071)
+svm.fit <- svm(y ~ ., data = data.frame(x, y), type = "C-classification",
+               kernel = "linear", scale = FALSE, cost = 1000)
+
+b <- t(svm.fit$coefs) %*% svm.fit$SV
+b0 <- -svm.fit$rho
+
+plot(x, col = ifelse(y > 0, "blue", "red"),
+     xlim = c(-1.5, 2.6), ylim = c(-2, 3.3), pch = 19,
+     xlab = " ", ylab = " ", cex.lab = 1.5)
+legend("bottomright", c("Positive", "Negative"),
+       col = c("blue", "red"), pch = c(19, 19),
+       text.col = c("blue", "red"))
+abline(a = -b0 / b[1, 2], b = -b[1, 1] / b[1, 2], col = "black", lty = 1, lwd = 1)
+points(x[svm.fit$index, ], col = "black", cex = 3)
+abline(a = (-b0 - 1) / b[1, 2], b = -b[1, 1] / b[1, 2], col = "black", lty = 3, lwd = 1)
+abline(a = (-b0 + 1) / b[1, 2], b = -b[1, 1] / b[1, 2], col = "black", lty = 3, lwd = 1)
+```
+
+We therefore introduce **slack variables** $\{\xi_i\}_{i=1}^{n}$ and relax the margin constraints to
+<font color="blue">
+\[
+y_i\bigl(x_i^T\beta + \beta_0\bigr) \ge 1-\xi_i,\qquad \xi_i\ge 0.
+\]
+</font>
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.align="center", out.width="75%", fig.cap="Slack variables in the linearly non-separable case"}
+knitr::include_graphics("images/week9/nonseparable1.png")
+```
+
+The value of $\xi_i$ has a direct geometric reading:
+
+- $\xi_i=0$: the point is on the correct side and outside or on the margin.
+- $0<\xi_i\le 1$: the point is on the correct side but inside the margin.
+- $\xi_i>1$: the point is on the wrong side of the separating hyperplane.
+
+The soft-margin problem is
+<div class="motivationbox">
+\[
+\operatorname{minimize}_{\beta,\,\beta_0,\,\xi}\quad
+\frac12\|\beta\|^2 + C\sum_{i=1}^{n}\xi_i
+\]
+\[
+\text{subject to }\quad
+y_i\bigl(x_i^T\beta+\beta_0\bigr)\ge 1-\xi_i,\qquad
+\xi_i\ge 0,\qquad i=1,\ldots,n.
+\]
+</div>
+
+The objective trades a large margin $2/\|\beta\|$ against the total slack $\sum_i\xi_i$. The tuning parameter $C>0$ is the *cost* of slack. A large $C$ penalizes violations heavily and recovers the hard-margin problem as $C\to\infty$. A small $C$ tolerates more violations in exchange for a wider margin. In practice $C$ is chosen by cross-validation.
+
+In these notes the parameter is $C$. In `e1071::svm()` the same quantity is called `cost`.
+
+<br>
+
+#### Solving the SVM with Slack Variables {-}
+
+The Lagrangian of the primal is
+<font color="blue">
+\begin{align*}
+\mathcal{L}(\beta,\beta_0,\xi,\alpha,\gamma)
+&= \frac12\|\beta\|^2 + C\sum_{i=1}^{n}\xi_i
+- \sum_{i=1}^{n}\alpha_i\bigl\{y_i(x_i^T\beta+\beta_0)-(1-\xi_i)\bigr\}
+- \sum_{i=1}^{n}\gamma_i\xi_i,
+\end{align*}
+</font>
+with $\alpha_i\ge 0$ and $\gamma_i\ge 0$. Stationarity yields
+\begin{align*}
+\nabla_{\beta}\mathcal{L}=0
+&\quad\Leftrightarrow\quad
+\beta = \sum_{i=1}^{n}\alpha_i y_i x_i,\\
+\nabla_{\beta_0}\mathcal{L}=0
+&\quad\Leftrightarrow\quad
+\sum_{i=1}^{n}\alpha_i y_i = 0,\\
+\nabla_{\xi_i}\mathcal{L}=0
+&\quad\Leftrightarrow\quad
+C-\alpha_i-\gamma_i=0.
+\end{align*}
+The last identity, together with $\gamma_i\ge 0$, forces $0\le\alpha_i\le C$. Substituting back produces the **soft-margin dual**:
+
+<div class="motivationbox">
+\[
+\max_{\alpha}\
+\sum_{i=1}^{n}\alpha_i
+- \frac12\sum_{i,j=1}^{n} y_i y_j\alpha_i\alpha_j\,\langle x_i,x_j\rangle
+\]
+\[
+\text{subject to }\quad
+0\le\alpha_i\le C,\qquad i=1,\ldots,n,
+\qquad
+\sum_{i=1}^{n}\alpha_i y_i=0.
+\]
+</div>
+The inner product $\langle x_i,x_j\rangle$ is just $x_i^T x_j$. As before,
+<font color="darkblue">
+\[
+\hat\beta = \sum_{i=1}^{n}\hat\alpha_i y_i x_i.
+\]
+</font>
+
+The KKT complementary slackness conditions are
+\begin{align*}
+\alpha_i\bigl\{y_i(x_i^T\beta+\beta_0)-(1-\xi_i)\bigr\}&=0,\\
+\gamma_i\xi_i&=0,\\
+y_i(x_i^T\beta+\beta_0)-(1-\xi_i)&\ge 0.
+\end{align*}
+They partition the training points into three groups:
+
+- $\alpha_i=0$ (hence $\xi_i=0$): points strictly beyond the margin. They do not affect $\hat\beta$.
+- $0<\alpha_i<C$ (hence $\xi_i=0$): points *on* the margin. These are the free support vectors and are the ones used to recover $\hat\beta_0$.
+- $\alpha_i=C$: points inside the margin or on the wrong side, with $\xi_i=1-y_i(x_i^T\beta+\beta_0)\ge 0$.
+
+To compute $\hat\beta_0$, use any *free* support vector ($0<\hat\alpha_i<C$), for which $y_i(x_i^T\hat\beta+\hat\beta_0)=1$. Averaging over all such points is more stable numerically. Do not use the hard-margin midpoint formula here: with slack, the closest points from each class may be inside the margin or misclassified.
+
+The two panels below use the same data with $C=1000$ (left) and $C=0.1$ (right). The plotted intercept is the solver intercept `-svm.fit$rho`, not the midpoint formula.
+
+```{r, echo=FALSE}
+par(mfrow = c(1, 2))
+svm.fit <- svm(y ~ ., data = data.frame(x, y), type = "C-classification",
+               kernel = "linear", scale = FALSE, cost = 1000)
+
+b <- t(svm.fit$coefs) %*% svm.fit$SV
+b0 <- -svm.fit$rho
+
+plot(x, col = ifelse(y > 0, "blue", "red"),
+     xlim = c(-1.5, 2.6), ylim = c(-2, 3.3), pch = 19,
+     xlab = " ", ylab = " ", cex.lab = 1.5)
+legend("bottomright", c("Positive", "Negative"),
+       col = c("blue", "red"), pch = c(19, 19),
+       text.col = c("blue", "red"))
+abline(a = -b0 / b[1, 2], b = -b[1, 1] / b[1, 2], col = "black", lty = 1, lwd = 1)
+points(x[svm.fit$index, ], col = "black", cex = 3)
+abline(a = (-b0 - 1) / b[1, 2], b = -b[1, 1] / b[1, 2], col = "black", lty = 3, lwd = 1)
+abline(a = (-b0 + 1) / b[1, 2], b = -b[1, 1] / b[1, 2], col = "black", lty = 3, lwd = 1)
+
+svm.fit <- svm(y ~ ., data = data.frame(x, y), type = "C-classification",
+               kernel = "linear", scale = FALSE, cost = 0.1)
+
+b <- t(svm.fit$coefs) %*% svm.fit$SV
+b0 <- -svm.fit$rho
+
+plot(x, col = ifelse(y > 0, "blue", "red"),
+     xlim = c(-1.5, 2.6), ylim = c(-2, 3.3), pch = 19,
+     xlab = " ", ylab = " ", cex.lab = 1.5)
+legend("bottomright", c("Positive", "Negative"),
+       col = c("blue", "red"), pch = c(19, 19),
+       text.col = c("blue", "red"))
+abline(a = -b0 / b[1, 2], b = -b[1, 1] / b[1, 2], col = "black", lty = 1, lwd = 1)
+points(x[svm.fit$index, ], col = "black", cex = 3)
+abline(a = (-b0 - 1) / b[1, 2], b = -b[1, 1] / b[1, 2], col = "black", lty = 3, lwd = 1)
+abline(a = (-b0 + 1) / b[1, 2], b = -b[1, 1] / b[1, 2], col = "black", lty = 3, lwd = 1)
+```
+
+A large $C$ puts more weight on avoiding slack than on widening the margin. A small $C$ does the reverse and is influenced more by points far from the boundary. In estimation language: large $C$ is closer to empirical 0-1 risk; small $C$ is more regularization. The same soft-margin program can be used on separable data as well: we may deliberately allow a few points to cross a margin line if that substantially increases the margin. The parameter $C$ controls that trade-off.
+
+<br><br>
+
+## Nonlinear SVM: _The Kernel Trick_
+
+In a linear SVM the decision boundaries are hyperplanes in the original input space. In many problems that is not flexible enough.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align="center", fig.width=6, fig.height=6, fig.cap="A linear SVM on a nonlinear problem (ESL mixture data)"}
+library(mda)
+data(ESL.mixture)
+
+px1 <- ESL.mixture$px1
+px2 <- ESL.mixture$px2
+x <- ESL.mixture$x
+y <- ESL.mixture$y
+
+prob <- ESL.mixture$prob
+prob.bayes <- matrix(prob, length(px1), length(px2))
+contour(px1, px2, prob.bayes, levels = 0.5, lty = 2,
+        labels = "", xlab = "x1", ylab = "x2",
+        main = "SVM with a linear kernel", col = "red", lwd = 2)
+points(x, col = ifelse(y == 1, "darkorange", "deepskyblue"), pch = 19)
+
+library(kernlab)
+cost <- 10
+svm.fit <- ksvm(x, y, type = "C-svc", kernel = "vanilladot", C = cost)
+
+w <- t(cbind(coef(svm.fit)[[1]])) %*% xmatrix(svm.fit)[[1]]
+b <- -b(svm.fit)
+
+abline(a = -b / w[1, 2], b = -w[1, 1] / w[1, 2], col = "black", lty = 1, lwd = 2)
+abline(a = (-b - 1) / w[1, 2], b = -w[1, 1] / w[1, 2], col = "black", lty = 3, lwd = 2)
+abline(a = (-b + 1) / w[1, 2], b = -w[1, 1] / w[1, 2], col = "black", lty = 3, lwd = 2)
+```
+
+To obtain nonlinear boundaries we enlarge the feature space with a map
+\[
+\Phi:\mathcal{X}\to\mathcal{F},\qquad
+\Phi(x)=\bigl(\phi_1(x),\phi_2(x),\ldots\bigr),
+\]
+where $\mathcal{F}$ may be finite- or infinite-dimensional, and then run a *linear* SVM in $\mathcal{F}$. A linear function of $\Phi(x)$ is typically a nonlinear function of the original $x$. The decision function becomes
+\[
+f(x)=\bigl\langle\Phi(x),\beta\bigr\rangle=\Phi(x)^T\beta.
+\]
+
+<div class="motivationbox">
+**Kernel trick**
+
+Do not compute $\Phi(x)$ explicitly. The dual SVM depends on the data only through inner products, and
+\[
+K(x,z)=\bigl\langle\Phi(x),\Phi(z)\bigr\rangle
+\]
+can often be evaluated directly in the original space.
+</div>
+
+#### Naive Approach {-}
+
+If $\Phi$ were known, we could form $\Phi(x_i)$ for each $i$ and solve
+\[
+\max_{\alpha}
+\sum_{i=1}^{n}\alpha_i
+- \frac12\sum_{i,j=1}^{n} y_i y_j\alpha_i\alpha_j
+\underbrace{\bigl\langle\Phi(x_i),\Phi(x_j)\bigr\rangle}_{=K(x_i,x_j)}
+\]
+\[
+\text{subject to }\quad
+0\le\alpha_i\le C,\qquad
+\sum_{i=1}^{n}\alpha_i y_i=0.
+\]
+The kernel trick lets us evaluate $K(x_i,x_j)$ without ever forming $\Phi(x_i)$.
+
+A simple example: the homogeneous quadratic kernel $K(x,z)=(x^T z)^2$ with $x,z\in\mathbb{R}^p$. Let $\Phi(x)$ collect all monomials $x_k x_{\ell}$ for $1\le k,\ell\le p$. Then
+\begin{align*}
+K(x,z)
+&= \Bigl(\sum_{k=1}^{p} x_k z_k\Bigr)\Bigl(\sum_{\ell=1}^{p} x_{\ell} z_{\ell}\Bigr)\\
+&= \sum_{k=1}^{p}\sum_{\ell=1}^{p} (x_k x_{\ell})(z_k z_{\ell})\\
+&= \bigl\langle\Phi(x),\Phi(z)\bigr\rangle.
+\end{align*}
+The kernel trick is useful for two reasons.
+
+- The dual depends on the training data only through the pairwise values $K(x_i,x_j)$. We never have to form $\Phi(x_i)$.
+- The fitted decision function can be written in terms of those same kernel evaluations,
+  \[
+  f(x)=\beta_0+\sum_{i=1}^{n}\alpha_i y_i K(x,x_i)
+  \]
+  (or an equivalent expansion, depending on how $\alpha$ is coded). In other words, $\hat f$ lives in the span of $\{K(\cdot,x_i)\}_{i=1}^{n}$.
+
+<font color="orange">_Remark._</font> A sufficient condition is that the kernel matrix $\bigl(K(x_i,x_j)\bigr)$ be positive semidefinite for every finite sample. Then $K$ is an inner product $\langle\Phi(x),\Phi(z)\rangle$ for some feature map $\Phi$ (Mercer's theorem). We will use that fact and will not develop the RKHS formalism further here.
+
+<br>
+#### Computational Advantage {-}
+
+- Evaluating $K(x,z)=(x^T z)^2$ costs $\mathcal{O}(p)$ operations.
+- Forming $\Phi(x)$ and $\Phi(z)$ and then taking an inner product costs $\mathcal{O}(p^2)$.
+
+That is why we derived the dual: the primal is written in terms of $\beta\in\mathcal{F}$, which we cannot even store when $\mathcal{F}$ is infinite-dimensional, whereas the dual is written entirely in terms of $K(x_i,x_j)$.
+
+<br>
+
+<div class="motivationbox">
+**Common kernels**
+
+- Degree-$d$ polynomial:
+  \[
+  K(x,z)=(1+x^T z)^d
+  \]
+- Radial basis (Gaussian):
+  \[
+  K(x,z)=\exp\bigl(-\|x-z\|^2/c\bigr)
+  \]
+- Sigmoid (listed for completeness; do not use it by default):
+  \[
+  K(x,z)=\tanh(\gamma x^T z + r)
+  \]
+
+**Remark.** Not every function $K$ is a valid kernel. If the kernel matrix fails to be positive semidefinite, the dual need not be convex and there may be no feature map $\Phi$. The sigmoid kernel is a historical choice from early neural-network comparisons. It is not always positive semidefinite; prefer a polynomial or radial kernel unless you have a specific reason not to.
+</div>
+
+<br><br>
+
+#### Remark on Convexity {-}
+
+Is the dual still convex after we replace $x_i^T x_j$ by $K(x_i,x_j)$? The quadratic term is
+\[
+\sum_{i,j=1}^{n} y_i y_j\alpha_i\alpha_j K(x_i,x_j)
+= \alpha^T \operatorname{diag}(y)\,K\,\operatorname{diag}(y)\,\alpha.
+\]
+This is a convex function of $\alpha$ whenever $K$ is positive semidefinite, which is the same condition that lets us treat $K(x,z)$ as an inner product $\langle\Phi(x),\Phi(z)\rangle$.
+
+<br><br>
+
+## SVM as a Penalization Method
+
+The soft-margin constraint $y_i f(x_i)\ge 1-\xi_i$ with $\xi_i\ge 0$ is equivalent to $\xi_i\ge \bigl(1-y_i f(x_i)\bigr)_+$. Substituting the smallest feasible slacks into the primal objective gives
+\[
+\operatorname{minimize}_{f}\
+\sum_{i=1}^{n}\bigl(1-y_i f(x_i)\bigr)_+ + \lambda\|\beta\|^2,
+\]
+where $\lambda=1/C$ and $f(x)=x^T\beta+\beta_0$. This is a **loss + penalty** problem. The loss is the **hinge loss**
+\[
+L(y,f(x))=\bigl(1-yf(x)\bigr)_+ = \max\bigl(0,\ 1-yf(x)\bigr).
+\]
+
+Hinge loss is not differentiable at $yf(x)=1$, so we cannot use ordinary gradient descent without modification (a subgradient does exist). Other convex surrogate losses used for classification include:
+
+- Logistic loss:
+  \[
+  L(y,f(x))=\log\bigl(1+e^{-yf(x)}\bigr)
+  \]
+- Modified Huber loss:
+  \[
+  L(y,f(x))=
+  \begin{cases}
+  \bigl(1-yf(x)\bigr)^2, & yf(x)\ge -1,\\
+  -4yf(x), & \text{otherwise}.
+  \end{cases}
+  \]
+
+```{r, echo=FALSE, fig.align="center", fig.width=6.5, fig.height=5}
+t <- seq(-2, 3, 0.01)
+hinge <- pmax(0, 1 - t)
+zeroone <- as.numeric(t <= 0)
+logistic <- log2(1 + exp(-t))
+modifiedhuber <- ifelse(t >= -1, (pmax(0, 1 - t))^2, -4 * t)
+
+plot(t, zeroone, type = "l", lwd = 2, ylim = c(0, 4),
+     xlab = "yf(x)", ylab = "loss", main = "Classification loss functions")
+lines(t, hinge, lwd = 2, col = "red")
+lines(t, logistic, lty = 2, col = "darkorange", lwd = 2)
+lines(t, modifiedhuber, lty = 2, col = "deepskyblue", lwd = 2)
+legend("topright",
+       c("Zero-one", "Hinge", "Logistic", "Modified Huber"),
+       col = c(1, 2, "darkorange", "deepskyblue"),
+       lty = c(1, 1, 2, 2), lwd = 2, cex = 1.1)
+```
+
+Zero-one loss is the target, but it is discontinuous and nonconvex. Hinge, logistic, and modified Huber are convex surrogates and are much easier to optimize. Logistic and modified Huber are differentiable, so gradient methods apply directly and can be attractive when $n$ is large.
+
+The contrast with the previous chapter is useful here. Logistic loss is (up to constants) the negative log-likelihood of a Bernoulli model, so we can map $\hat f$ to $\widehat{P}(Y=1\mid X=x)$ by the logistic transform. Hinge loss only cares that $yf(x)$ be at least $1$; once a point is beyond the margin it costs nothing further. That is why an SVM is a classifier and not, by itself, a probability model.
+
+<br>
+
+A nonlinear SVM with hinge loss solves
+\[
+\min_{f\in\mathcal{H}_K}
+\sum_{i=1}^{n}\bigl(1-y_i f(x_i)\bigr)_+
++ \lambda\|f\|_{\mathcal{H}_K}^2,
+\]
+where $\mathcal{H}_K$ is the RKHS of the kernel $K$. By the representer theorem the solution has the form
+\[
+\hat f(x)=\alpha_0+\sum_{i=1}^{n}\alpha_i K(x,x_i).
+\]
+The problem reduces to an optimization over $\alpha\in\mathbb{R}^n$,
+\[
+\sum_{i=1}^{n} L\bigl(y_i,\ K_i^T\alpha\bigr) + \lambda\,\alpha^T K\alpha,
+\]
+where $K$ is the $n\times n$ kernel matrix and $K_i$ is its $i$th column. If $L$ is differentiable this is an unconstrained smooth problem.
+
+In this view a kernel SVM first builds $n$ new predictors, each measuring similarity to one training point, and then fits a linear model in those predictors with an $\ell_2$-type penalty $\alpha^T K\alpha$.
+
+Two restrictions of the classical SVM are worth questioning once we adopt the loss-plus-penalty view:
+
+- The penalty on $\alpha$ is a ridge (RKHS-norm) penalty. A lasso-type penalty on $\alpha$ would produce a sparser expansion, using fewer kernel centers.
+- The kernel is required to be positive semidefinite. Many useful similarity functions are not.
+
+Relaxing either condition takes us outside the textbook definition of an SVM, but the resulting *kernel machines* are often useful supervised learning methods.
+
+<br>
+
+#### When an SVM is the wrong tool {-}
+
+An SVM is a strong binary classifier. It is not a default replacement for logistic regression or DA.
+
+- It does not produce $\widehat{P}(Y=1\mid X)$ without an extra calibration step (Platt scaling and relatives). If the scientific target is a probability, start with logistic regression.
+- Multiclass problems are handled by one-versus-one or one-versus-rest reductions. That works, but it is bolted on; there is no single native multiclass hinge in the same way that multinomial logistic regression is native.
+- When $n$ is large or $p$ is huge and *sparsity in the original features* is the point, $\ell_1$-penalized logistic regression is often the simpler statistical and computational story. The SVM sparsity is in the $\alpha_i$ (support vectors), not in the coordinates of $x$.
+- A radial kernel with a poorly chosen width will look excellent on the training plot and fail on a new draw. Scale the features, and treat $C$ and the kernel width as tuning parameters chosen by prediction error, not by how pretty the decision regions are.
+
+Use an SVM when you want a flexible decision boundary and you are willing to treat $f(x)$ as a score rather than a probability. Use logistic regression or DA when the probability model, or the linear structure in $x$, is the object of interest.
+
+<br><br>
+
+## SVM Examples in R
+
+This section is an illustration of the methods discussed in this week's lectures. The code shows how the objects from the notes, e.g., $\beta$, $C$, support vectors, kernels  appear in a fitted SVM. 
+
+
+The Python version of the example can be found here: <a href="code/ch9_PythonExample.html"> <b>Python Code for SVM</b> </a>.&nbsp;
+
+
+The calculations use `e1071::svm()`. Its argument `cost` is the $C$ of the notes. We keep `scale = FALSE` when we want coefficients and plots in the original units of $X$. In applications one would usually scale the features.
+
+Three comparisons:
+
+- a hard margin versus a soft margin (what $C$ does);
+- a linear SVM versus logistic regression on the same points (who influences the fit);
+- a linear kernel versus a radial kernel, with the Bayes boundary as a reference.
+
+<br>
+
+### Linear Separable Case: Maximal Margin Classifier {.unlisted .unnumbered}
+
+We start with a small maximal-margin example (adapted from an ISLR exercise).
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+toy.data <- data.frame(
+  X1 = c(3, 2, 4, 1, 2, 4, 4),
+  X2 = c(4, 2, 4, 4, 1, 3, 1),
+  Y  = as.factor(c("red", "red", "red", "red", "blue", "blue", "blue"))
+)
+knitr::kable(toy.data, row.names = FALSE, caption = NULL)
+```
+
+A scatterplot of the data:
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+library(dplyr)
+library(ggplot2)
+
+ggplot(toy.data, aes(x = X1, y = X2, color = Y)) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("blue", "red")) +
+  coord_fixed(xlim = c(0.5, 4.5), ylim = c(0.5, 4.5)) +
+  theme(legend.position = "none") +
+  labs(x = "X1", y = "X2")
+```
+
+The linear separating hyperplane has the form
+\[
+\beta_0 + \beta_1 X_1 + \beta_2 X_2 = 0.
+\]
+We compute it from a hard-margin SVM fit in `e1071` by taking a very large cost:
+
+```{r}
+library(e1071)
+# large C approximates a hard margin
+svm.toy <- svm(Y ~ ., data = toy.data, kernel = "linear",
+               cost = 1e5, scale = FALSE)
+```
+
+The coefficients of the separating line are
+
+```{r}
+b <- t(svm.toy$coefs) %*% svm.toy$SV
+c <- -svm.toy$rho
+b
+c
+```
+
+so the optimal separating hyperplane is
+\[
+1 - 2X_1 + 2X_2 = 0.
+\]
+
+```{r}
+slope <- -b[1] / b[2]
+b0 <- -c / b[2]
+slope
+b0
+```
+
+The decision boundary is the line
+\[
+X_2 = X_1 - 0.5,
+\]
+and the maximal-margin classifier can be written
+\[
+f(X) = X_2 - X_1 + 0.5.
+\]
+A new point $x^*$ is assigned to the red class if $f(x^*)>0$ and to the blue class otherwise. The margin width is $2/\|\beta\|$:
+
+```{r}
+margin <- 2 / sqrt(sum(b^2))
+margin
+```
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+grid <- expand.grid(
+  X1 = seq(0.5, 4.5, length.out = 200),
+  X2 = seq(0.5, 4.5, length.out = 200)
+) %>%
+  mutate(region = case_when(
+    X2 - X1 + 0.5 < 0 ~ "lt 0",
+    X2 - X1 + 0.5 > 0 ~ "gt 0"
+  ))
+
+ggplot(grid, aes(x = X1, y = X2)) +
+  geom_tile(aes(fill = region), alpha = 0.5) +
+  geom_point(data = toy.data, aes(x = X1, y = X2, color = Y), size = 2) +
+  geom_abline(slope = 1, intercept = -0.5) +
+  geom_abline(slope = 1, intercept = -1, linetype = "dotted", color = "grey40") +
+  geom_abline(slope = 1, intercept = 0,  linetype = "dotted", color = "grey40") +
+  scale_x_continuous(expand = c(0.01, 0.01), limits = c(0.5, 4.5)) +
+  scale_y_continuous(expand = c(0.01, 0.01), limits = c(0.5, 4.5)) +
+  scale_color_manual(values = c("blue", "red")) +
+  scale_fill_manual(values = c("mistyrose", "aliceblue")) +
+  theme(legend.position = "none") +
+  labs(x = "X1", y = "X2") +
+  coord_fixed()
+```
+
+The solid line is the optimal separating hyperplane; the dotted lines are the margins. The fit used `scale = FALSE` and a large `cost` so that this is, for practical purposes, the hard-margin solution in the original coordinates. In `e1071`, `svm.toy$index` identifies the support vectors and `svm.toy$rho` is the intercept used in the plot (not the hard-margin midpoint formula).
+
+```{r}
+svm.toy$index
+svm.toy$nSV
+```
+
+Those indices are the support vectors: the active points on the two dotted lines. For a hard-margin fit, $y_i f(x_i)\ge 1$ at every training point, with equality only on this subset. The printed margin $2/\|\beta\|$ is the width between the dotted lines.
+
+<br>
+
+### Non-Separable Data and the Role of $C$ {.unlisted .unnumbered}
+
+Add a red point at $(X_1,X_2)=(3,1)$. The data are no longer linearly separable.
+
+```{r}
+toy.data.2 <- data.frame(
+  X1 = c(3, 2, 4, 1, 2, 4, 4, 3),
+  X2 = c(4, 2, 4, 4, 1, 3, 1, 1),
+  Y  = as.factor(c("red", "red", "red", "red", "blue", "blue", "blue", "red"))
+)
+```
+
+A finite `cost` is now required. Large $C$ tries to avoid slack (narrower margin, fewer violations). Small $C$ allows more violations and a wider margin. The plotted intercept is again `-fit$rho`.
+
+```{r, fig.align="center", fig.width=8, fig.height=4.2}
+plot_linear_svm <- function(fit, data, main) {
+  b <- as.numeric(t(fit$coefs) %*% fit$SV)
+  b0 <- -fit$rho
+  x <- data[, c("X1", "X2")]
+  plot(x, col = ifelse(data$Y == "blue", "blue", "red"),
+       xlim = c(0, 5), ylim = c(0, 5), pch = 19,
+       xlab = "X1", ylab = "X2", main = main)
+  abline(a = -b0 / b[2], b = -b[1] / b[2], lwd = 2)
+  points(x[fit$index, ], col = "black", cex = 2.4)
+  abline(a = (-b0 - 1) / b[2], b = -b[1] / b[2], lty = 3)
+  abline(a = (-b0 + 1) / b[2], b = -b[1] / b[2], lty = 3)
+}
+
+svm.hiC <- svm(Y ~ ., data = toy.data.2, kernel = "linear",
+               cost = 10, scale = FALSE)
+svm.loC <- svm(Y ~ ., data = toy.data.2, kernel = "linear",
+               cost = 0.5, scale = FALSE)
+
+par(mfrow = c(1, 2))
+plot_linear_svm(svm.hiC, toy.data.2,
+                main = paste0("C = 10,  nSV = ", sum(svm.hiC$nSV)))
+plot_linear_svm(svm.loC, toy.data.2,
+                main = paste0("C = 0.5,  nSV = ", sum(svm.loC$nSV)))
+```
+
+The extra red point is expensive when $C=10$: the boundary moves toward it and the margin shrinks. When $C=0.5$ that point is tolerated as slack, more points become support vectors, and the margin widens. This is an estimation statement, not just a geometric one. Large $C$ is closer to empirical 0-1 risk (fit the training labels, even the noisy ones). Small $C$ is more regularization (a smaller $\|\beta\|$, a wider margin, more slack). The left panel weaves toward the extra point; the right panel is willing to ignore it.
+
+<br>
+
+### Linear SVM versus Logistic Regression {.unlisted .unnumbered}
+
+On the same eight points, fit a linear logistic regression. Both methods give a line; they do not use the data in the same way.
+
+```{r, fig.align="center", fig.width=5.2, fig.height=5.2}
+toy.data.2$y01 <- as.numeric(toy.data.2$Y == "red")
+glm.toy <- glm(y01 ~ X1 + X2, data = toy.data.2, family = binomial)
+
+b.svm <- as.numeric(t(svm.hiC$coefs) %*% svm.hiC$SV)
+b0.svm <- -svm.hiC$rho
+b.glm <- coef(glm.toy)
+
+plot(toy.data.2$X1, toy.data.2$X2,
+     col = ifelse(toy.data.2$Y == "blue", "blue", "red"),
+     pch = 19, xlim = c(0, 5), ylim = c(0, 5),
+     xlab = "X1", ylab = "X2",
+     main = "Linear SVM (C = 10) vs logistic")
+points(toy.data.2[svm.hiC$index, c("X1", "X2")], cex = 2.4)
+abline(a = -b0.svm / b.svm[2], b = -b.svm[1] / b.svm[2], lwd = 2)
+abline(a = -b.glm[1] / b.glm[3], b = -b.glm[2] / b.glm[3],
+       col = "darkorange", lwd = 2, lty = 2)
+legend("bottomright",
+       c("SVM", "Logistic", "SVM support vectors"),
+       col = c("black", "darkorange", "black"),
+       lty = c(1, 2, NA), pch = c(NA, NA, 1), lwd = 2, bty = "n")
+```
+
+Logistic regression is a likelihood for $P(Y=1\mid X)$. Every point contributes to the score equations. The SVM with hinge loss ignores points that already lie beyond the margin; only the support vectors (circled) determine the black line. The two boundaries need not agree, even when both are linear. Logistic regression still produces $\widehat{P}(Y=1\mid X)$; the SVM does not.
+
+<br>
+
+### Nonlinear SVM: Linear Kernel, Radial Kernel, Bayes Rule {.unlisted .unnumbered}
+
+The mixture data from ESL are not linearly separable in a way that matches the Bayes boundary (the red dashed $P(Y=1\mid X)=1/2$ contour). A linear SVM can only draw a line. A radial kernel can bend.
+
+```{r, message=FALSE, warning=FALSE, fig.align="center", fig.width=8, fig.height=4.2}
+library(mda)
+data(ESL.mixture)
+
+px1 <- ESL.mixture$px1
+px2 <- ESL.mixture$px2
+mix <- data.frame(X1 = ESL.mixture$x[, 1],
+                  X2 = ESL.mixture$x[, 2],
+                  y  = factor(ESL.mixture$y))
+prob <- ESL.mixture$prob
+xgrid <- expand.grid(X1 = px1, X2 = px2)
+
+svm.lin <- svm(y ~ ., data = mix, kernel = "linear",
+               cost = 10, scale = FALSE)
+svm.rad <- svm(y ~ ., data = mix, kernel = "radial",
+               cost = 5, scale = FALSE)
+
+plot_mixture <- function(fit, main) {
+  dec <- predict(fit, xgrid, decision.values = TRUE)
+  z <- attributes(dec)$decision
+  yhat <- predict(fit, xgrid)
+  plot(xgrid, col = ifelse(yhat == levels(mix$y)[2], "bisque", "cadetblue1"),
+       pch = 20, cex = 0.2, xlab = "x1", ylab = "x2", main = main)
+  points(mix$X1, mix$X2,
+         col = ifelse(mix$y == 1, "darkorange", "deepskyblue"), pch = 19)
+  contour(px1, px2, matrix(z, length(px1), length(px2)),
+          levels = 0, add = TRUE, lwd = 2)
+  contour(px1, px2, matrix(prob, length(px1), length(px2)),
+          levels = 0.5, add = TRUE, col = "red", lty = 2, lwd = 2)
+}
+
+par(mfrow = c(1, 2))
+plot_mixture(svm.lin, "Linear kernel, C = 10")
+plot_mixture(svm.rad, "Radial kernel, C = 5")
+```
+
+The red dashed curve is the Bayes boundary. The linear kernel cannot track it. The radial kernel can, but only for a reasonable $C$ (and kernel width). That is the point of this figure: the kernel changes the *class of boundaries*, $C$ changes how hard we fit within that class.
+
+<br>
+
+### Tuning $C$ by Cross-Validation {.unlisted .unnumbered}
+
+$C$ is a regularization parameter. We choose it by cross-validation, not by looking at the training plot. `e1071::tune()` does a grid search and returns the CV error. The radial kernel also has a width parameter `gamma` (large `gamma` is a narrow kernel).
+
+```{r, message=FALSE, warning=FALSE, fig.align="center", fig.width=6, fig.height=4.5}
+set.seed(1)
+tune.lin <- tune(svm, y ~ ., data = mix,
+                 kernel = "linear", scale = FALSE,
+                 ranges = list(cost = 2^seq(-3, 5, by = 1)))
+tune.lin$best.parameters
+plot(tune.lin)
+```
+
+```{r, message=FALSE, warning=FALSE}
+set.seed(1)
+tune.rad <- tune(svm, y ~ ., data = mix,
+                 kernel = "radial", scale = FALSE,
+                 ranges = list(cost  = c(0.5, 1, 5, 10),
+                               gamma = c(0.5, 1, 2)))
+tune.rad$best.parameters
+tune.rad$best.performance
+```
+
+Read the linear plot as you would a ridge CV curve: very small $C$ underfits (wide margin, too much slack), very large $C$ starts to overfit the training labels. The “best” $C$ is the one with the smallest estimated prediction error, not the prettiest training margin.
+
+If you already use `caret` in the course, the same idea can be written as `train(..., method = "svmRadial")`, where `C` is $C$ and `sigma` is the radial width. What matters is the CV curve, not the wrapper.

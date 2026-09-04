@@ -1,0 +1,557 @@
+# Introduction to Classification
+
+**Classification** is a supervised learning task whose goal is to *predict a categorical outcome* from a set of input features. Unlike regression, where the response is continuous, the labels here are discrete—for example, "spam" versus "not spam," or "diseased" versus "healthy." We learn a rule that maps features to a *class*, typically by estimating class probabilities or by constructing a decision boundary. Methods range from relatively simple models such as logistic regression and discriminant analysis to more flexible ones such as trees, support vector machines, neural networks, and ensembles. As in the rest of statistical learning, the central tension is between flexibility and overfitting: we want a rule that predicts well on *new* observations, not only on the training sample.
+
+### Classification Framework {.unnumbered .unlisted}
+
+We start with **training data** $\mathcal{D}_n = \{(x_i, y_i)\}_{i=1}^{n}$, where $x_i \in \mathbb{R}^p$ is a $p$-dimensional feature vector. For now we focus on the **binary** case, with response $y_i \in \{0, 1\}$. The particular coding of the two classes is not essential; $\{-1, +1\}$ is equally common.
+
+The goal is to find a **classifier**
+<font color=blue>$f: \mathbb{R}^p \rightarrow \{0, 1\}$</font>,
+that is, a map from feature space to the label set. To score a prediction $f(x)$ when the true label is $y$, we use the **0-1 loss**, also called the **misclassification error**:
+\[
+L\bigl(f(x), y\bigr) =
+\begin{cases}
+0, & \text{if } y = f(x),\\
+1, & \text{otherwise}.
+\end{cases}
+\]
+The training (empirical) risk of $f$ is then
+<font color=blue>
+\[
+\widehat{R}_n[f] = \frac{1}{n} \sum_{i=1}^{n} L\bigl(f(x_i), y_i\bigr).
+\]
+</font>
+Minimizing $\widehat{R}_n[f]$ over *all* functions $f$ is not a useful recipe by itself: the minimizer can interpolate the training labels and still fail on future data. What we actually want is a rule with small *expected* error on a new pair $(X, Y)$.
+
+### The Optimal Classifier {.unnumbered .unlisted}
+
+If we knew the data-generating distribution $P$, or if we had infinitely many samples, the empirical risk would converge to the expected risk,
+\[
+\widehat{R}_n[f] \longrightarrow R[f] := E_{X,Y}\, L\bigl(f(X), Y\bigr).
+\]
+
+<div class=motivationbox>
+**Optimal classifier**
+
+The optimal classifier minimizes expected 0-1 risk:
+\[
+f^* = \arg\min_f \, R[f], \qquad R[f] = E_{X,Y}\, L\bigl(f(X), Y\bigr).
+\]
+</div>
+
+Suppose we may use *any* function $f$. What is $f^*$?
+
+Write $p(x)$ for the marginal density of $X$, $p(y \mid x)$ for the conditional distribution of $Y$ given $X = x$, and $p(x,y) = p(x)\,p(y \mid x)$ for the joint distribution. Then
+\begin{align*}
+R[f]
+&= E_{X,Y}\, L\bigl(f(X), Y\bigr) \\
+&= \int_{\mathcal{X}} \sum_{y \in \{0,1\}} L\bigl(f(x), y\bigr)\, p(y \mid x)\, p(x)\, dx \\
+&= \int_{\mathcal{X}}
+\Biggl[
+\sum_{y \in \{0,1\}} L\bigl(f(x), y\bigr)\, p(y \mid x)
+\Biggr] p(x)\, dx.
+\end{align*}
+Because $p(x) \ge 0$, it is enough to minimize the inner sum *separately at each $x$*:
+\[
+f^*(x) = \arg\min_{a \in \{0,1\}} \sum_{y \in \{0,1\}} L(a, y)\, p(y \mid x).
+\]
+
+Let $\eta(x) := P(Y = 1 \mid X = x)$. Then $Y \mid X = x$ is Bernoulli, and the inner risk is just the conditional probability of a mistake:
+\begin{align*}
+\sum_{y} L\bigl(f(x), y\bigr)\, p(y \mid x)
+&=
+\begin{cases}
+1 - \eta(x), & \text{if } f(x) = 1,\\
+\eta(x),     & \text{if } f(x) = 0.
+\end{cases}
+\end{align*}
+Hence
+\[
+f^*(x) =
+\begin{cases}
+1, & \text{if } \eta(x) \ge 1/2,\\
+0, & \text{if } \eta(x) < 1/2.
+\end{cases}
+\]
+(The assignment at the tie $\eta(x) = 1/2$ is arbitrary.) This $f^*$ is the <font color=blue>**Bayes classifier**</font> (or **Bayes rule**). Its risk $R[f^*]$ is the <font color=blue>**Bayes risk**</font>, also called the <font color=blue>**Bayes error**</font>. No other classifier can beat it in expected 0-1 loss; in practice we never know $\eta(x)$, so every method is an attempt to approximate $f^*$.
+
+#### How about multi-class classification? {-}
+
+The same argument extends immediately to $K$ classes, $y \in \{1, \ldots, K\}$. The Bayes rule is
+<font color=blue>
+\[
+f^*(x) = \arg\max_{k \in \{1,\ldots,K\}} P(Y = k \mid X = x).
+\]
+</font>
+A classifier partitions $\mathbb{R}^p$ into labeled regions. We often describe the **decision boundary** (the interface between regions) rather than $f$ itself. A *linear classifier* is one whose decision boundaries are hyperplanes.
+
+## Discriminant Analysis
+
+**Discriminant analysis** builds a classifier by modeling how the *features* are distributed *within each class*, then applying Bayes' theorem to recover $P(Y = k \mid X = x)$. The three standard variants differ mainly in how they model $X \mid Y = k$, and therefore in the shape of the resulting boundary:
+
+1. Quadratic discriminant analysis (QDA)
+2. Linear discriminant analysis (LDA), and its connection to Fisher discriminant analysis (FDA)
+3. Naive Bayes
+
+All three start from the factorization $P(x, y) = P(x \mid y)\, P(y)$. We estimate
+
+- $f_k(x) = P(X = x \mid Y = k)$, the class-conditional density of the features, and
+- $\pi_k = P(Y = k)$, the class prior,
+
+and then flip the conditioning.
+
+<div class=motivationbox>
+**Bayes' theorem for classification**
+
+\begin{align*}
+P(Y = k \mid X = x)
+&= \frac{P(X = x \mid Y = k)\, P(Y = k)}{P(X = x)}
+= \frac{\pi_k \, f_k(x)}{P(X = x)}
+\propto \pi_k \, f_k(x).
+\end{align*}
+
+- <font color=blue>$f_k(x)$</font>: class-conditional density of $X \mid Y = k$
+- <font color=blue>$\pi_k = P(Y = k)$</font>: prior probability of class $k$
+</div>
+
+The Bayes classifier therefore has the equivalent form
+<font color=blue>
+\[
+f(x) = \arg\max_k \; \pi_k f_k(x)
+= \arg\max_k \bigl[\log \pi_k + \log f_k(x)\bigr].
+\]
+</font>
+To implement it we only need estimates of $\pi_k$ and $f_k$.
+
+### Quadratic Discriminant Analysis
+
+Assume that, given $Y = k$, the feature vector is multivariate normal,
+<font color=blue>$\mathbf{x} \sim N_p(\mu_k, \Sigma_k)$</font>,
+with class-specific mean $\mu_k$ and class-specific covariance $\Sigma_k$. The density is
+\[
+f_k(\mathbf{x})
+= (2\pi)^{-p/2} \, |\Sigma_k|^{-1/2}
+\exp\Bigl\{ -\tfrac12 (\mathbf{x} - \mu_k)^\top \Sigma_k^{-1} (\mathbf{x} - \mu_k) \Bigr\}.
+\]
+The quadratic form in the exponent is
+\[
+(\mathbf{x} - \mu_k)^\top \Sigma_k^{-1} (\mathbf{x} - \mu_k)
+= \sum_{j=1}^{p} \sum_{\ell=1}^{p} \theta_{k,j\ell}\, (x_j - \mu_{k,j})(x_\ell - \mu_{k,\ell}),
+\]
+where $\theta_{k,j\ell}$ are the entries of $\Sigma_k^{-1}$. Dropping terms that do not depend on $k$,
+<font color=blue>
+\[
+P(Y = k \mid \mathbf{x}) \propto \pi_k f_k(\mathbf{x}) \propto e^{-d_k(\mathbf{x})/2},
+\]
+</font>
+where
+\begin{align*}
+d_k(\mathbf{x})
+&= (\mathbf{x} - \mu_k)^\top \Sigma_k^{-1} (\mathbf{x} - \mu_k) + \log|\Sigma_k| - 2\log \pi_k.
+\end{align*}
+The first term is the **Mahalanobis distance** from $\mathbf{x}$ to $\mu_k$. We assign $\mathbf{x}$ to the class with the smallest $d_k(\mathbf{x})$. Because $d_k$ is a quadratic function of $\mathbf{x}$, the decision boundaries are quadratic, which is why the method is called <font color=blue>**quadratic discriminant analysis (QDA)**</font>.
+
+In practice we replace the unknown parameters by sample estimates:
+
+- Prior and mean:
+\[
+\hat{\pi}_k = \frac{n_k}{n}, \qquad
+\hat{\mu}_k = \frac{1}{n_k} \sum_{i: y_i = k} \mathbf{x}_i, \qquad k = 1, \ldots, K.
+\]
+- Class covariance:
+\[
+\hat{\Sigma}_k = \frac{1}{n_k - 1} \sum_{i: y_i = k} (\mathbf{x}_i - \hat{\mu}_k)(\mathbf{x}_i - \hat{\mu}_k)^\top.
+\]
+
+**Remark.** If $\hat{\Sigma}_k$ is singular (common when $p$ is large relative to $n_k$), replace $\hat{\Sigma}_k^{-1}$ by $(\hat{\Sigma}_k + \eta I_p)^{-1}$ for a small $\eta > 0$, or use a generalized inverse. This is a simple form of regularization.
+
+### Linear Discriminant Analysis
+
+Now assume a *common* covariance, $\Sigma_k = \Sigma$ for all $k$. Then
+\[
+d_k(\mathbf{x}) = (\mathbf{x} - \mu_k)^\top \Sigma^{-1} (\mathbf{x} - \mu_k) + \log|\Sigma| - 2\log \pi_k.
+\]
+Expanding the quadratic form,
+\[
+(\mathbf{x} - \mu_k)^\top \Sigma^{-1} (\mathbf{x} - \mu_k)
+= \mathbf{x}^\top \Sigma^{-1} \mathbf{x} - 2\mathbf{x}^\top \Sigma^{-1} \mu_k + \mu_k^\top \Sigma^{-1} \mu_k.
+\]
+The term $\mathbf{x}^\top \Sigma^{-1} \mathbf{x}$ does not depend on $k$, nor does $\log|\Sigma|$. What remains is a <font color=blue>**linear function of $\mathbf{x}$**</font>, so the decision boundaries are hyperplanes. This is <font color=blue>**linear discriminant analysis (LDA)**</font>.
+
+The shared covariance is estimated by the **pooled** sample covariance
+\[
+\hat{\Sigma} = \frac{1}{n - K} \sum_{k=1}^{K} \sum_{i: y_i = k} (\mathbf{x}_i - \hat{\mu}_k)(\mathbf{x}_i - \hat{\mu}_k)^\top.
+\]
+
+**Remark.** If $\hat{\Sigma}$ is singular, use $(\hat{\Sigma} + \eta I_p)^{-1}$ or a generalized inverse. For example, if the SVD is $\hat{\Sigma} = U \operatorname{diag}(d_1, \ldots, d_r, 0, \ldots, 0) U^\top$, invert only the positive singular values:
+\[
+\hat{\Sigma}^{+} = U \operatorname{diag}(d_1^{-1}, \ldots, d_r^{-1}, 0, \ldots, 0) U^\top.
+\]
+
+### Reduced-Rank LDA
+
+As a further simplification, take $\Sigma = I_p$. The LDA discriminant reduces to
+<font color=blue>
+\[
+d_k(\mathbf{x}) = \|\mathbf{x} - \mu_k\|^2 - 2\log \pi_k.
+\]
+</font>
+Only the squared Euclidean distance from $\mathbf{x}$ to the class center $\mu_k$ depends on the features.
+
+This distance can be computed in a subspace of dimension at most $K-1$. In that sense, LDA *is* a dimension-reduction method: it automatically collapses $p$ coordinates to $K-1$ coordinates without changing the classification rule (under $\Sigma = I_p$).
+
+Without loss of generality, translate the data so that the grand mean $\bar{\mu}$ is at the origin. The $K$ class means then lie in a subspace $\mathcal{A}$ of dimension at most $K-1$. Decompose any $\mathbf{x} \in \mathbb{R}^p$ as
+\[
+\mathbf{x} = \mathbf{x}_1 + \mathbf{x}_2, \qquad \mathbf{x}_1 \in \mathcal{A}, \quad \mathbf{x}_2 \in \mathcal{A}^\perp.
+\]
+In matrix form, if $B = (\mu_1, \ldots, \mu_{K-1})$ and $H = B(B^\top B)^{-1} B^\top$ is the orthogonal projector onto $\mathcal{A}$, then $\mathbf{x}_1 = H\mathbf{x}$ and $\mathbf{x}_2 = \mathbf{x} - \mathbf{x}_1$. Orthogonality gives
+\[
+\|\mathbf{x}\|^2 = \|\mathbf{x}_1\|^2 + \|\mathbf{x}_2\|^2,
+\]
+and, because each $\mu_k$ already lies in $\mathcal{A}$,
+\[
+\|\mathbf{x} - \mu_k\|^2 = \|\mathbf{x}_1 - \mu_k\|^2 + \|\mathbf{x}_2\|^2.
+\]
+The residual length $\|\mathbf{x}_2\|^2$ does not depend on $k$, so
+\[
+d_k(\mathbf{x}) = \|\mathbf{x}_1 - \mu_k\|^2 - 2\log \pi_k + \text{constant}.
+\]
+Classification using the original $\mathbf{x}$ is identical to classification using only its projection $\mathbf{x}_1$ onto the class-mean subspace.
+
+When $\Sigma \ne I_p$, first **whiten** the features. If $\Sigma = U D^2 U^\top$ is an SVD, set
+\[
+\Sigma^{-1/2} := U D^{-1} U^\top, \qquad \tilde{\mathbf{x}} = \Sigma^{-1/2} \mathbf{x}.
+\]
+Then $\operatorname{Cov}(\tilde{\mathbf{x}}) = I_p$:
+\begin{align*}
+\operatorname{Cov}(\tilde{\mathbf{x}})
+&= \Sigma^{-1/2}\, \Sigma\, (\Sigma^{-1/2})^\top
+= U D^{-1} U^\top \, U D^2 U^\top \, U D^{-1} U^\top
+= I_p.
+\end{align*}
+(The one-dimensional analogue is dividing a scalar by its standard deviation.) After whitening, apply the $\Sigma = I_p$ argument to $\tilde{\mathbf{x}}$ and the whitened means $\tilde{\mu}_k = \Sigma^{-1/2} \mu_k$.
+
+**Remark.** $\Sigma^{-1/2}$ is symmetric and satisfies $\Sigma^{-1/2}\Sigma^{-1/2} = \Sigma^{-1}$.
+
+#### Summary of reduced-rank LDA {-}
+
+**Training.** From $\{(x_i, y_i)\}_{i=1}^{n}$, compute $(\hat{\pi}_k, \hat{\mu}_k)_{k=1}^{K}$ and $\hat{\Sigma}$.
+
+**Prediction** at a test point $\mathbf{x}^*$:
+
+1. Compute a square-root inverse $A = \hat{\Sigma}^{-1/2}$ from the SVD $\hat{\Sigma} = U D^2 U^\top$, $A = U D^{-1} U^\top$.
+2. Form the whitened, centered class means and the projector onto their span:
+\begin{align*}
+B &= \bigl[A(\hat{\mu}_1 - \bar{\hat{\mu}}),\; \ldots,\; A(\hat{\mu}_{K-1} - \bar{\hat{\mu}})\bigr], \\
+H &= B(B^\top B)^{-1} B^\top.
+\end{align*}
+3. Project the whitened test point: $\tilde{\mathbf{x}}^* = H A \mathbf{x}^*$. Let $\tilde{\mu}_k = H A \hat{\mu}_k$ be the corresponding projected means.
+4. For $k = 1, \ldots, K$, compute
+\[
+d_k(\mathbf{x}^*) = \|\tilde{\mathbf{x}}^* - \tilde{\mu}_k\|^2 - 2\log \hat{\pi}_k.
+\]
+5. Predict $\arg\min_k d_k(\mathbf{x}^*)$.
+
+When $p \ge K$, LDA therefore lives in a $(K-1)$-dimensional subspace (a single line, in the binary case). The same subspace appears in **Fisher discriminant analysis (FDA)**, derived from a different criterion.
+
+#### Risk of overfitting {-}
+
+Each of the $K-1$ directions is a linear combination of the original $p$ coordinates, with weights estimated from the training sample. If $p$ is large, those weights can lock onto noise and produce excellent *training* separation that does not reproduce on test data.
+
+## Fisher Discriminant Analysis (FDA)
+
+<font color=blue>**Supervised dimension reduction**</font>
+
+<img style="float:right;" src="images/week7/FDA.png" width="400" height="300">
+
+FDA looks for directions $a \in \mathbb{R}^p$ such that the projected data $a^\top x$ are well separated by class: class means should be far apart relative to the spread *within* each class. Equivalently, we maximize the ratio
+<font color=blue>
+\[
+\frac{\text{between-class variation}}{\text{within-class variation}} = \frac{a^\top B a}{a^\top W a}.
+\]
+</font>
+Here $W$ and $B$ are the within-class and between-class covariance matrices
+\begin{align*}
+W &= \frac{1}{n-K} \sum_{k=1}^{K} \sum_{i: y_i = k} (\mathbf{x}_i - \hat{\mu}_k)(\mathbf{x}_i - \hat{\mu}_k)^\top, \\
+B &= \frac{1}{K-1} \sum_{k=1}^{K} n_k (\hat{\mu}_k - \bar{\hat{\mu}})(\hat{\mu}_k - \bar{\hat{\mu}})^\top,
+\end{align*}
+where $\bar{\hat{\mu}} = n^{-1}\sum_i \mathbf{x}_i$ is the grand mean. The matrix $W$ is exactly the pooled covariance $\hat{\Sigma}$ from LDA. If we write each point as
+\[
+\mathbf{x}_i = (\mathbf{x}_i - \hat{\mu}_{y_i}) + \hat{\mu}_{y_i},
+\]
+then $W$ is the covariance of the residuals $\mathbf{x}_i - \hat{\mu}_{y_i}$, and $B$ is (up to scaling) the covariance of the fitted class means $\hat{\mu}_{y_i}$. Overall constants in $B$ and $W$ do not change the maximizer of the ratio.
+
+### Generalized Eigenvalue Problem {.unlisted .unnumbered}
+
+\[
+\max_a \frac{a^\top B a}{a^\top W a}
+\quad\Longleftrightarrow\quad
+\max_a \; a^\top B a \quad \text{subject to} \quad a^\top W a = 1.
+\]
+Assume $W = U D^2 U^\top$ and set $b = W^{1/2} a$ with $W^{1/2} = U D U^\top$, so $W^{-1/2} = U D^{-1} U^\top$ and $a = W^{-1/2} b$. Then
+\begin{align*}
+a^\top B a
+&= b^\top \bigl(W^{-1/2} B W^{-1/2}\bigr) b,
+\end{align*}
+subject to $\|b\|^2 = 1$. This is an ordinary eigenvalue problem. Solve it sequentially:
+
+- $b_1 =$ leading eigenvector of $W^{-1/2} B W^{-1/2}$, then $a_1 = W^{-1/2} b_1$;
+- $b_2 =$ second eigenvector, then $a_2 = W^{-1/2} b_2$;
+- and so on.
+
+The $b_j$ are orthonormal, but the $a_j$ are orthogonal only *with respect to $W$*:
+\begin{align*}
+b_j^\top b_j &= 1, & a_j^\top W a_j &= 1, \\
+b_j^\top b_\ell &= 0, & a_j^\top W a_\ell &= 0 \quad (j \ne \ell).
+\end{align*}
+At most $K-1$ directions exist, because $\operatorname{rank}(B) \le K-1$. Those directions span the same subspace obtained from reduced-rank LDA.
+
+#### LDA vs. FDA {-}
+
+LDA is a *classifier*: it produces a decision rule. FDA is a *supervised dimension-reduction* method: it returns directions, not labels. FDA does not start from a Gaussian model, but the subspace it finds coincides with that of LDA when the class-conditional covariances are equal—the same working assumption that makes LDA's boundary linear. Unlike PCA, which ignores $Y$, FDA uses the labels. The same idea can be used as a pre-processing step for regression, but in high dimensions the estimated directions overfit unless we regularize.
+
+#### Risk of overfitting {-}
+
+<img style="float: right;" src="images/week7/dimred.png" width="300" height="190">
+
+A caricature: $n = 6$ points in high dimension, three from class 1 and three from class 0. One can always find a direction that sends the first class to (near) 1 and the second class to (near) 0. The separation is an artifact of $p$ being comparable to $n$; even pure noise features can be combined to separate the training labels.
+
+Two simple remedies:
+
+- **Shrinkage / $\ell_1$ penalties.** Regularize the estimated means or the inverse covariances (or the FDA criterion itself) so that the estimated directions cannot use every coordinate.
+- **Independence.** Pretend that the $p$ coordinates are independent within each class, so that $\Sigma_k$ is diagonal. That is **naive Bayes**, and it is often a surprisingly strong high-dimensional baseline.
+
+## Naive Bayes Classifiers
+
+The multi-class Bayes rule is still
+\[
+\arg\max_k P(Y = k \mid X = \mathbf{x}) = \arg\max_k \; \pi_k \, f_k(\mathbf{x}).
+\]
+Naive Bayes imposes the product factorization
+<font color=blue>
+\[
+f_k(\mathbf{x}) = \prod_{j=1}^{p} f_{kj}(x_j),
+\]
+</font>
+i.e., the coordinates of $\mathbf{x}$ are treated as independent given the class. Independence is almost never literally true; it is a *regularizer* for high-dimensional problems.
+
+Each univariate density $f_{kj}$ is estimated separately within class $k$: histograms or multinomials for discrete features; kernel density estimates (nonparametric naive Bayes) or univariate Gaussians (parametric / Gaussian naive Bayes) for numeric features.
+
+#### Summary of parametric (Gaussian) naive Bayes {-}
+
+**Training.** From $\{(x_i, y_i)\}_{i=1}^{n}$, compute $\hat{\pi}_k$ and, for each class $k$ and coordinate $j$, the marginal mean and variance $(\hat{\mu}_{kj}, \hat{\sigma}_{kj}^2)$.
+
+**Prediction** at $\mathbf{x}^* = (x_1^*, \ldots, x_p^*)$:
+\begin{align*}
+d_k(\mathbf{x}^*)
+&= -2\log \hat{\pi}_k + \sum_{j=1}^{p}
+\Biggl[
+\log \hat{\sigma}_{kj}^2 + \frac{(x_j^* - \hat{\mu}_{kj})^2}{\hat{\sigma}_{kj}^2}
+\Biggr].
+\end{align*}
+Predict $\arg\min_k d_k(\mathbf{x}^*)$. (Additive constants that do not depend on $k$ have been dropped.)
+
+#### Summary {-}
+
+Discriminant analysis estimates the *class-conditional* factorization
+\[
+P(X = x, Y = k) = P(X = x \mid Y = k)\, P(Y = k)
+\]
+and then recovers $P(Y = k \mid X = x)$ by Bayes' theorem. The idea is conceptually clean and works well when $p$ is modest and the Gaussian (or product) model is not badly wrong. In high dimensions, unrestricted QDA/LDA overfit; pooling, shrinking, reducing rank, or assuming coordinate-wise independence are the usual ways to buy stability.
+
+## The `Digits` Recognition Example
+
+### Discriminant analysis in R {.unnumbered .unlisted}
+
+
+The Python version of this section can  be found here: <a href="code/ch7_PythonExample.html"> <b>Discriminant Analysis in Python</b> </a>.
+
+
+To make the ideas concrete we use the handwritten ZIP-code digits from *The Elements of Statistical Learning*. The data originally  in `ElemStatLearn`  are now available in `tensorBSS`. Each observation is a $16 \times 16$ grayscale image, stored as 256 pixels, together with a label in $\{0,1,\ldots,9\}$. The task is to classify the digit. We will try LDA, QDA, FDA, and naive Bayes.
+
+The package also provides a proper test set `zip.test` ($n = 2007$). Below we instead draw a small training/test split from `zip.train` so that the demonstration stays fast; you should feel free to repeat the analysis on the official `zip.test`.
+
+```{r digits-setup}
+library(tensorBSS) ## ESL ZIP-code digits
+library(MASS)      ## lda(), qda()
+library(e1071)     ## naiveBayes()
+data(zip.train)
+```
+
+Column 1 is the digit label; columns 2 through 257 are the pixels. A few training images:
+
+```{r digits-images, fig.width=6, fig.height=6}
+par(mfrow = c(2, 3), mai = c(0.15, 0.15, 0.15, 0.15))
+for (i in 1:6) {
+  digit.img <- matrix(zip.train[i, -1], nrow = 16, byrow = TRUE)
+  digit.img <- t(digit.img)[, 16:1]
+  image(1:16, 1:16, digit.img, axes = FALSE, col = gray.colors(256, rev = TRUE))
+}
+```
+
+```{r digits-split}
+set.seed(598)
+n <- nrow(zip.train)
+
+train.index <- sample(1:n, 800)
+remaining.index <- setdiff(1:n, train.index)
+test.index <- sample(remaining.index, 200)
+
+train.zip <- zip.train[train.index, ]
+test.zip  <- zip.train[test.index, ]
+
+X.train <- train.zip[, 2:257]
+Y.train <- train.zip[, 1]
+X.test  <- test.zip[, 2:257]
+Y.test  <- test.zip[, 1]
+```
+
+### Linear Discriminant Analysis (LDA) {.unlisted .unnumbered}
+
+```{r digits-lda}
+digits.lda <- lda(X.train, Y.train)
+```
+
+```{r digits-lda-acc}
+Y.predicted <- predict(digits.lda, X.test)$class
+acc.lda <- mean(Y.predicted == Y.test)
+acc.lda
+# table(Y.test, Y.predicted)  # uncomment for the confusion matrix
+```
+
+On this particular split the test accuracy is `r round(100 * acc.lda, 1)`%. The number will move if you change the seed or the split sizes; the official `zip.test` is a harder benchmark.
+
+### Quadratic Discriminant Analysis (QDA) {.unlisted .unnumbered}
+
+A direct call to `qda()` fails here. With $p = 256$ pixels and only a few hundred observations per digit, each class covariance is rank-deficient, and `MASS::qda` does not regularize automatically.
+
+```{r digits-qda, eval=FALSE}
+## digits.qda <- qda(X.train, Y.train)  # rank-deficient Sigma_k
+```
+
+### Fisher Discriminant Analysis (FDA) {.unlisted .unnumbered}
+
+The matrix `lda()$scaling` contains the Fisher directions (at most $K-1 = 9$ of them for ten digits).
+
+```{r digits-fda-dir}
+FDA.digits.directions <- digits.lda$scaling
+dim(FDA.digits.directions)
+```
+
+Project training and test data onto the first two Fisher directions:
+
+```{r digits-fda-plot, fig.width=8, fig.height=4}
+F.train <- X.train %*% FDA.digits.directions
+F.test  <- X.test  %*% FDA.digits.directions
+
+par(mfrow = c(1, 2))
+plot(F.train[, 1], F.train[, 2], type = "n",
+     xlab = "FD 1", ylab = "FD 2", main = "Training")
+text(F.train[, 1], F.train[, 2], Y.train, col = Y.train + 7)
+
+plot(F.test[, 1], F.test[, 2], type = "n",
+     xlab = "FD 1", ylab = "FD 2", main = "Test")
+text(F.test[, 1], F.test[, 2], Y.test, col = Y.test + 7)
+```
+
+The training cloud (left) looks neatly separated. The test cloud (right) does not reproduce that separation. That gap is overfitting: the nine directions were tuned to the 800 training images.
+
+Feel free to plot other pairs of columns of `F.train` / `F.test`; different planes tell different stories.
+
+#### Computational remarks {-}
+
+We can recover the same directions by forming $W$ and $B$ explicitly. A no-intercept dummy regression of the features on the class labels yields residuals $\mathbf{x}_i - \hat{\mu}_{y_i}$ and fitted values $\hat{\mu}_{y_i}$:
+
+```{r digits-fda-wb}
+tmp.lm <- lm(X.train ~ as.factor(Y.train) - 1)
+W <- cov(tmp.lm$residuals)
+B <- cov(tmp.lm$fitted)
+
+eigenW <- eigen(W, symmetric = TRUE)
+## Guard tiny/negative eigenvalues so W^{-1/2} is defined
+ev <- pmax(eigenW$values, 1e-8)
+A <- eigenW$vectors %*% diag(1 / sqrt(ev)) %*% t(eigenW$vectors)
+```
+
+```{r digits-fda-eigen}
+FDA.eigen <- eigen(A %*% B %*% t(A), symmetric = TRUE)
+FDA.eigen.dir <- A %*% FDA.eigen$vectors[, 1:9]
+
+## Signs of eigenvectors are arbitrary, so correlations may be ±1
+for (j in 1:9) {
+  print(cor(FDA.eigen.dir[, j], FDA.digits.directions[, j]))
+}
+```
+
+#### FDA vs. PCA {-}
+
+PCA ignores the labels. The leading principal axes need not be good separating directions.
+
+```{r digits-pca}
+Sigma <- cov(X.train)
+dig.eigen <- eigen(Sigma, symmetric = TRUE)
+PCA.dir <- dig.eigen$vectors[, 1:100]
+dim(PCA.dir)
+```
+
+PCA directions are orthonormal in the usual Euclidean inner product:
+
+```{r digits-pca-orth}
+round(t(PCA.dir[, 1:10]) %*% PCA.dir[, 1:10], digits = 2)
+```
+
+FDA directions are not:
+
+```{r digits-fda-not-orth}
+round(t(FDA.eigen.dir) %*% FDA.eigen.dir, digits = 2)
+```
+
+They *are* orthogonal with respect to $W$:
+
+```{r digits-fda-W-orth}
+round(t(FDA.eigen.dir) %*% W %*% FDA.eigen.dir, digits = 2)
+```
+
+A practical compromise is to reduce dimension with PCA first and then run LDA/FDA in the principal subspace. That often trades a little training separation for a more stable test result.
+
+```{r digits-pca-lda}
+newX.train <- X.train %*% PCA.dir
+newX.test  <- X.test  %*% PCA.dir
+new.digits.lda <- lda(newX.train, Y.train)
+Y.test.pred <- predict(new.digits.lda, newX.test)$class
+table(Y.test, Y.test.pred)
+mean(Y.test != Y.test.pred)  # test error
+```
+
+```{r digits-pca-lda-plot, fig.width=8, fig.height=4}
+newF     <- newX.train %*% new.digits.lda$scaling
+newFtest <- newX.test  %*% new.digits.lda$scaling
+
+par(mfrow = c(1, 2))
+plot(newF[, 1], newF[, 2], type = "n",
+     xlab = "FD 1", ylab = "FD 2", main = "Training (PCA then LDA)")
+text(newF[, 1], newF[, 2], Y.train, col = Y.train + 5)
+plot(newFtest[, 1], newFtest[, 2], type = "n",
+     xlab = "FD 1", ylab = "FD 2", main = "Test (PCA then LDA)")
+text(newFtest[, 1], newFtest[, 2], Y.test, col = Y.test + 5)
+```
+
+Training separation is less dramatic after the $256 \to 100$ compression, but the training and test pictures are more consistent—the usual signature that we have given up some overfit.
+
+### Naive Bayes Prediction {-}
+
+As a high-dimensional baseline we fit Gaussian naive Bayes to a two-class slice (digits 1 versus 7), using `e1071::naiveBayes`. Restricting to two classes makes the confusion matrix easy to read; the same function will run on all ten digits.
+
+```{r digits-nb}
+zip17      <- train.zip[train.zip[, 1] %in% c(1, 7), ]
+zip17.test <- test.zip[test.zip[, 1]  %in% c(1, 7), ]
+Y.17 <- as.factor(zip17[, 1])
+X.17 <- zip17[, -1]
+
+NBfit  <- naiveBayes(X.17, Y.17)
+y_pred <- predict(NBfit, zip17.test[, -1])
+acc.nb <- mean(y_pred == zip17.test[, 1])
+acc.nb
+table(Predicted = y_pred, Actual = zip17.test[, 1])
+```
