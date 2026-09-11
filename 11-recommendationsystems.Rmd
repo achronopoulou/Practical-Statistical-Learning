@@ -1,28 +1,28 @@
 # Recommender Systems
 
 
-A **recommender** or a **recommendation system** or **recommendation platfor** is a subclass of information filtering system that seeks to predict the rating or preference a use would give to an item.
+A **recommender system** (also called a recommendation system or recommendation platform) is a subclass of information filtering systems that seeks to predict the rating or preference a user would give to an item.
 
 
-Recommendation Systems are everywhere: in movie/ series streaming platforms (e.g., Netflix), e-commerce websites (e.g., Amazon), social network platforms (e.g., Facbook, LinkedIn) or dating apps. The recommendation systems typically leverages historical data to automatically recommend items/products that a user is likely to be interested in. 
+Recommender systems are everywhere: in movie/series streaming platforms (e.g., Netflix), e-commerce websites (e.g., Amazon), social network platforms (e.g., Facebook, LinkedIn), or dating apps. These systems typically leverage historical data to automatically recommend items or products that a user is likely to be interested in.
 
 
 
-So, let's consider how those recommender systems are constructed. Historically, everything started with top 5 lists. Few years ago, recommendations you could find were about top 5 destinations for the summer, top 5 Black Friday deals, so on and so forth. However, those recommendations are  based on expert knowledge or aggregate statistics and there is a lack of personalization. This is exactly where the recommender systems come in.
+So, let's consider how those recommender systems are constructed. A useful starting point is the *non-personalized* baseline that many platforms still display: top-5 lists. A few years ago, the recommendations you could find were about top-5 destinations for the summer, top-5 Black Friday deals, and so on. Those lists are based on expert knowledge or aggregate statistics, and they lack personalization. This is exactly where recommender systems come in.
 
-In this section, we are going to explore fundamental recommendation methods, such as content-based methods or collaborative filtering, item-based or user-based, or latent factor models. If we classify the different methods, we notice that they are based on mainly two types of information: (i) characteristics/ information about the items, and/or (ii) user-item interactions. This approach leads to 
+In this section, we explore fundamental recommendation methods: content-based methods, collaborative filtering (item-based or user-based), and latent factor models. If we classify the different methods, we notice that they are based on mainly two types of information: (i) characteristics or information about the items, and/or (ii) user-item interactions. This approach leads to
 
-* <font color=blue>**Content-based methods**</font>: focusing on attributes of a specific item
+* <font color=blue>**Content-based methods**</font>: focusing on attributes of a specific item.
 
-* <font color=blue>**Collaborative Filtering**</font> (item-based/ user-based) methods: based on the analysis of user-item interaction data.
+* <font color=blue>**Collaborative Filtering**</font> (item-based / user-based) methods: based on the analysis of user-item interaction data.
+
+* <font color=blue>**Baseline predictors**</font>: global, user, and item effects as a first model for the rating matrix.
 
 * <font color=blue>**Latent Factor Models**</font>: also based on the analysis of user-item interaction data.
 
-* <font color=blue>**Hybrid methods**</font>: combination of content-based methods with collaborative filtering ones depending on the challenge.
+Hybrid methods combine content-based ideas with collaborative filtering, and modern production systems often use deep learning. We mention those only briefly at the end; the rest of this chapter develops the three families above.
 
-* <font color=blue>**Deep Recommender Systems**</font>: more modern techniques based on deep learning algorithms.
-
-In general, several of those systems have been historically developed by Netflix, going back to the Netflix prize competition.
+Several of these ideas were sharpened in industry, notably around the **Netflix Prize** (2006--2009), a public competition that asked teams to predict movie ratings and scored them by RMSE. Matrix factorization became a standard latent-factor method in large part because of that competition.
 
 
 
@@ -31,29 +31,30 @@ In general, several of those systems have been historically developed by Netflix
 ## Content-Based Methods
 
 
-The content-based method is more intuitive. So, assume that we are an online bookstore and we want to create a comprehensive catalogue of our products, making sure that we know we are able to accurately represent every item/book. So, we need to represent each book as a multidimensional feature vector. The features could include the author, the publisher, the genre, the year; anything that we believe describes the type of book in an effort to construct an item profile. Then, we visualize every item as a distinct point  within a multidimensional feature space (the orange dots in the Figure)
+The content-based method is the more intuitive of the two classical approaches. Assume that we are an online bookstore and we want a catalogue in which every item (book) can be represented accurately. We represent each book as a multidimensional feature vector. The features could include the author, the publisher, the genre, and the year---anything that we believe describes the type of book---and the resulting vector is the *item profile*. We then visualize every item as a distinct point within a multidimensional feature space (the orange dots in the figure).
 
-```{r ,echo=FALSE, message=FALSE, warning=FALSE, fig.align="center", out.width="30%", fig.cap="User & Item feature space"}
+```{r ,echo=FALSE, message=FALSE, warning=FALSE, fig.align="center", out.width="30%", fig.cap="User and Item feature space"}
 knitr::include_graphics("images/week11/useritem.png")
 ```
 
-We have a bank of all these item profiles for the various items, but we also construct a user profile within the same dimensional framework (the green dots in the Figure). It is more challenging to construct the user profile. Typically, this is done either _directly_ by asking users direct questions for feedback, or _indirectly_ by monitoring a user's activity on the website (by clicks, iewing times, analysis of previous items the user interacted with). These profiles usually give more weight to recent interactions compared to older ones. So, then the recommendation is based on the items that are **closer** to the user in this multidimensional feature space. In other words, <font color=blue>_closeness equates to preference_</font> giving us the ability to make tailored recommendations.
+We keep a bank of item profiles, and we also construct a *user profile* in the same feature space (the green dots in the figure). Building the user profile is harder. Typically this is done either *directly*, by asking users for feedback, or *indirectly*, by monitoring activity on the website (clicks, viewing times, and analysis of items the user has already interacted with). These profiles usually give more weight to recent interactions than to older ones. The recommendation is then based on the items that are **closer** to the user in this multidimensional feature space. In other words, <font color=blue>*closeness equates to preference*</font>, which gives us a way to make tailored recommendations.
 
 
-The main advantage of this approach is that it does not require any other user's data to make a recommendation. Therefore, it's very efficient, and we are able to start making recommendations from day one  without waiting for some expensive and extensive  user-item interaction data. In addition to that, this is a model that it does not discriminate based on item popularity.  In other words, if there is an item that is more or less popular than another, the method does not make any discrimination since the decision is made solely based on closeness.
+**Advantages.** The main advantage of this approach is that it does not require any other user's data to make a recommendation. It is therefore possible to start recommending from day one, without waiting for an expensive collection of user-item interaction data. The method also does not discriminate on the basis of item popularity: a rare book and a bestseller are treated the same way if they sit at the same distance from the user. Recommendations are tied to explicit features, which makes the system relatively transparent. It is easy to say why an item was recommended (matching author, genre, and so on) and how it aligns with the user's interests.
 
-Therefore, the recommendation is based on the other features, and that's a way that makes the items solely focused on our preferences, and they match our previous choices offering also a higher degree of transparency. It is easy to articulate why an item was recommended based on a specific set of features and how it aligns with the user's interests which means that there is limited discovery. Since every recommendation is based on similar item that the user has previously interacted with, then there is no appropriate discovery resulting in always providing similar recommendations.
+**Limitations.** The same mechanism produces *limited discovery*. Because every recommendation is based on items similar to those the user has already interacted with, the system tends to keep suggesting more of the same and rarely surfaces something unexpected. New users with empty profiles are also hard to place in the feature space until some feedback has been collected.
+
 
 
 
 ## Collaborative Filtering
 
 
- The collaborative filtering method relies on an interaction matrix between users and items, known as <font color=darkblue>**the rating matrix**</font>, that is an $m \times n$ grid, where rows represent users and columns represent items.  Within this matrix, some entries are known via _explicit_ or _implicit_ feedback. Explicit feedback might be direct ratings, such as a user’s rating of a movie on Netflix on a scale from one to five, signaling clear preferences.   Implicit feedback could come from user behaviors such as clicking on an item or spending time viewing a particular movie, providing subtle clues about their interests.
+The collaborative filtering method relies on an interaction matrix between users and items, known as <font color=darkblue>**the rating matrix**</font>. This is an $m \times n$ grid, where rows represent users and columns represent items. Within this matrix, some entries are known via *explicit* or *implicit* feedback. Explicit feedback might be direct ratings, such as a user's rating of a movie on Netflix on a scale from one to five. Implicit feedback comes from behavior such as clicking on an item or spending time viewing a particular movie, which provides only indirect clues about preference.
 
 
 
-"Mathematically", the problem we need to solve is that of _matrix completion_, since we need to fill in the blanks, by predicting user preferences for items a user has not  interacted with yet.
+Mathematically, the problem we need to solve is *matrix completion*: we fill in the blanks by predicting preferences for items a user has not yet interacted with. Throughout, we write $r_{aj}=?$ when user $a$ has no observed rating for item $j$.
 
 
 ```{r ,echo=FALSE, message=FALSE, warning=FALSE, fig.align="center", out.width="45%"}
@@ -62,41 +63,40 @@ knitr::include_graphics("images/week11/ratingmatrix.png")
 
 There are two types of collaborative filtering:
 
-* <font color=blue>**User-based CF**</font>: "_Similar users will like similar items_", e.g.,  if User A liked an item and User B has a similar profile to User A, it is likely that User B will also like that item. The 
-Challenge: defining what makes users similar.
+* <font color=blue>**User-based CF**</font>: "*Similar users will like similar items.*" For example, if User A liked an item and User B has a similar profile to User A, it is likely that User B will also like that item. The challenge is defining what makes users similar.
 
-
-* <font color=blue>**Item-based CF**</font>: "_Users will like items similar to those they have already liked._" e.g., if User A liked Item X, and Item Y is similar to Item X, then User A is likely to like Item Y as well.
+* <font color=blue>**Item-based CF**</font>: "*Users will like items similar to those they have already liked.*" For example, if User A liked Item X, and Item Y is similar to Item X, then User A is likely to like Item Y as well.
 
 
 
 #### User-based Collaborative Filtering {-}
 
-The challenge in used-based collaborative filtering is to  quantify the resemblance between users or items, even with incomplete data. This means that we need to define the notion of **similarity**.  Some of the most commonly used similarity metrics include:
+The challenge in user-based collaborative filtering is to quantify resemblance between users (or, later, items) even when most ratings are missing. This means that we need a notion of **similarity**. Some of the most commonly used similarity metrics include:
 
 
-* <font color=blue>**Jaccard Similarity**</font>: compares users based on the items they have both interacted with, or compare items based on shared users (ideal for binary data):
-\[\frac{|A\cap B|}{|A\cup B|}, \text{ where } A, B \text{ are two sets}\]
+* <font color=blue>**Jaccard Similarity**</font>: compares users based on the items they have both interacted with, or compares items based on shared users. It is ideal for binary data. For explicit ratings one first binarizes (for example, "rated" versus "not rated", or "liked" versus "not liked"):
+\[\frac{|A\cap B|}{|A\cup B|}, \quad \text{where } A, B \text{ are two sets.}\]
 
 
-* <font color=blue>**Cosine Similarity**</font>: measures the cosine of the angle between two vectors in an $n$-dimensional space. Missing values are ignored or equivalently treated as zeros:
-\[\frac{u^T v}{||u|| \cdot ||v||}, \text{ where } u,v \text{ are two vectors}\]
+* <font color=blue>**Cosine Similarity**</font>: measures the cosine of the angle between two vectors. Missing values are ignored, or equivalently treated as zeros:
+\[\frac{u^{\top} v}{\|u\| \cdot \|v\|}, \quad \text{where } u,v \text{ are two vectors.}\]
 
 * <font color=blue>**Centered Cosine Similarity (Pearson Correlation)**</font>:
-A variation of cosine similarity. First, normalizes around a user's (or item's) average rating by subtracting the mean of the observed values:
-\[\frac{(u-\bar{u})^T (v-\bar{v})}{||u-\bar{u}|| \cdot ||v-\bar{v}||}, \text{ where } u,v \text{ are two vectors}\]
+A variation of cosine similarity that first subtracts a user's (or item's) mean rating:
+\[\frac{(u-\bar{u})^{\top} (v-\bar{v})}{\|u-\bar{u}\| \cdot \|v-\bar{v}\|}, \quad \text{where } u,v \text{ are two vectors.}\]
 
 <br><br>
 
-Cosines (or correlation coefficients) fall within the range [-1, 1], while similarity measures are typically expected to be within the range [0, 1].%Alternatively consider de To bridge this gap, it’s customary to define similarity as (1 + cos)/2.
+Cosine and Pearson coefficients fall in the range $[-1, 1]$, whereas a similarity used as a weight is often expected to lie in $[0, 1]$. Negative similarities are awkward in a weighted average, so in practice one either keeps only positive similarities or maps the coefficient to $[0,1]$ via $(1+\cos)/2$. In what follows we treat the similarity $s_{au}$ as a weight and assume that convention has already been chosen.
 
- The measures are computed based on the shared, non-missing elements between two entities. 
-For example, for users u and v, the calculation relies on ratings for items that they have both rated. This implies that in the calculation the length of vector u can vary depending on whether we are computing the similarity between u and v1 or the similarity between u and v2. It’s worth noting that it’s common to obtain a similarity of 1 between two users if they have rated only one shared item.
+The measures are computed from the *shared*, non-missing elements between two entities. For users $u$ and $v$, the calculation uses only items that both users have rated. Consequently the effective length of the vector for $u$ can change depending on whether we compare $u$ with $v_1$ or $u$ with $v_2$. A common pathology is that two users who have rated only one item in common receive similarity $1$.
 
+Two conventions for centering are in use, and they are not the same:
 
+* **Center on all of a user's ratings, then take cosine on co-rated items.** If user $u$ has rated 20 movies and 5 of those are also rated by user $v$, the mean $\bar{u}$ is computed from all 20 ratings, while the cosine uses only the 5 shared ratings. This is the usual implementation of Pearson correlation in recommender systems.
+* **Restrict everything, including the means, to co-rated items.** In the same example, both the centering and the cosine use only the 5 shared ratings.
 
-To address the issue, we can restrict all calculations, including centering, to the shared, non-missing elements between two entities. Alternatively, we can first center each user's ratings to eliminate user bias and then computing the cosine similarity. 
-For example, if user u has rated 20 movies, and 5 of those movies are also rated by user v, the calculation during the centering stage takes into account all 20 ratings, whereas the cosine calculation considers only the shared 5 ratings. In contrast, in the centered cosine similarity calculation mentioned above, all computations, including centering, are restricted to the three shared ratings. Last, we need to be mindful of a potential issue related to the denominator: the denominator can become zero when all non-NA (non-missing) elements of $u$ are constant.
+The displayed formula above corresponds to the second convention if $\bar{u}$ and $\bar{v}$ are computed on the co-rated support only. Finally, the denominator can become zero when all non-missing entries of a (centered) vector are constant, so those pairs must be skipped or regularized.
 
 
 
@@ -108,7 +108,19 @@ knitr::include_graphics("images/week11/ucbf.png")
 
 
 
-In the illustration above we used simple averages. We can extend this to **weighted averages**, using weights based on proximity to the user of interest. In practice, to reduce missing ratings among the $k$-nearest neighbors, we can select the nearest neighbors who have rated the specific item in question. Consequently, the selected nearest neighbors of users may vary contingent upon the item under consideration.
+In the illustration above we used simple averages. We can extend this to **weighted averages**, using weights based on proximity to the user of interest. Let $N(a)$ be the set of $k$ nearest neighbors of user $a$. The predicted rating of user $a$ for item $i$ is
+
+\[
+\hat{r}_{ai}
+=
+\frac{
+\sum_{u \in N(a):\, r_{ui} \neq ?} s_{au}\, r_{ui}
+}{
+\sum_{u \in N(a):\, r_{ui} \neq ?} s_{au}
+}.
+\]
+
+The prediction is undefined if no neighbor of $a$ has rated item $i$. In practice, to reduce that problem, we select the nearest neighbors *among users who have rated the item in question*. The neighborhood of $a$ may therefore change with $i$. A mean-centered variant replaces $r_{ui}$ by $r_{ui}-\bar{r}_u$ and then adds $\bar{r}_a$ back after the weighted average.
 
 
 
@@ -124,7 +136,7 @@ In item-based collaborative filtering, we consider similarities between items in
 knitr::include_graphics("images/week11/icbf.png")
 ```
 
-The top three entries in each row are highlighted in bold, since we consider only 3-nearest neighbors.For a test user, represented in orange, who has provided ratings for items 1, 5, and 8, these respective columns are highlighted in blue. These are the items the test user has rated, and their ratings will serve as the foundation for our predictions.
+The top three entries in each row are highlighted in bold, since we consider only 3-nearest neighbors. For a test user, represented in orange, who has provided ratings for items 1, 5, and 8, these respective columns are highlighted in blue. These are the items the test user has rated, and their ratings will serve as the foundation for our predictions.
 
 
 
@@ -133,13 +145,21 @@ The top three entries in each row are highlighted in bold, since we consider onl
 
 
 
-For the test user in question, the aim is to predict the ratings for the unreviewed items using the known ratings for items 1, 5, and 8. 
+For the test user in question, the aim is to predict the ratings for the unreviewed items using the known ratings for items 1, 5, and 8.
 
-The \textbf{predicted rating} $\hat{r}_{ai}$ for item $i$ from user $a$ is calculated using a weighted average, where the weight is the similarity measure between items:
+Let $S(i)$ be the set of $k$ nearest items to item $i$ (in the figure, $k=3$). The **predicted rating** $\hat{r}_{ai}$ for item $i$ from user $a$ is a weighted average of $a$'s ratings on those neighbors that $a$ has actually rated, with weights given by item-item similarities $s_{ij}$:
 
-\[\hat{r}_{ai} = \frac{1}{\sum_{j\in S(i)\cap {j:r_{aj}\neq ?}} s_{ij} } \sum_{j\in S(i)\cap {j:r_{aj}\neq ?}} s_{ij} r_{aj} \]
+\[
+\hat{r}_{ai}
+=
+\frac{
+\sum_{j \in S(i):\, r_{aj} \neq ?} s_{ij}\, r_{aj}
+}{
+\sum_{j \in S(i):\, r_{aj} \neq ?} s_{ij}
+}.
+\]
 
- The prediction is missing if the set $S(i)\cap {j:r_{aj}\neq ?}$  is empty, i.e. when none of the similar items have been rated by the user. To reduce missing ratings among the $k$-nearest neighbors,  we can employ a strategic selection of nearest neighbors based on available item ratings, which might vary per item. As a solution,  we can dynamically adjust the neighbors chosen based on the item in question.
+The prediction is missing if the set $\{j \in S(i): r_{aj} \neq ?\}$ is empty, i.e., when none of the similar items have been rated by the user. As in the user-based case, we can choose the neighbors of $i$ dynamically among items that user $a$ has rated, so that the neighborhood used for $\hat{r}_{ai}$ can depend on $a$.
 
 
 <br>
@@ -147,26 +167,58 @@ The \textbf{predicted rating} $\hat{r}_{ai}$ for item $i$ from user $a$ is calcu
 #### Pros and Cons of Collaborative Filtering {-}
 
 
-Collaborative Filtering does not rely on pre-defined features since user interactions become the features, potentially recommending items outside the user's typical profile. 
-It cannot start from day one since it requires a build-up of user-item interaction data. New items without interaction data cannot be recommended, often referred to as the **cold start** problem. There is also a risk of a popularity bias where popular items are recommended to everyone, negating the personalization aspect.
+Collaborative filtering does not rely on pre-defined item features: user interactions *become* the features, so the system can recommend items outside the user's usual content profile.
+It cannot start from day one, because it needs a build-up of user-item interaction data. New items with no interaction history cannot be recommended; this is the **cold start** problem (the same issue appears for brand-new users). There is also a risk of popularity bias, in which items that many people have already rated are recommended to everyone and personalization is weakened.
 
 <br>
 
 #### Item-Based vs User-Based Collaborative Filtering {-}
 
 
-The choice between user-based and item-based collaborative filtering often depends on the specific context and platform. 
+The choice between user-based and item-based collaborative filtering often depends on the specific context and platform.
 
-For instance, e-commerce sites and streaming services, such as Amazon and Netflix, have found that IBCF tends to be more effective. This is likely because item similarities are more consistently defined than user similarities, making item similarity a more reliable metric compared to the unpredictability of human preferences.
+For instance, e-commerce sites and streaming services such as Amazon and Netflix have often found item-based CF more effective. Item similarities tend to be more stable over time than user similarities, and "users who liked this also liked that" is a more reliable relation than the less predictable notion of similar people.
 
-Both collaborative filtering algorithms are not computationally efficient in identifying the nearest neighbors within a vast data set. Approximation algorithms, clustering techniques, and efficient data structuring are essential to mitigate computational costs.
-
-
-
- Item-based collaborative filtering also offers _computational_ advantages. While both UBCF and IBCF must efficiently pinpoint nearest neighbors, IBCF has the benefit of offloading much of its computational load to the offline phase.  User-based collaborative filtering  has no distinct training phase, and the computational effort is deferred to the prediction stage. At this point, similarities between users are calculated on-the-fly, which can be resource-intensive in real-time.
+Neither algorithm is cheap if one identifies nearest neighbors by a brute-force scan of a large catalog. Approximation algorithms, clustering, and efficient data structures are used to keep the cost manageable.
 
 
-Item-based collaborative filtering  concentrates the bulk of its computation during the training phase facilitating the prediction phase. It involves creating and sorting a comprehensive item-to-item similarity matrix. While this upfront computation is intensive, it facilitates a more straightforward prediction phase. However, despite the ease of prediction, the pre-computed similarity matrix requires careful memory management during the prediction phase, ensuring they can be stored and accessed efficiently to generate recommendations.
+
+Item-based CF also has a *computational* advantage in production. Both methods must find nearest neighbors, but item-based CF can push most of the work into an offline training phase: one builds and sorts an item-to-item similarity matrix once, then serves predictions from it. User-based CF has no comparable static training phase; similarities between users are computed at prediction time, which is expensive in real time.
+
+The tradeoff is memory. The precomputed item-item matrix must be stored and accessed efficiently when recommendations are generated. If the catalog is huge one typically keeps only the top-$k$ similarities per item.
+
+
+<br>
+
+
+
+## Baseline Predictors
+
+
+Before we go to latent factors, it is useful to look at a much simpler model. Some users rate everything highly, some items are universally liked, and there is an overall average level of ratings. So a natural first prediction for a missing entry is not a neighbor or a latent factor, but a *baseline*.
+
+Start with the global average of all observed ratings, \(\mu\). Then allow each user their own offset \(a_i\) and each item its own offset \(b_j\):
+
+\[
+\hat{R}_{ij} = \mu + a_i + b_j.
+\]
+
+This is just a regression on dummy variables for users and items, fit only on the observed entries. We can think of a ladder of baselines:
+
+- predict everything by the global mean \(\mu\),
+- then by a user mean \(\mu + a_i\),
+- then by an item mean \(\mu + b_j\),
+- then by \(\mu + a_i + b_j\).
+
+Already this removes a lot of the obvious structure in the rating matrix. The residual
+
+\[
+\tilde{R}_{ij} = R_{ij} - \mu - a_i - b_j
+\]
+
+is what neighborhood methods or latent factors should be asked to explain. In that sense, collaborative filtering and matrix factorization are models for the leftover, not for the raw stars.
+
+We usually regularize \(a_i\) and \(b_j\) as well, especially for users or items with very few ratings --- the same shrinkage idea as in penalized regression. A user who has rated only one movie should not get a huge \(a_i\).
 
 
 <br>
@@ -176,36 +228,65 @@ Item-based collaborative filtering  concentrates the bulk of its computation dur
 ## Latent Factor Model
 
 
-The latent factor model offers a sophisticated approach to handling the rating matrix.
-The rating matrix is  decomposed using Singular Value Decomposition (SVD)  to two narrower matrices.
-
+The latent factor model is another way to work with the rating matrix. The idea is inspired by a truncated singular value decomposition (SVD): we approximate the $m \times n$ rating matrix by a product of two thinner factor matrices that embed users and items in a shared $d$-dimensional space.
 
  
 ```{r ,echo=FALSE, message=FALSE, warning=FALSE, fig.align="center", out.width="65%"}
 knitr::include_graphics("images/week11/latent.png")
 ```
 
-The decomposition of the rating matrix is given by
-\[R_{m \times m} \approx U_{m\times d} V^T_{d \times n}\]
-
-In this framework, the $d$ columns of $U$ represent user features, while the $d$ columns of $V$ (or $d$ rows of $V^T$ ) correspond to item features. By adopting this decomposition, we effectively embed users and items into a shared d-dimensional space, allowing their preferences to be measured through inner product or similarity metrics.
-
-
-The classical SVD algorithm is not directly applicable due to the presence of missing entries in the matrix. To address this, we minimize the _quadratic loss_, but only over the **entries that are not missing**. When there are no missing entries, this minimizer would essentially yield the results of an ordinary SVD. However, the adjusted loss function is specifically designed to handle the gaps presented by these missing entries.  To further refine this approach and avoid overfitting, penalty terms are incorporated into the loss function. The convex nature of this function makes gradient descent a suitable solution method:
-
-\[\sum_{R_{ij}\neq ?} (R_{ij} - u_i^T v_j)^2 + \lambda_1 Pen(U) + \lambda_2 Pen(V)\] 
-
-where $u_i$, the $i$-th row of matrix $U$, is the latent vector for user $i$, and $v_j$, the $j$-th row of matrix $V$, is the latent vector for item $j$. After determining these latent vectors, the preference predictions for missing entries are then estimated by computing the inner product of the corresponding d-dimensional vectors for users and items.
+The decomposition is
+\[
+R_{m \times n} \approx U_{m \times d}\, V^{\top}_{d \times n},
+\]
+where $V$ is $n \times d$. The $d$ columns of $U$ are user factors and the $d$ columns of $V$ (equivalently, the $d$ rows of $V^{\top}$) are item factors. A user's predicted preference for an item is the inner product of the corresponding factor vectors. In a full SVD one would also have a diagonal matrix of singular values; here those scales are absorbed into $U$ and $V$.
 
 
+Classical SVD cannot be applied directly, because $R$ has missing entries. Instead we minimize a quadratic loss *only over observed ratings*. If every entry were observed, that minimizer would recover (a truncation of) the ordinary SVD. To avoid overfitting we add penalty terms on the factors. The resulting objective is
 
-Taking this model further, the introduction of a baseline model helps to correct biases. This involves analyzing the rating matrix  and incorporating both the global average effect and specific effects related to users and items. %Similar to the approach used in centered cosine similarity, this baseline model removes user and item effects, refining the latent model’s predictive accuracy.
+\[
+\sum_{R_{ij} \neq ?} \bigl(R_{ij} - u_i^{\top} v_j\bigr)^2 + \lambda_1 \mathrm{Pen}(U) + \lambda_2 \mathrm{Pen}(V),
+\]
+
+where $u_i$, the $i$-th row of $U$, is the latent vector for user $i$, and $v_j$, the $j$-th row of $V$, is the latent vector for item $j$. Typical penalties are squared Frobenius norms, $\mathrm{Pen}(U)=\|U\|_F^2$ and $\mathrm{Pen}(V)=\|V\|_F^2$.
+
+This loss is convex in $U$ for fixed $V$ and convex in $V$ for fixed $U$, but it is **not jointly convex** in $(U,V)$. In practice one therefore uses alternating least squares (ALS), cycling between the two blocks, or stochastic gradient descent over observed ratings. After the factors have been fit, a missing entry is predicted by the inner product $u_i^{\top} v_j$.
 
 
-\[R_{ij} = \underbrace{\mu}_{\text{Overall Average} } + \underbrace{a_i}_{\text{User Effect}} + \underbrace{b_j}_{\text{Item Effect}} + \tilde{R}_{ij}\]
+
+Taking this model further, we put the baseline from the previous section back in. The latent product is then asked only to explain what is left after $\mu + a_i + b_j$:
+
+\[
+R_{ij} = \underbrace{\mu}_{\text{Overall Average} } + \underbrace{a_i}_{\text{User Effect}} + \underbrace{b_j}_{\text{Item Effect}} + u_i^{\top} v_j.
+\]
+
+Substituting that into the loss, and regularizing $a$ and $b$ as well, gives
+
+\[
+\sum_{R_{ij} \neq ?}
+\bigl(R_{ij} - \mu - a_i - b_j - u_i^{\top} v_j\bigr)^2
++ \lambda\bigl(\|U\|_F^2 + \|V\|_F^2 + \|a\|_2^2 + \|b\|_2^2\bigr).
+\]
+
+The same ALS or SGD procedures apply. In practice the baseline alone already does a lot; the factors are there to capture the leftover user--item interactions.
 
 
-Integrating these bias terms into the loss function, alongside regularization terms for a and b, facilitates gradient descent optimization. This process is straightforward and enhances the model's predictive accuracy.
+<br>
+
+## Evaluating Recommender Systems
+
+
+Evaluation is often treated as a prediction task, but the way we *split* the data matters as much as the metric.
+
+The unit of splitting is a *rating*, not a row of a table. If we randomly shuffle users the way we did in classification, we can leak a user's later ratings into the training set and then "predict" their earlier ones. A standard protocol is:
+
+- hold out some observed entries,  at random, or better, the most recent ratings of each user,
+- fit the model on the remaining observed entries only,
+- score only the held-out cells.
+
+RMSE (and MAE) make sense when the system is really asked to predict a number of stars. RMSE was the official score of the Netflix Prize, and it is still the default number people report. It has drawbacks. In many cases we care more about higher ratings (such as 4 or 5) that signal strong interest, and about what appears at the *top of a list*. Ranking metrics such as Precision@$K$, Recall@$K$, or NDCG@$K$ are usually closer to how recommendations are actually shown.
+
+One more warning: when we compute Precision@$K$ we have to decide what counts as a "relevant" item among the ones the user never saw. Held-out high ratings are the usual proxy. That proxy is imperfect, which is one reason live experiments still matter once a system is in production.
 
 
 <br>
@@ -214,23 +295,22 @@ Integrating these bias terms into the loss function, alongside regularization te
 
 
 1. <font color=darkblue> **Computational Efficiency:**</font><br>
-To efficiently find similar items or users, a pre-clustering step is often used. By grouping users into clusters beforehand, the search for the most similar user can be restricted to within the same cluster, greatly reducing computational overhead.
+To find similar items or users efficiently, a pre-clustering step is often used. By grouping users into clusters beforehand, the search for the most similar user can be restricted to the same cluster, which reduces computational overhead.
 
 2. <font color=darkblue> **Combining Multiple Systems:**</font><br>
-In practice, recommender systems often combine multiple approaches. For instance, Amazon may showcase the week’s top deals, popular products within specific categories, and items you’ve previously shown interest in. This hybrid strategy allows the system to accommodate diverse user preferences and behaviors.
+In practice, recommender systems often combine several approaches. For instance, Amazon may showcase the week's top deals, popular products within specific categories, and items you have previously shown interest in. This hybrid strategy accommodates different user preferences and different data constraints (including cold start).
 
 3. <font color=darkblue> **Contextual Information:**</font><br>
-Modern recommendation systems also take contextual factors into account—such as a user’s location, time of access, and device (e.g., iPhone, computer, or iPad). These elements can shape recommendations, since the browsing context often influences user decisions.
+Modern recommendation systems also take contextual factors into account---a user's location, time of access, and device (e.g., phone, computer, or tablet). The browsing context often changes what a good recommendation is.
 
 4. <font color=darkblue> **Evaluating Recommender Systems:**</font><br>
-Evaluation is often treated as a prediction task. While Root Mean Square Error (RMSE) is a commonly used metric, it has its drawbacks. In many cases, we care more about higher ratings (such as 4 or 5) that signal strong user interest. As a result, metrics like Precision@K—which assess the accuracy of the top K recommendations—tend to provide more meaningful insights.
+See the previous section. The short version: split by held-out *ratings* (ideally the most recent ones), report RMSE if you are predicting stars, and report a ranking metric such as Precision@$K$ if you are producing a list.
 
 5. <font color=darkblue> **Balance between accuracy and diversity:**</font> <br>
-While accuracy in predictions is important, maintaining diversity in recommendations is equally crucial to expose users to a wider range of items. The idea of serendipity—helping users discover unexpected items they end up enjoying—also adds significant value.
+Accuracy matters, but so does diversity. If every recommendation is a near-duplicate of something the user already likes, the list is precise and still unhelpful. Serendipity---helping users discover unexpected items they end up enjoying---is part of what makes a system feel useful.
 
 6. <font color=darkblue> **Incorporating User Feedback:**</font><br>
-It’s important to differentiate between a user’s lack of interest in an item and their unawareness of it. Tracking clicks on recommended items provides valuable feedback to help make this distinction.
+It is important to distinguish a user's lack of interest in an item from mere unawareness of it. Tracking clicks (and skips) on recommended items provides feedback that ratings alone do not.
 
 7. <font color=darkblue> **Challenges in Recommendation Systems:**</font><br>
-Scalability and data sparsity pose major challenges. The “cold start” problem—how to recommend items for new users or promote newly added content—remains a difficult issue with no universal solution.
-
+Scalability and data sparsity remain the main engineering constraints. The cold-start problem---how to recommend for a new user, or how to promote a newly added item---has no single universal solution; it is usually handled by mixing content-based signals, popularity baselines, and the collaborative or latent-factor models of this chapter.

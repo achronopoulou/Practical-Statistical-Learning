@@ -15,10 +15,10 @@ rmd_files:
   - "07-classification.Rmd"
   - "08-logisticregression.Rmd"
   - "09-supportvectormachines.Rmd"
-  # - "10-classificationtrees.Rmd"
-  # - "11-recommendationsystems.Rmd"
-  # - "12-clusteringanalysis.Rmd"
-  # - "13-gaussianmixtures.Rmd"
+  - "10-classificationtrees.Rmd"
+  - "11-recommendationsystems.Rmd"
+  - "12-clusteringanalysis.Rmd"
+  - "13-gaussianmixtures.Rmd"
   
 resources:
   - code/
