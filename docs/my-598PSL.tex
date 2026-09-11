@@ -199,7 +199,7 @@
 
 \title{CS 598 Practical Statistical Learning}
 \author{Alexandra Chronopoulou}
-\date{2026-09-04}
+\date{2026-09-11}
 
 \begin{document}
 \maketitle
@@ -7446,6 +7446,2679 @@ The red dashed curve is the Bayes boundary. The linear kernel cannot track it. T
 Read the linear plot as you would a ridge CV curve: very small \(C\) underfits (wide margin, too much slack), very large \(C\) starts to overfit the training labels. The ``best'' \(C\) is the one with the smallest estimated prediction error, not the prettiest training margin.
 
 If you already use \texttt{caret} in the course, the same idea can be written as \texttt{train(...,\ method\ =\ "svmRadial")}, where \texttt{C} is \(C\) and \texttt{sigma} is the radial width. What matters is the CV curve, not the wrapper.
+
+\chapter{Classification Trees \& Ensemble Methods}\label{classification-trees-ensemble-methods}
+
+In this section we revisit \textbf{trees} in a different context. In contrast to regression trees, the response is now a \textbf{categorical} variable taking values in a discrete set, \(Y\in \{1, 2, \ldots, K\}\). Given features \(X = (X_1, X_2, \ldots, X_p)\), the goal is to assign a new observation to one of the \(K\) classes.
+
+Tree-based methods, as discussed earlier, are \emph{nonparametric} procedures that recursively partition the feature space into hyper-rectangular regions and make a constant prediction in each region. Historically there are two main lines of tree algorithms: \emph{Classification and Regression Trees} (CART; Breiman, Friedman, Olshen, and Stone, 1984) and the \emph{ID3/C4.5} family (Quinlan, 1986, 1993).
+
+As an illustration we use the \emph{Titanic survival} data, a staple example for classification. The version in the chunk below was downloaded from Kaggle here. We use \emph{passenger class}, \emph{sex}, \emph{age}, \emph{number of siblings/spouses aboard}, and \emph{number of parents/children aboard} to predict whether a passenger survived. Pruning works in the same way as for regression trees.
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-107-1.pdf}}
+
+The terminal nodes show the idea of a classification tree: the algorithm recursively splits the feature space until each region is dominated by \emph{one class}, and that majority class is the prediction for the region.
+
+Once the tree is grown, the prediction in a terminal node \(\mathcal{T}\) is the majority class,
+\[
+\hat{y}(x)
+=
+\arg\max_{k}\, \hat{p}_k\bigl(\mathcal{T}(x)\bigr),
+\]
+where \(\mathcal{T}(x)\) is the leaf that contains \(x\) and \(\hat{p}_k\) is the sample frequency of class \(k\) in that leaf. If a probability is needed later---for example to compare the tree with logistic regression---use \(\hat{p}_k\bigl(\mathcal{T}(x)\bigr)\) itself, not only the hard label.
+
+The official Kaggle test file has no survival labels, so a fair comparison uses a holdout slice of the \emph{labeled} training data. The table below reports misclassification for a majority-class baseline, the pruned tree, and a logistic regression on the same features.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{10}\NormalTok{)}
+
+\CommentTok{\# Complete cases so the tree and the logistic model see the}
+\CommentTok{\# same rows}
+\NormalTok{titanic.cc }\OtherTok{=}\NormalTok{ titanic.train[}\FunctionTok{complete.cases}\NormalTok{(titanic.train[, }\FunctionTok{c}\NormalTok{(}\StringTok{"Survived"}\NormalTok{,}
+    \StringTok{"Pclass"}\NormalTok{, }\StringTok{"Sex"}\NormalTok{, }\StringTok{"Age"}\NormalTok{, }\StringTok{"SibSp"}\NormalTok{, }\StringTok{"Parch"}\NormalTok{)]), ]}
+\NormalTok{n.t }\OtherTok{=} \FunctionTok{nrow}\NormalTok{(titanic.cc)}
+\NormalTok{hold }\OtherTok{=} \FunctionTok{sample}\NormalTok{(}\FunctionTok{seq\_len}\NormalTok{(n.t), }\AttributeTok{size =} \FunctionTok{floor}\NormalTok{(}\FloatTok{0.3} \SpecialCharTok{*}\NormalTok{ n.t))}
+\NormalTok{tr }\OtherTok{=}\NormalTok{ titanic.cc[}\SpecialCharTok{{-}}\NormalTok{hold, ]}
+\NormalTok{te }\OtherTok{=}\NormalTok{ titanic.cc[hold, ]}
+
+\NormalTok{maj }\OtherTok{=} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{names}\NormalTok{(}\FunctionTok{which.max}\NormalTok{(}\FunctionTok{table}\NormalTok{(tr}\SpecialCharTok{$}\NormalTok{Survived))))}
+\NormalTok{base.err }\OtherTok{=} \FunctionTok{mean}\NormalTok{(te}\SpecialCharTok{$}\NormalTok{Survived }\SpecialCharTok{!=}\NormalTok{ maj)}
+
+\NormalTok{tree.hold }\OtherTok{=} \FunctionTok{rpart}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(Survived) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Pclass }\SpecialCharTok{+}\NormalTok{ Sex }\SpecialCharTok{+}\NormalTok{ Age }\SpecialCharTok{+}
+\NormalTok{    SibSp }\SpecialCharTok{+}\NormalTok{ Parch, }\AttributeTok{data =}\NormalTok{ tr)}
+\NormalTok{tree.hold }\OtherTok{=} \FunctionTok{prune}\NormalTok{(tree.hold, }\AttributeTok{cp =} \FloatTok{0.02}\NormalTok{)}
+\NormalTok{tree.err.tr }\OtherTok{=} \FunctionTok{mean}\NormalTok{(}\FunctionTok{predict}\NormalTok{(tree.hold, tr, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{) }\SpecialCharTok{!=}
+    \FunctionTok{factor}\NormalTok{(tr}\SpecialCharTok{$}\NormalTok{Survived))}
+\NormalTok{tree.err.te }\OtherTok{=} \FunctionTok{mean}\NormalTok{(}\FunctionTok{predict}\NormalTok{(tree.hold, te, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{) }\SpecialCharTok{!=}
+    \FunctionTok{factor}\NormalTok{(te}\SpecialCharTok{$}\NormalTok{Survived))}
+
+\NormalTok{glm.hold }\OtherTok{=} \FunctionTok{glm}\NormalTok{(Survived }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Pclass }\SpecialCharTok{+}\NormalTok{ Sex }\SpecialCharTok{+}\NormalTok{ Age }\SpecialCharTok{+}\NormalTok{ SibSp }\SpecialCharTok{+}\NormalTok{ Parch,}
+    \AttributeTok{data =}\NormalTok{ tr, }\AttributeTok{family =} \FunctionTok{binomial}\NormalTok{())}
+\NormalTok{glm.hat }\OtherTok{=} \FunctionTok{as.integer}\NormalTok{(}\FunctionTok{predict}\NormalTok{(glm.hold, te, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{) }\SpecialCharTok{\textgreater{}}
+    \FloatTok{0.5}\NormalTok{)}
+\NormalTok{glm.err.te }\OtherTok{=} \FunctionTok{mean}\NormalTok{(glm.hat }\SpecialCharTok{!=}\NormalTok{ te}\SpecialCharTok{$}\NormalTok{Survived)}
+
+\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{method =} \FunctionTok{c}\NormalTok{(}\StringTok{"Majority class (holdout)"}\NormalTok{, }\StringTok{"Pruned tree (train)"}\NormalTok{,}
+    \StringTok{"Pruned tree (holdout)"}\NormalTok{, }\StringTok{"Logistic regression (holdout)"}\NormalTok{),}
+    \AttributeTok{misclassification =} \FunctionTok{round}\NormalTok{(}\FunctionTok{c}\NormalTok{(base.err, tree.err.tr, tree.err.te,}
+\NormalTok{        glm.err.te), }\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                          method misclassification
+## 1      Majority class (holdout)             0.453
+## 2           Pruned tree (train)             0.158
+## 3         Pruned tree (holdout)             0.201
+## 4 Logistic regression (holdout)             0.192
+\end{verbatim}
+
+A single tree is already better than the base rate. Whether it beats the logistic model depends on the split and on how nonlinear the signal is; the point of the table is to put the tree on the same scoreboard as the methods from the previous chapters, not to declare a winner.
+
+\vspace{0.6em}
+
+The classification methods we have already discussed either transform the feature space (\emph{SVMs}) or rely on a distance (\emph{\(k\)NN}, kernel methods). A tree attacks the same problem by cutting the feature space directly into rectangles, using a \textbf{binary splitting rule} of the form \(\mathbf{1}_{\{x \leq c\}}\).
+
+\section{Splitting Rules in Classification Trees}\label{splitting-rules-in-classification-trees}
+
+To see how the splitting rule works, start with a toy example. Draw \(X_1, X_2 \sim \mathrm{Uniform}[-1,1]\). Generate the label so that about 90\% of the Class 1 (blue) points fall \emph{inside} the circle \(x_1^2 + x_2^2 < 0.6\), while about 90\% of the Class 2 (orange) points fall \emph{outside} it.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Simulation}
+
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+
+\NormalTok{x1 }\OtherTok{=} \FunctionTok{runif}\NormalTok{(}\DecValTok{500}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{x2 }\OtherTok{=} \FunctionTok{runif}\NormalTok{(}\DecValTok{500}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+
+\NormalTok{y }\OtherTok{=} \FunctionTok{rbinom}\NormalTok{(}\DecValTok{500}\NormalTok{, }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{prob =} \FunctionTok{ifelse}\NormalTok{(x1}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{+}\NormalTok{ x2}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{\textless{}} \FloatTok{0.6}\NormalTok{, }\FloatTok{0.9}\NormalTok{,}
+    \FloatTok{0.1}\NormalTok{))}
+
+\FunctionTok{plot}\NormalTok{(x1, x2, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"darkorange"}\NormalTok{),}
+    \AttributeTok{pch =} \DecValTok{16}\NormalTok{)}
+\FunctionTok{symbols}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\AttributeTok{circles =} \FunctionTok{sqrt}\NormalTok{(}\FloatTok{0.6}\NormalTok{), }\AttributeTok{add =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{inches =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-109-1.pdf}}
+
+A classification tree recursively splits this plane so that each resulting region is dominated by one class.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rpart)}
+
+\NormalTok{rpart.fit }\OtherTok{=} \FunctionTok{rpart}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(y) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x1 }\SpecialCharTok{+}\NormalTok{ x2, }\AttributeTok{data =} \FunctionTok{data.frame}\NormalTok{(x1,}
+\NormalTok{    x2, y))}
+
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mar =} \FunctionTok{rep}\NormalTok{(}\FloatTok{0.5}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(rpart.fit)}
+\FunctionTok{text}\NormalTok{(rpart.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-110-1.pdf}}
+
+The complexity table records the sequence of splits and the associated cost-complexity parameters:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{rpart.fit}\SpecialCharTok{$}\NormalTok{cptable}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           CP nsplit rel error    xerror       xstd
+## 1 0.17040359      0 1.0000000 1.0000000 0.04984280
+## 2 0.14798206      3 0.4843049 0.6816143 0.04612343
+## 3 0.01121076      4 0.3363229 0.4125561 0.03885386
+## 4 0.01000000      7 0.3004484 0.3721973 0.03730931
+\end{verbatim}
+
+As before, we can prune the tree and plot it with \texttt{rpart.plot}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pruned.tree }\OtherTok{=} \FunctionTok{prune}\NormalTok{(rpart.fit, }\AttributeTok{cp =} \FloatTok{0.041}\NormalTok{)}
+\FunctionTok{rpart.plot}\NormalTok{(pruned.tree, }\AttributeTok{type =} \DecValTok{2}\NormalTok{, }\AttributeTok{extra =} \DecValTok{104}\NormalTok{, }\AttributeTok{fallen.leaves =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-112-1.pdf}}
+
+The Bayes boundary in this example is a circle, but every split is perpendicular to a coordinate axis. The tree can only approximate that curve by a staircase of rectangles. That is approximation bias from the axis-aligned partition, not a coding failure. Bagging and random forests average many such staircases; they do not remove the axis-aligned constraint.
+
+At a given node the algorithm compares all candidate splits on all variables. For each variable it finds the \textbf{best cutoff}, then it compares those best cutoffs across variables and keeps the single split that most improves the criterion. It then repeats on each child.
+
+For a continuous predictor the split has the form \(\mathbf{1}_{\{X^{(j)} \leq c\}}\): node \(\mathcal{T}\) is partitioned into two children. We evaluate the \textbf{impurity} of the parent and of the two children (there are \(K\) classes) and choose the split with the largest reduction in impurity.
+
+That raises the question: which criterion should we use to compare cutoffs? Three standard choices are:
+
+\begin{itemize}
+\tightlist
+\item
+  Gini impurity (CART)
+\item
+  Shannon entropy (C4.5)
+\item
+  Misclassification error
+\end{itemize}
+
+\vspace{1.2em}
+
+\subsection{Impurity Measures}\label{impurity-measures}
+
+To choose the variable and the cutoff we quantify the \textbf{gain} in an impurity measure. If \(i(t)\) denotes the impurity at node \(t\), the gain of a split \((j,s)\) is
+\[\Phi(j,s) = i(t) - \bigl( p_L \cdot i(t_L) + p_R \cdot i(t_R) \bigr),\]
+where
+\[
+i(t) = I\bigl(\hat{p}_t(1), \ldots, \hat{p}_t(K)\bigr),
+\]
+\(I(\cdot)\) is an impurity function, and \(\hat{p}_t(k)\) is the sample frequency of class \(k\) at node \(t\). We pick the split \((j,s)\) with the \emph{largest reduction in impurity}.
+
+A proposed split \(\mathbf{1}_{\{X^{(j)}\leq c\}}\) partitions the observations in the node into two disjoint children, \(\mathcal{T}_{L}\) and \(\mathcal{T}_{R}\). Writing \(N_{\mathcal{T}}\), \(N_{\mathcal{T}_L}\), and \(N_{\mathcal{T}_R}\) for the corresponding sample sizes, the same gain is
+\[
+\Phi(j,s)
+=
+I(\mathcal{T})
+-
+\Biggl(
+\underbrace{\frac{N_{\mathcal{T}_L}}{N_{\mathcal{T}}}}_{\hat{p}_L}\, I(\mathcal{T}_L)
++
+\underbrace{\frac{N_{\mathcal{T}_R}}{N_{\mathcal{T}}}}_{\hat{p}_R}\, I(\mathcal{T}_R)
+\Biggr).
+\]
+The algorithm searches over variables \(j\) and cut points \(c\) and keeps the split with the best score.
+
+\vspace{0.6em}
+
+We now define an impurity measure formally.
+
+\textbf{Definition: Impurity measure}
+
+An impurity measure is a function \(I(p_1, \ldots, p_K)\) defined on \(p_k \geq 0\), \(\sum_k p_k = 1\), with the following properties:
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\item
+  the maximum occurs at the uniform distribution \((1/K, \ldots, 1/K)\);
+\item
+  the minimum occurs at a vertex \(p_k = 1\) (a perfectly pure node);
+\item
+  \(I\) is symmetric in \((p_1, \ldots, p_K)\): permuting the class probabilities does not change \(I\).
+\end{enumerate}
+
+\vspace{0.6em}
+
+The impurity measures used most often in classification are the following.
+
+\begin{itemize}
+\item
+  \textbf{Gini index (CART)}
+  \[
+  \operatorname{Gini}(\mathcal{T})
+  =
+  \sum_{k=1}^{K} \hat{p}_k (1 - \hat{p}_k)
+  =
+  1 - \sum_{k=1}^{K} \hat{p}_k^2,
+  \]
+  where
+  \[
+  \hat{p}_k
+  =
+  \frac{\sum_i \mathbf{1}_{\{y_i=k\}} \mathbf{1}_{\{x_i \in \mathcal{T}\}}}{\sum_i \mathbf{1}_{\{x_i \in \mathcal{T}\}}}
+  \]
+  is the within-node frequency of class \(k\).
+\item
+  \textbf{Shannon entropy (ID3/C4.5)}
+  \[
+  \operatorname{Entropy}(\mathcal{T})
+  = - \sum_{k=1}^{K} \hat{p}_k \log \hat{p}_k.
+  \]
+\item
+  \textbf{Misclassification rate}
+  \[
+  \operatorname{Error}(\mathcal{T})
+  =   1 - \max_{k=1,\ldots,K} \hat{p}_k.
+  \]
+\end{itemize}
+
+\vspace{0.6em}
+
+When there are only two classes (\(K=2\)) and \(p\) denotes the frequency of class 1, these reduce to
+
+\begin{itemize}
+\tightlist
+\item
+  Gini index: \(2p(1-p)\)
+\item
+  Shannon entropy: \(p\log(1/p) + (1-p)\log\bigl(1/(1-p)\bigr)\)
+\item
+  misclassification error: \(\min(p, 1-p)\)
+\end{itemize}
+
+Plotting the three binary impurity curves:
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-114-1.pdf}}
+
+A smaller value of the impurity measure means that the node is more ``pure,'' so there is less uncertainty about the class prediction. The point of a split is to produce two children that contain less variation---that is, children that are as pure as possible. We therefore compute the criterion before and after each candidate split and keep the cutoff with the largest reduction.
+
+Take the Gini index as an example. For an internal node \(\mathcal{T}\),
+\[
+\Phi_{\operatorname{Gini}}(j,c)
+=
+\operatorname{Gini}(\mathcal{T})
+-
+\Biggl(
+\frac{N_{\mathcal{T}_L}}{N_{\mathcal{T}}}\, \operatorname{Gini}(\mathcal{T}_L)
++
+\frac{N_{\mathcal{T}_R}}{N_{\mathcal{T}}}\, \operatorname{Gini}(\mathcal{T}_R)
+\Biggr).
+\]
+The two children produced by a split of variable \(j\) at cutoff \(c\) are
+\begin{align*}
+\mathcal{T}_{L} &= \{x: x\in \mathcal{T},\, x_j \leq c \},\\
+\mathcal{T}_{R} &= \{x: x\in \mathcal{T},\, x_j > c \}.
+\end{align*}
+The first term is the uncertainty in the parent; the second is the size-weighted uncertainty of the two children. A larger score is a better split, and we take
+\[
+\arg\max_{j,c} \Phi_{\operatorname{Gini}}(j,c).
+\]
+
+\vspace{1.2em}
+
+\subsubsection*{A Binary Classification Problem: Toy Example}\label{a-binary-classification-problem-toy-example}
+\addcontentsline{toc}{subsubsection}{A Binary Classification Problem: Toy Example}
+
+Consider the following split of a node of size 10:
+
+\begin{center}\includegraphics[width=1\linewidth]{images/week10/binaryexampletable} \end{center}
+
+The three impurity gains are
+\begin{align*}
+\Phi_{\operatorname{Gini}}
+&= 0.420 - \bigl(\tfrac{3}{10}\cdot 0 + \tfrac{7}{10}\cdot 0.490\bigr) = 0.077,\\[4pt]
+\Phi_{\operatorname{Entropy}}
+&= 0.611 - \bigl(\tfrac{3}{10}\cdot 0 + \tfrac{7}{10}\cdot 0.683\bigr) = 0.133,\\[4pt]
+\Phi_{\operatorname{Error}}
+&= \tfrac{3}{10} - \bigl(\tfrac{3}{10}\cdot 0 + \tfrac{7}{10}\cdot \tfrac{3}{7}\bigr) = 0.
+\end{align*}
+
+Gini and Shannon entropy respond to changes in the node probabilities and tend to produce purer children. Misclassification error is a natural criterion for \emph{evaluating} a finished tree, but it is often not sensitive enough for \emph{growing} one. Entropy and Gini are strictly concave, so the split gain \(\Phi\) is nonnegative and is strictly positive unless the two children have the same class frequencies. That is one reason they are the default criteria for growing trees.
+
+\vspace{1.2em}
+
+\subsection{Splitting Rules: Categorical Predictors}\label{splitting-rules-categorical-predictors}
+
+If a predictor \(X^{(j)}\) is categorical and takes values in \(\{1, \ldots, M\}\), we search over a subset \(\mathcal{A} \subset \{1, \ldots, M\}\) and use the split
+\[
+\mathbf{1}_{\{X^{(j)} \in \mathcal{A}\}}.
+\]
+There are at most \(2^{M-1}-1\) distinct partitions into two nonempty groups, so the search becomes expensive when \(M\) is large. Heuristics are then used; for example, one can try several random assignments of categories to a child.
+
+For \emph{binary} classification there is a useful shortcut (a classical CART result): order the \(M\) levels by the proportion of class 1, treat that ordered list as if it were a continuous variable, and search only the \(M-1\) adjacent cuts. That reduces the problem from exponential in \(M\) to linear in \(M\).
+
+\vspace{1.2em}
+
+\section{Random Forests}\label{random-forests-1}
+
+In the regression notes we already saw the drawback of a single tree and the benefit of aggregating unstable, relatively inaccurate ``weak learners'' into a stronger predictor.
+
+\emph{Bagging}, \emph{boosting}, and \emph{random forests} all combine many trees. Bagging and random forests grow individual trees with random perturbations and then aggregate them. Boosting instead grows models sequentially, each with a small contribution, and adds them to the current fit.
+
+\subsection{Bagging Predictors for Classification}\label{bagging-predictors-for-classification}
+
+Draw bootstrap samples with replacement (so some observations appear more than once). Fit a CART tree to each bootstrap sample (the trees themselves may be tuned by cross-validation) and combine the \(B\) predictions by majority vote:
+\[
+\hat{f}_{\operatorname{bag}}(x)
+=
+\operatorname{majority\ vote}\bigl\{\hat{f}_b(x)\bigr\}_{b=1}^{B}.
+\]
+Averaging in this way can reduce the variance of a single tree substantially. In the construction below, CART could be replaced by another unstable learner. The toy example compares one tree with a bagged ensemble:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Simulate data to use for the example}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\NormalTok{n }\OtherTok{=} \DecValTok{1000}
+\NormalTok{x1 }\OtherTok{=} \FunctionTok{runif}\NormalTok{(n, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{x2 }\OtherTok{=} \FunctionTok{runif}\NormalTok{(n, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{y }\OtherTok{=} \FunctionTok{rbinom}\NormalTok{(n, }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{prob =} \FunctionTok{ifelse}\NormalTok{((x1 }\SpecialCharTok{+}\NormalTok{ x2 }\SpecialCharTok{\textgreater{}} \SpecialCharTok{{-}}\FloatTok{0.5}\NormalTok{) }\SpecialCharTok{\&}\NormalTok{ (x1 }\SpecialCharTok{+}
+\NormalTok{    x2 }\SpecialCharTok{\textless{}} \FloatTok{0.5}\NormalTok{), }\FloatTok{0.8}\NormalTok{, }\FloatTok{0.2}\NormalTok{))}
+\NormalTok{xgrid }\OtherTok{=} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{x1 =} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.01}\NormalTok{), }\AttributeTok{x2 =} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.01}\NormalTok{))}
+
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+
+\CommentTok{\# Fit CART using rpart}
+\FunctionTok{library}\NormalTok{(rpart)}
+\NormalTok{rpart.fit }\OtherTok{=} \FunctionTok{rpart}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(y) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x1 }\SpecialCharTok{+}\NormalTok{ x2, }\AttributeTok{data =} \FunctionTok{data.frame}\NormalTok{(x1,}
+\NormalTok{    x2, y))}
+
+\CommentTok{\# A different tree from one bootstrap sample: rpart.fit =}
+\CommentTok{\# rpart(as.factor(y) \textasciitilde{} x1 + x2, data = data.frame(x1, x2,}
+\CommentTok{\# y)[sample(1:n, n, replace = TRUE), ])}
+
+\NormalTok{pred }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{predict}\NormalTok{(rpart.fit, xgrid, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{) }\SpecialCharTok{==} \DecValTok{1}\NormalTok{,}
+    \DecValTok{201}\NormalTok{, }\DecValTok{201}\NormalTok{)}
+\FunctionTok{contour}\NormalTok{(}\FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.01}\NormalTok{), }\FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.01}\NormalTok{), pred, }\AttributeTok{levels =} \FloatTok{0.5}\NormalTok{,}
+    \AttributeTok{labels =} \StringTok{""}\NormalTok{, }\AttributeTok{axes =} \ConstantTok{FALSE}\NormalTok{)}
+\FunctionTok{points}\NormalTok{(x1, x2, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{), }\AttributeTok{pch =} \DecValTok{16}\NormalTok{,}
+    \AttributeTok{yaxt =} \StringTok{"n"}\NormalTok{, }\AttributeTok{xaxt =} \StringTok{"n"}\NormalTok{)}
+\FunctionTok{points}\NormalTok{(xgrid, }\AttributeTok{pch =} \StringTok{"."}\NormalTok{, }\AttributeTok{cex =} \FloatTok{1.2}\NormalTok{, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(pred, }\StringTok{"darkblue"}\NormalTok{,}
+    \StringTok{"orange"}\NormalTok{))}
+\FunctionTok{box}\NormalTok{()}
+\FunctionTok{title}\NormalTok{(}\StringTok{"CART"}\NormalTok{)}
+
+\CommentTok{\# Fit bagging}
+\FunctionTok{library}\NormalTok{(ipred)}
+\NormalTok{bag.fit }\OtherTok{=} \FunctionTok{bagging}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(y) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x1 }\SpecialCharTok{+}\NormalTok{ x2, }\AttributeTok{data =} \FunctionTok{data.frame}\NormalTok{(x1,}
+\NormalTok{    x2, y), }\AttributeTok{nbagg =} \DecValTok{200}\NormalTok{)}
+\NormalTok{pred }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{predict}\NormalTok{(bag.fit, xgrid) }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\DecValTok{201}\NormalTok{, }\DecValTok{201}\NormalTok{)}
+\FunctionTok{contour}\NormalTok{(}\FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.01}\NormalTok{), }\FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.01}\NormalTok{), pred, }\AttributeTok{levels =} \FloatTok{0.5}\NormalTok{,}
+    \AttributeTok{labels =} \StringTok{""}\NormalTok{, }\AttributeTok{axes =} \ConstantTok{FALSE}\NormalTok{)}
+\FunctionTok{points}\NormalTok{(x1, x2, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{), }\AttributeTok{pch =} \DecValTok{16}\NormalTok{,}
+    \AttributeTok{yaxt =} \StringTok{"n"}\NormalTok{, }\AttributeTok{xaxt =} \StringTok{"n"}\NormalTok{)}
+\FunctionTok{points}\NormalTok{(xgrid, }\AttributeTok{pch =} \StringTok{"."}\NormalTok{, }\AttributeTok{cex =} \FloatTok{1.2}\NormalTok{, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(pred, }\StringTok{"darkblue"}\NormalTok{,}
+    \StringTok{"orange"}\NormalTok{))}
+\FunctionTok{box}\NormalTok{()}
+\FunctionTok{title}\NormalTok{(}\StringTok{"Bagging"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-116-1.pdf}}
+
+Bagging can cut the variance of unstable learners such as trees and often improves prediction. The price is interpretability: the simple rectangular structure of a single tree is lost. A second limitation is that bagged trees tend to be highly correlated, which reduces the benefit of averaging.
+
+\subsection{Random Forests}\label{random-forests-2}
+
+Random forests keep the bootstrap (or subsample) step and add extra randomness through tuning parameters. To fit a forest one must choose at least the following.
+
+\begin{itemize}
+\tightlist
+\item
+  The number of trees. A large number stabilizes the ensemble; once the estimate has settled, extra trees mainly cost computation.
+\item
+  How many observations to use for each tree. With sampling \emph{with} replacement one often uses a sample of size \(n\).
+\item
+  The number of randomly selected predictors available at each split (\texttt{mtry}). This is the main tuning parameter: larger values are more adaptive when the signal is sparse; smaller values help when predictors are highly correlated. For classification the usual default is \(\texttt{mtry}=\lfloor\sqrt{p}\rfloor\).
+\end{itemize}
+
+Splitting stops when a node has no more than \texttt{nodesize} observations. That role is a little like the neighborhood size \(k\) in \(k\)NN, although the effect interacts strongly with the other tuning parameters.
+
+\textbf{OOB error and the number of trees.} Growing more trees does not overfit in the usual sense: after the ensemble has settled, extra trees mostly cost time. Each observation is left out of about one-third of the bootstrap samples; the votes on those left-out cases are the \emph{out-of-bag} (OOB) predictions. The OOB error rate is a built-in estimate of test error, which is the main reason a forest can be used without a separate validation set.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Generate some data with larger p}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{542}\NormalTok{)}
+\NormalTok{n }\OtherTok{=} \DecValTok{1000}
+\NormalTok{p }\OtherTok{=} \DecValTok{10}
+\NormalTok{X }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{runif}\NormalTok{(n }\SpecialCharTok{*}\NormalTok{ p, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{), n, p)}
+\NormalTok{x1 }\OtherTok{=}\NormalTok{ X[, }\DecValTok{1}\NormalTok{]}
+\NormalTok{x2 }\OtherTok{=}\NormalTok{ X[, }\DecValTok{2}\NormalTok{]}
+\NormalTok{y }\OtherTok{=} \FunctionTok{rbinom}\NormalTok{(n, }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{prob =} \FunctionTok{ifelse}\NormalTok{((x1 }\SpecialCharTok{+}\NormalTok{ x2 }\SpecialCharTok{\textgreater{}} \SpecialCharTok{{-}}\FloatTok{0.5}\NormalTok{) }\SpecialCharTok{\&}\NormalTok{ (x1 }\SpecialCharTok{+}
+\NormalTok{    x2 }\SpecialCharTok{\textless{}} \FloatTok{0.5}\NormalTok{), }\FloatTok{0.8}\NormalTok{, }\FloatTok{0.2}\NormalTok{))}
+\NormalTok{xgrid }\OtherTok{=} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{x1 =} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.01}\NormalTok{), }\AttributeTok{x2 =} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.01}\NormalTok{))}
+
+\CommentTok{\# Fit a random forest with a selected tuning}
+\FunctionTok{library}\NormalTok{(randomForest)}
+
+\NormalTok{rf.fit }\OtherTok{=} \FunctionTok{randomForest}\NormalTok{(X, }\FunctionTok{as.factor}\NormalTok{(y), }\AttributeTok{ntree =} \DecValTok{1000}\NormalTok{, }\AttributeTok{mtry =} \DecValTok{7}\NormalTok{,}
+    \AttributeTok{nodesize =} \DecValTok{10}\NormalTok{, }\AttributeTok{sampsize =} \DecValTok{800}\NormalTok{)}
+
+\CommentTok{\# Last row of err.rate is the OOB error after all trees}
+\NormalTok{rf.fit}\SpecialCharTok{$}\NormalTok{err.rate[}\FunctionTok{nrow}\NormalTok{(rf.fit}\SpecialCharTok{$}\NormalTok{err.rate), }\StringTok{"OOB"}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   OOB 
+## 0.316
+\end{verbatim}
+
+Instead of manufacturing a test-set labeling by hand, compare the forest with the Bayes rule on a fresh sample.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Testing data}
+\NormalTok{Xtest }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{runif}\NormalTok{(n }\SpecialCharTok{*}\NormalTok{ p, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{), n, p)}
+
+\CommentTok{\# Bayes rule for this simulation}
+\NormalTok{BayesRule }\OtherTok{=} \FunctionTok{ifelse}\NormalTok{((Xtest[, }\DecValTok{1}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ Xtest[, }\DecValTok{2}\NormalTok{] }\SpecialCharTok{\textgreater{}} \SpecialCharTok{{-}}\FloatTok{0.5}\NormalTok{) }\SpecialCharTok{\&}\NormalTok{ (Xtest[,}
+    \DecValTok{1}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ Xtest[, }\DecValTok{2}\NormalTok{] }\SpecialCharTok{\textless{}} \FloatTok{0.5}\NormalTok{), }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+
+\FunctionTok{mean}\NormalTok{((}\FunctionTok{predict}\NormalTok{(rf.fit, Xtest) }\SpecialCharTok{==} \StringTok{"1"}\NormalTok{) }\SpecialCharTok{==}\NormalTok{ BayesRule)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.826
+\end{verbatim}
+
+That number is the fraction of test points on which the forest \emph{agrees with the Bayes rule}, not the ordinary misclassification rate.
+
+\subsection*{Variable importance}\label{variable-importance-2}
+
+A forest (or a boosted tree model) no longer offers a single split path, but it does give a ranking of predictors. Two common scores are:
+
+\begin{itemize}
+\tightlist
+\item
+  the total decrease in impurity (Gini) attributed to splits on that variable;
+\item
+  a permutation score: scramble one column in the OOB sample and record how much the OOB error rises.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{importance}\NormalTok{(rf.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    MeanDecreaseGini
+## 1          57.67159
+## 2          48.22224
+## 3          25.00175
+## 4          23.08845
+## 5          24.86713
+## 6          24.75000
+## 7          25.19696
+## 8          22.78443
+## 9          25.59233
+## 10         27.78592
+\end{verbatim}
+
+Large importance is not a causal claim, and correlated predictors share credit. The \texttt{xgboost} chunk at the end of the chapter prints a gain-based ranking of the same kind.
+
+\section{Boosting}\label{boosting}
+
+Consider a sequence of learners added together,
+\[
+F_T(x) = \sum_{t=1}^{T} f_t(x).
+\]
+
+\textbf{How should each \(f_t(x)\) be trained?} At iteration \(t\), given \(f_1, \ldots, f_{t-1}\), we look for a new function \(h(x)\) that reduces the loss:
+\[
+\min_h \sum_{i=1}^{n} L\Biggl(y_i,\; \sum_{k=1}^{t-1} f_k(x_i) + h(x_i)\Biggr).
+\]
+In boosting we typically do not add the whole \(h\). We take only a fraction of it and update the current model by \(\alpha_t h(x)\), then move to the next iteration.
+
+Boosting is an additive model, but it is not the same as a generalized additive model, where each component is a function of a single variable. Here each \(f_t(x)\) can use several features, and we may add a large number of such terms. It is also different from a random forest, which is additive as well but grows its trees independently, so the trees cannot borrow information from one another.
+
+\vspace{1.2em}
+
+\subsection{AdaBoost}\label{adaboost}
+
+\textbf{AdaBoost} (Freund and Schapire, 1997) is the special case of the framework above that uses exponential loss for classification. Labels are coded as \(y_i \in \{-1, 1\}\).
+
+\textbf{AdaBoost algorithm}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Initialize weights \(w_i^{(1)} = 1/n\), \(i=1,2,\ldots,n\).
+\item
+  For \(t=1,\ldots,T\), repeat (a)--(d):
+
+  \begin{enumerate}
+  \def\labelenumii{(\alph{enumii})}
+  \item
+    Fit a classifier \(f_t(x) \in \{-1,1\}\) to the training data using weights \(w_i^{(t)}\).
+  \item
+    Compute the weighted training error
+    \[
+    \varepsilon_t = \sum_i w_i^{(t)} \mathbf{1}_{\{y_i \neq f_t(x_i)\}}.
+    \]
+  \item
+    Set
+    \[
+    \alpha_t = \frac12 \log \frac{1-\varepsilon_t}{\varepsilon_t}.
+    \]
+  \item
+    Update the weights
+    \[
+    w_i^{(t+1)}
+    =
+    \frac{w_i^{(t)}}{Z_t}
+    \exp\bigl\{-\alpha_t y_i f_t(x_i)\bigr\},
+    \]
+    where \(Z_t\) renormalizes the weights to a probability distribution:
+    \[
+    Z_t = \sum_{i=1}^{n} w_i^{(t)} \exp\bigl\{-\alpha_t y_i f_t(x_i)\bigr\}.
+    \]
+  \end{enumerate}
+\item
+  Output
+  \[
+  F_T(x) = \sum_{t=1}^{T} \alpha_t f_t(x).
+  \]
+  The classification rule is \(\operatorname{sign}\bigl(F_T(x)\bigr)\).
+\end{enumerate}
+
+\textbf{Scope of this algorithm.} The version above needs labels in \(\{-1,1\}\) and a weak learner whose weighted error is below \(1/2\). It is a two-class method. Multiclass boosting uses a different algorithm (for example SAMME, or a multinomial gradient-boosted tree). Do not apply this \(\alpha_t\) update unchanged to a factor with \(K>2\) levels.
+
+\vspace{0.6em}
+
+In the next example each \(f_t(x)\) is a tree with a single split. The final classifier is the weighted sum of those stumps.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x1 }\OtherTok{=} \FunctionTok{seq}\NormalTok{(}\FloatTok{0.1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.1}\NormalTok{)}
+\NormalTok{x2 }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\FloatTok{0.5}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.6}\NormalTok{, }\FloatTok{0.7}\NormalTok{, }\FloatTok{0.8}\NormalTok{, }\FloatTok{0.5}\NormalTok{, }\FloatTok{0.7}\NormalTok{, }\FloatTok{0.8}\NormalTok{, }\FloatTok{0.2}\NormalTok{)}
+
+\NormalTok{y }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{)}
+\NormalTok{X }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(}\AttributeTok{x1 =}\NormalTok{ x1, }\AttributeTok{x2 =}\NormalTok{ x2)}
+\NormalTok{xgrid }\OtherTok{=} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{x1 =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{1.1}\NormalTok{, }\FloatTok{0.01}\NormalTok{), }\AttributeTok{x2 =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{0.9}\NormalTok{,}
+    \FloatTok{0.01}\NormalTok{))}
+
+\FunctionTok{plot}\NormalTok{(X[, }\DecValTok{1}\NormalTok{], X[, }\DecValTok{2}\NormalTok{], }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{),}
+    \AttributeTok{pch =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{1.1}\NormalTok{), }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}
+        \FloatTok{0.9}\NormalTok{), }\AttributeTok{cex =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-120-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Fit gbm with 3 trees}
+\FunctionTok{library}\NormalTok{(gbm)}
+
+\NormalTok{gbm.fit }\OtherTok{=} \FunctionTok{gbm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\FunctionTok{data.frame}\NormalTok{(x1, x2, }\AttributeTok{y =} \FunctionTok{as.numeric}\NormalTok{(y }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)),}
+    \AttributeTok{distribution =} \StringTok{"adaboost"}\NormalTok{, }\AttributeTok{interaction.depth =} \DecValTok{1}\NormalTok{, }\AttributeTok{n.minobsinnode =} \DecValTok{1}\NormalTok{,}
+    \AttributeTok{n.trees =} \DecValTok{3}\NormalTok{, }\AttributeTok{shrinkage =} \DecValTok{1}\NormalTok{, }\AttributeTok{bag.fraction =} \DecValTok{1}\NormalTok{)}
+
+\FunctionTok{pretty.gbm.tree}\NormalTok{(gbm.fit, }\AttributeTok{i.tree =} \DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   SplitVar SplitCodePred LeftNode RightNode MissingNode ErrorReduction Weight
+## 0        0          0.25        1         2           3            2.5     10
+## 1       -1          1.00       -1        -1          -1            0.0      2
+## 2       -1         -0.25       -1        -1          -1            0.0      8
+## 3       -1          0.00       -1        -1          -1            0.0     10
+##   Prediction
+## 0       0.00
+## 1       1.00
+## 2      -0.25
+## 3       0.00
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(X[, }\DecValTok{1}\NormalTok{], X[, }\DecValTok{2}\NormalTok{], }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{),}
+    \AttributeTok{pch =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{1.1}\NormalTok{), }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}
+        \FloatTok{0.9}\NormalTok{), }\AttributeTok{cex =} \DecValTok{3}\NormalTok{)}
+\NormalTok{pred }\OtherTok{=} \FunctionTok{predict}\NormalTok{(gbm.fit, xgrid)}
+\FunctionTok{points}\NormalTok{(xgrid, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(pred }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{), }\AttributeTok{cex =} \FloatTok{0.2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-121-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{w1 }\OtherTok{=} \FunctionTok{rep}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\DecValTok{10}\NormalTok{, }\DecValTok{10}\NormalTok{)}
+\NormalTok{f1 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{ifelse}\NormalTok{(x[, }\DecValTok{1}\NormalTok{] }\SpecialCharTok{\textless{}} \FloatTok{0.25}\NormalTok{, }\DecValTok{1}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{)}
+\NormalTok{e1 }\OtherTok{=} \FunctionTok{sum}\NormalTok{(w1 }\SpecialCharTok{*}\NormalTok{ (}\FunctionTok{f1}\NormalTok{(X) }\SpecialCharTok{!=}\NormalTok{ y))}
+\NormalTok{a1 }\OtherTok{=} \FloatTok{0.5} \SpecialCharTok{*} \FunctionTok{log}\NormalTok{((}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ e1)}\SpecialCharTok{/}\NormalTok{e1)}
+
+\NormalTok{w2 }\OtherTok{=}\NormalTok{ w1 }\SpecialCharTok{*} \FunctionTok{exp}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{a1 }\SpecialCharTok{*}\NormalTok{ y }\SpecialCharTok{*} \FunctionTok{f1}\NormalTok{(X))}
+\NormalTok{w2 }\OtherTok{=}\NormalTok{ w2}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(w2)}
+
+\CommentTok{\# First tree}
+\FunctionTok{plot}\NormalTok{(X[, }\DecValTok{1}\NormalTok{], X[, }\DecValTok{2}\NormalTok{], }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{),}
+    \AttributeTok{pch =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{1.1}\NormalTok{), }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}
+        \FloatTok{0.9}\NormalTok{), }\AttributeTok{cex =} \DecValTok{3}\NormalTok{)}
+
+\NormalTok{pred }\OtherTok{=} \FunctionTok{f1}\NormalTok{(xgrid)}
+\FunctionTok{points}\NormalTok{(xgrid, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(pred }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{), }\AttributeTok{cex =} \FloatTok{0.2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-121-2.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Weights after the first tree}
+\FunctionTok{plot}\NormalTok{(X[, }\DecValTok{1}\NormalTok{], X[, }\DecValTok{2}\NormalTok{], }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{),}
+    \AttributeTok{pch =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{1.1}\NormalTok{), }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}
+        \FloatTok{0.9}\NormalTok{), }\AttributeTok{cex =} \DecValTok{30} \SpecialCharTok{*}\NormalTok{ w2)}
+
+\NormalTok{f2 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{ifelse}\NormalTok{(x[, }\DecValTok{2}\NormalTok{] }\SpecialCharTok{\textgreater{}} \FloatTok{0.65}\NormalTok{, }\DecValTok{1}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{)}
+\NormalTok{e2 }\OtherTok{=} \FunctionTok{sum}\NormalTok{(w2 }\SpecialCharTok{*}\NormalTok{ (}\FunctionTok{f2}\NormalTok{(X) }\SpecialCharTok{!=}\NormalTok{ y))}
+\NormalTok{a2 }\OtherTok{=} \FloatTok{0.5} \SpecialCharTok{*} \FunctionTok{log}\NormalTok{((}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ e2)}\SpecialCharTok{/}\NormalTok{e2)}
+
+\NormalTok{w3 }\OtherTok{=}\NormalTok{ w2 }\SpecialCharTok{*} \FunctionTok{exp}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{a2 }\SpecialCharTok{*}\NormalTok{ y }\SpecialCharTok{*} \FunctionTok{f2}\NormalTok{(X))}
+\NormalTok{w3 }\OtherTok{=}\NormalTok{ w3}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(w3)}
+
+\CommentTok{\# Second tree}
+\FunctionTok{plot}\NormalTok{(X[, }\DecValTok{1}\NormalTok{], X[, }\DecValTok{2}\NormalTok{], }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{),}
+    \AttributeTok{pch =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{1.1}\NormalTok{), }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}
+        \FloatTok{0.9}\NormalTok{), }\AttributeTok{cex =} \DecValTok{30} \SpecialCharTok{*}\NormalTok{ w2)}
+
+\NormalTok{pred }\OtherTok{=} \FunctionTok{f2}\NormalTok{(xgrid)}
+\FunctionTok{points}\NormalTok{(xgrid, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(pred }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{), }\AttributeTok{cex =} \FloatTok{0.2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-121-3.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Weights after the second tree}
+\FunctionTok{plot}\NormalTok{(X[, }\DecValTok{1}\NormalTok{], X[, }\DecValTok{2}\NormalTok{], }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{),}
+    \AttributeTok{pch =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{1.1}\NormalTok{), }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}
+        \FloatTok{0.9}\NormalTok{), }\AttributeTok{cex =} \DecValTok{30} \SpecialCharTok{*}\NormalTok{ w3)}
+
+\NormalTok{f3 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{ifelse}\NormalTok{(x[, }\DecValTok{1}\NormalTok{] }\SpecialCharTok{\textless{}} \FloatTok{0.85}\NormalTok{, }\DecValTok{1}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{)}
+\NormalTok{e3 }\OtherTok{=} \FunctionTok{sum}\NormalTok{(w3 }\SpecialCharTok{*}\NormalTok{ (}\FunctionTok{f3}\NormalTok{(X) }\SpecialCharTok{!=}\NormalTok{ y))}
+\NormalTok{a3 }\OtherTok{=} \FloatTok{0.5} \SpecialCharTok{*} \FunctionTok{log}\NormalTok{((}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ e3)}\SpecialCharTok{/}\NormalTok{e3)}
+
+\CommentTok{\# Third tree}
+\FunctionTok{plot}\NormalTok{(X[, }\DecValTok{1}\NormalTok{], X[, }\DecValTok{2}\NormalTok{], }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{),}
+    \AttributeTok{pch =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{1.1}\NormalTok{), }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}
+        \FloatTok{0.9}\NormalTok{), }\AttributeTok{cex =} \DecValTok{30} \SpecialCharTok{*}\NormalTok{ w3)}
+
+\NormalTok{pred }\OtherTok{=} \FunctionTok{f3}\NormalTok{(xgrid)}
+\FunctionTok{points}\NormalTok{(xgrid, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(pred }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{), }\AttributeTok{cex =} \FloatTok{0.2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-121-4.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Final decision rule}
+\FunctionTok{plot}\NormalTok{(X[, }\DecValTok{1}\NormalTok{], X[, }\DecValTok{2}\NormalTok{], }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{),}
+    \AttributeTok{pch =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{1.1}\NormalTok{), }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}
+        \FloatTok{0.9}\NormalTok{), }\AttributeTok{cex =} \DecValTok{3}\NormalTok{)}
+
+\NormalTok{pred }\OtherTok{=}\NormalTok{ a1 }\SpecialCharTok{*} \FunctionTok{f1}\NormalTok{(xgrid) }\SpecialCharTok{+}\NormalTok{ a2 }\SpecialCharTok{*} \FunctionTok{f2}\NormalTok{(xgrid) }\SpecialCharTok{+}\NormalTok{ a3 }\SpecialCharTok{*} \FunctionTok{f3}\NormalTok{(xgrid)}
+\FunctionTok{points}\NormalTok{(xgrid, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(pred }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{), }\AttributeTok{cex =} \FloatTok{0.2}\NormalTok{)}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =} \FloatTok{0.25}\NormalTok{)  }\CommentTok{\# f1}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{h =} \FloatTok{0.65}\NormalTok{)  }\CommentTok{\# f2}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =} \FloatTok{0.85}\NormalTok{)  }\CommentTok{\# f3}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-121-5.pdf}}
+
+At the first iteration the stump splits \(X_1\) at \(0.25\). The misclassified positive points on the right have their weights increased. At the second iteration the stump splits \(X_2\) at \(0.65\), which updates the weights again and produces a new \(\alpha_t\). At the third iteration the stump splits \(X_1\) at \(0.85\). The stacked model is
+\[
+F_3(x) = 0.4236\, f_1(x) + 0.6496\, f_2(x) + 0.9229\, f_3(x).
+\]
+
+The intuition is simple. All observations start with equal weight. After we fit \(f_t\), the misclassified points are upweighted for the next round. We add \(\alpha_t f_t(x)\) to the current model and continue with the new weights.
+
+A very small training error is possible, but that does not prevent overfitting. The next example shows the pattern.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# One{-}dimensional classification example}
+\NormalTok{n }\OtherTok{=} \DecValTok{1000}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{x }\OtherTok{=} \FunctionTok{cbind}\NormalTok{(}\FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{length.out =}\NormalTok{ n), }\FunctionTok{runif}\NormalTok{(n))}
+\NormalTok{py }\OtherTok{=}\NormalTok{ (}\FunctionTok{sin}\NormalTok{(}\DecValTok{4} \SpecialCharTok{*}\NormalTok{ pi }\SpecialCharTok{*}\NormalTok{ x[, }\DecValTok{1}\NormalTok{]) }\SpecialCharTok{+} \DecValTok{1}\NormalTok{)}\SpecialCharTok{/}\DecValTok{2}
+\NormalTok{y }\OtherTok{=} \FunctionTok{rbinom}\NormalTok{(n, }\DecValTok{1}\NormalTok{, py)}
+
+\FunctionTok{plot}\NormalTok{(x[, }\DecValTok{1}\NormalTok{], y }\SpecialCharTok{+} \FunctionTok{runif}\NormalTok{(n, }\SpecialCharTok{{-}}\FloatTok{0.05}\NormalTok{, }\FloatTok{0.05}\NormalTok{), }\AttributeTok{pch =} \DecValTok{16}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.05}\NormalTok{,}
+    \FloatTok{1.05}\NormalTok{), }\AttributeTok{cex =} \FloatTok{0.5}\NormalTok{, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\StringTok{"orange"}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{),}
+    \AttributeTok{xlab =} \StringTok{"x"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"P(Y = 1 | X = x)"}\NormalTok{)}
+\FunctionTok{points}\NormalTok{(x[, }\DecValTok{1}\NormalTok{], py, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-122-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# AdaBoost with a large shrinkage factor, to make the}
+\CommentTok{\# stages visible}
+\NormalTok{gbm.fit }\OtherTok{=} \FunctionTok{gbm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\FunctionTok{data.frame}\NormalTok{(x, y), }\AttributeTok{distribution =} \StringTok{"adaboost"}\NormalTok{,}
+    \AttributeTok{n.minobsinnode =} \DecValTok{2}\NormalTok{, }\AttributeTok{n.trees =} \DecValTok{200}\NormalTok{, }\AttributeTok{shrinkage =} \DecValTok{1}\NormalTok{, }\AttributeTok{bag.fraction =} \FloatTok{0.8}\NormalTok{,}
+    \AttributeTok{cv.folds =} \DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{))}
+\CommentTok{\# Plot the decision function F(x), not sign(F(x))}
+\NormalTok{size }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{20}\NormalTok{, }\DecValTok{50}\NormalTok{, }\DecValTok{100}\NormalTok{)}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{6}\NormalTok{) \{}
+    \FunctionTok{par}\NormalTok{(}\AttributeTok{mar =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+    \FunctionTok{plot}\NormalTok{(x[, }\DecValTok{1}\NormalTok{], py, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{3}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"P(Y = 1 | X = x)"}\NormalTok{,}
+        \AttributeTok{col =} \StringTok{"gray"}\NormalTok{)}
+    \FunctionTok{points}\NormalTok{(x[, }\DecValTok{1}\NormalTok{], y }\SpecialCharTok{+} \FunctionTok{runif}\NormalTok{(n, }\SpecialCharTok{{-}}\FloatTok{0.05}\NormalTok{, }\FloatTok{0.05}\NormalTok{), }\AttributeTok{pch =} \DecValTok{16}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.5}\NormalTok{,}
+        \AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(y }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\StringTok{"orange"}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{))}
+\NormalTok{    Fx }\OtherTok{=} \FunctionTok{predict}\NormalTok{(gbm.fit, }\AttributeTok{n.trees =}\NormalTok{ size[i])}
+    \FunctionTok{lines}\NormalTok{(x[, }\DecValTok{1}\NormalTok{], }\DecValTok{1}\SpecialCharTok{/}\NormalTok{(}\DecValTok{1} \SpecialCharTok{+} \FunctionTok{exp}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{2} \SpecialCharTok{*}\NormalTok{ Fx)), }\AttributeTok{lwd =} \DecValTok{1}\NormalTok{)}
+    \FunctionTok{title}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"\# of iterations = "}\NormalTok{, size[i]))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-124-1.pdf}}
+
+With few iterations the fit is too smooth (underfitting); with many iterations it tracks noise (overfitting). The number of trees therefore has to be chosen. One can use the out-of-bag estimate of the exponential loss, or ordinary cross-validation.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Best number of trees from cross{-}validation (use method =}
+\CommentTok{\# \textquotesingle{}OOB\textquotesingle{} if no CV was run)}
+\FunctionTok{gbm.perf}\NormalTok{(gbm.fit, }\AttributeTok{method =} \StringTok{"cv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-125-1.pdf}}
+
+\begin{verbatim}
+## [1] 39
+\end{verbatim}
+
+\vspace{0.6em}
+
+\subsection{Training Error Bound}\label{training-error-bound}
+
+A useful property of AdaBoost is the following: if every iteration produces a classifier that is better than random guessing, the \emph{training} error tends to zero. To see why, unwind the weights after the last update,
+\[
+w_i^{(T+1)}
+=
+\frac{1}{Z_T}\, w_i^{(T)}\, \exp\bigl\{-\alpha_T y_i f_T(x_i)\bigr\}.
+\]
+The same relation holds at the previous step,
+\[
+w_i^{(T)}
+=
+\frac{1}{Z_{T-1}}\, w_i^{(T-1)}\, \exp\bigl\{-\alpha_{T-1} y_i f_{T-1}(x_i)\bigr\},
+\]
+and so on back to the first iteration. Therefore
+\begin{align*}
+w_i^{(T+1)}
+&=
+\frac{1}{Z_1 \cdots Z_T}\, w_i^{(1)}
+\prod_{t=1}^{T} \exp\bigl\{-\alpha_t y_i f_t(x_i)\bigr\} \\
+&=
+\frac{1}{Z_1 \cdots Z_T}\, \frac{1}{n}
+\exp\Bigl\{-y_i \sum_{t=1}^{T} \alpha_t f_t(x_i)\Bigr\} \\
+&=
+\frac{1}{Z_1 \cdots Z_T}\, \frac{1}{n}
+\exp\bigl\{-y_i F_T(x_i)\bigr\}.
+\end{align*}
+The weights sum to 1, so
+\[
+1
+=
+\sum_{i=1}^{n} w_i^{(T+1)}
+=
+\frac{1}{Z_1 \cdots Z_T}\, \frac{1}{n}
+\sum_{i=1}^{n} \exp\bigl\{-y_i F_T(x_i)\bigr\},
+\]
+or
+\[
+Z_1 \cdots Z_T
+=
+\frac{1}{n} \sum_{i=1}^{n} \exp\bigl\{-y_i F_T(x_i)\bigr\}.
+\]
+The right-hand side is the exponential loss. Two elementary comparisons are:
+
+\begin{itemize}
+\tightlist
+\item
+  if \(y\) and \(F(x)\) have the same sign, then \(\exp\bigl(-y F(x)\bigr) \le 1\);
+\item
+  if they have opposite signs, then \(\exp\bigl(-y F(x)\bigr) > 1\).
+\end{itemize}
+
+In particular, exponential loss dominates 0--1 loss:
+\begin{align*}
+Z_1 \cdots Z_T
+&=
+\frac{1}{n} \sum_{i=1}^{n} \exp\bigl\{-y_i F_T(x_i)\bigr\} \\
+&\ge
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{1}_{\{y_i \neq \operatorname{sign}(F_T(x_i))\}}.
+\end{align*}
+Each factor \(Z_t\) can be written more explicitly. Because \(f_t(x_i)\in\{-1,1\}\),
+\begin{align*}
+Z_t
+&=
+\sum_{i=1}^{n} w_i^{(t)} \exp\bigl\{-\alpha_t y_i f_t(x_i)\bigr\} \\
+&=
+e^{-\alpha_t} \sum_{y_i = f_t(x_i)} w_i^{(t)}
++
+e^{\alpha_t} \sum_{y_i \neq f_t(x_i)} w_i^{(t)} \\
+&=
+(1-\varepsilon_t)\, e^{-\alpha_t} + \varepsilon_t\, e^{\alpha_t},
+\end{align*}
+where
+\[
+\varepsilon_t = \sum_i w_i^{(t)} \mathbf{1}_{\{y_i \neq f_t(x_i)\}}
+\]
+is the weighted misclassification rate at step \(t\). The value of \(\alpha_t\) used by AdaBoost is exactly the choice that minimizes this \(Z_t\). Differentiating in \(\alpha_t\) gives
+\[
+-(1-\varepsilon_t)\, e^{-\alpha_t} + \varepsilon_t\, e^{\alpha_t} = 0,
+\]
+hence
+\[
+\alpha_t = \frac12 \log \frac{1-\varepsilon_t}{\varepsilon_t}.
+\]
+Substituting that value yields
+\[
+Z_t = 2\sqrt{\varepsilon_t(1-\varepsilon_t)}.
+\]
+The product \(\varepsilon_t(1-\varepsilon_t)\) is at most \(1/4\), with equality only when \(\varepsilon_t = 1/2\). Thus \(Z_t < 1\) whenever the weak learner beats random guessing, and the product \(Z_1 \cdots Z_T\) is driven toward 0.
+
+\subsubsection*{The Training Error}\label{the-training-error}
+\addcontentsline{toc}{subsubsection}{The Training Error}
+
+Write \(\gamma_t = 1/2 - \varepsilon_t\) for the edge over random guessing. Then
+\begin{align*}
+Z_t
+&=
+2\sqrt{\varepsilon_t(1-\varepsilon_t)}
+=
+\sqrt{1-4\gamma_t^2}
+\le
+\exp(-2\gamma_t^2),
+\end{align*}
+using \(1-u \le e^{-u}\). Therefore the AdaBoost training error satisfies
+\begin{align*}
+\frac{1}{n}\sum_{i=1}^{n} \mathbf{1}_{\{y_i \neq \operatorname{sign}(F_T(x_i))\}}
+&\le
+\frac{1}{n}\sum_{i=1}^{n} \exp\bigl\{-y_i F_T(x_i)\bigr\} \\
+&=
+Z_1 \cdots Z_T \\
+&\le
+\exp\Bigl\{-2\sum_{t=1}^{T}\gamma_t^2\Bigr\}.
+\end{align*}
+Whenever each \(f_t\) is better than a coin flip, the right-hand side tends to 0 as \(T\) grows.
+
+\vspace{0.6em}
+
+\textbf{Remarks}
+
+\begin{itemize}
+\tightlist
+\item
+  Does AdaBoost output a classifier \(F_T\) with small \emph{test} error? \textbf{Not automatically.} \(T\) still has to be tuned; the algorithm can overfit.
+\item
+  Does the 0--1 training error of \(F_T\) decrease at every \(T\)? \textbf{Not necessarily.} What decreases at each step is a particular \emph{upper bound} on that error. Over a long run the training error is driven toward zero, but not monotonically.
+\item
+  Can we use a classifier that is \emph{worse} than random guessing? \textbf{Yes.} That classifier is equivalent to its reverse with \(\alpha_t < 0\).
+\end{itemize}
+
+In practice the weak learner is a classification tree (often a stump or a shallow tree). One can also read off an estimated class probability from the exponential loss. The population criterion \(E\bigl[\exp(-y F(x))\bigr]\) equals
+\[
+e^{-F(x)}\, P(Y=1\mid x) + e^{F(x)}\, P(Y=-1\mid x).
+\]
+Setting the derivative in \(F(x)\) to zero gives
+\[
+-e^{-F(x)}\, P(Y=1\mid x) + e^{F(x)}\, P(Y=-1\mid x) = 0,
+\]
+so the minimizer is
+\begin{align*}
+F(x)
+&=
+\frac12 \log \frac{P(Y=1\mid x)}{P(Y=-1\mid x)},
+\qquad
+P(Y=1\mid x)
+=
+\frac{e^{2F(x)}}{1+e^{2F(x)}}.
+\end{align*}
+
+\vspace{1.2em}
+
+\subsection{Gradient Boosting: Forward Stagewise Additive Models}\label{gradient-boosting-forward-stagewise-additive-models}
+
+A more general additive expansion is
+\[
+F_T(x) = \sum_{t=1}^{T} \alpha_t f(x; \theta_t),
+\]
+fitted by minimizing
+\[
+\min_{\{\alpha_t,\theta_t\}_{t=1}^{T}}
+\sum_{i=1}^{n} L\bigl(y_i, F_T(x_i)\bigr).
+\]
+One chooses a loss \(L\) that matches the problem and a base learner \(f(x;\theta)\) (a linear term, a tree, \ldots). Minimizing jointly over all \(\{\alpha_t,\theta_t\}\) is hard, so the fit is built stage by stage.
+
+\textbf{Algorithm}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Set \(F_0(x) = 0\).
+\item
+  For \(t = 1, \ldots, T\):
+
+  \begin{enumerate}
+  \def\labelenumii{(\alph{enumii})}
+  \item
+    Choose \(\{\alpha_t, \theta_t\}\) to minimize
+    \[
+    \min_{\alpha,\theta}
+    \sum_{i=1}^{n} L\bigl(y_i,\, F_{t-1}(x_i) + \alpha f(x_i;\theta)\bigr).
+    \]
+  \item
+    Update \(F_t(x) = F_{t-1}(x) + \alpha_t f(x;\theta_t)\).
+  \end{enumerate}
+\end{enumerate}
+
+AdaBoost is this procedure with exponential loss. It does not insist on an optimal \(f(x;\theta)\) at each step: any learner better than random is enough. Given that learner, the step size \(\alpha_t\) \emph{is} optimized.
+
+Another forward-stagewise example is \textbf{forward-stagewise linear regression}. At each step one uses a single-variable update
+\[
+f(x,j) = \operatorname{sign}\bigl(\operatorname{Cor}(X_j, r)\bigr)\, X_j,
+\]
+where \(r_i = y_i - F_{t-1}(x_i)\) is the current residual and \(j\) indexes the predictor most correlated with \(r\). A very small step \(\alpha_t\) (for example \(10^{-5}\)) is then taken in that direction. As \(t\) varies, \(F_t\) traces a path that is nearly the lasso path.
+
+Equivalently, \(r_i\) is the negative gradient of squared-error loss:
+\[
+r_{it}
+=
+-\Biggl[
+\frac{\partial}{\partial F(x_i)} \bigl(y_i - F(x_i)\bigr)^2
+\Biggr]_{F(x_i)=F_{t-1}(x_i)}.
+\]
+One fits the weak learner \(f_t\) to these residuals and updates \(F_t\). The same idea applies to a general loss \(L\):
+
+\begin{itemize}
+\item
+  At iteration \(t\), compute the \emph{pseudo-residuals} (negative gradient)
+  \[
+  g_{it}
+  =
+  -\Biggl[
+  \frac{\partial L\bigl(y_i, F(x_i)\bigr)}{\partial F(x_i)}
+  \Biggr]_{F(x_i)=F_{t-1}(x_i)}.
+  \]
+\item
+  Fit \(f_t(x;\theta_t)\) to \(\{g_{it}\}\).
+\item
+  Choose a step length
+  \[
+  \alpha_t
+  =
+  \arg\min_{\alpha}
+  \sum_{i=1}^{n} L\bigl(y_i,\, F_{t-1}(x_i) + \alpha f(x_i;\theta_t)\bigr).
+  \]
+\item
+  Update \(F_t(x) = F_{t-1}(x) + \alpha_t f(x;\theta_t)\).
+\end{itemize}
+
+Changing the outcome type then amounts to changing the loss and the implied pseudo-residuals. When the base learner is CART, one can go further and choose a separate step size in each terminal node.
+
+\vspace{1.2em}
+
+\subsection{xgboost}\label{xgboost}
+
+AdaBoost and \texttt{gbm} already show how a boosted classifier is trained and how \(T\) is chosen. What remains is the implementation students are most likely to meet in practice.
+
+\texttt{xgboost} (Chen and Guestrin, 2016) is a fast implementation of gradient boosting with explicit regularization (\texttt{lambda}, \texttt{alpha}, \texttt{max\_depth}, column and row subsampling) and built-in early stopping. The chunk below uses squared-error loss so the API is uncluttered. A classification fit is the same call with \texttt{objective} set to \texttt{"binary:logistic"} or \texttt{"multi:softprob"}; the iteration logic does not change.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{2025}\NormalTok{)}
+\NormalTok{n }\OtherTok{\textless{}{-}} \DecValTok{2000}
+\NormalTok{p }\OtherTok{\textless{}{-}} \DecValTok{15}
+\NormalTok{X }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{rnorm}\NormalTok{(n }\SpecialCharTok{*}\NormalTok{ p), n, p)}
+\NormalTok{f\_true }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) }\DecValTok{2} \SpecialCharTok{*} \FunctionTok{sin}\NormalTok{(x[, }\DecValTok{1}\NormalTok{]) }\SpecialCharTok{+} \FloatTok{0.5} \SpecialCharTok{*}\NormalTok{ x[, }\DecValTok{2}\NormalTok{]}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{{-}} \FloatTok{1.5} \SpecialCharTok{*}\NormalTok{ (x[, }\DecValTok{3}\NormalTok{] }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{)}
+\NormalTok{y }\OtherTok{\textless{}{-}} \FunctionTok{f\_true}\NormalTok{(X) }\SpecialCharTok{+} \FunctionTok{rnorm}\NormalTok{(n, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+
+\NormalTok{idx }\OtherTok{\textless{}{-}} \FunctionTok{sample.int}\NormalTok{(n, }\FunctionTok{floor}\NormalTok{(}\FloatTok{0.7} \SpecialCharTok{*}\NormalTok{ n))}
+\NormalTok{dtrain }\OtherTok{\textless{}{-}}\NormalTok{ xgboost}\SpecialCharTok{::}\FunctionTok{xgb.DMatrix}\NormalTok{(X[idx, ], }\AttributeTok{label =}\NormalTok{ y[idx])}
+\NormalTok{dvalid }\OtherTok{\textless{}{-}}\NormalTok{ xgboost}\SpecialCharTok{::}\FunctionTok{xgb.DMatrix}\NormalTok{(X[}\SpecialCharTok{{-}}\NormalTok{idx, ], }\AttributeTok{label =}\NormalTok{ y[}\SpecialCharTok{{-}}\NormalTok{idx])}
+
+\NormalTok{params }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}
+  \AttributeTok{objective =} \StringTok{"reg:squarederror"}\NormalTok{,}
+  \AttributeTok{eval\_metric =} \StringTok{"rmse"}\NormalTok{,}
+  \AttributeTok{eta =} \FloatTok{0.05}\NormalTok{,}
+  \AttributeTok{max\_depth =} \DecValTok{4}\NormalTok{,}
+  \AttributeTok{subsample =} \FloatTok{0.8}\NormalTok{,}
+  \AttributeTok{colsample\_bytree =} \FloatTok{0.8}\NormalTok{,}
+  \AttributeTok{min\_child\_weight =} \DecValTok{5}\NormalTok{,}
+  \AttributeTok{lambda =} \FloatTok{1.0}\NormalTok{,}
+  \AttributeTok{alpha =} \DecValTok{0}
+\NormalTok{)}
+
+\NormalTok{watch }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}\AttributeTok{train =}\NormalTok{ dtrain, }\AttributeTok{valid =}\NormalTok{ dvalid)}
+\NormalTok{fit }\OtherTok{\textless{}{-}}\NormalTok{ xgboost}\SpecialCharTok{::}\FunctionTok{xgb.train}\NormalTok{(}
+  \AttributeTok{params =}\NormalTok{ params,}
+  \AttributeTok{data =}\NormalTok{ dtrain,}
+  \AttributeTok{nrounds =} \DecValTok{3000}\NormalTok{,}
+  \AttributeTok{watchlist =}\NormalTok{ watch,}
+  \AttributeTok{early\_stopping\_rounds =} \DecValTok{50}\NormalTok{,}
+  \AttributeTok{verbose =} \DecValTok{0}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in throw_err_or_depr_msg("Parameter '", match_old, "' has been renamed
+## to '", : Parameter 'watchlist' has been renamed to 'evals'. This warning will
+## become an error in a future version.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit}\SpecialCharTok{$}\NormalTok{best\_iteration}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## NULL
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit}\SpecialCharTok{$}\NormalTok{best\_score}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## NULL
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{imp }\OtherTok{\textless{}{-}}\NormalTok{ xgboost}\SpecialCharTok{::}\FunctionTok{xgb.importance}\NormalTok{(}\AttributeTok{model =}\NormalTok{ fit, }\AttributeTok{feature\_names =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"x"}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\NormalTok{p))}
+\FunctionTok{head}\NormalTok{(imp, }\DecValTok{8}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Feature       Gain      Cover  Frequency
+##     <char>      <num>      <num>      <num>
+## 1:      x1 0.52082853 0.17986857 0.13098649
+## 2:      x2 0.17765382 0.20785955 0.16332378
+## 3:      x3 0.16081670 0.10099492 0.08350389
+## 4:     x11 0.01634937 0.04621493 0.06221858
+## 5:     x14 0.01426370 0.04683192 0.06221858
+## 6:      x4 0.01410662 0.05919056 0.06099059
+## 7:     x10 0.01354525 0.03752183 0.04952927
+## 8:      x6 0.01240869 0.04412002 0.05771592
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit, dvalid)}
+\NormalTok{rmse }\OtherTok{\textless{}{-}} \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{mean}\NormalTok{((pred }\SpecialCharTok{{-}}\NormalTok{ y[}\SpecialCharTok{{-}}\NormalTok{idx])}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{))}
+\NormalTok{rmse}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1.085705
+\end{verbatim}
+
+\vspace{1.2em}
+
+\section{A Controlled Comparison}\label{a-controlled-comparison}
+
+The Python version of this example and of all the other examples in this chapter can be found here: Python Code for Classification Trees And Ensemble .~
+
+The figures above use different data sets, so they cannot answer a simple question: on \emph{one} problem, how do a single tree, bagging, a random forest, and boosting compare? We reuse the circular Bayes rule from the beginning of the chapter, with one training draw and one independent test draw.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rpart)}
+\FunctionTok{library}\NormalTok{(ipred)}
+\FunctionTok{library}\NormalTok{(randomForest)}
+\FunctionTok{library}\NormalTok{(gbm)}
+
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{10}\NormalTok{)}
+\NormalTok{n }\OtherTok{=} \DecValTok{1000}
+
+\NormalTok{sim\_circle }\OtherTok{=} \ControlFlowTok{function}\NormalTok{(n) \{}
+\NormalTok{    x1 }\OtherTok{=} \FunctionTok{runif}\NormalTok{(n, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{    x2 }\OtherTok{=} \FunctionTok{runif}\NormalTok{(n, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{    p }\OtherTok{=} \FunctionTok{ifelse}\NormalTok{(x1}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{+}\NormalTok{ x2}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{\textless{}} \FloatTok{0.6}\NormalTok{, }\FloatTok{0.9}\NormalTok{, }\FloatTok{0.1}\NormalTok{)}
+\NormalTok{    y }\OtherTok{=} \FunctionTok{rbinom}\NormalTok{(n, }\DecValTok{1}\NormalTok{, p)}
+    \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{x1 =}\NormalTok{ x1, }\AttributeTok{x2 =}\NormalTok{ x2, }\AttributeTok{y =}\NormalTok{ y)}
+\NormalTok{\}}
+
+\NormalTok{train }\OtherTok{=} \FunctionTok{sim\_circle}\NormalTok{(n)}
+\NormalTok{test }\OtherTok{=} \FunctionTok{sim\_circle}\NormalTok{(n)}
+\NormalTok{train}\SpecialCharTok{$}\NormalTok{yf }\OtherTok{=} \FunctionTok{factor}\NormalTok{(train}\SpecialCharTok{$}\NormalTok{y)}
+\NormalTok{test}\SpecialCharTok{$}\NormalTok{yf }\OtherTok{=} \FunctionTok{factor}\NormalTok{(test}\SpecialCharTok{$}\NormalTok{y)}
+
+\NormalTok{bayes\_rule }\OtherTok{=} \ControlFlowTok{function}\NormalTok{(x1, x2) }\FunctionTok{as.integer}\NormalTok{(x1}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{+}\NormalTok{ x2}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{\textless{}} \FloatTok{0.6}\NormalTok{)}
+
+\CommentTok{\# 1. Pruned CART}
+\NormalTok{cart.fit }\OtherTok{=} \FunctionTok{rpart}\NormalTok{(yf }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x1 }\SpecialCharTok{+}\NormalTok{ x2, }\AttributeTok{data =}\NormalTok{ train)}
+\NormalTok{cp.best }\OtherTok{=}\NormalTok{ cart.fit}\SpecialCharTok{$}\NormalTok{cptable[}\FunctionTok{which.min}\NormalTok{(cart.fit}\SpecialCharTok{$}\NormalTok{cptable[, }\StringTok{"xerror"}\NormalTok{]),}
+    \StringTok{"CP"}\NormalTok{]}
+\NormalTok{cart.pr }\OtherTok{=} \FunctionTok{prune}\NormalTok{(cart.fit, }\AttributeTok{cp =}\NormalTok{ cp.best)}
+
+\CommentTok{\# 2. Bagging}
+\NormalTok{bag.fit }\OtherTok{=} \FunctionTok{bagging}\NormalTok{(yf }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x1 }\SpecialCharTok{+}\NormalTok{ x2, }\AttributeTok{data =}\NormalTok{ train, }\AttributeTok{nbagg =} \DecValTok{200}\NormalTok{)}
+
+\CommentTok{\# 3. Random forest (classification default mtry =}
+\CommentTok{\# floor(sqrt(p)) = 1)}
+\NormalTok{rf.fit }\OtherTok{=} \FunctionTok{randomForest}\NormalTok{(yf }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x1 }\SpecialCharTok{+}\NormalTok{ x2, }\AttributeTok{data =}\NormalTok{ train, }\AttributeTok{ntree =} \DecValTok{500}\NormalTok{,}
+    \AttributeTok{mtry =} \DecValTok{1}\NormalTok{)}
+
+\CommentTok{\# 4. Gradient boosting; choose T by CV}
+\NormalTok{gbm.fit }\OtherTok{=} \FunctionTok{gbm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x1 }\SpecialCharTok{+}\NormalTok{ x2, }\AttributeTok{data =}\NormalTok{ train, }\AttributeTok{distribution =} \StringTok{"bernoulli"}\NormalTok{,}
+    \AttributeTok{n.trees =} \DecValTok{400}\NormalTok{, }\AttributeTok{shrinkage =} \FloatTok{0.05}\NormalTok{, }\AttributeTok{interaction.depth =} \DecValTok{2}\NormalTok{, }\AttributeTok{bag.fraction =} \FloatTok{0.8}\NormalTok{,}
+    \AttributeTok{cv.folds =} \DecValTok{5}\NormalTok{)}
+\NormalTok{best.iter }\OtherTok{=} \FunctionTok{gbm.perf}\NormalTok{(gbm.fit, }\AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\AttributeTok{plot.it =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{xgrid }\OtherTok{=} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{x1 =} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.02}\NormalTok{), }\AttributeTok{x2 =} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.02}\NormalTok{))}
+
+\NormalTok{pred\_grid }\OtherTok{=} \FunctionTok{list}\NormalTok{(}\AttributeTok{CART =} \FunctionTok{as.integer}\NormalTok{(}\FunctionTok{predict}\NormalTok{(cart.pr, xgrid, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)) }\SpecialCharTok{{-}}
+    \DecValTok{1}\NormalTok{, }\AttributeTok{Bagging =} \FunctionTok{as.integer}\NormalTok{(}\FunctionTok{predict}\NormalTok{(bag.fit, xgrid)) }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{, }\AttributeTok{Forest =} \FunctionTok{as.integer}\NormalTok{(}\FunctionTok{predict}\NormalTok{(rf.fit,}
+\NormalTok{    xgrid)) }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{, }\AttributeTok{Boosting =} \FunctionTok{as.integer}\NormalTok{(}\FunctionTok{predict}\NormalTok{(gbm.fit, xgrid,}
+    \AttributeTok{n.trees =}\NormalTok{ best.iter, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{) }\SpecialCharTok{\textgreater{}} \FloatTok{0.5}\NormalTok{))}
+
+\NormalTok{plot\_panel }\OtherTok{=} \ControlFlowTok{function}\NormalTok{(title, pred) \{}
+\NormalTok{    z }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(pred, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(}\FunctionTok{unique}\NormalTok{(xgrid}\SpecialCharTok{$}\NormalTok{x1)))}
+    \FunctionTok{contour}\NormalTok{(}\FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.02}\NormalTok{), }\FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{0.02}\NormalTok{), z, }\AttributeTok{levels =} \FloatTok{0.5}\NormalTok{,}
+        \AttributeTok{labels =} \StringTok{""}\NormalTok{, }\AttributeTok{axes =} \ConstantTok{FALSE}\NormalTok{)}
+    \FunctionTok{points}\NormalTok{(train}\SpecialCharTok{$}\NormalTok{x1, train}\SpecialCharTok{$}\NormalTok{x2, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(train}\SpecialCharTok{$}\NormalTok{y }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{,}
+        \StringTok{"orange"}\NormalTok{), }\AttributeTok{pch =} \DecValTok{16}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.45}\NormalTok{)}
+    \FunctionTok{points}\NormalTok{(xgrid, }\AttributeTok{pch =} \StringTok{"."}\NormalTok{, }\AttributeTok{cex =} \FloatTok{1.1}\NormalTok{, }\AttributeTok{col =} \FunctionTok{ifelse}\NormalTok{(pred }\SpecialCharTok{==}
+        \DecValTok{1}\NormalTok{, }\StringTok{"darkblue"}\NormalTok{, }\StringTok{"orange"}\NormalTok{))}
+    \FunctionTok{symbols}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\AttributeTok{circles =} \FunctionTok{sqrt}\NormalTok{(}\FloatTok{0.6}\NormalTok{), }\AttributeTok{add =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{inches =} \ConstantTok{FALSE}\NormalTok{,}
+        \AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+    \FunctionTok{box}\NormalTok{()}
+    \FunctionTok{title}\NormalTok{(title)}
+\NormalTok{\}}
+
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{), }\AttributeTok{mar =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot\_panel}\NormalTok{(}\StringTok{"CART"}\NormalTok{, pred\_grid}\SpecialCharTok{$}\NormalTok{CART)}
+\FunctionTok{plot\_panel}\NormalTok{(}\StringTok{"Bagging"}\NormalTok{, pred\_grid}\SpecialCharTok{$}\NormalTok{Bagging)}
+\FunctionTok{plot\_panel}\NormalTok{(}\StringTok{"Random forest"}\NormalTok{, pred\_grid}\SpecialCharTok{$}\NormalTok{Forest)}
+\FunctionTok{plot\_panel}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"Boosting ("}\NormalTok{, best.iter, }\StringTok{" trees)"}\NormalTok{), pred\_grid}\SpecialCharTok{$}\NormalTok{Boosting)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-128-1.pdf}}
+
+The black circle is the Bayes boundary. The single tree builds a coarse staircase. Bagging, the forest, and boosting keep the axis-aligned constraint but average (or add) enough rectangles to track the circle more closely.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pred\_test }\OtherTok{=} \FunctionTok{list}\NormalTok{(}\AttributeTok{Majority =} \FunctionTok{rep}\NormalTok{(}\FunctionTok{as.integer}\NormalTok{(}\FunctionTok{names}\NormalTok{(}\FunctionTok{which.max}\NormalTok{(}\FunctionTok{table}\NormalTok{(train}\SpecialCharTok{$}\NormalTok{y)))),}
+    \FunctionTok{nrow}\NormalTok{(test)), }\AttributeTok{CART =} \FunctionTok{as.integer}\NormalTok{(}\FunctionTok{predict}\NormalTok{(cart.pr, test, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)) }\SpecialCharTok{{-}}
+    \DecValTok{1}\NormalTok{, }\AttributeTok{Bagging =} \FunctionTok{as.integer}\NormalTok{(}\FunctionTok{predict}\NormalTok{(bag.fit, test)) }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{, }\AttributeTok{Forest =} \FunctionTok{as.integer}\NormalTok{(}\FunctionTok{predict}\NormalTok{(rf.fit,}
+\NormalTok{    test)) }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{, }\AttributeTok{Boosting =} \FunctionTok{as.integer}\NormalTok{(}\FunctionTok{predict}\NormalTok{(gbm.fit, test,}
+    \AttributeTok{n.trees =}\NormalTok{ best.iter, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{) }\SpecialCharTok{\textgreater{}} \FloatTok{0.5}\NormalTok{))}
+\NormalTok{truth }\OtherTok{=}\NormalTok{ test}\SpecialCharTok{$}\NormalTok{y}
+\NormalTok{bayes }\OtherTok{=} \FunctionTok{bayes\_rule}\NormalTok{(test}\SpecialCharTok{$}\NormalTok{x1, test}\SpecialCharTok{$}\NormalTok{x2)}
+
+\NormalTok{cmp }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{method =} \FunctionTok{names}\NormalTok{(pred\_test), }\AttributeTok{test\_error =} \FunctionTok{sapply}\NormalTok{(pred\_test,}
+    \ControlFlowTok{function}\NormalTok{(ph) }\FunctionTok{mean}\NormalTok{(ph }\SpecialCharTok{!=}\NormalTok{ truth)), }\AttributeTok{agree\_with\_Bayes =} \FunctionTok{sapply}\NormalTok{(pred\_test,}
+    \ControlFlowTok{function}\NormalTok{(ph) }\FunctionTok{mean}\NormalTok{(ph }\SpecialCharTok{==}\NormalTok{ bayes)))}
+\NormalTok{cmp}\SpecialCharTok{$}\NormalTok{test\_error }\OtherTok{=} \FunctionTok{round}\NormalTok{(cmp}\SpecialCharTok{$}\NormalTok{test\_error, }\DecValTok{3}\NormalTok{)}
+\NormalTok{cmp}\SpecialCharTok{$}\NormalTok{agree\_with\_Bayes }\OtherTok{=} \FunctionTok{round}\NormalTok{(cmp}\SpecialCharTok{$}\NormalTok{agree\_with\_Bayes, }\DecValTok{3}\NormalTok{)}
+\NormalTok{cmp}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            method test_error agree_with_Bayes
+## Majority Majority      0.491            0.515
+## CART         CART      0.173            0.915
+## Bagging   Bagging      0.154            0.934
+## Forest     Forest      0.141            0.949
+## Boosting Boosting      0.141            0.947
+\end{verbatim}
+
+Two remarks follow from the table and the figure, and they are the point of putting all four methods on the same draw.
+
+\begin{itemize}
+\tightlist
+\item
+  Test error and agreement with the Bayes rule need not rank methods in the same order. A procedure can match the circle and still miss labels near the boundary, where the class probability is \(0.9\) on one side and \(0.1\) on the other---so even the Bayes rule has error \(0.1\).
+\item
+  The forest used the default \(\texttt{mtry}=1\) and a large \texttt{ntree}; extra trees after the OOB curve has flattened cost time rather than decisions. Boosting chose \(T\) from the CV trace (\texttt{best.iter} in the plot title). That is the practical difference advertised earlier: a forest is mostly insensitive to using ``too many'' trees, and a boosted model is not.
+\end{itemize}
+
+\vspace{1.2em}
+
+\subsection*{Which method, and when?}\label{which-method-and-when}
+
+The last four classification chapters are different answers to the same prediction problem:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Logistic regression} when you want coefficients, standard errors, and calibrated probabilities from a linear predictor on the logit scale.
+\item
+  \textbf{Discriminant analysis} when a Gaussian (or similar) class-conditional model is plausible and you want a rule that uses the pooled or class-specific covariance.
+\item
+  \textbf{SVM} when the margin story matters and you are willing to work with a kernel rather than with probabilities.
+\item
+  \textbf{A single tree} when the decision rule itself has to be shown---a split on sex and class, for example.
+\item
+  \textbf{A random forest} as a strong default among tree methods: little tuning beyond \texttt{mtry}, and OOB error as a built-in check.
+\item
+  \textbf{Boosting} (\texttt{gbm}, \texttt{xgboost}) when you will tune the number of iterations and care about the last bits of accuracy. It is more sensitive to \(T\) and to shrinkage than a forest is.
+\end{itemize}
+
+\chapter{Recommender Systems}\label{recommender-systems}
+
+A \textbf{recommender system} (also called a recommendation system or recommendation platform) is a subclass of information filtering systems that seeks to predict the rating or preference a user would give to an item.
+
+Recommender systems are everywhere: in movie/series streaming platforms (e.g., Netflix), e-commerce websites (e.g., Amazon), social network platforms (e.g., Facebook, LinkedIn), or dating apps. These systems typically leverage historical data to automatically recommend items or products that a user is likely to be interested in.
+
+So, let's consider how those recommender systems are constructed. A useful starting point is the \emph{non-personalized} baseline that many platforms still display: top-5 lists. A few years ago, the recommendations you could find were about top-5 destinations for the summer, top-5 Black Friday deals, and so on. Those lists are based on expert knowledge or aggregate statistics, and they lack personalization. This is exactly where recommender systems come in.
+
+In this section, we explore fundamental recommendation methods: content-based methods, collaborative filtering (item-based or user-based), and latent factor models. If we classify the different methods, we notice that they are based on mainly two types of information: (i) characteristics or information about the items, and/or (ii) user-item interactions. This approach leads to
+
+\begin{itemize}
+\item
+  \textbf{Content-based methods}: focusing on attributes of a specific item.
+\item
+  \textbf{Collaborative Filtering} (item-based / user-based) methods: based on the analysis of user-item interaction data.
+\item
+  \textbf{Baseline predictors}: global, user, and item effects as a first model for the rating matrix.
+\item
+  \textbf{Latent Factor Models}: also based on the analysis of user-item interaction data.
+\end{itemize}
+
+Hybrid methods combine content-based ideas with collaborative filtering, and modern production systems often use deep learning. We mention those only briefly at the end; the rest of this chapter develops the three families above.
+
+Several of these ideas were sharpened in industry, notably around the \textbf{Netflix Prize} (2006--2009), a public competition that asked teams to predict movie ratings and scored them by RMSE. Matrix factorization became a standard latent-factor method in large part because of that competition.
+
+\section{Content-Based Methods}\label{content-based-methods}
+
+The content-based method is the more intuitive of the two classical approaches. Assume that we are an online bookstore and we want a catalogue in which every item (book) can be represented accurately. We represent each book as a multidimensional feature vector. The features could include the author, the publisher, the genre, and the year---anything that we believe describes the type of book---and the resulting vector is the \emph{item profile}. We then visualize every item as a distinct point within a multidimensional feature space (the orange dots in the figure).
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.3\linewidth]{images/week11/useritem} 
+
+}
+
+\caption{User and Item feature space}\label{fig:unnamed-chunk-130}
+\end{figure}
+
+We keep a bank of item profiles, and we also construct a \emph{user profile} in the same feature space (the green dots in the figure). Building the user profile is harder. Typically this is done either \emph{directly}, by asking users for feedback, or \emph{indirectly}, by monitoring activity on the website (clicks, viewing times, and analysis of items the user has already interacted with). These profiles usually give more weight to recent interactions than to older ones. The recommendation is then based on the items that are \textbf{closer} to the user in this multidimensional feature space. In other words, \emph{closeness equates to preference}, which gives us a way to make tailored recommendations.
+
+\textbf{Advantages.} The main advantage of this approach is that it does not require any other user's data to make a recommendation. It is therefore possible to start recommending from day one, without waiting for an expensive collection of user-item interaction data. The method also does not discriminate on the basis of item popularity: a rare book and a bestseller are treated the same way if they sit at the same distance from the user. Recommendations are tied to explicit features, which makes the system relatively transparent. It is easy to say why an item was recommended (matching author, genre, and so on) and how it aligns with the user's interests.
+
+\textbf{Limitations.} The same mechanism produces \emph{limited discovery}. Because every recommendation is based on items similar to those the user has already interacted with, the system tends to keep suggesting more of the same and rarely surfaces something unexpected. New users with empty profiles are also hard to place in the feature space until some feedback has been collected.
+
+\section{Collaborative Filtering}\label{collaborative-filtering}
+
+The collaborative filtering method relies on an interaction matrix between users and items, known as \textbf{the rating matrix}. This is an \(m \times n\) grid, where rows represent users and columns represent items. Within this matrix, some entries are known via \emph{explicit} or \emph{implicit} feedback. Explicit feedback might be direct ratings, such as a user's rating of a movie on Netflix on a scale from one to five. Implicit feedback comes from behavior such as clicking on an item or spending time viewing a particular movie, which provides only indirect clues about preference.
+
+Mathematically, the problem we need to solve is \emph{matrix completion}: we fill in the blanks by predicting preferences for items a user has not yet interacted with. Throughout, we write \(r_{aj}=?\) when user \(a\) has no observed rating for item \(j\).
+
+\begin{center}\includegraphics[width=0.45\linewidth]{images/week11/ratingmatrix} \end{center}
+
+There are two types of collaborative filtering:
+
+\begin{itemize}
+\item
+  \textbf{User-based CF}: ``\emph{Similar users will like similar items.}'' For example, if User A liked an item and User B has a similar profile to User A, it is likely that User B will also like that item. The challenge is defining what makes users similar.
+\item
+  \textbf{Item-based CF}: ``\emph{Users will like items similar to those they have already liked.}'' For example, if User A liked Item X, and Item Y is similar to Item X, then User A is likely to like Item Y as well.
+\end{itemize}
+
+\subsubsection*{User-based Collaborative Filtering}\label{user-based-collaborative-filtering}
+\addcontentsline{toc}{subsubsection}{User-based Collaborative Filtering}
+
+The challenge in user-based collaborative filtering is to quantify resemblance between users (or, later, items) even when most ratings are missing. This means that we need a notion of \textbf{similarity}. Some of the most commonly used similarity metrics include:
+
+\begin{itemize}
+\item
+  \textbf{Jaccard Similarity}: compares users based on the items they have both interacted with, or compares items based on shared users. It is ideal for binary data. For explicit ratings one first binarizes (for example, ``rated'' versus ``not rated'', or ``liked'' versus ``not liked''):
+  \[\frac{|A\cap B|}{|A\cup B|}, \quad \text{where } A, B \text{ are two sets.}\]
+\item
+  \textbf{Cosine Similarity}: measures the cosine of the angle between two vectors. Missing values are ignored, or equivalently treated as zeros:
+  \[\frac{u^{\top} v}{\|u\| \cdot \|v\|}, \quad \text{where } u,v \text{ are two vectors.}\]
+\item
+  \textbf{Centered Cosine Similarity (Pearson Correlation)}:
+  A variation of cosine similarity that first subtracts a user's (or item's) mean rating:
+  \[\frac{(u-\bar{u})^{\top} (v-\bar{v})}{\|u-\bar{u}\| \cdot \|v-\bar{v}\|}, \quad \text{where } u,v \text{ are two vectors.}\]
+\end{itemize}
+
+Cosine and Pearson coefficients fall in the range \([-1, 1]\), whereas a similarity used as a weight is often expected to lie in \([0, 1]\). Negative similarities are awkward in a weighted average, so in practice one either keeps only positive similarities or maps the coefficient to \([0,1]\) via \((1+\cos)/2\). In what follows we treat the similarity \(s_{au}\) as a weight and assume that convention has already been chosen.
+
+The measures are computed from the \emph{shared}, non-missing elements between two entities. For users \(u\) and \(v\), the calculation uses only items that both users have rated. Consequently the effective length of the vector for \(u\) can change depending on whether we compare \(u\) with \(v_1\) or \(u\) with \(v_2\). A common pathology is that two users who have rated only one item in common receive similarity \(1\).
+
+Two conventions for centering are in use, and they are not the same:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Center on all of a user's ratings, then take cosine on co-rated items.} If user \(u\) has rated 20 movies and 5 of those are also rated by user \(v\), the mean \(\bar{u}\) is computed from all 20 ratings, while the cosine uses only the 5 shared ratings. This is the usual implementation of Pearson correlation in recommender systems.
+\item
+  \textbf{Restrict everything, including the means, to co-rated items.} In the same example, both the centering and the cosine use only the 5 shared ratings.
+\end{itemize}
+
+The displayed formula above corresponds to the second convention if \(\bar{u}\) and \(\bar{v}\) are computed on the co-rated support only. Finally, the denominator can become zero when all non-missing entries of a (centered) vector are constant, so those pairs must be skipped or regularized.
+
+\begin{center}\includegraphics[width=0.65\linewidth]{images/week11/ucbf} \end{center}
+
+In the illustration above we used simple averages. We can extend this to \textbf{weighted averages}, using weights based on proximity to the user of interest. Let \(N(a)\) be the set of \(k\) nearest neighbors of user \(a\). The predicted rating of user \(a\) for item \(i\) is
+
+\[
+\hat{r}_{ai}
+=
+\frac{
+\sum_{u \in N(a):\, r_{ui} \neq ?} s_{au}\, r_{ui}
+}{
+\sum_{u \in N(a):\, r_{ui} \neq ?} s_{au}
+}.
+\]
+
+The prediction is undefined if no neighbor of \(a\) has rated item \(i\). In practice, to reduce that problem, we select the nearest neighbors \emph{among users who have rated the item in question}. The neighborhood of \(a\) may therefore change with \(i\). A mean-centered variant replaces \(r_{ui}\) by \(r_{ui}-\bar{r}_u\) and then adds \(\bar{r}_a\) back after the weighted average.
+
+\subsubsection*{Item-Based Collaborative Filtering}\label{item-based-collaborative-filtering}
+\addcontentsline{toc}{subsubsection}{Item-Based Collaborative Filtering}
+
+In item-based collaborative filtering, we consider similarities between items instead of users. Below, a similarity matrix for items is constructed.
+
+\begin{center}\includegraphics[width=0.65\linewidth]{images/week11/icbf} \end{center}
+
+The top three entries in each row are highlighted in bold, since we consider only 3-nearest neighbors. For a test user, represented in orange, who has provided ratings for items 1, 5, and 8, these respective columns are highlighted in blue. These are the items the test user has rated, and their ratings will serve as the foundation for our predictions.
+
+For the test user in question, the aim is to predict the ratings for the unreviewed items using the known ratings for items 1, 5, and 8.
+
+Let \(S(i)\) be the set of \(k\) nearest items to item \(i\) (in the figure, \(k=3\)). The \textbf{predicted rating} \(\hat{r}_{ai}\) for item \(i\) from user \(a\) is a weighted average of \(a\)'s ratings on those neighbors that \(a\) has actually rated, with weights given by item-item similarities \(s_{ij}\):
+
+\[
+\hat{r}_{ai}
+=
+\frac{
+\sum_{j \in S(i):\, r_{aj} \neq ?} s_{ij}\, r_{aj}
+}{
+\sum_{j \in S(i):\, r_{aj} \neq ?} s_{ij}
+}.
+\]
+
+The prediction is missing if the set \(\{j \in S(i): r_{aj} \neq ?\}\) is empty, i.e., when none of the similar items have been rated by the user. As in the user-based case, we can choose the neighbors of \(i\) dynamically among items that user \(a\) has rated, so that the neighborhood used for \(\hat{r}_{ai}\) can depend on \(a\).
+
+\subsubsection*{Pros and Cons of Collaborative Filtering}\label{pros-and-cons-of-collaborative-filtering}
+\addcontentsline{toc}{subsubsection}{Pros and Cons of Collaborative Filtering}
+
+Collaborative filtering does not rely on pre-defined item features: user interactions \emph{become} the features, so the system can recommend items outside the user's usual content profile.
+It cannot start from day one, because it needs a build-up of user-item interaction data. New items with no interaction history cannot be recommended; this is the \textbf{cold start} problem (the same issue appears for brand-new users). There is also a risk of popularity bias, in which items that many people have already rated are recommended to everyone and personalization is weakened.
+
+\subsubsection*{Item-Based vs User-Based Collaborative Filtering}\label{item-based-vs-user-based-collaborative-filtering}
+\addcontentsline{toc}{subsubsection}{Item-Based vs User-Based Collaborative Filtering}
+
+The choice between user-based and item-based collaborative filtering often depends on the specific context and platform.
+
+For instance, e-commerce sites and streaming services such as Amazon and Netflix have often found item-based CF more effective. Item similarities tend to be more stable over time than user similarities, and ``users who liked this also liked that'' is a more reliable relation than the less predictable notion of similar people.
+
+Neither algorithm is cheap if one identifies nearest neighbors by a brute-force scan of a large catalog. Approximation algorithms, clustering, and efficient data structures are used to keep the cost manageable.
+
+Item-based CF also has a \emph{computational} advantage in production. Both methods must find nearest neighbors, but item-based CF can push most of the work into an offline training phase: one builds and sorts an item-to-item similarity matrix once, then serves predictions from it. User-based CF has no comparable static training phase; similarities between users are computed at prediction time, which is expensive in real time.
+
+The tradeoff is memory. The precomputed item-item matrix must be stored and accessed efficiently when recommendations are generated. If the catalog is huge one typically keeps only the top-\(k\) similarities per item.
+
+\section{Baseline Predictors}\label{baseline-predictors}
+
+Before we go to latent factors, it is useful to look at a much simpler model. Some users rate everything highly, some items are universally liked, and there is an overall average level of ratings. So a natural first prediction for a missing entry is not a neighbor or a latent factor, but a \emph{baseline}.
+
+Start with the global average of all observed ratings, \(\mu\). Then allow each user their own offset \(a_i\) and each item its own offset \(b_j\):
+
+\[
+\hat{R}_{ij} = \mu + a_i + b_j.
+\]
+
+This is just a regression on dummy variables for users and items, fit only on the observed entries. We can think of a ladder of baselines:
+
+\begin{itemize}
+\tightlist
+\item
+  predict everything by the global mean \(\mu\),
+\item
+  then by a user mean \(\mu + a_i\),
+\item
+  then by an item mean \(\mu + b_j\),
+\item
+  then by \(\mu + a_i + b_j\).
+\end{itemize}
+
+Already this removes a lot of the obvious structure in the rating matrix. The residual
+
+\[
+\tilde{R}_{ij} = R_{ij} - \mu - a_i - b_j
+\]
+
+is what neighborhood methods or latent factors should be asked to explain. In that sense, collaborative filtering and matrix factorization are models for the leftover, not for the raw stars.
+
+We usually regularize \(a_i\) and \(b_j\) as well, especially for users or items with very few ratings --- the same shrinkage idea as in penalized regression. A user who has rated only one movie should not get a huge \(a_i\).
+
+\section{Latent Factor Model}\label{latent-factor-model}
+
+The latent factor model is another way to work with the rating matrix. The idea is inspired by a truncated singular value decomposition (SVD): we approximate the \(m \times n\) rating matrix by a product of two thinner factor matrices that embed users and items in a shared \(d\)-dimensional space.
+
+\begin{center}\includegraphics[width=0.65\linewidth]{images/week11/latent} \end{center}
+
+The decomposition is
+\[
+R_{m \times n} \approx U_{m \times d}\, V^{\top}_{d \times n},
+\]
+where \(V\) is \(n \times d\). The \(d\) columns of \(U\) are user factors and the \(d\) columns of \(V\) (equivalently, the \(d\) rows of \(V^{\top}\)) are item factors. A user's predicted preference for an item is the inner product of the corresponding factor vectors. In a full SVD one would also have a diagonal matrix of singular values; here those scales are absorbed into \(U\) and \(V\).
+
+Classical SVD cannot be applied directly, because \(R\) has missing entries. Instead we minimize a quadratic loss \emph{only over observed ratings}. If every entry were observed, that minimizer would recover (a truncation of) the ordinary SVD. To avoid overfitting we add penalty terms on the factors. The resulting objective is
+
+\[
+\sum_{R_{ij} \neq ?} \bigl(R_{ij} - u_i^{\top} v_j\bigr)^2 + \lambda_1 \mathrm{Pen}(U) + \lambda_2 \mathrm{Pen}(V),
+\]
+
+where \(u_i\), the \(i\)-th row of \(U\), is the latent vector for user \(i\), and \(v_j\), the \(j\)-th row of \(V\), is the latent vector for item \(j\). Typical penalties are squared Frobenius norms, \(\mathrm{Pen}(U)=\|U\|_F^2\) and \(\mathrm{Pen}(V)=\|V\|_F^2\).
+
+This loss is convex in \(U\) for fixed \(V\) and convex in \(V\) for fixed \(U\), but it is \textbf{not jointly convex} in \((U,V)\). In practice one therefore uses alternating least squares (ALS), cycling between the two blocks, or stochastic gradient descent over observed ratings. After the factors have been fit, a missing entry is predicted by the inner product \(u_i^{\top} v_j\).
+
+Taking this model further, we put the baseline from the previous section back in. The latent product is then asked only to explain what is left after \(\mu + a_i + b_j\):
+
+\[
+R_{ij} = \underbrace{\mu}_{\text{Overall Average} } + \underbrace{a_i}_{\text{User Effect}} + \underbrace{b_j}_{\text{Item Effect}} + u_i^{\top} v_j.
+\]
+
+Substituting that into the loss, and regularizing \(a\) and \(b\) as well, gives
+
+\[
+\sum_{R_{ij} \neq ?}
+\bigl(R_{ij} - \mu - a_i - b_j - u_i^{\top} v_j\bigr)^2
++ \lambda\bigl(\|U\|_F^2 + \|V\|_F^2 + \|a\|_2^2 + \|b\|_2^2\bigr).
+\]
+
+The same ALS or SGD procedures apply. In practice the baseline alone already does a lot; the factors are there to capture the leftover user--item interactions.
+
+\section{Evaluating Recommender Systems}\label{evaluating-recommender-systems}
+
+Evaluation is often treated as a prediction task, but the way we \emph{split} the data matters as much as the metric.
+
+The unit of splitting is a \emph{rating}, not a row of a table. If we randomly shuffle users the way we did in classification, we can leak a user's later ratings into the training set and then ``predict'' their earlier ones. A standard protocol is:
+
+\begin{itemize}
+\tightlist
+\item
+  hold out some observed entries, at random, or better, the most recent ratings of each user,
+\item
+  fit the model on the remaining observed entries only,
+\item
+  score only the held-out cells.
+\end{itemize}
+
+RMSE (and MAE) make sense when the system is really asked to predict a number of stars. RMSE was the official score of the Netflix Prize, and it is still the default number people report. It has drawbacks. In many cases we care more about higher ratings (such as 4 or 5) that signal strong interest, and about what appears at the \emph{top of a list}. Ranking metrics such as Precision@\(K\), Recall@\(K\), or NDCG@\(K\) are usually closer to how recommendations are actually shown.
+
+One more warning: when we compute Precision@\(K\) we have to decide what counts as a ``relevant'' item among the ones the user never saw. Held-out high ratings are the usual proxy. That proxy is imperfect, which is one reason live experiments still matter once a system is in production.
+
+\section{Challenges \& Strategies}\label{challenges-strategies}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Computational Efficiency:}
+  To find similar items or users efficiently, a pre-clustering step is often used. By grouping users into clusters beforehand, the search for the most similar user can be restricted to the same cluster, which reduces computational overhead.
+\item
+  \textbf{Combining Multiple Systems:}
+  In practice, recommender systems often combine several approaches. For instance, Amazon may showcase the week's top deals, popular products within specific categories, and items you have previously shown interest in. This hybrid strategy accommodates different user preferences and different data constraints (including cold start).
+\item
+  \textbf{Contextual Information:}
+  Modern recommendation systems also take contextual factors into account---a user's location, time of access, and device (e.g., phone, computer, or tablet). The browsing context often changes what a good recommendation is.
+\item
+  \textbf{Evaluating Recommender Systems:}
+  See the previous section. The short version: split by held-out \emph{ratings} (ideally the most recent ones), report RMSE if you are predicting stars, and report a ranking metric such as Precision@\(K\) if you are producing a list.
+\item
+  \textbf{Balance between accuracy and diversity:}
+  Accuracy matters, but so does diversity. If every recommendation is a near-duplicate of something the user already likes, the list is precise and still unhelpful. Serendipity---helping users discover unexpected items they end up enjoying---is part of what makes a system feel useful.
+\item
+  \textbf{Incorporating User Feedback:}
+  It is important to distinguish a user's lack of interest in an item from mere unawareness of it. Tracking clicks (and skips) on recommended items provides feedback that ratings alone do not.
+\item
+  \textbf{Challenges in Recommendation Systems:}
+  Scalability and data sparsity remain the main engineering constraints. The cold-start problem---how to recommend for a new user, or how to promote a newly added item---has no single universal solution; it is usually handled by mixing content-based signals, popularity baselines, and the collaborative or latent-factor models of this chapter.
+\end{enumerate}
+
+\chapter{Clustering Analysis}\label{clustering-analysis}
+
+So far, all the methods we discussed were presented in a supervised learning framework. However, in our discussion of clustering analysis we will focus on \textbf{unsupervised learning problems}.
+
+In the sequel, in our framework we no longer have a response variable \(Y\), but we only have access to the features \(\{x_i\}_{i=1}^{n}\), and our goal is to learn patterns in \(\textbf{X}\).
+
+Some examples of unsupervised learning include estimation of the density or the covariance or the network structure using a set of features, which can become very challenging in high-dimensional settings. Clustering analysis is also primarily used in an unsupervised learning framework.
+
+\textbf{Clustering analysis} is the identification of multiple regions of the feature space that contain modes of density, or in other words, regions of the feature space with some \emph{common similarities}. In some cases, we are also interested in dimension reduction, in which case we want to identify low-dimensional manifolds within the feature space \(\mathcal{X}\) that represent high data density.
+
+\subsubsection*{Clustering}\label{clustering}
+\addcontentsline{toc}{subsubsection}{Clustering}
+
+When we cluster, we group the data set into subsets so that those within each subset are more closely related (\emph{similar}) to each other than those objects assigned to other subsets. Each subset is called a \textbf{cluster}. We have two main types of clustering: \emph{Flat Clustering} and \emph{Hierarchical Clustering}. Flat Clustering divides the data into \(k\) clusters, while hierarchical clustering arranges the clusters into a natural hierarchy.
+
+Clustering results are dependent on the \textbf{measure of similarity} (or distance) between the ``points'' to be clustered. A distance metric or a distance function is a function that defines the dissimilarity of two elements (points, sets, etc.) Mathematically, a distance function is non-negative; it is zero when two points are the same; it is symmetric and it satisfies the triangle inequality. The most popular examples of distances we will use are:
+
+\begin{itemize}
+\tightlist
+\item
+  The \textbf{Euclidean Distance} (appropriate for continuous variables):
+\end{itemize}
+
+\[d(u,v) = \|u-v\|_2 = \sqrt{\sum_{j=1}^{p} (u_j - v_j)^2}\]
+
+The \emph{squared} Euclidean distance \(\|u-v\|_2^2\) is not a metric (it fails the triangle inequality), but it is the quantity minimized by \(K\)-means. The two distances yield the same nearest-center assignments.
+
+\begin{itemize}
+\tightlist
+\item
+  The \textbf{Hamming Distance} (suited for categorical variables):
+\end{itemize}
+
+\[d(u,v) = \sum_{j=1}^{p} \mathbf{1}_{u_j \neq v_j} \]
+
+In general, there is no universally best approach, so distance measures should be defined based on the application.
+
+The Python code for this chapter is available here Python Code for Clustering . It reproduces the main R examples (kmeans, hclust, and the spectral clustering demo).
+
+\section{Introduction to Clustering}\label{introduction-to-clustering}
+
+Consider a set of \(n\) data points. The \textbf{goal} is to form \(K \ll n\) clusters, indexed by \(k \in \{1, \ldots, K\}\). This implies that we need to search for a function \(C: \{1, \ldots, n\} \rightarrow \{1, \ldots, K\}\) that minimizes the within cluster distance, i.e.
+
+\[W(C) = \frac{1}{2} \sum_{k=1}^{K} \sum_{C(i)=C(i')=k} d(x_i, x_{i'})\]
+where \(C(\cdot)\) is a cluster index function that assigns the \(i\)th observation to cluster \(C(i)\).
+
+This is equivalent to maximizing the between cluster distance:
+\[B(C) = \frac{1}{2} \sum_{k=1}^{K} \sum_{C(i)=k}\sum_{C(i') \neq k} d_{i i'}\]
+
+Note that the \textbf{total distance} can be broken down into
+\begin{align*}
+T &= \frac{1}{2} \sum_{i=1}^{n} \sum_{i'=1}^{n} d_{ii'} \\
+&= \frac{1}{2} \sum_{k=1}^{K} \sum_{C(i)=k} \Biggl\{ \sum_{C(i') = k} d_{i i'} + \sum_{C(i') \neq k} d_{i i'} \Biggr\}\\
+&= W(C) + B(C)\\
+\end{align*}
+
+Since, the total distance is fixed for a given set of data, we have that
+
+\[\text{Minimize } W(C) \, \Leftrightarrow \, \text{Maximize } B(C)\]
+
+Given a specific distance measure \(d(\cdot, \cdot)\), several algorithms can
+be used to find the clusters:
+
+\begin{enumerate}
+\def\labelenumi{\roman{enumi}.}
+\item
+  Combinatorial Algorithms
+\item
+  \(k\)-means Clustering
+\item
+  Hierarchical Clustering
+\end{enumerate}
+
+\subsubsection*{Combinatorial Algorithms}\label{combinatorial-algorithms}
+\addcontentsline{toc}{subsubsection}{Combinatorial Algorithms}
+
+For small \(n\) and \(K\), we could minimize \(W\) by using brute-force search. However, the number of ``tries'' needed to complete the search is
+
+\[S(n,K) = \frac{1}{K!} \sum_{k=0}^{K} (-1)^{K-k} \binom{K}{k} k^n\]
+
+(the Stirling number of the second kind; for \(n>0\) the \(k=0\) term vanishes). This counts the number of ways to partition \(n\) observations into \(K\) nonempty unlabeled clusters.
+
+It is clear that this is not feasible for large \(n\) and \(K\), since the number of distinct assignments can be extremely large. So, we need to develop more efficient algorithms that may not be optimal but they could be a reasonably good sub-optimal partition.
+
+\section{\texorpdfstring{\(K\)-means Clustering}{K-means Clustering}}\label{k-means-clustering}
+
+Consider an enlarged optimization problem
+
+\[\min_{C, \{m_k\}_{k=1}^{K}} \sum_{k=1}^{K} \sum_{C(i)=k} ||x_i - m_k||^2\]
+
+We solve this with respect to both: \emph{the cluster function} \(C(\cdot)\) and the \emph{cluster centers} \(m_k\), \(k=1,\ldots, K\). But, this problem is NP-hard for \(\geq 2\) dimensions and a combinatorial algorithm is too expensive.
+
+We could instead consider an algorithm that alternatively updates the two components:
+
+\begin{itemize}
+\item
+  \(C\) the cluster assignments
+\item
+  \(\{m_k\}_{k=1}^{K}\) the cluster means
+\end{itemize}
+
+So, we can achieve this by first fixing \(C\), and then finding the best \(\{m_k\}_{k=1}^{K}\), and
+second by fixing \(\{m_k\}_{k=1}^{K}\), and then finding the best \(C\). Specifically, in
+\(K\)-means Clustering, we need to alternate between the following two steps until convergence:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Fix \(C\), i.e.~the cluster label of each subject is known. Then, for any set
+  \(\{i : C(i) = k\}\), we only need to find the mean
+  \[m_k = \arg \min_m \sum_{C(i)=k} ||x_i-m||^2\]
+  which boils down to simply finding the mean within cluster \(k\), i.e.
+  \[m_k = \frac{\sum_{C(i)=k} x_i}{\sum_i \mathbf{1}_{\{C(i)=k\}}} \]
+\item
+  Fix the cluster means \(\{m_k\}_{k=1}^{K}\). Then, to find the new cluster
+  assignments, we simply recalculate the distance from an observation to each of the cluster means:
+  \[C(i) = \arg \min_{k\in \{1, \ldots, K\}} d(x_i, m_k) \]
+  Hence each point will be assigned to the closest cluster mean.
+\end{enumerate}
+
+The \(K\)-means Clustering Algorithm can be summarized as follows:
+
+\textbf{\(K\)-means Clustering Algorithm}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Randomly split the data set into \(K\) different subsets. Assign each subset a cluster label. Then iterate between (2) and (3):
+\item
+  Given the cluster assignment \(C\), calculate the cluster mean vectors \(m_1, \ldots, m_K\).
+\item
+  Given the current set of means \(\{m_1, \ldots, m_K\}\), assign each observation to the closest current cluster mean.
+\item
+  Stop the algorithm when \(C\) does not change.
+\end{enumerate}
+
+Below is an illustration of the way the algorithm works in a toy example
+
+\textbf{Illustration of \(K\)-Means Clustering}
+
+Suppose we have a set of \emph{six} observations.
+
+\begin{center}\includegraphics{my-598PSL_files/figure-latex/unnamed-chunk-135-1} \end{center}
+
+We first \emph{randomly assign them into two clusters} (initiate a random \(C\) function). Based on this cluster assignment, we can calculate the corresponding cluster mean \(m_k\)'s:
+
+\begin{center}\includegraphics{my-598PSL_files/figure-latex/unnamed-chunk-136-1} \end{center}
+
+Then we will assign each observation to the closest cluster mean. In this example, only the blue point on the top will be moved to a new cluster. Then the cluster means can then be recalculated.
+
+\begin{center}\includegraphics{my-598PSL_files/figure-latex/unnamed-chunk-137-1} \end{center}
+
+When there is nothing to move anymore, the algorithm stops. Keep in mind that we started with a random cluster assignment, and this objective function is not convex which implies that we may obtain different results if we start with different values. The solution is to try different starting points and use the best final results. This can be tuned using the \texttt{nstart} parameter in the \texttt{kmeans()} function.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# some random data}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{mat }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{1000}\NormalTok{), }\DecValTok{50}\NormalTok{, }\DecValTok{20}\NormalTok{)}
+
+\CommentTok{\# if we use only one starting point}
+\FunctionTok{kmeans}\NormalTok{(mat, }\AttributeTok{centers =} \DecValTok{3}\NormalTok{, }\AttributeTok{nstart =} \DecValTok{1}\NormalTok{)}\SpecialCharTok{$}\NormalTok{tot.withinss}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 885.8913
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# if we use multiple starting points and pick the best one}
+\FunctionTok{kmeans}\NormalTok{(mat, }\AttributeTok{centers =} \DecValTok{3}\NormalTok{, }\AttributeTok{nstart =} \DecValTok{100}\NormalTok{)}\SpecialCharTok{$}\NormalTok{tot.withinss}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 883.8241
+\end{verbatim}
+
+Note that the clusters are typically \textbf{initialized randomly}. However, this algorithm does not guarantee a global minimum, although it still leads to a local minimizer.
+
+Two modeling assumptions are easy to miss and matter in practice. First, \(K\)-means with Euclidean (or squared Euclidean) distance treats every coordinate as comparable, so features should be put on a common scale before clustering; otherwise a variable measured in thousands will dominate one measured in fractions. Second, minimizing \(\sum \|x_i-m_k\|^2\) favors compact, roughly spherical clusters of similar size. Elongated or unequal-variance groups will be split or merged for reasons that have nothing to do with ``natural'' labels.
+
+The same squared-error criterion will reappear in the next chapter: \(K\)-means is a hard-assignment, equal-covariance version of EM for a Gaussian mixture. That is the hinge between geometric clustering and model-based clustering.
+
+An alternative approach is the \(K\)-\textbf{medoids} method. We need to replace the \textbf{first step} (updating the centers) by searching for \emph{the one} observation that minimizes the distance to all others in the cluster, i.e.~
+\[i^*_k = \arg \min_{i:C(i)=k} \sum_{C(i')=k} d(x_i, x_{i'})\]
+Then we use \(x_{i^*_k}\) as the ``center'\,' of cluster \(k\). The assignment step is unchanged: each point is assigned to the closest medoid.
+
+\subsection{Categorical Variables in Clustering}\label{categorical-variables-in-clustering}
+
+By design, the \(k\)-means method cannot handle categorical variables as is unless we change them to numerical, e.g., using one-hot encoding, or ordinal encoding. Alternatively, we may also use distance metrics that are specifically designed for categorical data, e.g., Hamming distance, or the Jaccard distance.
+
+We can also choose clustering algorithms that support categorical variables, such as \(K\)-Modes or \(K\)-prototypes.
+
+\subsection{\texorpdfstring{Tuning \(K\)-Means: How to Choose \(K\)}{Tuning K-Means: How to Choose K}}\label{tuning-k-means-how-to-choose-k}
+
+When using \(K\)-Means, we need to identify an appropriate value for the number of clusters, \(k\). Some of the available methods, include:
+
+\begin{itemize}
+\item
+  Gap Statistics
+\item
+  Silhouette Statistics
+\item
+  Prediction Strength
+\end{itemize}
+
+When identifying the appropriate number of clusters, we need to consider a \emph{measure of} \emph{compactness}/\emph{tightness} of clusters. A measure that quantifies the \textbf{compactness} or \textbf{tightness} of clusters can be computed based on
+
+\[SS(K) = \sum_{k=1}^{K} \sum_{C(i)=k} ||x_i - m_k||^2 \]
+
+A smaller SS indicates tighter clusters. As the number of clusters (\(K\)) increases, the SS inherently decreases for the same data set which means that relying only on SS can be misleading when selecting the optimal \(K\).
+
+\subsubsection*{Gap Statistic}\label{gap-statistic}
+\addcontentsline{toc}{subsubsection}{Gap Statistic}
+
+The \textbf{gap statistic} (Tibshirani, Walther and Hastie, 2001) compares the clustering of actual data against a \emph{random clustering from a reference distribution}.
+
+\begin{align*}
+G(K) &= E_0\Bigl( \log SS^*(K) \Bigr) - \log SS_{obs}(K)\\
+&\approx \frac{1}{B} \sum_{b=1}^{B} \log SS_b^*(K) - \log SS_{obs}(K)
+\end{align*}
+
+This reference set is derived from a distribution that has \emph{no intrinsic clustering}, meaning an ideal number of clusters would be one. As \(K\) grows, even though the SS shrinks, the difference (or gap) may not always decrease. A high gap statistic suggests that the SS for the observed data at a particular \(K\) is notably smaller than its reference counterpart, indicating good clustering.
+
+There are two proposed methods for generating data from the reference distribution:
+
+\begin{itemize}
+\item
+  \textbf{Uniform Sampling:} The reference data is uniformly sampled over the range of the observed data. This method may not be effective if the observed data has distinct shapes.
+\item
+  \textbf{Principal Component Based Sampling}: This method samples over the range of the principal components of the observed data, ensuring better alignment with the data structure.
+\end{itemize}
+
+So, to determine the \textbf{optimal \(K\)} with the \textbf{gap statistic}, we plot the gap statistic values for different values of \(K\). The optimal \(K\) is determined either by identifying the highest gap statistic or, in a sequential approach, by selecting the first \(K\) where its gap statistic exceeds that of \(K+1\).
+
+Since the gap statistic is based on random sampling, there is inherent variability:
+the one-standard-error principle is used to account for this uncertainty. We compare the gap statistic at \(K\) to the lower bound of the gap statistic for \(K+1\) (subtracting one standard error). If the former is greater, we consider that \(K\) as optimal:
+\[K_{opt} = \arg\min_K \{K: G(K) \geq G(K+1) - s_{K+1}\}\]
+where
+\[s_{K} = \mathrm{sd}_{K}\sqrt{1+1/B}\]
+and \(\mathrm{sd}_{K}\) is the standard deviation of \(\log SS_b^*(K)\) over the \(B\) reference samples.
+
+\subsubsection*{Silhouette Statistic}\label{silhouette-statistic}
+\addcontentsline{toc}{subsubsection}{Silhouette Statistic}
+
+The \textbf{silhouette statistic} of the \(i\)th observation measures how well this observation fits in its own cluster versus how well it fits in its next closest cluster. In the original definition (Rousseeuw, 1987), \(a(i)\) is the average distance from \(i\) to the other points in its own cluster, and \(b(i)\) is the smallest average distance from \(i\) to the points of any other cluster. A common adaptation for \(K\)-means uses distances to centroids instead:
+
+\[a(i) = \|x_i - m_k\|,\,\,\,\,\,\,\, b(i) = \|x_i - m_{\ell}\|\]
+where \(i\in C_k\) and \(C_{\ell}\) is the next-closest cluster to \(x_i\). Then, its silhouette is
+\[s(i) = \frac{b(i) - a(i)}{\max \{a(i),\, b(i)\} }\]
+
+For well-clustered observations where \(a(i)\) is significantly smaller than \(b(i)\), \(s(i)\) approaches 1. If the \(i\)th observation lies on the borderline of two clusters, both \(a(i)\) and \(b(i)\) will be similar, rendering \(s(i)\) close to 0.
+
+In the \(K\)-means scenario with centroid distances, \(b(i)\) should be greater than \(a(i)\); otherwise, the observation would belong to a different cluster. With the pairwise-average definition, or with other clustering algorithms, \(b(i)\) can be smaller than \(a(i)\), potentially resulting in a negative silhouette statistic. Even then, the value of \(s(i)\) remains above \(-1\). Extremely negative silhouette statistics indicate poor clustering for the \(i\)th observation.
+
+\subsubsection*{Silhouette Coefficient}\label{silhouette-coefficient}
+\addcontentsline{toc}{subsubsection}{Silhouette Coefficient}
+
+The \textbf{Silhouette Coefficient (SC)}, also referred to as the Silhouette Width, is defined as the average silhouette statistic over all samples.
+
+A rule of thumb taken from Kaufman and Rousseeuw (1990); see also Struyf, Hubert and Rousseeuw (1997), ``\emph{Clustering in an Object-Oriented Environment}'':
+
+\begin{itemize}
+\tightlist
+\item
+  SC \(>\) 70\%: A strong structure has been found.
+\item
+  SC \(>\) 50\%: A reasonable structure has been found.
+\item
+  SC \(>\) 26\%: The structure is weak and could be artificial; try additional methods.
+\item
+  SC \(<\) 26\%: No substantial structure has been found.
+\end{itemize}
+
+We can also plot the silhouette coefficient against varying \(K\) values. The optimal \(K\) can either be the one yielding the largest silhouette coefficient or a \(K\) surpassing a specific threshold.
+
+\subsubsection*{Prediction Strength}\label{prediction-strength}
+\addcontentsline{toc}{subsubsection}{Prediction Strength}
+
+The \textbf{Prediction Strength} method is another strategy for choosing the optimal number of clusters \(K\). We start by splitting the data set into two subsets: \(A\) (training set) and \(B\) (test set).
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Assume there are \(m\) observations in test set \(B\). Cluster these \(m\) samples into \(K\) clusters using your chosen clustering algorithm. Label these clusters as \(C_1, \ldots, C_K\). Each cluster contains \(m_j\) observations. The sum of the sizes of these clusters \(m_1, \ldots, m_K\) is equal to \(m\). This step determines the true clustering structure for the test data.
+\item
+  Then, cluster the training data \(A\) into \(K\) clusters. Use the resulting clustering rule to allocate the \(m\) observations from test set \(B\) into these \(K\) clusters. This essentially means predicting the cluster membership for the test set based on the cluster centers determined from the training data. Denote these predicted clusters as \(C'_1, \ldots, C'_K\).
+\end{enumerate}
+
+For each cluster obtained in \emph{Step 1} (the clusters found on the test set \(B\)), examine every pair of observations within that cluster. Check whether those pairs remain in the same cluster under the assignment from \emph{Step 2}. Calculate the average co-membership accuracy for each test cluster, indicating how often pairs of observations remain together.
+
+The ``prediction strength'' (Tibshirani and Walther 2005) for \(K\) clusters is the worst (smallest) accuracy among these clusters. Choosing the worst accuracy avoids potential biases. If one were to take the average accuracy, the method might be skewed by predominantly classifying many observations into one cluster, artificially inflating the average. A common rule is to choose the largest \(K\) whose prediction strength stays above a threshold such as \(0.8\) or \(0.9\).
+
+\section{Hierarchical Clustering}\label{hierarchical-clustering}
+
+Choosing the number of clusters \(K\) may be difficult. In a \textbf{Hierarchical Representation} each cluster contains a single observation at the lowest level, and there is only one cluster containing all observations at the highest level. We then use a dendrogram to display the clustering result.
+
+\textbf{Hierarchical Clustering Example}
+
+Suppose we have a set of six observations:
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-139-1.pdf}}
+
+The goal is to progressively group them together until there is only one group.
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-140-1.pdf}}
+
+During this entire process, only the pair-wise distances are used to determine which observations are grouped. Hence, the \texttt{R} function \texttt{hclust()} will take a distance matrix and perform the clustering. A distance matrix is an \(n \times n\) matrix. As a default, we can use the Euclidean distance.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# the Euclidean distance can be computed using dist()}
+\FunctionTok{as.matrix}\NormalTok{(}\FunctionTok{dist}\NormalTok{(x))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          1         2         3         4         5         6
+## 1 0.000000 1.2294164 1.7864196 1.1971565 1.4246185 1.5698349
+## 2 1.229416 0.0000000 2.3996575 0.8727261 1.9243764 2.2708670
+## 3 1.786420 2.3996575 0.0000000 2.8586738 0.4782442 0.2448835
+## 4 1.197156 0.8727261 2.8586738 0.0000000 2.4219048 2.6741260
+## 5 1.424618 1.9243764 0.4782442 2.4219048 0.0000000 0.4204479
+## 6 1.569835 2.2708670 0.2448835 2.6741260 0.4204479 0.0000000
+\end{verbatim}
+
+We then use this distance matrix in the hierarchical clustering algorithm.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# the Euclidean distance can be computed using dist()}
+\FunctionTok{as.matrix}\NormalTok{(}\FunctionTok{dist}\NormalTok{(x))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          1         2         3         4         5         6
+## 1 0.000000 1.2294164 1.7864196 1.1971565 1.4246185 1.5698349
+## 2 1.229416 0.0000000 2.3996575 0.8727261 1.9243764 2.2708670
+## 3 1.786420 2.3996575 0.0000000 2.8586738 0.4782442 0.2448835
+## 4 1.197156 0.8727261 2.8586738 0.0000000 2.4219048 2.6741260
+## 5 1.424618 1.9243764 0.4782442 2.4219048 0.0000000 0.4204479
+## 6 1.569835 2.2708670 0.2448835 2.6741260 0.4204479 0.0000000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# pass the distance matrix to hclust() we use a complete}
+\CommentTok{\# link function}
+\NormalTok{hcfit }\OtherTok{\textless{}{-}} \FunctionTok{hclust}\NormalTok{(}\FunctionTok{dist}\NormalTok{(x), }\AttributeTok{method =} \StringTok{"complete"}\NormalTok{)}
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mar =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(hcfit)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-142-1.pdf}}
+
+Hence, the merging process is exactly the same as we demonstrated previously. The height of each split represents how separated the two subsets are. Selecting the number of clusters is still a tricky problem. Usually, we pick a cutoff where the height of the next split is short. Hence, the above example fits well with two clusters.
+
+An \textbf{agglomerative algorithm} is a bottom-up approach:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Begin with every observation representing a singleton cluster.
+\item
+  At each step, merge two closest clusters into one cluster and
+  reduce the number of clusters by one.
+\item
+  Stop when all observations are in the same cluster.
+\end{enumerate}
+
+To choose which two clusters to merge, we need \emph{(i)} a distance measure between any two observations \(d(x_i, x_j)\), and \emph{(ii)} a distance measure between any two sets of observations \(d(G, H)\).
+
+A Distance \(d(G, H)\) between two clusters \(G\) and \(H\) defined as:
+
+\begin{itemize}
+\item
+  \textbf{Complete Linkage}: the furthest pair
+  \[d(G, H) = \max_{i\in G,\, i'\in H} d_{ii'}\]
+\item
+  \textbf{Single Linkage}: the closest pair
+  \[d(G, H) = \min_{i\in G,\, i'\in H} d_{ii'}\]
+\item
+  \textbf{Average Linkage}: average dissimilarity
+  \[d(G, H) = \frac{1}{n_G n_H} \sum_{i\in G} \sum_{i'\in H} d_{ii'}\]
+\item
+  \textbf{Ward Linkage}: merge the pair of clusters whose combination increases the within-cluster sum of squares the least. This linkage is the closest hierarchical analogue of the \(K\)-means objective.
+\end{itemize}
+
+Different choices may result in different hierarchical structures.
+
+To perform a hierarchical clustering, a matrix of all the pair-wise distances is sufficient, and we do not need to know the values of the original observations. This is an \(n \times n\) matrix: the \((i, i')\) element represents the distance between \(x_i\) and \(x_{i'}\). This matrix is also called a \textbf{dissimilarity matrix}. This is a symmetric matrix with diagonal elements that are zero.
+
+\section{Self-Organizing Maps}\label{self-organizing-maps}
+
+Self-organizing Map (SOM) is another popular clustering method. The main difference between SOM and \(K\)-means is that the cluster means of a SOM have a geometric relationship preserving the geometry of the underlying data. An SOM starts with \textbf{Input Data}: \(\{x_i\}_{i=1}^{n}\), with each \(x_i \in \mathbb{R}^{p}\). We then randomly initialize the \textbf{Cluster Means}, i.e.~creating a grid of centers \(w_{ij} \in \mathbb{R}^{p}\), \(i=1, \ldots, q_1\), \(j=1,\ldots, q_2\). These are similar to the centers in a \(K\)-means algorithm, but they also preserve some geometric relationship on the grid. Then, we pick a \textbf{Learning Rate}: \(\alpha \in[0,1]\). This controls how fast the \(w_{ij}\)'s are updated, and it will decrease progressively. We also need to choose the \textbf{Radius}: \(r\). This controls how many \(w_{ij}\)'s will be updated at each
+iteration, and it will also decrease progressively.
+
+\textbf{SOM Algorithm}
+
+For \(k = 1, \ldots, n\), we will stream in one new observation \(x_k\) and perform the following update:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  For all \(w_{ij}\), calculate the distance between each \(w_{ij}\) and \(x_k\). \textbackslash{}
+  Let
+  \(d_{ij} =\|x_k - w_{ij}\|\) (use Euclidean distance).
+\item
+  Select the closest \(w_{ij}\), denoted as \(w_{*}\).
+\item
+  Update each \(w_{ij}\) based on the formula
+  \[w_{ij} \leftarrow w_{ij} + \alpha \, h(w_{*}, w_{ij}, r)\, (x_k - w_{ij})\]
+  where \(h\) is a neighborhood function on the \emph{grid} (typically depending on the grid distance between units and the current radius \(r\)). Units close to the winner on the map are pulled toward \(x_k\); units outside the neighborhood are left unchanged.
+\item
+  Decrease the value of \(\alpha\) and \(r\).
+\end{enumerate}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.75\linewidth]{images/week13/som1} 
+
+}
+
+\caption{Self-Organizing Map (Ref. ESL textbook)}\label{fig:unnamed-chunk-143}
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.85\linewidth]{images/week13/som2} 
+
+}
+
+\caption{Self-Organizing Map (Ref. ESL textbook)}\label{fig:unnamed-chunk-144}
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.7\linewidth]{images/week13/som3} 
+
+}
+
+\caption{Self-Organizing Map (Ref. ESL textbook)}\label{fig:unnamed-chunk-145}
+\end{figure}
+
+\section{Spectral Clustering}\label{spectral-clustering}
+
+In some applications, we do not have the value of each data point, instead, we have the similarities between data points. Note that for similarity measures, larger means more similar, while for distance measures, larger is further away. A way to represent the data is the \textbf{Similarity Graph} \(G = (V,E)\) (an undirected graph) in which \(V\) is a set of vertices \(\{x_1, x_2, \ldots, x_n \}\), and \(E\) is the set of edges \(\{(i,j)\}_{ij}\).
+
+For our case, this graph is weighted by an \textbf{adjacency matrix}
+\[\mathbf{W}_{n \times n} = \{w_{ij}\}_{ij}\]
+
+We can define \(\mathbf{W}\) in many different ways. Each \(w_{ij}\) is the \emph{similarity} between vertices \(i\) and \(j\) which means that \(\mathbf{W}\) is symmetric \(w_{ij} = w_{ji}\).
+
+We also define the \textbf{degree matrix} \(D\) as a \emph{diagonal} matrix
+\[diag(d_1, \ldots, d_n)\]
+where \(d_i\) is the degree of vertex \(i\):
+\[d_i = \sum_{j=1}^{n} w_{ij}\]
+
+\subsubsection*{Graph Laplacian}\label{graph-laplacian}
+\addcontentsline{toc}{subsubsection}{Graph Laplacian}
+
+There are many different ways to define a graph Laplacian matrix:
+
+\begin{itemize}
+\item
+  Unnormalized graph Laplacian:
+  \[\mathbf{L} = \mathbf{D} - \mathbf{W}\]
+\item
+  Normalized graph Laplacians:
+\end{itemize}
+
+\begin{align*}
+\mathbf{L}_{sym} &= \mathbf{D}^{-1/2} \mathbf{L} \mathbf{D} ^{-1/2} = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{W} \mathbf{D}^{-1/2}\\
+\mathbf{L}_{rw} &= \mathbf{D}^{-1} \mathbf{L} = \mathbf{I} - \mathbf{D}^{-1}\mathbf{W}\\
+\end{align*}
+
+Each of them has some unique properties:
+For the unnormalized graph Laplacian, we have, for any \(f\)
+\begin{align*}
+f'\mathbf{L} f &= f'\mathbf{D} f - f'\mathbf{W} f = \sum_{i=1}^{n} d_i f_i^2 - \sum_{ij} f_i f_j w_{ij}\\
+&= \frac{1}{2} \Biggl\{ \sum_{i} d_i f_i^2 - 2\sum_{i,j} f_i f_j w_{ij} + \sum_j d_j f_j^2 \Biggr\}\\
+&= \frac{1}{2} \sum_{i,j} w_{ij} (f_i - f_j)^2
+\end{align*}
+
+\(L\) here is positive semi-definite. The smallest eigen-value is 0, with eigen-vector 1. The number of 0 eigen-values depends on the number of connected components.
+
+For the normalized graph Laplacian, we have
+\[f' \mathbf{L}_{sym} f = \frac{1}{2} \sum_{i,j} w_{ij} \Bigl( \frac{f_i}{\sqrt{d_i}} - \frac{f_j}{\sqrt{d_j}} \Bigr)^2\]
+The eigenvalue \(\lambda\) and eigenvector \(\mathbf{v}\) of \(\mathbf{L}_{rw}\) can be solved from
+\[\mathbf{L}\mathbf{v} = \lambda \mathbf{D}\mathbf{v}\]
+The smallest eigenvalue of both \(\mathbf{L}_{sym}\) and \(\mathbf{L}_{rw}\) are 0, with eigenvectors \(\mathbf{1}\) and \(\mathbf{D}^{1/2}\mathbf{1}\) respectively.
+
+The spectral clustering is very simple:
+
+\textbf{Clustering Algorithm}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Construct a weighted adjacency matrix \(\mathbf{W}\), using e.g.,
+  \[w_{ij} = \exp \Biggl( -\frac{1}{2\sigma^2} ||x_i - x_j||^2\Biggr)\]
+\item
+  Compute the Laplacian \(\mathbf{L}\) (or normalized versions \(\mathbf{L}_{sym}\) and \(\mathbf{L}_{rw}\) )
+\item
+  Compute the smallest \(k\) eigenvectors, denote as \(\mathbf{V}_{n \times k}\). (For \(\mathbf{L}_{sym}\), a common extra step is to row-normalize \(\mathbf{V}\) before clustering.)
+\item
+  Treat \(\mathbf{V}_{n \times k}\) as the matrix of the observed data, and perform \(k\)-means clustering.
+\item
+  Output the \(k\) cluster labels
+\end{enumerate}
+
+Below is an example from Von Luxburg, Ulrike. ``A tutorial on spectral clustering.'' Statistics and computing 17, no. 4 (2007): 395-416.
+
+\textbf{Spectral Clustering Example}
+
+Spectral clustering essentially consists of two steps. First, we construct the graph Laplacian \(\mathbf{L}\) (or normalized version), then we perform eigen-decomposition of the matrix. Let's show an example, replicated from Von Luxburg (2007).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{n }\OtherTok{=} \DecValTok{50}
+\NormalTok{x }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\FunctionTok{rnorm}\NormalTok{(n, }\DecValTok{0}\NormalTok{, }\FloatTok{0.2}\NormalTok{), }\FunctionTok{rnorm}\NormalTok{(n, }\DecValTok{2}\NormalTok{, }\FloatTok{0.2}\NormalTok{), }\FunctionTok{rnorm}\NormalTok{(n, }\DecValTok{4}\NormalTok{, }\FloatTok{0.2}\NormalTok{), }\FunctionTok{rnorm}\NormalTok{(n,}
+    \DecValTok{6}\NormalTok{, }\FloatTok{0.2}\NormalTok{))}
+\FunctionTok{hist}\NormalTok{(x, }\AttributeTok{breaks =} \DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{my-598PSL_files/my-598PSL_files/figure-latex/unnamed-chunk-146-1.pdf}}
+
+We use the adjacency matrix defined as \[w_{ij} = \exp\bigg\{\frac{- \lVert x_i - x_j\rVert^2 }{2 \sigma^2 } \bigg\},\] and calculate the Laplacian \[\mathbf{L} = \mathbf{D} - \mathbf{W}.\] We can then use the eigen decomposition to recover the underlying features.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# construct the adjacency matrix}
+\NormalTok{W }\OtherTok{=} \FunctionTok{as.matrix}\NormalTok{(}\FunctionTok{exp}\NormalTok{(}\SpecialCharTok{{-}}\FunctionTok{dist}\NormalTok{(}\FunctionTok{as.matrix}\NormalTok{(x))}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\DecValTok{4}\NormalTok{))}
+\FunctionTok{heatmap}\NormalTok{(W, }\AttributeTok{Rowv =} \ConstantTok{NA}\NormalTok{, }\AttributeTok{Colv =} \ConstantTok{NA}\NormalTok{, }\AttributeTok{symm =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{revC =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.35\linewidth]{my-598PSL_files/figure-latex/unnamed-chunk-147-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# compute the degree of each vertex}
+\NormalTok{d }\OtherTok{=} \FunctionTok{colSums}\NormalTok{(W)}
+
+\CommentTok{\# the laplacian matrix}
+\NormalTok{L }\OtherTok{=} \FunctionTok{diag}\NormalTok{(d) }\SpecialCharTok{{-}}\NormalTok{ W}
+
+\CommentTok{\# eigen decomposition}
+\NormalTok{f }\OtherTok{=} \FunctionTok{eigen}\NormalTok{(L, }\AttributeTok{symmetric =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# plot the eigen values we need the smallest ones}
+\FunctionTok{plot}\NormalTok{(}\FunctionTok{rev}\NormalTok{(f}\SpecialCharTok{$}\NormalTok{values)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{20}\NormalTok{], }\AttributeTok{pch =} \DecValTok{19}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"eigen{-}values"}\NormalTok{, }\AttributeTok{col =} \FunctionTok{c}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\StringTok{"red"}\NormalTok{,}
+    \DecValTok{4}\NormalTok{), }\FunctionTok{rep}\NormalTok{(}\StringTok{"blue"}\NormalTok{, }\DecValTok{196}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.35\linewidth]{my-598PSL_files/figure-latex/unnamed-chunk-147-2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot the last four eigen vectors}
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(f}\SpecialCharTok{$}\NormalTok{vectors[, }\DecValTok{200}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"eigenvector"}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.15}\NormalTok{,}
+    \FloatTok{0.15}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(f}\SpecialCharTok{$}\NormalTok{vectors[, }\DecValTok{199}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"eigenvector"}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.15}\NormalTok{,}
+    \FloatTok{0.15}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(f}\SpecialCharTok{$}\NormalTok{vectors[, }\DecValTok{198}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"eigenvector"}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.15}\NormalTok{,}
+    \FloatTok{0.15}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(f}\SpecialCharTok{$}\NormalTok{vectors[, }\DecValTok{197}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"eigenvector"}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.15}\NormalTok{,}
+    \FloatTok{0.15}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.95\linewidth]{my-598PSL_files/figure-latex/unnamed-chunk-148-1}
+
+On the other hand, if we use an adjacency matrix that contains several non-connected blocks, then we would observe four zero eigen values. For example, using the KNN adjacency index, we may obtain four separated blocks.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(FNN)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'FNN'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:class':
+## 
+##     knn, knn.cv
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nn }\OtherTok{=} \FunctionTok{get.knn}\NormalTok{(x, }\AttributeTok{k =} \DecValTok{10}\NormalTok{)}
+\NormalTok{W }\OtherTok{=} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{200}\NormalTok{, }\DecValTok{200}\NormalTok{)}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{200}\NormalTok{) W[i, nn}\SpecialCharTok{$}\NormalTok{nn.index[i, ]] }\OtherTok{=} \DecValTok{1}
+
+\CommentTok{\# W is not necessarily symmetric}
+\NormalTok{W }\OtherTok{=} \FunctionTok{pmax}\NormalTok{(W, }\FunctionTok{t}\NormalTok{(W))}
+
+\FunctionTok{heatmap}\NormalTok{(W, }\AttributeTok{Rowv =} \ConstantTok{NA}\NormalTok{, }\AttributeTok{Colv =} \ConstantTok{NA}\NormalTok{, }\AttributeTok{symm =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{revC =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.35\linewidth]{my-598PSL_files/figure-latex/unnamed-chunk-149-1}
+
+We use a normalized graph Laplacian, defined as \[\mathbf{L}_\text{sym} = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{W} \mathbf{D}^{-1/2}\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# compute the degree of each vertex}
+\NormalTok{d }\OtherTok{=} \FunctionTok{colSums}\NormalTok{(W)}
+
+\CommentTok{\# the laplacian matrix}
+\NormalTok{L }\OtherTok{=} \FunctionTok{diag}\NormalTok{(}\DecValTok{200}\NormalTok{) }\SpecialCharTok{{-}} \FunctionTok{diag}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\FunctionTok{sqrt}\NormalTok{(d)) }\SpecialCharTok{\%*\%}\NormalTok{ W }\SpecialCharTok{\%*\%} \FunctionTok{diag}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\FunctionTok{sqrt}\NormalTok{(d))}
+
+\CommentTok{\# eigen decomposition}
+\NormalTok{f }\OtherTok{=} \FunctionTok{eigen}\NormalTok{(L, }\AttributeTok{symmetric =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# plot the eigen values we need the smallest ones}
+\FunctionTok{plot}\NormalTok{(}\FunctionTok{rev}\NormalTok{(f}\SpecialCharTok{$}\NormalTok{values)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{20}\NormalTok{], }\AttributeTok{pch =} \DecValTok{19}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"eigen{-}values"}\NormalTok{, }\AttributeTok{col =} \FunctionTok{c}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\StringTok{"red"}\NormalTok{,}
+    \DecValTok{4}\NormalTok{), }\FunctionTok{rep}\NormalTok{(}\StringTok{"blue"}\NormalTok{, }\DecValTok{196}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.35\linewidth]{my-598PSL_files/figure-latex/unnamed-chunk-150-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot the last four eigen vectors}
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(f}\SpecialCharTok{$}\NormalTok{vectors[, }\DecValTok{200}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"eigenvector"}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.15}\NormalTok{,}
+    \FloatTok{0.15}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(f}\SpecialCharTok{$}\NormalTok{vectors[, }\DecValTok{199}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"eigenvector"}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.15}\NormalTok{,}
+    \FloatTok{0.15}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(f}\SpecialCharTok{$}\NormalTok{vectors[, }\DecValTok{198}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"eigenvector"}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.15}\NormalTok{,}
+    \FloatTok{0.15}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(f}\SpecialCharTok{$}\NormalTok{vectors[, }\DecValTok{197}\NormalTok{], }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"eigenvector"}\NormalTok{, }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.15}\NormalTok{,}
+    \FloatTok{0.15}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.95\linewidth]{my-598PSL_files/figure-latex/unnamed-chunk-151-1}
+
+We can then perform \(k\)-means clustering using the top eigen vectors as the features.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cl }\OtherTok{=} \FunctionTok{kmeans}\NormalTok{(f}\SpecialCharTok{$}\NormalTok{vectors[, }\DecValTok{197}\SpecialCharTok{:}\DecValTok{200}\NormalTok{], }\AttributeTok{centers =} \DecValTok{4}\NormalTok{, }\AttributeTok{nstart =} \DecValTok{100}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(x, cl}\SpecialCharTok{$}\NormalTok{cluster, }\AttributeTok{ylab =} \StringTok{"Cluster"}\NormalTok{, }\AttributeTok{col =}\NormalTok{ cl}\SpecialCharTok{$}\NormalTok{cluster, }\AttributeTok{pch =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.95\linewidth]{my-598PSL_files/figure-latex/unnamed-chunk-152-1}
+
+\chapter{Model-Based Clustering: Latent Structure Models}\label{model-based-clustering-latent-structure-models}
+
+This chapter is \textbf{model-based clustering}. Last week we partitioned \(\mathbf{X}\) with a distance and a criterion such as \(W(C)\). Here we treat the cluster labels as missing data, put a probability model on \(\mathbf{X}\), and estimate that model. The main example is a Gaussian mixture; a hidden Markov model is the same idea when the labels form a Markov chain in time.
+
+Model-based clustering works by fitting a mixture model to the data, with each cluster represented by one component of that mixture.
+
+In this framework, clustering becomes equivalent to estimating a mixture model that captures the underlying distribution of the variable \(X\). Choosing the correct number of clusters, \(K\), can be guided by model selection criteria such as AIC or BIC.
+
+A major difficulty in model-based clustering---and in mixture modeling more broadly---is estimating the model parameters. The EM (Expectation--Maximization) algorithm is the standard tool used to obtain maximum likelihood estimates of these parameters.
+
+Although our focus here is on clustering, mixture models belong to the wider family of hierarchical models, and their applications reach well beyond clustering alone.
+
+\section{Gaussian Mixtures}\label{gaussian-mixtures}
+
+Consider two \emph{populations} with means \(\mu_1\) and \(\mu_2\) and the same variance, say \(\sigma^2=1\), and let \(X\) be the \textbf{observed outcome} (from one of the two populations), and \$ Z \in \{0, 1\}\$ be a \textbf{hidden variable} (not observable) that indicates the population label, with \(P(Z=1)=\pi\).
+
+Using only the observed data, \(\{x_i\}_{i=1}^{n}\), we want to estimate the two population means and the mixing probability \(\theta=(\mu_1, \mu_2, \pi)\). The density of \(X\) is a \emph{mixture of two Gaussian} random variables, i.e.
+
+\[p_X(x) = (1-\pi) \;\phi_{\mu_1}(x) + \pi \; \phi_{\mu_2}(x)\]
+where \(\phi_{\mu}\) is the density function of \(\mathcal{N}(\mu,1)\).
+
+The log-likelihood function based on \(n\) observed training data computes as
+\[\ell(\mathbf{x}|\theta) = \sum_{i=1}^{n} \log \Bigl( (1-\pi)\phi_{\mu_1}(x_i) + \pi \phi_{\mu_2}(x_i)\Bigr)\]
+
+We can solve this by \emph{gradient descent}, but it is often slow. Instead, we can treat the labels from which distribution each sample comes from (call them \(Z\)) as \textbf{missing} and then we can use the EM algorithm.
+
+\section{EM Algorithm}\label{em-algorithm}
+
+Instead of directly optimizing the log-likelihood \(\ell(\mathbf{x}|\theta)\), we introduce the \textbf{latent variable} \(Z\), and write the joint \emph{log-likelihood} as
+
+\begin{align*}
+\ell(\mathbf{x}, \mathbf{z}|\theta) &= \sum_{i=1}^{n}  \Bigl( (1-z_i)\log \phi_{\mu_1}(x_i) + z_i \log \phi_{\mu_2}(x_i)\Bigr)\\
+& \quad + \sum_{i=1}^{n} \Bigl( (1-z_i) \log(1-\pi) + z_i \log \pi\Bigr)
+\end{align*}
+
+EM algorithm: We optimize this likelihood function by iteratively updating the unknowns: \(\mathbf{z}\) and \(\theta\).
+
+\begin{itemize}
+\item
+  \emph{E-step (Expectation)}: we treat both \(\mathbf{x}\) and \((\mu_1, \mu_2, \pi)\) as known, and calculate the conditional probability of each \(z_i\).
+\item
+  \emph{M-step (Maximization)}: we treat \(\mathbf{x}\) and \(\mathbf{z}\) as known, and solve the parameters by maximizing the likelihood.
+\end{itemize}
+
+\subsubsection*{EM Algorithm: E-Step}\label{em-algorithm-e-step}
+\addcontentsline{toc}{subsubsection}{EM Algorithm: E-Step}
+
+If both \(\mathbf{x}\) and \(\theta=(\mu_1, \mu_2, \pi)\) are known, then the conditional probability of each \(z_i\) can be calculated as:
+\begin{align*}
+P\left( Z_i=1|\theta^{(k)}, \mathbf{x} \right) &= \frac{P \Bigl(Z_i=1, x_i|\theta^{(k)} \Bigr) }{p\Bigl(x_i|\theta^{(k)}\Bigr)}\\
+&= \frac{\pi^{(k)}\,\phi_{\mu_2^{(k)}}(x_i)}{(1-\pi^{(k)})\,\phi_{\mu_1^{(k)}}(x_i) + \pi^{(k)}\,\phi_{\mu_2^{(k)}}(x_i)}
+\end{align*}
+
+This is simple since we just need to calculate the density functions of each \(x_i\) under the current parameter \(\theta^{(k)}\) for each possible label (\(z_i=0\) or \(1\)).
+
+\subsubsection*{EM Algorithm: M-Step}\label{em-algorithm-m-step}
+\addcontentsline{toc}{subsubsection}{EM Algorithm: M-Step}
+
+We already have \(P\Bigl(\mathbf{Z} = \mathbf{z}|\mathbf{x}, \theta^{(k)}\Bigr)\), we can replace all the \(z_i\) values (since they are unknown anyways) in the likelihood function \(\ell(\mathbf{x}, \mathbf{z}|\theta)\) by their expectations (from the E-step):
+\[\hat{p}_i = P\left(Z_i=1|\mathbf{x}, \theta^{(k)}\right)\]
+
+After this, what remains in the likelihood only involves \(\mathbf{x}\) and \(\theta\), so we can solve (the M-step) for the MLE of \(\theta\) based on this new likelihood function.
+
+It turns out that these estimators are just \emph{weighted means}:
+
+\[\hat{\mu}_1 = \frac{\sum_{i=1}^{n}(1-\hat{p}_i)x_i}{\sum_{i=1}^{n}(1-\hat{p}_i)},\quad
+\hat{\mu}_2 = \frac{\sum_{i=1}^{n}\hat{p}_i x_i}{\sum_{i=1}^{n} \hat{p}_i},\quad
+\hat{\pi} = \frac{1}{n}\sum_{i=1}^{n} \hat{p}_i \]
+
+We will then \emph{iterate the E- and M- steps until convergence}.
+
+\subsection*{\texorpdfstring{Connection with \(k\)-Means}{Connection with k-Means}}\label{connection-with-k-means}
+\addcontentsline{toc}{subsection}{Connection with \(k\)-Means}
+
+Suppose in the E-step, we do not use the ``\emph{soft}'' label (the probability), instead, we use a ``\emph{hard}'' label:
+\[\mathbf{1}_{\bigl\{P\bigl(Z_i = 1|\mathbf{x}, \theta^{(k)}\bigr) > 0.5\bigr\}}\]
+
+This is essentially comparing the two densities and seeing which one is larger. Notice that, with equal variance, the log density of a Gaussian differs from a constant only by the squared Euclidean norm, so we are just choosing the ``closer'' cluster mean (of the previous iteration). The M-step is just re-calculating the cluster means based on the new assignments. In that sense, \(K\)-means is a hard-assignment, equal-covariance version of EM for a Gaussian mixture. If the component variances are allowed to differ, the hard assignment is no longer ``nearest mean.''
+
+The same EM argument extends immediately to \(K\) components in \(p\) dimensions,
+\[p(x) = \sum_{k=1}^{K} \pi_k\,\phi(x;\,\mu_k, \Sigma_k),\]
+with \(\sum_k \pi_k = 1\). The E-step produces responsibilities \(\hat{p}_{ik} = P(Z_i=k|x_i,\theta^{(k)})\), and the M-step updates each \(\pi_k\), \(\mu_k\), and \(\Sigma_k\) as weighted means and weighted covariances. Constraining \(\Sigma_k = \sigma^2 I\) recovers spherical clusters; allowing a common \(\Sigma\) or free \(\Sigma_k\) lets clusters be elliptical. The observed-data likelihood is then available, so the number of components can be chosen by AIC or BIC, which is the model-based counterpart of the gap and silhouette statistics from the previous chapter. In practice one often initializes EM from a \(K\)-means run.
+
+\subsection*{\texorpdfstring{Responsibilities, labels, and choosing \(K\)}{Responsibilities, labels, and choosing K}}\label{responsibilities-labels-and-choosing-k}
+\addcontentsline{toc}{subsection}{Responsibilities, labels, and choosing \(K\)}
+
+The numbers \(\hat{p}_{ik}\) are the reason to prefer a mixture model over \(K\)-means when the model is plausible. They are soft cluster memberships: \(\hat{p}_{ik}\) is the estimated probability that observation \(i\) belongs to component \(k\), given the current fit. One can report a hard label \(\arg\max_k \hat{p}_{ik}\), but one can also keep the vector \((\hat{p}_{i1},\ldots,\hat{p}_{iK})\) as a measure of uncertainty. Points with two comparable \(\hat{p}_{ik}\) sit on the boundary between clusters; \(K\)-means has no analogue of that statement.
+
+Two caveats come with the likelihood. First, \(\ell(\theta|\mathbf{x})\) is unchanged if we permute the component labels, so the maximizer is not unique; this is \textbf{label switching}. Second, the observed-data likelihood is not concave, so EM converges to a local maximum. Different \(K\)-means starts (or several random starts) can yield different fits; one keeps the run with the largest \(\ell(\theta|\mathbf{x})\).
+
+Once a fit is in hand, the same observed-data log-likelihood is what we use to choose \(K\). With \(\ell_K\) the maximized log-likelihood of a \(K\)-component mixture and \(d_K\) the number of free parameters,
+\begin{align*}
+\mathrm{AIC}(K) &= -2\ell_K + 2d_K,\\
+\mathrm{BIC}(K) &= -2\ell_K + d_K\log n.
+\end{align*}
+For a \(p\)-dimensional Gaussian mixture with free mixing weights, means, and covariances,
+\[d_K = (K-1) + Kp + K\cdot\frac{p(p+1)}{2}.\]
+Constraints on \(\Sigma_k\) (spherical, diagonal, or shared across \(k\)) reduce \(d_K\). We select the \(K\) that minimizes AIC or BIC. BIC penalizes complexity more heavily and is the more common default for mixtures. This is a different answer to ``how many clusters?'' than gap or silhouette: here \(K\) indexes a list of probability models, and we score those models on the observed data.
+
+\section{EM Algorithm: General Framework}\label{em-algorithm-general-framework}
+
+Suppose that we want to maximize the log-likelihood \(\log p(\mathbf{x}|\theta)\). Under some scenarios, this likelihood can be difficult to derive. For example, \(X\) are generated from a mixture of several models, however, we do not know which is the underlying true model for each observation. Or, \(X\) contains missing values, where we have \(\mathbf{X} = (\mathbf{X}_{obs}, \mathbf{X}_{mis})\). In such cases, it would be easier if we introduced a latent variable \(Z\), such that the joint likelihood of \(p(\mathbf{x}, \mathbf{z}| \theta)\) is much easier to derive.
+
+For example, if \(Z\) represents the hidden label, then
+\[p(\mathbf{x}, \mathbf{z}|\theta) = p(\mathbf{z}|\theta) \, p(\mathbf{x}|\mathbf{z}, \theta)\]
+where both probabilities are easier to write out given the underlying model. In general, for a discrete case of \(Z\), we need to maximize the log-likelihood
+\[\log p(\mathbf{x}|\theta) = \log \sum_z p(\mathbf{x}, \mathbf{z}|\theta)\]
+For a continuous case, we maximize the log-likelihood
+\[\log p(\mathbf{x}|\theta) = \log \int_z p(\mathbf{x}, \mathbf{z}|\theta) d\mathbf{z}\]
+
+This can still be difficult to solve since there is a summation in the \(\log\) function. The \textbf{Expectation - Maximization (EM) algorithm} is designed to solve this problem (Dempster, Laird, and Rubin, 1977).
+
+\textbf{General EM Algorithm}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{E-Step}: Under the current value of \(\theta\), denoted as \(\theta^{(k)}\), find \(p(\mathbf{z}|\mathbf{x}, \theta^{(k)})\), the distribution of the unobserved variables given the
+  data and \(\theta^{(k)}\). Then calculate the conditional expectation:
+  \begin{align*}
+  g(\theta) &= \mathbf{E}_{\mathbf{Z}|\mathbf{x},  \theta^{(k)}} \log p(\mathbf{x}, \mathbf{Z} |\theta)\\
+  &= \begin{cases}
+  & \sum_{\mathbf{z}} P(\mathbf{Z} = \mathbf{z}| \mathbf{x}, \theta^{(k)}) \log p(\mathbf{x}, \mathbf{z}|\theta)\\
+  & \int_{\mathbf{z}} P(\mathbf{Z} = \mathbf{z}| \mathbf{x}, \theta^{(k)}) \log p(\mathbf{x}, \mathbf{z}|\theta) dz\\
+  \end{cases}
+  \end{align*}
+\item
+  \textbf{M-Step}: Re-estimate the parameter \(\theta\) to maximize \(g(\theta)\):
+  \[\theta^{(k+1)} = \arg \max_{\theta} g(\theta)\]
+\end{enumerate}
+
+To summarize, three components are involved in an EM algorithm:
+1. The outcome variable \(\mathbf{X}\), with observed values \(\mathbf{x}\).
+2. The distribution parameters \(\theta\)
+3. The latent variables \(\mathbf{Z}\)
+
+The EM algorithm bounces back and forth between two processes:
+
+\begin{itemize}
+\item
+  E-step: Given the current parameters and the observed data, estimate the (conditional mean of) latent variables.
+\item
+  M-step: Given the observed data and the latent variables, estimate the parameters.
+\end{itemize}
+
+\section{The MM Algorithm}\label{the-mm-algorithm}
+
+The \textbf{MM algorithm} (Minorize-Maximize, or Majorize-Minimize) is a general framework for optimization. The EM algorithm can be treated as a special case of MM. We will show that both MM and EM have the ascend (or descend) property.
+
+\textbf{General Philosophy}
+
+Suppose we want to maximize the function \(f\left(\theta\right)\). We perform the optimization by \emph{recursively updating} the \(\theta\) value.
+
+\begin{itemize}
+\item
+  At each iteration \(k\):
+
+  \begin{itemize}
+  \item
+    Let \(\theta^{(k)}\) represent the current parameter value.
+  \item
+    We first find a function \(g\left(\theta|\theta^{(k)}\right)\) that \emph{minorizes} \(f\left(\theta\right)\) (lies below \(f\) and touches it at the current point):
+  \item
+    For all \(\theta\), \(g\left(\theta|\theta^{(k)} \right) \leq f\left(\theta\right)\) and \(g\left(\theta^{(k)}|\theta^{(k)} \right) = f \left(\theta^{(k)} \right)\).
+  \item
+    Update \(\theta\) with
+    \[\theta^{(k+1)} = \arg \max_{\theta} g\Bigl(\theta|\theta^{(k)} \Bigr) \]
+  \end{itemize}
+\end{itemize}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.65\linewidth]{images/week15/mmalgo} 
+
+}
+
+\caption{MM Algorithm (Ref. Wikipedia)}\label{fig:unnamed-chunk-153}
+\end{figure}
+
+\subsection{Ascend Property}\label{ascend-property}
+
+The MM algorithm is guaranteed to ascend:
+\begin{align*}
+f\left( \theta^{(k+1)} \right) &= g \left(\theta^{(k+1)} | \theta^{(k)}\right) +
+\Bigl(f\left( \theta^{(k+1)}\right) - g\left( \theta^{(k+1)}| \theta^{(k)} \right)\Bigr)\\
+&\geq  g\left( \theta^{(k+1)}| \theta^{(k)} \right)\\
+&\geq  g\left( \theta^{(k)}| \theta^{(k)} \right) = f(\theta^{(k)})
+\end{align*}
+
+If we instead minimize \(f\) using a majorizing surrogate \(g \geq f\), the same argument shows that the algorithm is guaranteed to descend.
+
+\subsubsection*{Ascend Property: EM Algorithm}\label{ascend-property-em-algorithm}
+\addcontentsline{toc}{subsubsection}{Ascend Property: EM Algorithm}
+
+The EM algorithm is a special case of MM. We can show that
+\[\ell \Bigl(\theta^{(k+1)} | \mathbf{x} \Bigr) = \log p\Bigl(\mathbf{x}|\theta^{(k+1)} \Bigr) \geq 
+\log p\Bigl(\mathbf{x}|\theta^{(k)} \Bigr) = \ell\Bigl(\theta^{(k)} | \mathbf{x}\Bigr) \]
+
+The proof relies on Jensen's inequality:
+\begin{align*}
+E\Bigl( f(X) \Bigr) &\geq f\Bigl( E(X) \Bigr), \, \text{ if } \, f\, \text{ is convex}\\
+E\Bigl( f(X) \Bigr) &\leq f\Bigl( E(X) \Bigr), \, \text{ if } \, f\, \text{ is concave}\\
+\end{align*}
+
+Since \(\mathbf{x}\) is observed and \(\mathbf{z}\) is the missing part
+\[\ell(\theta|\mathbf{x}) = \log p(\mathbf{x}|\theta) = \log \frac{p(\mathbf{x}, \mathbf{z}|\theta)}{p(\mathbf{z}| \mathbf{x},\theta)}\]
+The difference of two likelihood functions under \(\theta^{(k)}\) and \(\theta^{(k+1)}\)
+
+\begin{align*}
+\ell(\theta^{(k+1)}|\mathbf{x}) -  \ell(\theta^{(k)}|\mathbf{x}) &= \log p(\mathbf{x}, \mathbf{z}|\theta^{(k+1)}) - \log p(\mathbf{x}, \mathbf{z}|\theta^{(k)}) \\
+&\quad - \Bigl( \log p( \mathbf{z}|\mathbf{x},\theta^{(k+1)}) - \log p( \mathbf{z}| \mathbf{x}, \theta^{(k)})\Bigr)
+\end{align*}
+
+This identity holds for every \(\mathbf{z}\). We take the expectation of both sides with respect to \(\mathbf{z}\) given \(\mathbf{x}\) and \(\theta^{(k)}\). The left-hand side does not depend on \(\mathbf{z}\), so it is unchanged.
+
+The right-hand side becomes
+\begin{align*}
+& \underbrace{E \Bigl( \log p(\mathbf{x}, \mathbf{z}| \theta^{(k+1)}) - \log p(\mathbf{x}, \mathbf{z}| \theta^{(k)} )\,\Big|\, \mathbf{x}, \theta^{(k)} \Bigr)}_{g(\theta^{(k+1)}|\mathbf{x}, \theta^{(k)}) - g(\theta^{(k)}|\mathbf{x}, \theta^{(k)})} \\
+& \quad - E \Bigl( \log p( \mathbf{z}| \mathbf{x},\theta^{(k+1)}) - \log p(\mathbf{z}| \mathbf{x}, \theta^{(k)}) \,\Big|\, \mathbf{x}, \theta^{(k)} \Bigr).
+\end{align*}
+
+The first term is nonnegative because \(\theta^{(k+1)}\) maximizes \(g(\cdot|\mathbf{x}, \theta^{(k)})\) in the M-step.
+
+The second term is
+\[  E \Biggl( \log \frac{ p( \mathbf{z}| \mathbf{x},\theta^{(k+1)})}{ p(\mathbf{z}| \mathbf{x}, \theta^{(k)} )} \Bigl |\; \mathbf{x}, \theta^{(k)} \Biggr). \]
+Since \(\log\) is concave, Jensen's inequality gives
+\begin{align*}
+& E \Biggl( \log \frac{ p( \mathbf{z}| \; \mathbf{x},\theta^{(k+1)})}{ p(\mathbf{z}| \mathbf{x}, \theta^{(k)} ) } \Bigl | \;\mathbf{x}, \theta^{(k)} \Biggr) \\
+&\leq \log  E \Biggl(\frac{ p( \mathbf{z}| \; \mathbf{x},\theta^{(k+1)})}{ p(\mathbf{z}| \mathbf{x}, \theta^{(k)}) } \Bigl |\; \mathbf{x}, \theta^{(k)} \Biggr)  \\
+&= \log \int \frac{ p( \mathbf{z}|\; \mathbf{x},\theta^{(k+1)})}{ p(\mathbf{z}| \mathbf{x}, \theta^{(k)}) } p(\mathbf{z}| \mathbf{x}, \theta^{(k)})  d\mathbf{z}\\
+&= \log(1) = 0.
+ \end{align*}
+(The same quantity is \(-D_{\mathrm{KL}}\bigl(p(\mathbf{z}|\mathbf{x},\theta^{(k)}) \,\|\, p(\mathbf{z}|\mathbf{x},\theta^{(k+1)})\bigr) \leq 0\).)
+
+Hence the difference of observed-data log-likelihoods is a nonnegative term minus a nonpositive term, and we have the ascend property
+\[\ell(\theta^{(k+1)}|\mathbf{x}) - \ell(\theta^{(k)}|\mathbf{x}) \geq 0.\]
+
+\section{Hidden Markov Models}\label{hidden-markov-models}
+
+A hidden Markov model is model-based clustering in time: the observations \(X_t\) are still generated from component distributions, but the latent labels \(Z_t\) are no longer independent. They form a Markov chain, so nearby time points tend to share a cluster.
+
+We will start by discussing an example taken from Durbin et al.~(1999). A \emph{dishonest casino} uses two dice, one of them is \textbf{fair} and the other one is \textbf{biased}:
+
+\begin{center}\includegraphics[width=0.55\linewidth]{images/week15/casino} \end{center}
+
+The observer does not know which die is actually taken (the state is \emph{hidden}), but the sequence of throws (observations) can be used to infer which die (state) was used.
+
+\textbf{Hidden Markov Model (HMM)}
+
+A \textbf{Hidden Markov Model (HMM)} for \((\mathbf{Z}, \mathbf{X}) = (Z_1, \ldots, Z_n, X_1, \ldots, X_n)\) consists of
+
+\begin{itemize}
+\tightlist
+\item
+  \(X_i\)s are observed (face of a die)
+\item
+  \(Z_i\)s are hidden (fair or biased)
+\end{itemize}
+
+where we assume that both \(Z\) and \(X\) are \emph{discrete} random variables, taking \(m_z\) and \(m_x\) possible values, respectively.
+
+So the HMM is parametrized by \(\theta = (w, A, B)\) where
+* \(w_{m_z \times 1}\): Distribution of \(Z_1\), an initial state
+* \(A_{m_z \times m_z}\): the transition probability matrix from \(Z_t\) to \(Z_{t+1}\)
+* \(B_{m_z \times m_x}\): the probability matrix (the emission distribution) for observing \(X_t\) under each hidden state \(Z_t\).
+
+The behavior of a HMM is fully determined by the three probabilities \(w\), \(A\), and \(B\), and implicitly by \(m_z\) and \(m_x\)
+
+\begin{center}\includegraphics[width=0.55\linewidth]{images/week15/hmm_sketch} \end{center}
+
+For the \emph{Dishonest Casino example}, we have
+
+\begin{itemize}
+\tightlist
+\item
+  \(m_z=2\) and \(m_x=6\).
+\item
+  \(A = \begin{bmatrix} 0.98 & 0.02\\ 0.05 & 0.95\end{bmatrix}\)
+\item
+  \(B = \begin{bmatrix} \frac{1}{6} & \frac{1}{6} & \frac{1}{6} & \frac{1}{6} & \frac{1}{6} & \frac{1}{6} \\
+  \frac{1}{10} & \frac{1}{10} & \frac{1}{10} & \frac{1}{10} & \frac{1}{10} & \frac{1}{2}\end{bmatrix}\)
+\item
+  \(w=(\frac{1}{2}, \frac{1}{2})\) equal probabilities if no strong prior.
+\end{itemize}
+
+We can calculate the probabilities of the observed data based on any given parameter value.
+
+How should we model the data and detect the underlying states (which die was used)?
+
+The underlying states \(\{Z_t; t=1, \ldots, n\}\) are a \textbf{Markov chain}, that satisfies the following assumptions:
+
+\begin{itemize}
+\item
+  Memoryless Assumption
+  \[p(Z_t|Z_{t-1}, \ldots, Z_1) = p(Z_t|Z_{t-1})\]
+\item
+  Stationarity Assumption
+  \[p(Z_t|Z_{t-1}) = p(Z_2|Z_{1})\,\,\, \text{ for } \, t=2, \ldots, n\]
+\end{itemize}
+
+The log-likelihood on the observed data is given by
+\[\log \left( p(\mathbf{x}|\theta) \right) = \log \left(\sum_z p(\mathbf{x}, \mathbf{z} | \theta) \right) = \log \left(\sum_z p(\mathbf{z} | \theta)  p(\mathbf{x}| \mathbf{z}, \theta)\right)\]
+which is very hard to optimize due to the summation inside the log (generally not convex). Note that here \(\mathbf{x}\) and \(\mathbf{z}\) are the observed vectors of the sequences \(\mathbf{X}\) and \(\mathbf{Z}\), respectively. The \emph{Baum-Welch Algorithm} was developed to solve this problem. It uses the EM algorithm and the Forward-Backward algorithm.
+
+\subsection{EM Algorithm for HMM (discrete case)}\label{em-algorithm-for-hmm-discrete-case}
+
+\textbf{E-step}: Under the current value of \(\theta\), denoted as \(\theta^{(k)}\), find \(p(\mathbf{z}|\mathbf{x}, \theta^{(k)})\), the distribution of the unobserved variables given
+the observed data and \(\theta^{(k)}\). Then calculate:
+\begin{align*}
+g(\theta) &= \mathbf{E}_{\mathbf{Z}|\mathbf{x}, \theta^{(k)}} \log p(\mathbf{x}, \mathbf{Z} | \theta) \\
+&= \sum_{\mathbf{z}} P(\mathbf{Z}=\mathbf{z} |\mathbf{x}, \theta^{(k)}) \log p(\mathbf{x}, \mathbf{z} |\theta)\\
+\end{align*}
+
+\textbf{M-step}: Re-estimate the parameter \(\theta\) to maximize \(g(\theta)\):
+\[\theta^{(k+1)} = \arg \max_{\theta} g(\theta)\]
+
+\paragraph*{\texorpdfstring{How to calculate \(p(\mathbf{z}|\mathbf{x}, \theta^{(k)})\) for our HMM problem?}{How to calculate p(\textbackslash mathbf\{z\}\textbar\textbackslash mathbf\{x\}, \textbackslash theta\^{}\{(k)\}) for our HMM problem?}}\label{how-to-calculate-pmathbfzmathbfx-thetak-for-our-hmm-problem}
+\addcontentsline{toc}{paragraph}{How to calculate \(p(\mathbf{z}|\mathbf{x}, \theta^{(k)})\) for our HMM problem?}
+
+\textbf{E-step}
+
+We first write out the log-likelihood of the \textbf{complete data}:
+
+\[\log p(\mathbf{z}, \mathbf{x}|\theta)
+= \log \Bigl (p(z_1) \prod_{t=1}^{n-1} p(z_{t+1}|z_t, \ldots, z_1, \theta) \prod_{t=1}^{n} p(x_t|z_t, \ldots, z_1, \theta) \Bigr)\]
+
+Using the memoryless and stationarity assumptions, this can be
+simplified to
+\[\log p(\mathbf{z}, \mathbf{x}|\theta)
+= \log w(z_1) + \sum_{t=1}^{n-1} \log A(z_t, z_{t+1}) + \sum_{t=1}^{n} \log B(z_t, x_t)\]
+Note that \(\theta = (w, A, B)\). We then try to integrate it over all possible values of \(Z\), based on a current iteration value \(\theta^{(k)}\):
+\[E_{\mathbf{Z}|\mathbf{x}, \theta^{(k)}}\Biggl( \log p(\mathbf{x}, \mathbf{Z}|\theta ) \Biggr)\]
+To calculate this expectation, we need the conditional distribution of \((\mathbf{Z}|\mathbf{x}, \theta^{(k)})\) which is just the following:
+
+\begin{align*}
+\gamma_t(i,j) &= P(Z_t=i, Z_{t+1}=j | \mathbf{X}, \theta^{(k)})\\
+\gamma_t(i) &= P(Z_t=i | \mathbf{X}, \theta^{(k)})
+\end{align*}
+
+Suppose we already have the \(\gamma_t\) values, the E-step is
+\begin{align*}
+ E_{\mathbf{Z}|\mathbf{x}, \theta^{(k)}}\Bigl( \log p(\mathbf{x}, \mathbf{Z}|\theta) \Bigr) &= E_{\mathbf{Z}|\mathbf{x}, \theta^{(k)}} \Bigl( \log w(Z_1) + \sum_{t=1}^{n-1} \log A(Z_t, Z_{t+1}) + \sum_{t=1}^{n} \log B(Z_t, x_t) \Bigr)\\
+=& \sum_{i=1}^{m_z} \gamma_1(i) \log w(i) + \sum_{t=1}^{n-1} \sum_{i,j=1}^{m_z} \gamma_t(i,j) \log A(i,j)\\
+&\quad + \sum_{t=1}^{n} \sum_{i=1}^{m_z} \gamma_t(i) \log B(i, x_t)\\
+\end{align*}
+If we can compute each \(\gamma_t(i,j)\) and \(\gamma_t(i)\), this step is done.
+
+\textbf{M-step}
+
+At the M-step, we update the parameters \(\theta = (w, A, B)\)
+\begin{align*}
+w^{(k+1)}(i) &= \gamma_1(i), \,\,\, i=1, \ldots, m_z\\
+A^{(k+1)}(i,j) &= \frac{\sum_{t=1}^{n-1} \gamma_t(i,j)}{\sum_{j'} \sum_{t=1}^{n-1} \gamma_t(i,j')}, \,\,\, i,j=1, \ldots, m_z\\
+B^{(k+1)}(i,l) &= \frac{\sum_{t:x_t=l} \gamma_t(i)}{\sum_{t=1}^{n}  \gamma_t(i)}, \,\,\, i=1, \ldots, m_z;\, \, l=1, \ldots, m_x
+\end{align*}
+
+They are just the MLE estimators obtained by pooling and
+averaging a particular transition/emission event. For example, \(B(i, \ell)\) is observing \(X = \ell\) if the state is \(Z = i\), so we go through all events with \(Z = i\) in the entire chain, and average
+the events where \(X = \ell\) is observed to get the probability.
+
+\subsection{Forward-Backward Algorithm for HMM}\label{forward-backward-algorithm-for-hmm}
+
+In both steps, we need to calculate the conditional probabilities:
+
+\[\gamma_t(i,j) = P(Z_t = i, Z_{t+1} = j|\mathbf{x}, \theta^{(k)})\]
+which is the conditional probability of transitioning from state \(i\) to
+state \(j\) at time point \(t\) given all the observed data \(x\), and
+
+\[\gamma_t(i) = P(Z_t=i|\mathbf{x}, \theta^{(k)})\]
+the conditional probability of being at state \(i\) at time point \(t\) given
+all the observed data \(x\).
+
+We will use a \textbf{forward-backward algorithm} to calculate this.
+
+With no risk of ambiguity, we omit \(\theta^{(k)}\) from the notation, i.e., \(p\) is always \(p_{\theta^{(k)}}\).
+
+For \(\gamma_t(i,j)\) by Bayes' theorem, we have:
+
+\begin{align*}
+\gamma_t(i,j) &= P(Z_t = i, Z_{t+1} = j |x)\\
+& \propto P(X_{1:t}, Z_t=i, Z_{t+1}=j, x_{t+1}, x_{(t+2):n})\\
+&=  \underbrace{P(X_{1:t}, Z_t=i)}_{\alpha_t(i)} \times  \underbrace{P( Z_{t+1}=j| Z_t=i)}_{A(i,j)}\\
+&\quad \times  \underbrace{P(x_{t+1}|Z_{t+1}=j)}_{B(j, x_{t+1})} \times  \underbrace{P(x_{(t+2):n} | Z_{t+1}=j)}_{\beta_{t+1}(j)}\\
+&= \alpha_t(i)\, A(i,j)\, B(j, x_{t+1})\, \beta_{t+1}(j)
+\end{align*}
+
+where \(\alpha_t(i) = P(x_{1:t}, Z_t=i)\) is the forward probability of observing \(x_{1:t}\) and having state \(i\) at time \(t\) and \(\beta_{t+1}(j) = P(x_{(t+2):n} | Z_{t+1}=j)\) is the backward probability of observing \(x_{(t+2):n}\) given state \(j\) at time \(t\). Note that \(\alpha_t(i)\) is a \textbf{joint} probability, and \$\beta\_\{t+1\}(j) \$ is a \textbf{conditional} probability.
+
+How to calculate \(\alpha_t(i)\) and \(\beta_{t+1}(j)\)? We do this recursively starting from the two end points \(t = 1\) and \(t = n\).
+
+\subsubsection*{Forward Probability}\label{forward-probability}
+\addcontentsline{toc}{subsubsection}{Forward Probability}
+
+For the first time point \(t=1\):
+\[\alpha_1(i) = P(x_1, Z_1=i) = w(i) B(i, x_1)\]
+
+For each \(t\), we can then calculate the next time point \(\alpha_{t+1}(i)\) using the information of \(\alpha_t(i)\):
+\begin{align*}
+\alpha_{t+1}(i) &= P(x_1, \ldots, x_{t+1}, Z_{t+1}=i)\\
+&= \sum_j P(X_1, \ldots, X_{t+1}, Z_t = j, Z_{t+1}=i)\\
+&= \sum_j P(x_{1:t}, Z_t =j) p(Z_{t+1}=i|Z_t=j) P(x_{t+1}|Z_{t+1}=i)\\
+&= \sum_j \alpha_t(j) A(j,i) B(i, x_{t+1})
+\end{align*}
+
+\subsubsection*{Backward Probability}\label{backward-probability}
+\addcontentsline{toc}{subsubsection}{Backward Probability}
+
+Define \(\beta_t(i) = P(x_{(t+1):n}|Z_t=i)\). For the last time point \(t=n\) there is no future observation, so we set
+\[\beta_n(i)=1.\]
+Then we recurse backward. Using \(\beta_{t+1}\) we obtain \(\beta_t\):
+\begin{align*}
+\beta_t(i) &= P(x_{(t+1):n}| Z_t=i)\\
+&= \sum_j P(Z_{t+1}=j | Z_t=i)\, P(x_{t+1}|Z_{t+1}=j)\, P(x_{(t+2):n}|Z_{t+1}=j)\\
+&= \sum_j  A(i,j)\, B(j, x_{t+1})\, \beta_{t+1}(j).
+\end{align*}
+
+Finally, the conditional probability \(\gamma_t(i,j)\) needs to be normalized by the marginal probability to be a \emph{proper} distribution:
+
+\[\gamma_t(i,j) = \frac{\alpha_t(i) A(i,j) B(j, x_{t+1}) \beta_{t+1}(j)}{\sum_i \sum_j \alpha_t(i) A(i,j) B(j, x_{t+1}) \beta_{t+1}(j)}\]
+Note that this is a joint probability, so we divide by the sum of all cases. This concludes the calculation of \(\gamma_t(i,j)\)
+
+Similarly, we can calculate \(\gamma_t(i)\) using Bayes' Theorem
+\begin{align*}
+\gamma_t(i) &= P(Z_t=i|\mathbf{x})\\
+&\propto P(Z_t=i,\mathbf{x})\\
+&= P(Z_t=i, \mathbf{x}_{1:t}) P(\mathbf{x}_{t+1:n} |Z_t=i, \mathbf{x}_{1:t})\\
+&= P(Z_t=i, \mathbf{x}_{1:t}) P(\mathbf{x}_{t+1:n} |Z_t=i)\\
+&= \alpha_t(i) \beta_t(i)
+\end{align*}
+
+Hence, after normalization, this is a proper distribution
+\[\gamma_t(i) = \frac{\alpha_t(i) \beta_t(i)}{\sum_i \alpha_t(i) \beta_t(i)}\]
+
+This concludes all the components needed in the EM algorithm!
+
+\section{\texorpdfstring{Inference on the Hidden States \(Z\)}{Inference on the Hidden States Z}}\label{inference-on-the-hidden-states-z}
+
+There are several ways to find the \textbf{optimal} hidden state sequence \(Z\) given an observation sequence \(\mathbf{x}\), depending on the definition of \emph{optimality}.
+
+One criterion is to choose the hidden states \(Z_t\)s that are \textbf{individually most likely at the time point \(t\)}, that is
+\[\hat{Z}_t^* = \arg \max_i P(Z_t=i | \mathbf{x}, \hat{\theta}) = \arg \max_i \gamma_t(i)\]
+
+Here we can plug in \(\hat{\theta}\) from the aforementioned EM algorithm
+and simply get the argmax. Such a solution is optimal in the sense that it maximizes the expected number of correct states (by choosing the most likely state for each \(t\)). However, the resulting sequence may not be the most likely one and it may not even be a valid sequence.
+
+For example, if \(Z\) has three states (instead of 2), and the transition probability \(A(1, 3) = 0\) (impossible to transit from 1 to 3), but it is still possible to have
+\[\hat{Z}_t^* = 1\,\, \text{ and } \,\,  \hat{Z}_{t+1}^* = 3\]
+
+An alternative approach is to find the most likely single sequence, i.e.,
+\[\hat{\mathbf{Z}}^* = \arg \max_{z_{1:n}} P(\mathbf{Z}=\mathbf{z}|\mathbf{x}, \hat{\theta})\]
+
+Note that maximizing this is the same as maximizing
+\[P(\mathbf{Z} = \mathbf{z}, \mathbf{x} | \hat{\theta}) \text{ w.r.t. } z_{1:n}\]
+
+Solving this with brute force will cost \(m_z^n\) tries, which is almost impossible. Hence, we need some sophisticated algorithm. A dynamic programming method called the Viterbi
+algorithm was proposed for this.
+
+Define a maximizing sequence \(z_{1:t}\) up to time \(t\), which ends with
+\(z_t = i\). The associated probability is
+\[\mu_t(i) = \max_{z_{1:(t-1)}} P \Bigl(\mathbf{Z}_{1:(t-1)} = \mathbf{z}_{1:(t-1)}, Z_t = i, \mathbf{x}_{1:t} | \hat{\theta} \Bigr)\]
+
+which is the highest probability along a single path from 1 to \(t\)
+that ends up at state \(Z_t = i\), given the observed sequence and
+the parameter estimation. Realizing that (with \(\hat{\theta}\) omitted)
+\begin{align*}
+&\mu_{t+1}(i) \\
+&= \max_{z_{1:t}} P( z_{1:t}, Z_{t+1} = i, x_{1:(t+1)} | \hat{\theta})\\
+&= \max_{z_{1:t}}\Bigl\{ P( z_{1:(t-1)}, Z_{t} = z_t, \mathbf{x}_{1:t} | \hat{\theta}) P(Z_{t+1}|Z_t, \hat{\theta}) P(x_{t+1}|z_{t+1}, \hat{\theta}) \Bigr\}\\
+&= \Bigl\{ \max_j \mu_t(j) A(j,i) \Bigr\} B(i, x_{t+1}).
+\end{align*}
+
+To recover the sequence we also store the maximizing predecessor
+\[\psi_{t+1}(i) = \arg\max_j \bigl\{\mu_t(j) A(j,i)\bigr\}.\]
+At time \(n\) set \(\hat{Z}_n = \arg\max_i \mu_n(i)\), then trace backward \(\hat{Z}_t = \psi_{t+1}(\hat{Z}_{t+1})\). This is the Viterbi path.
 
 \bibliography{book.bib,packages.bib}
 
